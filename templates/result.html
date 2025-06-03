@@ -185,6 +185,94 @@
             </div>
             {% endif %}
             
+            <!-- Threat Intelligence Analysis -->
+            {% if result.threat_intelligence %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 p-4">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-virus text-danger me-2"></i>
+                        Real-Time Threat Intelligence
+                    </h5>
+                    <p class="text-muted mb-0 mt-2">Live security analysis from global threat monitoring systems</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                            <div class="threat-risk-card text-center p-3 border rounded 
+                                 {% if result.threat_intelligence.overall_risk == 'HIGH' %}border-danger bg-danger bg-opacity-10
+                                 {% elif result.threat_intelligence.overall_risk == 'MEDIUM' %}border-warning bg-warning bg-opacity-10
+                                 {% else %}border-success bg-success bg-opacity-10{% endif %}">
+                                {% if result.threat_intelligence.overall_risk == 'HIGH' %}
+                                    <i class="fas fa-exclamation-triangle text-danger fs-2 mb-2"></i>
+                                    <h6 class="text-danger fw-bold">HIGH RISK</h6>
+                                {% elif result.threat_intelligence.overall_risk == 'MEDIUM' %}
+                                    <i class="fas fa-exclamation-circle text-warning fs-2 mb-2"></i>
+                                    <h6 class="text-warning fw-bold">MEDIUM RISK</h6>
+                                {% else %}
+                                    <i class="fas fa-check-circle text-success fs-2 mb-2"></i>
+                                    <h6 class="text-success fw-bold">LOW RISK</h6>
+                                {% endif %}
+                                <p class="small text-muted mb-0">Threat Level</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center p-3 border rounded">
+                                <i class="fas fa-percentage text-info fs-4 mb-2"></i>
+                                <h6 class="fw-bold">{{ "%.0f"|format(result.threat_intelligence.confidence) }}%</h6>
+                                <p class="small text-muted mb-0">Confidence</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center p-3 border rounded">
+                                <i class="fas fa-search text-primary fs-4 mb-2"></i>
+                                <h6 class="fw-bold">{{ result.threat_intelligence.key_findings|length }}</h6>
+                                <p class="small text-muted mb-0">Findings</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center p-3 border rounded">
+                                <i class="fas fa-clock text-secondary fs-4 mb-2"></i>
+                                <h6 class="fw-bold">Real-time</h6>
+                                <p class="small text-muted mb-0">Analysis</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if result.threat_intelligence.key_findings %}
+                    <div class="mt-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-list-alt text-primary me-2"></i>Security Intelligence Findings:
+                        </h6>
+                        <div class="threat-findings">
+                            {% for finding in result.threat_intelligence.key_findings %}
+                            <div class="finding-item d-flex align-items-start mb-2 p-3 bg-light rounded">
+                                <i class="fas fa-info-circle text-primary me-3 mt-1"></i>
+                                <span class="text-dark">{{ finding }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if result.threat_intelligence.immediate_actions %}
+                    <div class="mt-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>Immediate Actions Required:
+                        </h6>
+                        <div class="immediate-actions">
+                            {% for action in result.threat_intelligence.immediate_actions %}
+                            <div class="action-item d-flex align-items-start mb-2 p-3 border-start border-4 border-warning bg-warning bg-opacity-10 rounded">
+                                <i class="fas fa-arrow-right text-warning me-3 mt-1"></i>
+                                <span class="text-dark">{{ action }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
             <!-- AI Analysis Details -->
             {% if result.ai_analysis %}
             <div class="card border-0 shadow-sm mb-4">

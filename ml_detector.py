@@ -7,6 +7,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from urllib.parse import urlparse
 import logging
+from threat_intelligence import threat_engine
 
 # Download required NLTK data
 try:
@@ -78,7 +79,9 @@ class PhishingDetector:
             'classification': 'safe',
             'confidence': 0.0,
             'reasons': [],
+            'user_friendly_reasons': [],
             'ai_analysis': {},
+            'threat_intelligence': {},
             'risk_score': 0.0
         }
         
@@ -92,6 +95,10 @@ class PhishingDetector:
             
             # Apply AI enhancement
             result = self._enhance_with_ai(content, result, input_type)
+            
+            # Apply threat intelligence for URLs
+            if input_type == 'url':
+                result = self._enhance_with_threat_intelligence(content, result)
             
             # Calculate final classification
             result = self._calculate_final_result(result)
@@ -488,13 +495,63 @@ class PhishingDetector:
         
         return max(0.0, min(1.0, confidence))
     
+    def _enhance_with_threat_intelligence(self, url, result):
+        """Enhance analysis with real-time threat intelligence"""
+        try:
+            threat_summary = threat_engine.get_threat_summary(url)
+            result['threat_intelligence'] = threat_summary
+            
+            # Integrate threat intelligence into risk assessment
+            threat_score = threat_summary.get('confidence', 0) / 100
+            result['risk_score'] = min(result.get('risk_score', 0) + threat_score * 0.5, 1.0)
+            
+            # Add threat intelligence findings to user-friendly reasons
+            if not result.get('user_friendly_reasons'):
+                result['user_friendly_reasons'] = []
+                
+            # Add threat intelligence insights
+            overall_risk = threat_summary.get('overall_risk', 'LOW')
+            key_findings = threat_summary.get('key_findings', [])
+            
+            if overall_risk == 'HIGH':
+                result['user_friendly_reasons'].append({
+                    'issue': 'High threat detected by security intelligence',
+                    'explanation': f'Our threat intelligence system found serious security concerns: {", ".join(key_findings[:2])}',
+                    'safety_tip': 'Do not visit this URL. It has been flagged by multiple security sources as dangerous.',
+                    'severity': 'critical'
+                })
+            elif overall_risk == 'MEDIUM':
+                result['user_friendly_reasons'].append({
+                    'issue': 'Moderate security concerns detected',
+                    'explanation': f'Security analysis revealed potential risks: {", ".join(key_findings[:2])}',
+                    'safety_tip': 'Exercise caution and verify this URL through official channels before proceeding.',
+                    'severity': 'high'
+                })
+            elif key_findings:
+                result['user_friendly_reasons'].append({
+                    'issue': 'Security monitoring alerts',
+                    'explanation': f'Our monitoring detected: {", ".join(key_findings[:1])}',
+                    'safety_tip': 'Stay alert and monitor for any suspicious behavior if you choose to proceed.',
+                    'severity': 'medium'
+                })
+            
+        except Exception as e:
+            logging.error(f"Threat intelligence enhancement failed: {e}")
+        
+        return result
+    
     def _calculate_final_result(self, result):
         """Calculate final classification based on all factors"""
         risk_score = result['risk_score']
         ai_confidence = result['ai_analysis'].get('ai_confidence', 0.5)
         
-        # Combine risk score and AI confidence
-        final_score = (risk_score + (1 - ai_confidence)) / 2
+        # Include threat intelligence score
+        threat_score = 0.0
+        if 'threat_intelligence' in result:
+            threat_score = result['threat_intelligence'].get('confidence', 0) / 100
+        
+        # Weighted combination of all scores
+        final_score = (risk_score * 0.5) + ((1 - ai_confidence) * 0.3) + (threat_score * 0.2)
         
         if final_score >= 0.7:
             result['classification'] = 'phishing'
@@ -508,6 +565,10 @@ class PhishingDetector:
         
         # Add AI explanation to reasons
         if final_score >= 0.4:
-            result['reasons'].append(f"AI analysis indicates elevated risk (score: {final_score:.2f})")
+            result['reasons'].append(f"Combined analysis indicates elevated risk (score: {final_score:.2f})")
+        
+        # Add threat intelligence summary to reasons
+        if 'threat_intelligence' in result and result['threat_intelligence'].get('overall_risk') != 'LOW':
+            result['reasons'].append(f"Threat intelligence: {result['threat_intelligence']['overall_risk']} risk detected")
         
         return result
