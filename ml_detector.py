@@ -590,7 +590,7 @@ class PhishingDetector:
             result['reasons'].append(f"Combined analysis indicates elevated risk (score: {final_score:.2f})")
         
         # Add threat intelligence summary to reasons
-        if 'threat_intelligence' in result and result['threat_intelligence'].get('overall_risk') != 'LOW':
-            result['reasons'].append(f"Threat intelligence: {result['threat_intelligence']['overall_risk']} risk detected")
+        if 'threat_intelligence' in result and result['threat_intelligence'].get('threat_level') != 'LOW':
+            result['reasons'].append(f"Threat intelligence: {result['threat_intelligence']['threat_level']} risk detected")
         
         return result
