@@ -1,0 +1,83 @@
+I'm building a responsive phishing detection web platform using Replit. This project is part of my final semester and needs to be visually appealing, functional, and educational. I want to use only HTML, CSS, and Python for the backend (with optional JavaScript if necessary). Please help me build it step by step.
+
+🔒 Project Requirements:
+🌐 Platform Features:
+Home Page
+
+Visually appealing with animated elements (CSS animations, transitions).
+
+A clean, modern UI with a clear “Check for Phishing” input section.
+
+Educational tips or slider section: "How to Stay Safe from Phishing".
+
+User Authentication (Login/Signup)
+
+Allow users to register/login securely.
+
+Use Python (Flask preferred) for backend logic.
+
+Store user login info and history (Replit database or simple JSON/SQLite).
+
+Phishing Detection Engine
+
+Detect phishing from input:
+
+URL or website link
+
+Email content
+
+Message body
+
+Use a simple ML model in Python or a rule-based system to detect patterns.
+
+When a user inputs data, show a result page with:
+
+“Phishing” or “Safe” label
+
+Detailed reasons (e.g., “Suspicious URL pattern”, “Contains IP address”, etc.)
+
+User History Dashboard
+
+Logged-in users can see what links/messages they’ve checked so far.
+
+Each entry should show:
+
+The original input
+
+Result
+
+Timestamp
+
+Tips Section
+
+A dedicated page or card component listing practical anti-phishing tips.
+
+Optionally rotate/display different tips daily or randomly.
+
+⚙️ Technical Requirements:
+Use HTML/CSS for UI (mobile responsive).
+
+Use Python (Flask) to handle backend and ML logic.
+
+Use JavaScript for dynamic elements (like alerts, animation triggers, etc.).
+
+If possible, use Replit DB or SQLite for storing login and user history.
+
+🎯 What I Need Help With:
+Full project folder structure for Replit.
+
+Home page layout with animations and form input.
+
+Flask server setup with login/logout and sessions.
+
+Phishing detection logic (code + dataset if ML).
+
+User dashboard with search history.
+
+Displaying reasons for phishing detection.
+
+Tips page (auto-load random tips or educational cards).
+
+Final UI polish (basic CSS animations and responsiveness).
+
+Make everything beginner-friendly but with scalable code. Use simplified examples and make sure every part is well-commented. Also, guide me on how to test it properly inside Replit.
