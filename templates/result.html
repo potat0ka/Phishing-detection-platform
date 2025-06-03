@@ -86,30 +86,103 @@
                 </div>
             </div>
             
-            <!-- Detection Reasons -->
-            {% if result.reasons %}
+            <!-- User-Friendly Analysis -->
+            {% if result.user_friendly_reasons %}
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-transparent border-0 p-4">
                     <h5 class="mb-0">
-                        <i class="fas fa-list-ul text-warning me-2"></i>
-                        Detection Analysis
+                        <i class="fas fa-shield-alt text-info me-2"></i>
+                        What We Found - Explained Simply
                     </h5>
+                    <p class="text-muted mb-0 mt-2">Here's what our AI detected and what it means for your safety:</p>
                 </div>
                 <div class="card-body p-4">
-                    <div class="reasons-list">
-                        {% for reason in result.reasons %}
-                        <div class="reason-item d-flex align-items-start mb-3">
-                            <div class="reason-icon me-3 mt-1">
-                                <i class="fas fa-exclamation-circle text-{{ risk_color }}"></i>
+                    <div class="user-friendly-reasons">
+                        {% for item in result.user_friendly_reasons %}
+                        <div class="safety-alert mb-4 p-4 border-start border-4 
+                             {% if item.severity == 'critical' %}border-danger bg-danger bg-opacity-10
+                             {% elif item.severity == 'high' %}border-warning bg-warning bg-opacity-10
+                             {% elif item.severity == 'medium' %}border-info bg-info bg-opacity-10
+                             {% else %}border-secondary bg-light{% endif %}">
+                            
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="severity-icon me-3">
+                                    {% if item.severity == 'critical' %}
+                                        <i class="fas fa-exclamation-triangle text-danger fs-4"></i>
+                                    {% elif item.severity == 'high' %}
+                                        <i class="fas fa-exclamation-circle text-warning fs-4"></i>
+                                    {% elif item.severity == 'medium' %}
+                                        <i class="fas fa-info-circle text-info fs-4"></i>
+                                    {% else %}
+                                        <i class="fas fa-eye text-secondary fs-4"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="fw-bold mb-2 
+                                        {% if item.severity == 'critical' %}text-danger
+                                        {% elif item.severity == 'high' %}text-warning
+                                        {% elif item.severity == 'medium' %}text-info
+                                        {% else %}text-secondary{% endif %}">
+                                        🚨 {{ item.issue }}
+                                        <span class="badge bg-{{ 'danger' if item.severity == 'critical' else ('warning' if item.severity == 'high' else ('info' if item.severity == 'medium' else 'secondary')) }} ms-2">
+                                            {{ item.severity.title() }} Risk
+                                        </span>
+                                    </h6>
+                                </div>
                             </div>
-                            <div class="reason-text">
-                                <p class="mb-0">{{ reason }}</p>
+                            
+                            <div class="explanation-section mb-3">
+                                <h6 class="text-dark mb-2">
+                                    <i class="fas fa-question-circle me-2"></i>What does this mean?
+                                </h6>
+                                <p class="mb-0 text-dark">{{ item.explanation }}</p>
+                            </div>
+                            
+                            <div class="safety-tip-section">
+                                <h6 class="text-success mb-2">
+                                    <i class="fas fa-lightbulb me-2"></i>How to stay safe:
+                                </h6>
+                                <p class="mb-0 text-success fw-medium">{{ item.safety_tip }}</p>
                             </div>
                         </div>
                         {% endfor %}
                     </div>
                 </div>
             </div>
+            
+            <!-- Technical Details (Collapsible) -->
+            {% if result.reasons %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 text-muted">
+                            <i class="fas fa-cog me-2"></i>
+                            Technical Detection Details
+                        </h6>
+                        <button class="btn btn-sm btn-outline-secondary" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#technicalDetails">
+                            <i class="fas fa-chevron-down me-1"></i>Show Details
+                        </button>
+                    </div>
+                </div>
+                <div class="collapse" id="technicalDetails">
+                    <div class="card-body pt-0">
+                        <div class="reasons-list">
+                            {% for reason in result.reasons %}
+                            <div class="reason-item d-flex align-items-start mb-2 p-2 bg-light rounded">
+                                <div class="reason-icon me-3 mt-1">
+                                    <i class="fas fa-cog text-muted"></i>
+                                </div>
+                                <div class="reason-text">
+                                    <small class="text-muted">{{ reason }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
             {% endif %}
             
             <!-- AI Analysis Details -->
@@ -156,49 +229,164 @@
             </div>
             {% endif %}
             
-            <!-- Recommendations -->
+            <!-- Comprehensive Safety Recommendations -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-transparent border-0 p-4">
                     <h5 class="mb-0">
-                        <i class="fas fa-lightbulb text-success me-2"></i>
-                        Security Recommendations
+                        <i class="fas fa-shield-alt text-success me-2"></i>
+                        Your Next Steps - Stay Safe
                     </h5>
+                    <p class="text-muted mb-0 mt-2">Based on our analysis, here's what you should do:</p>
                 </div>
                 <div class="card-body p-4">
                     {% if result.classification == 'safe' %}
-                    <div class="alert alert-success border-0">
-                        <i class="fas fa-check-circle me-2"></i>
-                        This content appears safe, but always remain vigilant when sharing personal information online.
+                    <div class="alert alert-success border-0 mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success fs-3 me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Good News - This Looks Safe!</h6>
+                                <p class="mb-0">Our AI didn't find any major red flags, but always stay alert when sharing personal information.</p>
+                            </div>
+                        </div>
                     </div>
-                    <ul class="list-unstyled mb-0">
-                        <li class="mb-2"><i class="fas fa-arrow-right text-success me-2"></i>Continue with normal caution</li>
-                        <li class="mb-2"><i class="fas fa-arrow-right text-success me-2"></i>Verify sender identity if unsure</li>
-                        <li><i class="fas fa-arrow-right text-success me-2"></i>Keep software and browsers updated</li>
-                    </ul>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="safe-action-card p-3 border rounded bg-light">
+                                <h6 class="text-success fw-bold mb-2">
+                                    <i class="fas fa-thumbs-up me-2"></i>You Can Proceed, But:
+                                </h6>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Still verify the sender if you don't know them</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Don't share passwords or banking details</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Trust your instincts if something feels off</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="general-tips-card p-3 border rounded bg-light">
+                                <h6 class="text-info fw-bold mb-2">
+                                    <i class="fas fa-lightbulb me-2"></i>General Safety Tips:
+                                </h6>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2"><i class="fas fa-shield text-info me-2"></i>Keep your browser updated</li>
+                                    <li class="mb-2"><i class="fas fa-shield text-info me-2"></i>Use strong, unique passwords</li>
+                                    <li><i class="fas fa-shield text-info me-2"></i>Enable two-factor authentication</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
                     {% elif result.classification == 'suspicious' %}
-                    <div class="alert alert-warning border-0">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Exercise extra caution with this content. Verify through alternative channels before taking action.
+                    <div class="alert alert-warning border-0 mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle text-warning fs-3 me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Caution Required - This Looks Suspicious</h6>
+                                <p class="mb-0">Our AI found some warning signs. Don't take any action until you verify this is legitimate.</p>
+                            </div>
+                        </div>
                     </div>
-                    <ul class="list-unstyled mb-0">
-                        <li class="mb-2"><i class="fas fa-arrow-right text-warning me-2"></i>Do not click any links yet</li>
-                        <li class="mb-2"><i class="fas fa-arrow-right text-warning me-2"></i>Verify sender through independent means</li>
-                        <li class="mb-2"><i class="fas fa-arrow-right text-warning me-2"></i>Contact organization directly if needed</li>
-                        <li><i class="fas fa-arrow-right text-warning me-2"></i>Report if confirmed as phishing</li>
-                    </ul>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="warning-action-card p-3 border border-warning rounded bg-warning bg-opacity-10">
+                                <h6 class="text-warning fw-bold mb-2">
+                                    <i class="fas fa-pause-circle me-2"></i>Stop and Verify First:
+                                </h6>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2"><i class="fas fa-times text-warning me-2"></i>Don't click any links right now</li>
+                                    <li class="mb-2"><i class="fas fa-phone text-warning me-2"></i>Call the company using their official number</li>
+                                    <li class="mb-2"><i class="fas fa-globe text-warning me-2"></i>Visit their official website directly</li>
+                                    <li><i class="fas fa-users text-warning me-2"></i>Ask someone you trust for advice</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="verification-card p-3 border rounded bg-light">
+                                <h6 class="text-info fw-bold mb-2">
+                                    <i class="fas fa-search me-2"></i>How to Verify:
+                                </h6>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2"><i class="fas fa-phone text-info me-2"></i>Call using numbers from official websites</li>
+                                    <li class="mb-2"><i class="fas fa-envelope text-info me-2"></i>Send a separate email to confirm</li>
+                                    <li><i class="fas fa-store text-info me-2"></i>Visit a physical location if possible</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
                     {% else %}
-                    <div class="alert alert-danger border-0">
-                        <i class="fas fa-times-circle me-2"></i>
-                        This appears to be a phishing attempt. Do not interact with this content.
+                    <div class="alert alert-danger border-0 mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-ban text-danger fs-3 me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">DANGER - This is Likely a Scam!</h6>
+                                <p class="mb-0">Our AI found multiple red flags indicating this is a phishing attempt. Do not interact with this content.</p>
+                            </div>
+                        </div>
                     </div>
-                    <ul class="list-unstyled mb-0">
-                        <li class="mb-2"><i class="fas fa-arrow-right text-danger me-2"></i>Do not click any links</li>
-                        <li class="mb-2"><i class="fas fa-arrow-right text-danger me-2"></i>Do not provide any information</li>
-                        <li class="mb-2"><i class="fas fa-arrow-right text-danger me-2"></i>Delete or mark as spam</li>
-                        <li class="mb-2"><i class="fas fa-arrow-right text-danger me-2"></i>Report to appropriate authorities</li>
-                        <li><i class="fas fa-arrow-right text-danger me-2"></i>Warn others who may have received similar content</li>
-                    </ul>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="danger-action-card p-3 border border-danger rounded bg-danger bg-opacity-10">
+                                <h6 class="text-danger fw-bold mb-2">
+                                    <i class="fas fa-stop me-2"></i>Do NOT:
+                                </h6>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2"><i class="fas fa-times text-danger me-2"></i>Click any links or buttons</li>
+                                    <li class="mb-2"><i class="fas fa-times text-danger me-2"></i>Download any attachments</li>
+                                    <li class="mb-2"><i class="fas fa-times text-danger me-2"></i>Reply with personal information</li>
+                                    <li><i class="fas fa-times text-danger me-2"></i>Call any phone numbers provided</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="protection-card p-3 border rounded bg-light">
+                                <h6 class="text-success fw-bold mb-2">
+                                    <i class="fas fa-shield-alt me-2"></i>Protect Yourself:
+                                </h6>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2"><i class="fas fa-trash text-success me-2"></i>Delete the message immediately</li>
+                                    <li class="mb-2"><i class="fas fa-flag text-success me-2"></i>Report it as spam/phishing</li>
+                                    <li class="mb-2"><i class="fas fa-users text-success me-2"></i>Warn friends and family</li>
+                                    <li><i class="fas fa-police-station text-success me-2"></i>Report to authorities if needed</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-info bg-opacity-10 border border-info rounded">
+                        <h6 class="text-info fw-bold mb-2">
+                            <i class="fas fa-info-circle me-2"></i>What to Do if You Already Clicked:
+                        </h6>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-1"><i class="fas fa-key text-info me-2"></i>Change passwords immediately for any accounts mentioned</li>
+                            <li class="mb-1"><i class="fas fa-credit-card text-info me-2"></i>Check your bank and credit card statements</li>
+                            <li class="mb-1"><i class="fas fa-phone text-info me-2"></i>Contact your bank if you provided financial information</li>
+                            <li><i class="fas fa-virus text-info me-2"></i>Run a virus scan on your device</li>
+                        </ul>
+                    </div>
                     {% endif %}
+                    
+                    <!-- Emergency Contacts -->
+                    <div class="mt-4 p-3 bg-light border rounded">
+                        <h6 class="fw-bold mb-2">
+                            <i class="fas fa-phone-alt text-primary me-2"></i>Need Help? Emergency Contacts:
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">Report Fraud:</small>
+                                <p class="mb-1"><strong>FTC:</strong> 1-877-FTC-HELP</p>
+                                <p class="mb-1"><strong>FBI IC3:</strong> ic3.gov</p>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">Credit Monitoring:</small>
+                                <p class="mb-1"><strong>Equifax:</strong> 1-800-525-6285</p>
+                                <p class="mb-1"><strong>Experian:</strong> 1-888-397-3742</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
