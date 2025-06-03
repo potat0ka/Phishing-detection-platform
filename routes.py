@@ -2,12 +2,14 @@ from flask import render_template, request, redirect, url_for, flash, session, j
 from app import app, db
 from models import User, Detection, PhishingTip
 from ml_detector import PhishingDetector
+from social_automation import SocialMediaAutomation, Platform, PostStatus, ABTestStatus
 from utils import is_logged_in, login_required
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
-# Initialize ML detector
+# Initialize ML detector and social automation
 detector = PhishingDetector()
+social_automation = SocialMediaAutomation()
 
 @app.route('/')
 def index():
@@ -243,3 +245,241 @@ def initialize_tips():
             except Exception as e:
                 db.session.rollback()
                 app.logger.error(f"Failed to initialize tips: {e}")
+
+# Social Media Automation Routes
+@app.route('/automation')
+@login_required
+def automation_dashboard():
+    """Social media automation dashboard"""
+    # Get user's recent posts and analytics
+    recent_posts = list(social_automation.posts.values())[-10:]  # Last 10 posts
+    ab_tests = list(social_automation.ab_tests.values())
+    
+    # Calculate stats
+    total_posts = len(social_automation.posts)
+    published_posts = len([p for p in social_automation.posts.values() if p.status == PostStatus.PUBLISHED])
+    active_tests = len([t for t in ab_tests if t.status == ABTestStatus.RUNNING])
+    
+    stats = {
+        'total_posts': total_posts,
+        'published_posts': published_posts,
+        'active_tests': active_tests,
+        'success_rate': round((published_posts / max(total_posts, 1)) * 100, 1)
+    }
+    
+    return render_template('automation/dashboard.html', 
+                         recent_posts=recent_posts,
+                         ab_tests=ab_tests,
+                         stats=stats,
+                         platforms=Platform)
+
+@app.route('/automation/create-post', methods=['GET', 'POST'])
+@login_required
+def create_social_post():
+    """Create a new social media post"""
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        content = request.form.get('content', '').strip()
+        platforms = request.form.getlist('platforms')
+        scheduled_date = request.form.get('scheduled_date')
+        scheduled_time = request.form.get('scheduled_time')
+        newsletter_link = request.form.get('newsletter_link', '').strip()
+        hashtags = [tag.strip() for tag in request.form.get('hashtags', '').split(',') if tag.strip()]
+        
+        if not title or not content or not platforms:
+            flash('Title, content, and at least one platform are required.', 'error')
+            return render_template('automation/create_post.html', platforms=Platform)
+        
+        # Parse scheduled datetime
+        try:
+            scheduled_datetime = datetime.strptime(f"{scheduled_date} {scheduled_time}", "%Y-%m-%d %H:%M")
+        except ValueError:
+            flash('Invalid date or time format.', 'error')
+            return render_template('automation/create_post.html', platforms=Platform)
+        
+        # Convert platform strings to Platform enums
+        platform_enums = []
+        for platform_str in platforms:
+            try:
+                platform_enums.append(Platform(platform_str))
+            except ValueError:
+                flash(f'Invalid platform: {platform_str}', 'error')
+                return render_template('automation/create_post.html', platforms=Platform)
+        
+        # Create the post
+        try:
+            post_id = social_automation.create_post(
+                title=title,
+                content=content,
+                platforms=platform_enums,
+                scheduled_time=scheduled_datetime,
+                newsletter_link=newsletter_link,
+                hashtags=hashtags
+            )
+            
+            flash(f'Post created successfully! ID: {post_id}', 'success')
+            return redirect(url_for('automation_dashboard'))
+            
+        except Exception as e:
+            app.logger.error(f"Error creating post: {e}")
+            flash('Failed to create post. Please try again.', 'error')
+    
+    return render_template('automation/create_post.html', platforms=Platform)
+
+@app.route('/automation/create-ab-test', methods=['GET', 'POST'])
+@login_required
+def create_ab_test():
+    """Create a new A/B test"""
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        description = request.form.get('description', '').strip()
+        start_date = request.form.get('start_date')
+        start_time = request.form.get('start_time')
+        end_date = request.form.get('end_date')
+        end_time = request.form.get('end_time')
+        
+        # Get variant data
+        variants = []
+        variant_count = int(request.form.get('variant_count', 2))
+        
+        for i in range(variant_count):
+            variant_name = request.form.get(f'variant_{i}_name', '').strip()
+            variant_content = request.form.get(f'variant_{i}_content', '').strip()
+            variant_platforms = request.form.getlist(f'variant_{i}_platforms')
+            variant_hashtags = [tag.strip() for tag in request.form.get(f'variant_{i}_hashtags', '').split(',') if tag.strip()]
+            
+            if variant_name and variant_content and variant_platforms:
+                # Convert platform strings to Platform enums
+                platform_enums = []
+                for platform_str in variant_platforms:
+                    try:
+                        platform_enums.append(Platform(platform_str))
+                    except ValueError:
+                        flash(f'Invalid platform: {platform_str}', 'error')
+                        return render_template('automation/create_ab_test.html', platforms=Platform)
+                
+                variants.append({
+                    'name': variant_name,
+                    'content': variant_content,
+                    'platforms': platform_enums,
+                    'hashtags': variant_hashtags
+                })
+        
+        if not name or not description or len(variants) < 2:
+            flash('Name, description, and at least 2 variants are required.', 'error')
+            return render_template('automation/create_ab_test.html', platforms=Platform)
+        
+        # Parse datetimes
+        try:
+            start_datetime = datetime.strptime(f"{start_date} {start_time}", "%Y-%m-%d %H:%M")
+            end_datetime = datetime.strptime(f"{end_date} {end_time}", "%Y-%m-%d %H:%M")
+        except ValueError:
+            flash('Invalid date or time format.', 'error')
+            return render_template('automation/create_ab_test.html', platforms=Platform)
+        
+        if end_datetime <= start_datetime:
+            flash('End time must be after start time.', 'error')
+            return render_template('automation/create_ab_test.html', platforms=Platform)
+        
+        # Create the A/B test
+        try:
+            test_id = social_automation.create_ab_test(
+                name=name,
+                description=description,
+                variants=variants,
+                start_time=start_datetime,
+                end_time=end_datetime
+            )
+            
+            flash(f'A/B test created successfully! ID: {test_id}', 'success')
+            return redirect(url_for('view_ab_test', test_id=test_id))
+            
+        except Exception as e:
+            app.logger.error(f"Error creating A/B test: {e}")
+            flash('Failed to create A/B test. Please try again.', 'error')
+    
+    return render_template('automation/create_ab_test.html', platforms=Platform)
+
+@app.route('/automation/ab-test/<test_id>')
+@login_required
+def view_ab_test(test_id):
+    """View A/B test details and results"""
+    if test_id not in social_automation.ab_tests:
+        flash('A/B test not found.', 'error')
+        return redirect(url_for('automation_dashboard'))
+    
+    ab_test = social_automation.ab_tests[test_id]
+    
+    # Analyze test results
+    try:
+        analysis = social_automation.analyze_ab_test(test_id)
+    except Exception as e:
+        app.logger.error(f"Error analyzing A/B test: {e}")
+        analysis = {"status": "error", "message": str(e)}
+    
+    return render_template('automation/ab_test_details.html', 
+                         ab_test=ab_test, 
+                         analysis=analysis)
+
+@app.route('/automation/analytics')
+@login_required
+def automation_analytics():
+    """View detailed analytics and reports"""
+    # Get date range from query parameters
+    start_date_str = request.args.get('start_date', (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d'))
+    end_date_str = request.args.get('end_date', datetime.now().strftime('%Y-%m-%d'))
+    
+    try:
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+    except ValueError:
+        start_date = datetime.now() - timedelta(days=30)
+        end_date = datetime.now()
+    
+    # Generate analytics report
+    report = social_automation.get_analytics_report(start_date, end_date)
+    
+    return render_template('automation/analytics.html', 
+                         report=report,
+                         start_date=start_date_str,
+                         end_date=end_date_str)
+
+@app.route('/automation/api/publish/<post_id>', methods=['POST'])
+@login_required
+def api_publish_post(post_id):
+    """API endpoint to manually publish a post"""
+    try:
+        results = social_automation.publish_post(post_id)
+        return jsonify({
+            'success': True,
+            'results': {platform: result for platform, result in results.items()}
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 400
+
+@app.route('/automation/api/analytics/<post_id>', methods=['POST'])
+@login_required
+def api_update_analytics(post_id):
+    """API endpoint to update post analytics"""
+    try:
+        data = request.get_json()
+        platform = Platform(data['platform'])
+        metrics = data['metrics']
+        
+        social_automation.update_analytics(post_id, platform, metrics)
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 400
+
+@app.route('/automation/settings')
+@login_required
+def automation_settings():
+    """Automation platform settings and API configuration"""
+    return render_template('automation/settings.html', platforms=Platform)
