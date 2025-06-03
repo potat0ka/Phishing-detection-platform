@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Register - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-shield text-primary fs-1 mb-3"></i>
+                        <h2 class="fw-bold">Create Account</h2>
+                        <p class="text-muted">Join the secure phishing detection platform</p>
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('register') }}">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="fas fa-user me-2"></i>Username
+                            </label>
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="username" name="username" required minlength="3" maxlength="80">
+                            <div class="form-text">Choose a unique username (3-80 characters)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>Email Address
+                            </label>
+                            <input type="email" class="form-control form-control-lg" 
+                                   id="email" name="email" required>
+                            <div class="form-text">We'll use this for account recovery</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock me-2"></i>Password
+                            </label>
+                            <input type="password" class="form-control form-control-lg" 
+                                   id="password" name="password" required minlength="6">
+                            <div class="form-text">Minimum 6 characters</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="confirm_password" class="form-label">
+                                <i class="fas fa-lock me-2"></i>Confirm Password
+                            </label>
+                            <input type="password" class="form-control form-control-lg" 
+                                   id="confirm_password" name="confirm_password" required>
+                        </div>
+                        
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>
+                                Create Account
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center">
+                        <p class="text-muted">Already have an account?</p>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Sign In
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Features -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body p-4">
+                    <h6 class="text-center mb-3">
+                        <i class="fas fa-shield-alt text-success me-2"></i>
+                        Account Security Features
+                    </h6>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <i class="fas fa-lock text-primary mb-2 d-block"></i>
+                            <small class="text-muted">Encrypted Storage</small>
+                        </div>
+                        <div class="col-4">
+                            <i class="fas fa-user-secret text-success mb-2 d-block"></i>
+                            <small class="text-muted">Privacy Protected</small>
+                        </div>
+                        <div class="col-4">
+                            <i class="fas fa-history text-info mb-2 d-block"></i>
+                            <small class="text-muted">Detection History</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Password confirmation validation
+document.getElementById('confirm_password').addEventListener('input', function() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = this.value;
+    
+    if (password !== confirmPassword) {
+        this.setCustomValidity('Passwords do not match');
+    } else {
+        this.setCustomValidity('');
+    }
+});
+</script>
+{% endblock %}

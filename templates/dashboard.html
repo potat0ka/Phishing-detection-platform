@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-6">
+                <i class="fas fa-tachometer-alt text-primary me-3"></i>
+                Welcome back, {{ session.username }}!
+            </h1>
+            <p class="text-muted">Monitor your phishing detection activity and security insights</p>
+        </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="stat-icon mb-3">
+                        <i class="fas fa-search-plus text-primary fs-2"></i>
+                    </div>
+                    <h3 class="fw-bold">{{ stats.total_checks }}</h3>
+                    <p class="text-muted mb-0">Total Checks</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="stat-icon mb-3">
+                        <i class="fas fa-exclamation-triangle text-danger fs-2"></i>
+                    </div>
+                    <h3 class="fw-bold text-danger">{{ stats.phishing_detected }}</h3>
+                    <p class="text-muted mb-0">Phishing Detected</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="stat-icon mb-3">
+                        <i class="fas fa-shield-alt text-success fs-2"></i>
+                    </div>
+                    <h3 class="fw-bold text-success">{{ stats.safe_results }}</h3>
+                    <p class="text-muted mb-0">Safe Content</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="stat-icon mb-3">
+                        <i class="fas fa-chart-line text-info fs-2"></i>
+                    </div>
+                    <h3 class="fw-bold">{{ stats.accuracy_rate }}%</h3>
+                    <p class="text-muted mb-0">Protection Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row mb-5">
+        <div class="col">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-bolt text-warning me-2"></i>
+                        Quick Actions
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="{{ url_for('check') }}" class="btn btn-primary w-100 p-3">
+                                <i class="fas fa-search me-2"></i>
+                                <br>New Check
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('tips') }}" class="btn btn-success w-100 p-3">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <br>Safety Tips
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-info w-100 p-3" onclick="exportHistory()">
+                                <i class="fas fa-download me-2"></i>
+                                <br>Export History
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detection History -->
+    <div class="row">
+        <div class="col">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-0 p-4">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history text-info me-2"></i>
+                        Recent Detection History
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if detections %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Content</th>
+                                        <th>Result</th>
+                                        <th>Confidence</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for detection in detections %}
+                                    <tr>
+                                        <td>
+                                            {% if detection.input_type == 'url' %}
+                                                <span class="badge bg-primary">
+                                                    <i class="fas fa-link me-1"></i>URL
+                                                </span>
+                                            {% elif detection.input_type == 'email' %}
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-envelope me-1"></i>Email
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-comment me-1"></i>Message
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="content-preview">
+                                                {{ detection.input_content[:50] }}{% if detection.input_content|length > 50 %}...{% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% set risk_color = 'success' if detection.result == 'safe' else ('warning' if detection.result == 'suspicious' else 'danger') %}
+                                            <span class="badge bg-{{ risk_color }}">
+                                                <i class="fas {{ 'fa-shield-alt' if detection.result == 'safe' else ('fa-exclamation-triangle' if detection.result == 'suspicious' else 'fa-times-circle') }} me-1"></i>
+                                                {{ detection.result.title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-{{ risk_color }}" 
+                                                     style="width: {{ detection.confidence_score * 100 }}%">
+                                                    {{ "%.1f"|format(detection.confidence_score * 100) }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                {{ detection.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-secondary" 
+                                                    onclick="showDetails({{ detection.id }})">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center p-5">
+                            <i class="fas fa-inbox text-muted fs-1 mb-3"></i>
+                            <h5 class="text-muted">No Detection History</h5>
+                            <p class="text-muted">Start analyzing content to see your history here.</p>
+                            <a href="{{ url_for('check') }}" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>
+                                Start First Check
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detection Details Modal -->
+<div class="modal fade" id="detectionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Detection Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="detectionDetails">
+                <!-- Details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showDetails(detectionId) {
+    // In a real implementation, you'd fetch details via AJAX
+    // For now, we'll show a placeholder
+    const modal = new bootstrap.Modal(document.getElementById('detectionModal'));
+    document.getElementById('detectionDetails').innerHTML = `
+        <div class="text-center p-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Loading detection details...</p>
+        </div>
+    `;
+    modal.show();
+}
+
+function exportHistory() {
+    // Simple alert for now - in real implementation, would generate CSV/PDF
+    alert('Export functionality would generate a downloadable report of your detection history.');
+}
+
+// Chart for statistics (if Chart.js is available)
+if (typeof Chart !== 'undefined') {
+    const ctx = document.createElement('canvas');
+    // Add chart implementation here if needed
+}
+</script>
+{% endblock %}

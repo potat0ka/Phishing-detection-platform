@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Result - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="display-6 fw-bold">
+                    <i class="fas fa-chart-line text-primary me-3"></i>
+                    AI Analysis Complete
+                </h1>
+            </div>
+            
+            <!-- Main Result Card -->
+            <div class="card border-0 shadow-lg mb-4">
+                <div class="card-body p-5">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="result-summary">
+                                {% set risk_color = 'success' if result.classification == 'safe' else ('warning' if result.classification == 'suspicious' else 'danger') %}
+                                {% set risk_icon = 'fa-shield-alt' if result.classification == 'safe' else ('fa-exclamation-triangle' if result.classification == 'suspicious' else 'fa-times-circle') %}
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="result-icon me-4">
+                                        <i class="fas {{ risk_icon }} text-{{ risk_color }} fs-1"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="fw-bold text-{{ risk_color }} mb-1">
+                                            {{ result.classification.title() }}
+                                        </h2>
+                                        <p class="text-muted mb-0">
+                                            {% if result.classification == 'safe' %}
+                                                This content appears to be legitimate and safe.
+                                            {% elif result.classification == 'suspicious' %}
+                                                This content shows some warning signs and should be verified.
+                                            {% else %}
+                                                This content appears to be a phishing attempt. Do not interact with it.
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Confidence Score -->
+                                <div class="confidence-display">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold">AI Confidence Score</span>
+                                        <span class="fw-bold">{{ "%.1f"|format(result.confidence * 100) }}%</span>
+                                    </div>
+                                    <div class="progress progress-lg">
+                                        <div class="progress-bar bg-{{ risk_color }}" 
+                                             style="width: {{ result.confidence * 100 }}%">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <canvas id="confidenceChart" width="200" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analyzed Content -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 p-4">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-alt text-info me-2"></i>
+                        Analyzed Content
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="content-display">
+                        <div class="mb-2">
+                            <span class="badge bg-primary">{{ input_type.title() }}</span>
+                        </div>
+                        <div class="border rounded p-3 bg-light">
+                            <pre class="mb-0 text-wrap">{{ input_content }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Detection Reasons -->
+            {% if result.reasons %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 p-4">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list-ul text-warning me-2"></i>
+                        Detection Analysis
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="reasons-list">
+                        {% for reason in result.reasons %}
+                        <div class="reason-item d-flex align-items-start mb-3">
+                            <div class="reason-icon me-3 mt-1">
+                                <i class="fas fa-exclamation-circle text-{{ risk_color }}"></i>
+                            </div>
+                            <div class="reason-text">
+                                <p class="mb-0">{{ reason }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- AI Analysis Details -->
+            {% if result.ai_analysis %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 p-4">
+                    <h5 class="mb-0">
+                        <i class="fas fa-brain text-primary me-2"></i>
+                        AI Technical Analysis
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                            <div class="stat-card text-center p-3 border rounded">
+                                <i class="fas fa-chart-bar text-info fs-4 mb-2"></i>
+                                <div class="fw-bold">Text Complexity</div>
+                                <div class="text-muted">{{ "%.2f"|format(result.ai_analysis.text_complexity) }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center p-3 border rounded">
+                                <i class="fas fa-heart text-danger fs-4 mb-2"></i>
+                                <div class="fw-bold">Sentiment</div>
+                                <div class="text-muted">{{ "%.2f"|format(result.ai_analysis.sentiment_score) }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center p-3 border rounded">
+                                <i class="fas fa-key text-warning fs-4 mb-2"></i>
+                                <div class="fw-bold">Keyword Density</div>
+                                <div class="text-muted">{{ "%.3f"|format(result.ai_analysis.keyword_density) }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center p-3 border rounded">
+                                <i class="fas fa-robot text-success fs-4 mb-2"></i>
+                                <div class="fw-bold">AI Confidence</div>
+                                <div class="text-muted">{{ "%.1f"|format(result.ai_analysis.ai_confidence * 100) }}%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Recommendations -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 p-4">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb text-success me-2"></i>
+                        Security Recommendations
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    {% if result.classification == 'safe' %}
+                    <div class="alert alert-success border-0">
+                        <i class="fas fa-check-circle me-2"></i>
+                        This content appears safe, but always remain vigilant when sharing personal information online.
+                    </div>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><i class="fas fa-arrow-right text-success me-2"></i>Continue with normal caution</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-success me-2"></i>Verify sender identity if unsure</li>
+                        <li><i class="fas fa-arrow-right text-success me-2"></i>Keep software and browsers updated</li>
+                    </ul>
+                    {% elif result.classification == 'suspicious' %}
+                    <div class="alert alert-warning border-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Exercise extra caution with this content. Verify through alternative channels before taking action.
+                    </div>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><i class="fas fa-arrow-right text-warning me-2"></i>Do not click any links yet</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-warning me-2"></i>Verify sender through independent means</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-warning me-2"></i>Contact organization directly if needed</li>
+                        <li><i class="fas fa-arrow-right text-warning me-2"></i>Report if confirmed as phishing</li>
+                    </ul>
+                    {% else %}
+                    <div class="alert alert-danger border-0">
+                        <i class="fas fa-times-circle me-2"></i>
+                        This appears to be a phishing attempt. Do not interact with this content.
+                    </div>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><i class="fas fa-arrow-right text-danger me-2"></i>Do not click any links</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-danger me-2"></i>Do not provide any information</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-danger me-2"></i>Delete or mark as spam</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-danger me-2"></i>Report to appropriate authorities</li>
+                        <li><i class="fas fa-arrow-right text-danger me-2"></i>Warn others who may have received similar content</li>
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="text-center">
+                <a href="{{ url_for('check') }}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-search me-2"></i>
+                    Analyze Another
+                </a>
+                {% if session.user_id %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-lg me-3">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    View Dashboard
+                </a>
+                {% endif %}
+                <a href="{{ url_for('tips') }}" class="btn btn-outline-success btn-lg">
+                    <i class="fas fa-graduation-cap me-2"></i>
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Create confidence chart
+if (typeof Chart !== 'undefined') {
+    const ctx = document.getElementById('confidenceChart').getContext('2d');
+    const confidence = {{ result.confidence }};
+    const riskColor = '{{ risk_color }}';
+    
+    const colorMap = {
+        'success': '#198754',
+        'warning': '#ffc107', 
+        'danger': '#dc3545'
+    };
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [confidence * 100, (1 - confidence) * 100],
+                backgroundColor: [colorMap[riskColor], '#e9ecef'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        },
+        plugins: [{
+            beforeDraw: function(chart) {
+                const width = chart.width,
+                      height = chart.height,
+                      ctx = chart.ctx;
+                
+                ctx.restore();
+                const fontSize = (height / 114).toFixed(2);
+                ctx.font = fontSize + "em sans-serif";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = colorMap[riskColor];
+                
+                const text = Math.round(confidence * 100) + "%",
+                      textX = Math.round((width - ctx.measureText(text).width) / 2),
+                      textY = height / 2;
+                
+                ctx.fillText(text, textX, textY);
+                ctx.save();
+            }
+        }]
+    });
+}
+</script>
+
+<style>
+.progress-lg {
+    height: 1.5rem;
+}
+
+.content-display pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: inherit;
+    font-size: inherit;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.reason-item {
+    padding: 1rem;
+    border-left: 3px solid var(--bs-{{ risk_color }});
+    background: rgba(var(--bs-{{ risk_color }}-rgb), 0.1);
+    border-radius: 0.375rem;
+}
+
+.stat-card {
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+#confidenceChart {
+    max-width: 200px;
+    max-height: 200px;
+}
+</style>
+{% endblock %}

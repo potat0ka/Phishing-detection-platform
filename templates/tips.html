@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block title %}Safety Tips - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">
+            <i class="fas fa-graduation-cap text-warning me-3"></i>
+            Phishing Safety Tips
+        </h1>
+        <p class="lead text-muted">
+            Learn how to protect yourself from phishing attacks with these expert tips
+        </p>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-4">
+                <i class="fas fa-exclamation-triangle text-danger fs-2 mb-3"></i>
+                <h4 class="fw-bold">3.4B</h4>
+                <p class="text-muted mb-0">Phishing emails sent daily</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-4">
+                <i class="fas fa-users text-warning fs-2 mb-3"></i>
+                <h4 class="fw-bold">1 in 99</h4>
+                <p class="text-muted mb-0">Emails are phishing attempts</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-4">
+                <i class="fas fa-dollar-sign text-success fs-2 mb-3"></i>
+                <h4 class="fw-bold">$4.9M</h4>
+                <p class="text-muted mb-0">Average cost of data breach</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-4">
+                <i class="fas fa-shield-alt text-info fs-2 mb-3"></i>
+                <h4 class="fw-bold">99.9%</h4>
+                <p class="text-muted mb-0">Prevention with awareness</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tips Tabs -->
+    <div class="card border-0 shadow-lg">
+        <div class="card-header bg-transparent border-0 p-4">
+            <ul class="nav nav-tabs card-header-tabs" id="tipsTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="email-tab" data-bs-toggle="tab" 
+                            data-bs-target="#email-tips" type="button">
+                        <i class="fas fa-envelope me-2"></i>Email Tips
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="url-tab" data-bs-toggle="tab" 
+                            data-bs-target="#url-tips" type="button">
+                        <i class="fas fa-link me-2"></i>URL Safety
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="general-tab" data-bs-toggle="tab" 
+                            data-bs-target="#general-tips" type="button">
+                        <i class="fas fa-shield-alt me-2"></i>General Safety
+                    </button>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="card-body p-0">
+            <div class="tab-content" id="tipsTabContent">
+                <!-- Email Tips -->
+                <div class="tab-pane fade show active" id="email-tips" role="tabpanel">
+                    <div class="p-4">
+                        <h5 class="mb-4">
+                            <i class="fas fa-envelope text-info me-2"></i>
+                            Email Phishing Prevention
+                        </h5>
+                        <div class="row g-4">
+                            {% for tip in email_tips %}
+                            <div class="col-md-6">
+                                <div class="tip-card card h-100 border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex align-items-start">
+                                            <div class="tip-number me-3">
+                                                <span class="badge bg-info rounded-circle p-2">
+                                                    {{ loop.index }}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-2">{{ tip.title }}</h6>
+                                                <p class="text-muted mb-0">{{ tip.content }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% if not email_tips %}
+                            <div class="col-12 text-center py-5">
+                                <i class="fas fa-inbox text-muted fs-1 mb-3"></i>
+                                <h5 class="text-muted">No email tips available</h5>
+                                <p class="text-muted">Email safety tips will appear here.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- URL Tips -->
+                <div class="tab-pane fade" id="url-tips" role="tabpanel">
+                    <div class="p-4">
+                        <h5 class="mb-4">
+                            <i class="fas fa-link text-primary me-2"></i>
+                            URL and Website Safety
+                        </h5>
+                        <div class="row g-4">
+                            {% for tip in url_tips %}
+                            <div class="col-md-6">
+                                <div class="tip-card card h-100 border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex align-items-start">
+                                            <div class="tip-number me-3">
+                                                <span class="badge bg-primary rounded-circle p-2">
+                                                    {{ loop.index }}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-2">{{ tip.title }}</h6>
+                                                <p class="text-muted mb-0">{{ tip.content }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% if not url_tips %}
+                            <div class="col-12 text-center py-5">
+                                <i class="fas fa-link text-muted fs-1 mb-3"></i>
+                                <h5 class="text-muted">No URL tips available</h5>
+                                <p class="text-muted">URL safety tips will appear here.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- General Tips -->
+                <div class="tab-pane fade" id="general-tips" role="tabpanel">
+                    <div class="p-4">
+                        <h5 class="mb-4">
+                            <i class="fas fa-shield-alt text-success me-2"></i>
+                            General Security Best Practices
+                        </h5>
+                        <div class="row g-4">
+                            {% for tip in general_tips %}
+                            <div class="col-md-6">
+                                <div class="tip-card card h-100 border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex align-items-start">
+                                            <div class="tip-number me-3">
+                                                <span class="badge bg-success rounded-circle p-2">
+                                                    {{ loop.index }}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-2">{{ tip.title }}</h6>
+                                                <p class="text-muted mb-0">{{ tip.content }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% if not general_tips %}
+                            <div class="col-12 text-center py-5">
+                                <i class="fas fa-shield-alt text-muted fs-1 mb-3"></i>
+                                <h5 class="text-muted">No general tips available</h5>
+                                <p class="text-muted">General safety tips will appear here.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Interactive Phishing Test -->
+    <div class="card border-0 shadow-lg mt-5">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <h4 class="fw-bold">
+                    <i class="fas fa-gamepad text-warning me-2"></i>
+                    Test Your Knowledge
+                </h4>
+                <p class="text-muted">Can you spot the phishing attempt?</p>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card border-warning">
+                        <div class="card-body">
+                            <div class="email-example p-3 bg-light rounded">
+                                <div class="email-header mb-3 pb-2 border-bottom">
+                                    <strong>From:</strong> security@payp4l-verification.com<br>
+                                    <strong>Subject:</strong> URGENT: Verify Your Account Now!
+                                </div>
+                                <div class="email-body">
+                                    <p>Dear Customer,</p>
+                                    <p>Your PayPal account has been temporarily suspended due to unusual activity. 
+                                       To restore access, please verify your information immediately by clicking the link below:</p>
+                                    <p><a href="#" class="btn btn-primary">Verify Account Now</a></p>
+                                    <p>You have 24 hours to complete this verification or your account will be permanently closed.</p>
+                                    <p>Best regards,<br>PayPal Security Team</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 text-center">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-success" onclick="checkAnswer(true)">
+                                        <i class="fas fa-check me-2"></i>Legitimate
+                                    </button>
+                                    <button type="button" class="btn btn-danger" onclick="checkAnswer(false)">
+                                        <i class="fas fa-times me-2"></i>Phishing
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="testResult" class="mt-3" style="display: none;">
+                                <!-- Result will be shown here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Call to Action -->
+    <div class="text-center mt-5">
+        <div class="card border-0 shadow-sm bg-primary text-white">
+            <div class="card-body p-5">
+                <h3 class="fw-bold mb-3">Ready to Test Your Content?</h3>
+                <p class="lead mb-4">Use our AI-powered detector to analyze suspicious emails, URLs, and messages.</p>
+                <a href="{{ url_for('check') }}" class="btn btn-light btn-lg">
+                    <i class="fas fa-robot me-2"></i>
+                    Start AI Detection
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function checkAnswer(isLegitimate) {
+    const resultDiv = document.getElementById('testResult');
+    
+    if (isLegitimate) {
+        resultDiv.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-times-circle me-2"></i>
+                <strong>Incorrect!</strong> This is a phishing email. Red flags include:
+                <ul class="mt-2 mb-0">
+                    <li>Suspicious domain: "payp4l-verification.com" (notice the "4" instead of "a")</li>
+                    <li>Urgent language creating false pressure</li>
+                    <li>Generic greeting "Dear Customer"</li>
+                    <li>Threatening account closure</li>
+                </ul>
+            </div>
+        `;
+    } else {
+        resultDiv.innerHTML = `
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Correct!</strong> This is indeed a phishing email. You spotted the warning signs:
+                <ul class="mt-2 mb-0">
+                    <li>Suspicious domain with typosquatting</li>
+                    <li>Urgent, threatening language</li>
+                    <li>Generic greeting instead of personal name</li>
+                    <li>Requests immediate action</li>
+                </ul>
+            </div>
+        `;
+    }
+    
+    resultDiv.style.display = 'block';
+}
+
+// Animate tip cards on scroll
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, observerOptions);
+
+// Observe all tip cards
+document.querySelectorAll('.tip-card').forEach(card => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(card);
+});
+</script>
+{% endblock %}

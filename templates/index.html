@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Home - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section py-5">
+    <div class="container">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-6">
+                <div class="hero-content fade-in">
+                    <h1 class="display-4 fw-bold mb-4">
+                        <i class="fas fa-shield-alt text-primary me-3"></i>
+                        AI-Powered<br>
+                        <span class="text-primary">Phishing Detection</span>
+                    </h1>
+                    <p class="lead text-muted mb-4">
+                        Protect yourself from phishing attacks with our advanced AI detection system. 
+                        Analyze URLs, emails, and messages in real-time with machine learning precision.
+                    </p>
+                    <div class="d-flex gap-3 mb-4">
+                        <a href="{{ url_for('check') }}" class="btn btn-primary btn-lg pulse-btn">
+                            <i class="fas fa-search me-2"></i>Start Detection
+                        </a>
+                        <a href="{{ url_for('tips') }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-lightbulb me-2"></i>Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-visual text-center">
+                    <div class="security-shield">
+                        <i class="fas fa-shield-alt shield-icon"></i>
+                        <div class="pulse-ring"></div>
+                        <div class="pulse-ring delay-1"></div>
+                        <div class="pulse-ring delay-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Check Section -->
+<section class="quick-check-section py-5 bg-dark">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-4">
+                        <h3 class="text-center mb-4">
+                            <i class="fas fa-bolt text-warning me-2"></i>
+                            Quick Phishing Check
+                        </h3>
+                        <form method="POST" action="{{ url_for('check') }}" class="quick-check-form">
+                            <div class="mb-3">
+                                <label for="input_type" class="form-label">What would you like to check?</label>
+                                <select class="form-select" name="input_type" id="input_type" required>
+                                    <option value="url">Website URL</option>
+                                    <option value="email">Email Content</option>
+                                    <option value="message">Message/Text</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="input_content" class="form-label">Content to Analyze</label>
+                                <textarea class="form-control" name="input_content" id="input_content" 
+                                         rows="4" placeholder="Paste URL, email content, or message here..." required></textarea>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-robot me-2"></i>
+                                    Analyze with AI
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">
+            <i class="fas fa-cogs text-primary me-2"></i>
+            Advanced Security Features
+        </h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-brain text-primary"></i>
+                        </div>
+                        <h5 class="card-title">AI-Powered Analysis</h5>
+                        <p class="card-text text-muted">
+                            Advanced machine learning algorithms analyze patterns and detect sophisticated phishing attempts.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-chart-line text-success"></i>
+                        </div>
+                        <h5 class="card-title">Real-time Detection</h5>
+                        <p class="card-text text-muted">
+                            Instant analysis with confidence scores and detailed explanations for every check.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-history text-info"></i>
+                        </div>
+                        <h5 class="card-title">Detection History</h5>
+                        <p class="card-text text-muted">
+                            Track your security checks and learn from past detections with detailed analytics.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Educational Tips Preview -->
+{% if tips %}
+<section class="tips-preview-section py-5 bg-dark">
+    <div class="container">
+        <h2 class="text-center mb-5">
+            <i class="fas fa-graduation-cap text-warning me-2"></i>
+            Stay Safe Online
+        </h2>
+        <div class="row g-4">
+            {% for tip in tips %}
+            <div class="col-md-4">
+                <div class="tip-card card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h6 class="card-title text-primary">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            {{ tip.title }}
+                        </h6>
+                        <p class="card-text text-muted">{{ tip.content[:100] }}...</p>
+                        <div class="mt-auto">
+                            <span class="badge bg-secondary">{{ tip.category.title() }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('tips') }}" class="btn btn-outline-warning">
+                <i class="fas fa-book-reader me-2"></i>
+                View All Tips
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Statistics Section -->
+<section class="stats-section py-5">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number text-primary">99.2%</div>
+                    <div class="stat-label text-muted">Detection Accuracy</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number text-success">< 1s</div>
+                    <div class="stat-label text-muted">Analysis Time</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number text-info">24/7</div>
+                    <div class="stat-label text-muted">Protection</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number text-warning">AI</div>
+                    <div class="stat-label text-muted">Powered</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

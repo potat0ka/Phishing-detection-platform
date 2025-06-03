@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Check Content - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold">
+                    <i class="fas fa-robot text-primary me-3"></i>
+                    AI Phishing Detection
+                </h1>
+                <p class="lead text-muted">
+                    Analyze URLs, emails, and messages using advanced machine learning
+                </p>
+            </div>
+            
+            <!-- Detection Form -->
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <form method="POST" action="{{ url_for('check') }}" id="detectionForm">
+                        <!-- Input Type Selection -->
+                        <div class="mb-4">
+                            <label for="input_type" class="form-label fw-bold">
+                                <i class="fas fa-list me-2"></i>
+                                What would you like to analyze?
+                            </label>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <input type="radio" class="btn-check" name="input_type" 
+                                           id="type_url" value="url" checked>
+                                    <label class="btn btn-outline-primary w-100 p-3" for="type_url">
+                                        <i class="fas fa-link d-block fs-4 mb-2"></i>
+                                        Website URL
+                                    </label>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="radio" class="btn-check" name="input_type" 
+                                           id="type_email" value="email">
+                                    <label class="btn btn-outline-info w-100 p-3" for="type_email">
+                                        <i class="fas fa-envelope d-block fs-4 mb-2"></i>
+                                        Email Content
+                                    </label>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="radio" class="btn-check" name="input_type" 
+                                           id="type_message" value="message">
+                                    <label class="btn btn-outline-secondary w-100 p-3" for="type_message">
+                                        <i class="fas fa-comment d-block fs-4 mb-2"></i>
+                                        Message/Text
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Content Input -->
+                        <div class="mb-4">
+                            <label for="input_content" class="form-label fw-bold">
+                                <i class="fas fa-paste me-2"></i>
+                                Content to Analyze
+                            </label>
+                            <textarea class="form-control form-control-lg" name="input_content" 
+                                     id="input_content" rows="8" required
+                                     placeholder="Paste your URL, email content, or message here..."></textarea>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                The AI will analyze patterns, language, and structure to detect potential phishing attempts.
+                            </div>
+                        </div>
+                        
+                        <!-- AI Analysis Options -->
+                        <div class="mb-4">
+                            <div class="card bg-light border-0">
+                                <div class="card-body p-3">
+                                    <h6 class="fw-bold mb-3">
+                                        <i class="fas fa-cog text-primary me-2"></i>
+                                        AI Analysis Features
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-4 text-center">
+                                            <i class="fas fa-brain text-primary fs-4 mb-2 d-block"></i>
+                                            <small class="fw-bold">Pattern Recognition</small>
+                                            <br><small class="text-muted">ML-powered detection</small>
+                                        </div>
+                                        <div class="col-md-4 text-center">
+                                            <i class="fas fa-chart-bar text-success fs-4 mb-2 d-block"></i>
+                                            <small class="fw-bold">Confidence Scoring</small>
+                                            <br><small class="text-muted">Risk assessment</small>
+                                        </div>
+                                        <div class="col-md-4 text-center">
+                                            <i class="fas fa-lightbulb text-warning fs-4 mb-2 d-block"></i>
+                                            <small class="fw-bold">Detailed Explanations</small>
+                                            <br><small class="text-muted">Learn why it's risky</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="analyzeBtn">
+                                <i class="fas fa-robot me-2"></i>
+                                <span class="btn-text">Analyze with AI</span>
+                                <div class="spinner-border spinner-border-sm ms-2 d-none" id="loadingSpinner"></div>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Help Section -->
+            <div class="row mt-5 g-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 text-center">
+                            <i class="fas fa-link text-primary fs-3 mb-3"></i>
+                            <h6 class="fw-bold">URL Analysis</h6>
+                            <p class="text-muted small">
+                                Detect malicious domains, IP addresses, suspicious patterns, and typosquatting attempts.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 text-center">
+                            <i class="fas fa-envelope text-info fs-3 mb-3"></i>
+                            <h6 class="fw-bold">Email Detection</h6>
+                            <p class="text-muted small">
+                                Identify phishing emails using language analysis, sender verification, and content patterns.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 text-center">
+                            <i class="fas fa-comment text-secondary fs-3 mb-3"></i>
+                            <h6 class="fw-bold">Message Analysis</h6>
+                            <p class="text-muted small">
+                                Analyze text messages and social media content for manipulation tactics and scams.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form submission with loading animation
+document.getElementById('detectionForm').addEventListener('submit', function() {
+    const btn = document.getElementById('analyzeBtn');
+    const spinner = document.getElementById('loadingSpinner');
+    const btnText = btn.querySelector('.btn-text');
+    
+    // Show loading state
+    btn.disabled = true;
+    spinner.classList.remove('d-none');
+    btnText.textContent = 'Analyzing...';
+});
+
+// Update placeholder text based on selected type
+document.querySelectorAll('input[name="input_type"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const textarea = document.getElementById('input_content');
+        const placeholders = {
+            'url': 'Paste the website URL here (e.g., https://example.com/suspicious-link)',
+            'email': 'Paste the email content here, including subject line and body text...',
+            'message': 'Paste the message or text content here that you want to analyze...'
+        };
+        textarea.placeholder = placeholders[this.value];
+    });
+});
+
+// Auto-resize textarea
+document.getElementById('input_content').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+});
+</script>
+{% endblock %}
