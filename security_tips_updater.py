@@ -356,7 +356,7 @@ class SecurityTipsUpdater:
         """Get security tips filtered by category"""
         with app.app_context():
             from models import PhishingTip
-            tips = PhishingTip.query.filter_by(category=category).order_by(PhishingTip.priority.asc()).all()
+            tips = PhishingTip.query.filter_by(category=category).order_by(PhishingTip.priority).all()
             return [
                 {
                     'title': tip.title,

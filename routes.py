@@ -169,9 +169,9 @@ def tips():
         app.logger.error(f"Error updating security tips: {e}")
     
     # Get tips organized by category
-    email_tips = PhishingTip.query.filter_by(category='email').order_by(PhishingTip.priority.asc()).all()
-    url_tips = PhishingTip.query.filter_by(category='url').order_by(PhishingTip.priority.asc()).all()
-    general_tips = PhishingTip.query.filter_by(category='general').order_by(PhishingTip.priority.asc()).all()
+    email_tips = PhishingTip.query.filter_by(category='email').order_by(PhishingTip.priority).all()
+    url_tips = PhishingTip.query.filter_by(category='url').order_by(PhishingTip.priority).all()
+    general_tips = PhishingTip.query.filter_by(category='general').order_by(PhishingTip.priority).all()
     
     # Get trending threats information
     trending_threats = security_updater.get_trending_threats()
