@@ -47,7 +47,9 @@ def register():
             return render_template('register.html')
         
         # Create new user
-        user = User(username=username, email=email)
+        user = User()
+        user.username = username
+        user.email = email
         user.set_password(password)
         
         try:
@@ -188,56 +190,56 @@ def quick_check():
         return jsonify({'error': 'Analysis failed'}), 500
 
 # Initialize default tips if database is empty
-@app.before_first_request
 def initialize_tips():
     """Initialize default phishing tips"""
-    if PhishingTip.query.count() == 0:
-        default_tips = [
-            {
-                'title': 'Check the Sender\'s Email Address',
+    with app.app_context():
+        if PhishingTip.query.count() == 0:
+            default_tips = [
+                {
+                    'title': 'Check the Sender\'s Email Address',
                 'content': 'Verify the sender\'s email address carefully. Phishing emails often use addresses that look similar to legitimate ones but contain subtle differences.',
-                'category': 'email',
-                'priority': 1
-            },
-            {
-                'title': 'Look for Spelling and Grammar Errors',
-                'content': 'Legitimate organizations usually have professional communications. Multiple spelling or grammar errors can be a red flag.',
-                'category': 'email',
-                'priority': 1
-            },
-            {
-                'title': 'Verify URLs Before Clicking',
-                'content': 'Hover over links to see the actual destination. Be suspicious of shortened URLs or domains that don\'t match the supposed sender.',
-                'category': 'url',
-                'priority': 1
-            },
-            {
-                'title': 'Check for HTTPS and SSL Certificates',
-                'content': 'Legitimate websites, especially those handling sensitive information, should use HTTPS. Look for the padlock icon in your browser.',
-                'category': 'url',
-                'priority': 1
-            },
-            {
-                'title': 'Be Wary of Urgent Language',
-                'content': 'Phishing attempts often create false urgency like "Act now!" or "Your account will be closed!" Take time to verify before acting.',
-                'category': 'general',
-                'priority': 1
-            },
-            {
-                'title': 'Never Share Personal Information',
-                'content': 'Legitimate companies will never ask for passwords, social security numbers, or credit card details via email or suspicious websites.',
-                'category': 'general',
-                'priority': 1
-            }
-        ]
-        
-        for tip_data in default_tips:
-            tip = PhishingTip(**tip_data)
-            db.session.add(tip)
-        
-        try:
-            db.session.commit()
-            app.logger.info("Default phishing tips initialized")
-        except Exception as e:
-            db.session.rollback()
-            app.logger.error(f"Failed to initialize tips: {e}")
+                    'category': 'email',
+                    'priority': 1
+                },
+                {
+                    'title': 'Look for Spelling and Grammar Errors',
+                    'content': 'Legitimate organizations usually have professional communications. Multiple spelling or grammar errors can be a red flag.',
+                    'category': 'email',
+                    'priority': 1
+                },
+                {
+                    'title': 'Verify URLs Before Clicking',
+                    'content': 'Hover over links to see the actual destination. Be suspicious of shortened URLs or domains that don\'t match the supposed sender.',
+                    'category': 'url',
+                    'priority': 1
+                },
+                {
+                    'title': 'Check for HTTPS and SSL Certificates',
+                    'content': 'Legitimate websites, especially those handling sensitive information, should use HTTPS. Look for the padlock icon in your browser.',
+                    'category': 'url',
+                    'priority': 1
+                },
+                {
+                    'title': 'Be Wary of Urgent Language',
+                    'content': 'Phishing attempts often create false urgency like "Act now!" or "Your account will be closed!" Take time to verify before acting.',
+                    'category': 'general',
+                    'priority': 1
+                },
+                {
+                    'title': 'Never Share Personal Information',
+                    'content': 'Legitimate companies will never ask for passwords, social security numbers, or credit card details via email or suspicious websites.',
+                    'category': 'general',
+                    'priority': 1
+                }
+            ]
+            
+            for tip_data in default_tips:
+                tip = PhishingTip(**tip_data)
+                db.session.add(tip)
+            
+            try:
+                db.session.commit()
+                app.logger.info("Default phishing tips initialized")
+            except Exception as e:
+                db.session.rollback()
+                app.logger.error(f"Failed to initialize tips: {e}")

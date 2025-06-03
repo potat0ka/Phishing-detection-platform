@@ -30,3 +30,8 @@ with app.app_context():
 
 # Import routes
 import routes
+
+# Initialize default data
+with app.app_context():
+    from routes import initialize_tips
+    initialize_tips()
