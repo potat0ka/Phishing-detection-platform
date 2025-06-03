@@ -4,6 +4,7 @@ from models import User, Detection, PhishingTip
 from ml_detector import PhishingDetector
 # Social automation removed - this is a phishing detection platform
 from utils import is_logged_in, login_required
+from security_tips_updater import security_updater
 import json
 from datetime import datetime, timedelta
 
@@ -159,15 +160,39 @@ def check():
 
 @app.route('/tips')
 def tips():
-    """Educational tips about phishing prevention"""
-    email_tips = PhishingTip.query.filter_by(category='email').all()
-    url_tips = PhishingTip.query.filter_by(category='url').all()
-    general_tips = PhishingTip.query.filter_by(category='general').all()
+    """Educational tips about phishing prevention with latest threat intelligence"""
+    # Update security tips with comprehensive content
+    try:
+        update_results = security_updater.update_security_tips_database()
+        app.logger.info(f"Security tips updated: {update_results}")
+    except Exception as e:
+        app.logger.error(f"Error updating security tips: {e}")
+    
+    # Get tips organized by category
+    email_tips = PhishingTip.query.filter_by(category='email').order_by(PhishingTip.priority.asc()).all()
+    url_tips = PhishingTip.query.filter_by(category='url').order_by(PhishingTip.priority.asc()).all()
+    general_tips = PhishingTip.query.filter_by(category='general').order_by(PhishingTip.priority.asc()).all()
+    
+    # Get trending threats information
+    trending_threats = security_updater.get_trending_threats()
+    
+    # Calculate statistics
+    total_tips = len(email_tips) + len(url_tips) + len(general_tips)
+    
+    stats = {
+        'total_tips': total_tips,
+        'email_count': len(email_tips),
+        'url_count': len(url_tips),
+        'general_count': len(general_tips),
+        'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M')
+    }
     
     return render_template('tips.html', 
                          email_tips=email_tips,
                          url_tips=url_tips, 
-                         general_tips=general_tips)
+                         general_tips=general_tips,
+                         trending_threats=trending_threats,
+                         stats=stats)
 
 @app.route('/api/quick-check', methods=['POST'])
 def quick_check():

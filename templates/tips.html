@@ -19,33 +19,64 @@
     <div class="row g-4 mb-5">
         <div class="col-md-3">
             <div class="card border-0 shadow-sm text-center p-4">
-                <i class="fas fa-exclamation-triangle text-danger fs-2 mb-3"></i>
-                <h4 class="fw-bold">3.4B</h4>
-                <p class="text-muted mb-0">Phishing emails sent daily</p>
+                <i class="fas fa-lightbulb text-warning fs-2 mb-3"></i>
+                <h4 class="fw-bold">{{ stats.total_tips if stats else '45+' }}</h4>
+                <p class="text-muted mb-0">Security tips available</p>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card border-0 shadow-sm text-center p-4">
-                <i class="fas fa-users text-warning fs-2 mb-3"></i>
-                <h4 class="fw-bold">1 in 99</h4>
-                <p class="text-muted mb-0">Emails are phishing attempts</p>
+                <i class="fas fa-envelope text-primary fs-2 mb-3"></i>
+                <h4 class="fw-bold">{{ stats.email_count if stats else '15+' }}</h4>
+                <p class="text-muted mb-0">Email security tips</p>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card border-0 shadow-sm text-center p-4">
-                <i class="fas fa-dollar-sign text-success fs-2 mb-3"></i>
-                <h4 class="fw-bold">$4.9M</h4>
-                <p class="text-muted mb-0">Average cost of data breach</p>
+                <i class="fas fa-link text-info fs-2 mb-3"></i>
+                <h4 class="fw-bold">{{ stats.url_count if stats else '12+' }}</h4>
+                <p class="text-muted mb-0">URL safety tips</p>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card border-0 shadow-sm text-center p-4">
-                <i class="fas fa-shield-alt text-info fs-2 mb-3"></i>
-                <h4 class="fw-bold">99.9%</h4>
-                <p class="text-muted mb-0">Prevention with awareness</p>
+                <i class="fas fa-shield-alt text-success fs-2 mb-3"></i>
+                <h4 class="fw-bold">{{ stats.general_count if stats else '18+' }}</h4>
+                <p class="text-muted mb-0">General security tips</p>
             </div>
         </div>
     </div>
+    
+    <!-- Trending Threats Alert -->
+    {% if trending_threats %}
+    <div class="alert alert-warning border-0 shadow-sm mb-5">
+        <div class="d-flex align-items-start">
+            <i class="fas fa-exclamation-triangle text-warning fs-4 me-3 mt-1"></i>
+            <div>
+                <h5 class="alert-heading fw-bold mb-3">Current Threat Landscape</h5>
+                <div class="row g-3">
+                    {% for threat in trending_threats %}
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded">
+                            <h6 class="fw-bold text-dark mb-2">{{ threat.threat }}</h6>
+                            <p class="mb-2 small">{{ threat.description }}</p>
+                            <small class="text-muted">
+                                <strong>Status:</strong> {{ threat.prevalence }} | 
+                                <strong>Mitigation:</strong> {{ threat.mitigation }}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if stats %}
+                <small class="text-muted d-block mt-2">
+                    <i class="fas fa-clock me-1"></i>Last updated: {{ stats.last_updated }}
+                </small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
     
     <!-- Tips Tabs -->
     <div class="card border-0 shadow-lg">
