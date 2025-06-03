@@ -9,11 +9,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize all components
     initializeAnimations();
     initializeFormValidations();
+    initializeContentTypeSwitcher();
     initializeTooltips();
     initializeLoadingStates();
     initializeThemeSupport();
     initializeMobileOptimizations();
     initializeAnalyticsTracking();
+    
+    // Initialize security carousel features
+    initializeSecurityCarousel();
+    initializeInteractiveSecurityTips();
+    initializeCarouselPerformance();
+    initializeCarouselTouchGestures();
 });
 
 /**
@@ -401,6 +408,250 @@ function updatePasswordStrength(container, strength) {
     
     if (strength.feedback.length > 0) {
         strengthText.textContent += ` (needs: ${strength.feedback.join(', ')})`;
+    }
+}
+
+/**
+ * Initialize Security Tips Carousel with enhanced interactions
+ */
+function initializeSecurityCarousel() {
+    const carousel = document.getElementById('securityTipsCarousel');
+    if (!carousel) return;
+
+    // Initialize Bootstrap carousel with custom options
+    const carouselInstance = new bootstrap.Carousel(carousel, {
+        interval: 6000,
+        wrap: true,
+        keyboard: true
+    });
+
+    // Add pause on hover functionality
+    carousel.addEventListener('mouseenter', () => {
+        carouselInstance.pause();
+    });
+
+    carousel.addEventListener('mouseleave', () => {
+        carouselInstance.cycle();
+    });
+
+    // Add keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (carousel.classList.contains('carousel') && isElementInViewport(carousel)) {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                carouselInstance.prev();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                carouselInstance.next();
+            }
+        }
+    });
+
+    // Add progress indicator animation
+    const indicators = carousel.querySelectorAll('.carousel-indicators button');
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            animateIndicatorProgress(indicator);
+        });
+    });
+
+    // Auto-animate on slide change
+    carousel.addEventListener('slide.bs.carousel', (e) => {
+        const activeIndicator = carousel.querySelector('.carousel-indicators button.active');
+        if (activeIndicator) {
+            animateIndicatorProgress(activeIndicator);
+        }
+        
+        // Add entrance animations to new slide content
+        setTimeout(() => {
+            const newSlide = e.relatedTarget;
+            animateSlideContent(newSlide);
+        }, 300);
+    });
+
+    // Initialize first slide animation
+    const firstSlide = carousel.querySelector('.carousel-item.active');
+    if (firstSlide) {
+        animateSlideContent(firstSlide);
+    }
+}
+
+/**
+ * Animate carousel indicator progress
+ */
+function animateIndicatorProgress(indicator) {
+    indicator.style.transform = 'scale(1.3)';
+    indicator.style.backgroundColor = '#ffc107';
+    
+    setTimeout(() => {
+        indicator.style.transform = 'scale(1.2)';
+        indicator.style.backgroundColor = '';
+    }, 200);
+}
+
+/**
+ * Animate slide content entrance
+ */
+function animateSlideContent(slide) {
+    if (!slide) return;
+    
+    const icon = slide.querySelector('.security-tip-icon i');
+    const title = slide.querySelector('h4');
+    const content = slide.querySelector('.lead');
+    const badge = slide.querySelector('.tip-priority');
+    const visual = slide.querySelector('.security-visual svg');
+
+    // Reset animations
+    [icon, title, content, badge, visual].forEach(el => {
+        if (el) {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+        }
+    });
+
+    // Animate elements in sequence
+    const elements = [icon, title, content, badge, visual].filter(el => el);
+    elements.forEach((el, index) => {
+        setTimeout(() => {
+            el.style.transition = 'all 0.6s ease-out';
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+}
+
+/**
+ * Check if element is in viewport
+ */
+function isElementInViewport(el) {
+    const rect = el.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+}
+
+/**
+ * Initialize interactive security tips features
+ */
+function initializeInteractiveSecurityTips() {
+    // Add click handlers for tip cards to show detailed information
+    const tipCards = document.querySelectorAll('.tip-card');
+    tipCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const title = this.querySelector('h6').textContent;
+            const content = this.querySelector('p').textContent;
+            
+            // Create modal or tooltip with expanded information
+            showTipDetails(title, content, this);
+        });
+        
+        // Add hover effects
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+            this.style.boxShadow = '0 12px 35px rgba(0,0,0,0.15)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+            this.style.boxShadow = '';
+        });
+    });
+}
+
+/**
+ * Show detailed tip information
+ */
+function showTipDetails(title, content, element) {
+    // Create and show a Bootstrap tooltip with enhanced content
+    if (element._tooltip) {
+        element._tooltip.dispose();
+    }
+    
+    const tooltip = new bootstrap.Tooltip(element, {
+        title: `<strong>${title}</strong><br><small>${content}</small>`,
+        html: true,
+        placement: 'top',
+        trigger: 'manual',
+        customClass: 'security-tip-tooltip'
+    });
+    
+    tooltip.show();
+    element._tooltip = tooltip;
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        if (tooltip) {
+            tooltip.dispose();
+        }
+    }, 5000);
+}
+
+/**
+ * Initialize security tip carousel with performance optimizations
+ */
+function initializeCarouselPerformance() {
+    const carousel = document.getElementById('securityTipsCarousel');
+    if (!carousel) return;
+
+    // Lazy load carousel images and animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Start carousel auto-play when visible
+                const carouselInstance = bootstrap.Carousel.getOrCreateInstance(entry.target);
+                carouselInstance.cycle();
+                
+                // Add smooth scroll behavior
+                entry.target.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+                
+                observer.unobserve(entry.target);
+            }
+        });
+    });
+
+    observer.observe(carousel);
+}
+
+/**
+ * Add carousel touch gestures for mobile
+ */
+function initializeCarouselTouchGestures() {
+    const carousel = document.getElementById('securityTipsCarousel');
+    if (!carousel) return;
+
+    let startX = 0;
+    let endX = 0;
+    const threshold = 50; // Minimum swipe distance
+
+    carousel.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+    });
+
+    carousel.addEventListener('touchend', (e) => {
+        endX = e.changedTouches[0].clientX;
+        handleSwipe();
+    });
+
+    function handleSwipe() {
+        const deltaX = startX - endX;
+        
+        if (Math.abs(deltaX) > threshold) {
+            const carouselInstance = bootstrap.Carousel.getOrCreateInstance(carousel);
+            
+            if (deltaX > 0) {
+                // Swipe left - next slide
+                carouselInstance.next();
+            } else {
+                // Swipe right - previous slide
+                carouselInstance.prev();
+            }
+        }
     }
 }
 

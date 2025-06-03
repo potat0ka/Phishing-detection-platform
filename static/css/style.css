@@ -316,6 +316,143 @@
     }
 }
 
+/* Security Tips Carousel Styles */
+.carousel-item {
+    transition: transform 0.8s ease-in-out;
+}
+
+.security-tip-icon {
+    transition: transform 0.3s ease;
+}
+
+.security-tip-icon:hover {
+    transform: scale(1.1);
+}
+
+.security-visual svg {
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    transition: transform 0.3s ease;
+}
+
+.security-visual:hover svg {
+    transform: scale(1.05);
+}
+
+.tip-priority {
+    animation: priorityPulse 2s infinite;
+}
+
+@keyframes priorityPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+    transition: opacity 0.3s ease;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    opacity: 0.9;
+}
+
+.carousel-indicators button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 0 4px;
+    transition: all 0.3s ease;
+}
+
+.carousel-indicators button.active {
+    transform: scale(1.2);
+}
+
+/* Animated background for carousel slides */
+.bg-gradient {
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Enhanced carousel animations */
+.carousel-item-next,
+.carousel-item-prev,
+.carousel-item.active {
+    display: block;
+}
+
+.carousel-item-next:not(.carousel-item-start),
+.active.carousel-item-end {
+    transform: translateX(100%);
+}
+
+.carousel-item-prev:not(.carousel-item-end),
+.active.carousel-item-start {
+    transform: translateX(-100%);
+}
+
+/* Mobile responsiveness for carousel */
+@media (max-width: 768px) {
+    .security-visual {
+        display: none;
+    }
+    
+    .carousel-item .row {
+        text-align: center;
+    }
+    
+    .carousel-item .card-body {
+        padding: 2rem 1rem;
+    }
+    
+    .security-tip-icon {
+        margin-bottom: 1rem;
+    }
+    
+    .carousel-item h4 {
+        font-size: 1.5rem;
+    }
+    
+    .carousel-item .lead {
+        font-size: 1rem;
+    }
+}
+
+/* Interactive elements */
+.interactive-tip {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.interactive-tip:hover {
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 8px;
+}
+
+/* Progress indicators for security level */
+.security-progress {
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    background-color: rgba(255,255,255,0.2);
+}
+
+.security-progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease-in-out;
+    background: linear-gradient(90deg, #ff6b6b 0%, #feca57 50%, #48ca9a 100%);
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
