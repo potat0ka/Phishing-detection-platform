@@ -119,6 +119,112 @@
                             </div>
                         </div>
 
+                        <!-- Capture Options -->
+                        <div class="mb-4">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="card border-0 shadow-sm" style="background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 100%);">
+                                        <div class="card-body text-center p-4">
+                                            <i class="fas fa-camera fa-3x text-dark mb-3"></i>
+                                            <h6 class="text-dark fw-bold mb-2">Capture Photo</h6>
+                                            <p class="text-dark mb-3" style="opacity: 0.8;">Take a photo using your camera</p>
+                                            <button type="button" class="btn btn-dark btn-sm" onclick="startCamera()">
+                                                <i class="fas fa-camera me-2"></i>Start Camera
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border-0 shadow-sm" style="background: linear-gradient(45deg, #a8edea 0%, #fed6e3 100%);">
+                                        <div class="card-body text-center p-4">
+                                            <i class="fas fa-microphone fa-3x text-dark mb-3"></i>
+                                            <h6 class="text-dark fw-bold mb-2">Record Audio</h6>
+                                            <p class="text-dark mb-3" style="opacity: 0.8;">Record audio using your microphone</p>
+                                            <button type="button" class="btn btn-dark btn-sm" onclick="startRecording()">
+                                                <i class="fas fa-microphone me-2"></i>Start Recording
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Camera Modal -->
+                        <div class="modal fade" id="cameraModal" tabindex="-1">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            <i class="fas fa-camera me-2"></i>Capture Photo
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <video id="cameraVideo" width="100%" height="300" autoplay style="border-radius: 10px;"></video>
+                                        <canvas id="cameraCanvas" style="display: none;"></canvas>
+                                        <div class="mt-3">
+                                            <button type="button" class="btn btn-primary me-2" onclick="capturePhoto()">
+                                                <i class="fas fa-camera me-2"></i>Capture
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" onclick="stopCamera()">
+                                                <i class="fas fa-times me-2"></i>Cancel
+                                            </button>
+                                        </div>
+                                        <div id="capturedPhoto" class="mt-3" style="display: none;">
+                                            <img id="photoPreview" style="max-width: 100%; border-radius: 10px;">
+                                            <div class="mt-2">
+                                                <button type="button" class="btn btn-success me-2" onclick="usePhoto()">
+                                                    <i class="fas fa-check me-2"></i>Use This Photo
+                                                </button>
+                                                <button type="button" class="btn btn-warning" onclick="retakePhoto()">
+                                                    <i class="fas fa-redo me-2"></i>Retake
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Audio Recording Modal -->
+                        <div class="modal fade" id="audioModal" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            <i class="fas fa-microphone me-2"></i>Record Audio
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <div id="recordingStatus" class="mb-3">
+                                            <i class="fas fa-microphone fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">Click start to begin recording</p>
+                                        </div>
+                                        <div id="recordingControls">
+                                            <button type="button" class="btn btn-danger me-2" id="startRecordBtn" onclick="startAudioRecording()">
+                                                <i class="fas fa-play me-2"></i>Start Recording
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" id="stopRecordBtn" onclick="stopAudioRecording()" disabled>
+                                                <i class="fas fa-stop me-2"></i>Stop Recording
+                                            </button>
+                                        </div>
+                                        <div id="audioPlayback" class="mt-3" style="display: none;">
+                                            <audio id="recordedAudio" controls style="width: 100%;"></audio>
+                                            <div class="mt-2">
+                                                <button type="button" class="btn btn-success me-2" onclick="useAudio()">
+                                                    <i class="fas fa-check me-2"></i>Use This Recording
+                                                </button>
+                                                <button type="button" class="btn btn-warning" onclick="reRecord()">
+                                                    <i class="fas fa-redo me-2"></i>Record Again
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Analysis Information -->
                         <div class="alert alert-info">
                             <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>How AI Detection Works</h6>
@@ -292,5 +398,162 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize file accept
     updateFileAccept();
 });
+
+// Camera and audio capture functionality
+let cameraStream = null;
+let mediaRecorder = null;
+let recordedChunks = [];
+
+// Start camera function
+window.startCamera = async function() {
+    try {
+        const modal = new bootstrap.Modal(document.getElementById('cameraModal'));
+        modal.show();
+        
+        cameraStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { width: 640, height: 480 } 
+        });
+        
+        const video = document.getElementById('cameraVideo');
+        video.srcObject = cameraStream;
+    } catch (error) {
+        alert('Camera access denied or not available. Please check your browser permissions.');
+        console.error('Camera error:', error);
+    }
+};
+
+// Capture photo function
+window.capturePhoto = function() {
+    const video = document.getElementById('cameraVideo');
+    const canvas = document.getElementById('cameraCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+    
+    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    document.getElementById('photoPreview').src = photoDataUrl;
+    document.getElementById('capturedPhoto').style.display = 'block';
+    video.style.display = 'none';
+};
+
+// Use captured photo
+window.usePhoto = function() {
+    const canvas = document.getElementById('cameraCanvas');
+    canvas.toBlob(function(blob) {
+        const file = new File([blob], 'captured_photo.jpg', { type: 'image/jpeg' });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        document.getElementById('file').files = dataTransfer.files;
+        
+        // Trigger file change event
+        document.getElementById('file').dispatchEvent(new Event('change'));
+        
+        // Set content type to image
+        document.getElementById('imageType').checked = true;
+        
+        stopCamera();
+        bootstrap.Modal.getInstance(document.getElementById('cameraModal')).hide();
+    }, 'image/jpeg', 0.8);
+};
+
+// Retake photo
+window.retakePhoto = function() {
+    document.getElementById('capturedPhoto').style.display = 'none';
+    document.getElementById('cameraVideo').style.display = 'block';
+};
+
+// Stop camera
+window.stopCamera = function() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+    bootstrap.Modal.getInstance(document.getElementById('cameraModal')).hide();
+};
+
+// Start recording function
+window.startRecording = async function() {
+    try {
+        const modal = new bootstrap.Modal(document.getElementById('audioModal'));
+        modal.show();
+    } catch (error) {
+        alert('Microphone access denied or not available. Please check your browser permissions.');
+        console.error('Microphone error:', error);
+    }
+};
+
+// Start audio recording
+window.startAudioRecording = async function() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        recordedChunks = [];
+        
+        mediaRecorder.ondataavailable = function(event) {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+        
+        mediaRecorder.onstop = function() {
+            const blob = new Blob(recordedChunks, { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+            document.getElementById('recordedAudio').src = url;
+            document.getElementById('audioPlayback').style.display = 'block';
+            
+            // Stop microphone stream
+            stream.getTracks().forEach(track => track.stop());
+        };
+        
+        mediaRecorder.start();
+        
+        // Update UI
+        document.getElementById('startRecordBtn').disabled = true;
+        document.getElementById('stopRecordBtn').disabled = false;
+        document.getElementById('recordingStatus').innerHTML = 
+            '<i class="fas fa-microphone fa-3x text-danger mb-3"></i><p class="text-danger fw-bold">Recording in progress...</p>';
+        
+    } catch (error) {
+        alert('Microphone access denied or not available. Please check your browser permissions.');
+        console.error('Recording error:', error);
+    }
+};
+
+// Stop audio recording
+window.stopAudioRecording = function() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        document.getElementById('startRecordBtn').disabled = false;
+        document.getElementById('stopRecordBtn').disabled = true;
+        document.getElementById('recordingStatus').innerHTML = 
+            '<i class="fas fa-check fa-3x text-success mb-3"></i><p class="text-success fw-bold">Recording completed!</p>';
+    }
+};
+
+// Use recorded audio
+window.useAudio = function() {
+    const blob = new Blob(recordedChunks, { type: 'audio/wav' });
+    const file = new File([blob], 'recorded_audio.wav', { type: 'audio/wav' });
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    document.getElementById('file').files = dataTransfer.files;
+    
+    // Trigger file change event
+    document.getElementById('file').dispatchEvent(new Event('change'));
+    
+    bootstrap.Modal.getInstance(document.getElementById('audioModal')).hide();
+};
+
+// Re-record audio
+window.reRecord = function() {
+    document.getElementById('audioPlayback').style.display = 'none';
+    document.getElementById('recordingStatus').innerHTML = 
+        '<i class="fas fa-microphone fa-3x text-muted mb-3"></i><p class="text-muted">Click start to begin recording</p>';
+    document.getElementById('startRecordBtn').disabled = false;
+    document.getElementById('stopRecordBtn').disabled = true;
+    recordedChunks = [];
+};
 </script>
 {% endblock %}

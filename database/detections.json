@@ -475,5 +475,52 @@
       ]
     },
     "created_at": "2025-06-04T09:26:54.843986"
+  },
+  {
+    "id": "b7d295ac-4af9-4069-937c-b9e18b8fb31d",
+    "user_id": "70e0a7ff-944f-4322-97be-69df0b336cc9",
+    "input_type": "ai_video",
+    "input_content": "001_Module_Introduction.mp4",
+    "result": "likely_real",
+    "confidence_score": 0.13333333333333333,
+    "reasons": [
+      "Metadata analysis: 0.00",
+      "File structure: 0.40",
+      "Frame patterns: 0.00",
+      "Overall confidence: 0.13"
+    ],
+    "ai_analysis": {
+      "classification": "likely_real",
+      "confidence": 0.13333333333333333,
+      "explanation": "Low confidence (13.3%) of AI generation - appears to be authentic video",
+      "details": [
+        "Metadata analysis: 0.00",
+        "File structure: 0.40",
+        "Frame patterns: 0.00",
+        "Overall confidence: 0.13"
+      ],
+      "analysis_methods": [
+        {
+          "method": "Metadata Analysis",
+          "score": 0.0,
+          "explanation": "Checks for AI video generation tool signatures"
+        },
+        {
+          "method": "File Structure Analysis",
+          "score": 0.4,
+          "explanation": "Analyzes video encoding patterns typical of AI tools"
+        },
+        {
+          "method": "Frame Pattern Analysis",
+          "score": 0.0,
+          "explanation": "Detects artificial patterns in video frames"
+        }
+      ],
+      "suspected_source": null,
+      "editing_indicators": [
+        "unusually_small_file"
+      ]
+    },
+    "created_at": "2025-06-04T09:36:43.940279"
   }
 ]
