@@ -252,9 +252,10 @@ def tips():
         app.logger.error(f"Error updating security tips: {e}")
     
     # Get tips organized by category
-    email_tips = PhishingTip.find_by_category('email')
-    url_tips = PhishingTip.find_by_category('url')
-    general_tips = PhishingTip.find_by_category('general')
+    all_tips = PhishingTip.get_all_tips()
+    email_tips = [tip for tip in all_tips if tip.get('category') == 'email']
+    url_tips = [tip for tip in all_tips if tip.get('category') == 'url']
+    general_tips = [tip for tip in all_tips if tip.get('category') == 'general']
     
     # Get trending threats information
     trending_threats = security_updater.get_trending_threats()
@@ -323,7 +324,7 @@ def initialize_tips():
     """Initialize default phishing tips"""
     try:
         # Check if tips already exist
-        existing_tips = PhishingTip.find_all()
+        existing_tips = PhishingTip.get_all_tips()
         if existing_tips:
             app.logger.info(f"Tips already initialized: {len(existing_tips)} tips found")
             return

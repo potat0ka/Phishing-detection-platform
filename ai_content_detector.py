@@ -874,7 +874,7 @@ class AIContentDetector:
         
         return 0.2
     
-    def save_analysis_result(self, file_path, analysis_result):
+    def save_analysis_result(self, file_path, analysis_result, user_id=None, user_ip=None):
         """
         Save analysis results for future reference
         

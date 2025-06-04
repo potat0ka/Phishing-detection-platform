@@ -332,14 +332,17 @@ class PhishingTip:
         """Insert multiple tips"""
         try:
             if db is not None:
+                # Clear existing tips and insert new ones
+                db.security_tips.delete_many({})
                 if tips:
                     db.security_tips.insert_many(tips)
+                return len(tips)
             else:
-                existing_tips = load_json_data(TIPS_FILE)
-                existing_tips.extend(tips)
-                save_json_data(TIPS_FILE, existing_tips)
+                save_json_data(TIPS_FILE, tips)
+                return len(tips)
         except Exception as e:
             logger.error(f"Error bulk inserting tips: {e}")
+            return 0
 
 
 # Database utility functions
