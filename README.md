@@ -213,6 +213,153 @@ export PGDATABASE="postgres_database"
 
 This platform is optimized for Replit deployment with automatic configuration detection and JSON fallback for reliable operation in cloud environments.
 
+## 🖥️ Platform-Specific Installation
+
+### Windows Installation
+
+#### Prerequisites
+- Download Python 3.11+ from [python.org](https://python.org)
+- Install Git from [git-scm.com](https://git-scm.com)
+
+#### Installation Steps
+```cmd
+# Open Command Prompt or PowerShell as Administrator
+# Clone the repository
+git clone <repository-url>
+cd ai-phishing-detection-platform
+
+# Create virtual environment
+python -m venv venv
+venv\Scripts\activate
+
+# Install dependencies
+pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary cryptography pymongo flask-pymongo motor bson
+
+# Run the application
+gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
+```
+
+#### Troubleshooting Windows
+- If `pip install` fails, try: `python -m pip install --upgrade pip`
+- For OpenCV issues: `pip install opencv-python-headless`
+- For TensorFlow issues on older systems: `pip install tensorflow-cpu`
+
+### macOS Installation
+
+#### Prerequisites
+```bash
+# Install Homebrew (if not installed)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install Python 3.11+
+brew install python@3.11 git
+```
+
+#### Installation Steps
+```bash
+# Clone the repository
+git clone <repository-url>
+cd ai-phishing-detection-platform
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary cryptography pymongo flask-pymongo motor bson
+
+# Run the application
+gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
+```
+
+#### Troubleshooting macOS
+- For M1/M2 Macs with TensorFlow: `pip install tensorflow-macos`
+- For OpenCV issues: `brew install opencv`
+- For permission issues: Use `pip install --user` instead
+
+### Linux Installation (Ubuntu/Debian)
+
+#### Prerequisites
+```bash
+# Update package list
+sudo apt update
+
+# Install Python 3.11 and dependencies
+sudo apt install python3.11 python3.11-pip python3.11-venv python3.11-dev git
+
+# Install system dependencies for computer vision
+sudo apt install libgl1-mesa-glx libglib2.0-0 libsm6 libxext6 libxrender-dev libgomp1
+```
+
+#### Installation Steps
+```bash
+# Clone the repository
+git clone <repository-url>
+cd ai-phishing-detection-platform
+
+# Create virtual environment
+python3.11 -m venv venv
+source venv/bin/activate
+
+# Upgrade pip
+pip install --upgrade pip
+
+# Install dependencies
+pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary cryptography pymongo flask-pymongo motor bson
+
+# Run the application
+gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
+```
+
+#### For Other Linux Distributions
+
+**CentOS/RHEL/Fedora:**
+```bash
+# Install Python and dependencies
+sudo dnf install python3.11 python3.11-pip python3.11-devel git
+# or for older versions: sudo yum install python3.11 python3.11-pip python3.11-devel git
+
+# Follow the same installation steps as Ubuntu
+```
+
+**Arch Linux:**
+```bash
+# Install Python and dependencies
+sudo pacman -S python python-pip git
+
+# Follow the same installation steps as Ubuntu
+```
+
+#### Troubleshooting Linux
+- For OpenCV issues: `sudo apt install python3-opencv`
+- For TensorFlow GPU support: `pip install tensorflow-gpu` (requires CUDA)
+- For permission issues: Use virtual environment or `pip install --user`
+
+### Docker Installation (All Platforms)
+
+```dockerfile
+# Create Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY . .
+
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx libglib2.0-0 libsm6 libxext6 libxrender-dev libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary cryptography pymongo flask-pymongo motor bson
+
+EXPOSE 5000
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--reuse-port", "--reload", "main:app"]
+```
+
+```bash
+# Build and run with Docker
+docker build -t ai-phishing-detector .
+docker run -p 5000:5000 ai-phishing-detector
+```
+
 ## Project Structure
 
 ```
