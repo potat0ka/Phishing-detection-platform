@@ -40,7 +40,7 @@ If Python is not installed, download it from [python.org](https://www.python.org
 
 2. **Install dependencies using pip**
    ```bash
-   pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura
+   pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython
    ```
 
 3. **Run the application**
@@ -72,7 +72,7 @@ If Python is not installed, download it from [python.org](https://www.python.org
 
 2. **Install dependencies**
    ```bash
-   pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura
+   pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython
    ```
 
 3. **Run the application**
@@ -259,7 +259,7 @@ PORT=5000
 #### 1. "Module not found" error
 ```bash
 # Solution 1: Install missing dependencies
-pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura
+pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython
 
 # Solution 2: Make sure you're in the right directory
 cd path/to/your/project
