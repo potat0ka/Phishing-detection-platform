@@ -181,9 +181,14 @@ class Detection:
     
     @staticmethod
     def get_user_stats(user_id):
-        """Get detection statistics for a user"""
+        """Get detection statistics for a user (handles encrypted data)"""
         detections = load_json_data(DETECTIONS_FILE)
-        user_detections = [d for d in detections if d.get('user_id') == user_id]
+        user_detections = []
+        
+        for encrypted_detection in detections:
+            detection = decrypt_sensitive_data('activity', encrypted_detection)
+            if detection.get('user_id') == user_id:
+                user_detections.append(detection)
         
         stats = {"safe": 0, "phishing": 0, "suspicious": 0}
         

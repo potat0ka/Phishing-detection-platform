@@ -25,12 +25,17 @@ from ml_detector import PhishingDetector  # AI/ML detection engine
 from ai_content_detector import ai_detector  # AI content detection for images/documents
 from utils import is_logged_in, login_required  # Helper functions
 from security_tips_updater import security_updater  # Security tips management
+from encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data, encryption_manager  # Data encryption
 from werkzeug.utils import secure_filename  # For secure file uploads
 import json
 import os
 import re
 from urllib.parse import urlparse
 from datetime import datetime, timedelta
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Initialize the AI/ML detector when the app starts
 # This loads the machine learning model for phishing detection
@@ -203,10 +208,13 @@ def check():
             # Perform phishing detection
             result = detector.analyze(input_content, input_type)
             
-            # Save detection if user is logged in
+            # Save detection with encrypted user activity data
             if is_logged_in():
                 try:
                     user_id = session.get('user_id')
+                    user_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.environ.get('REMOTE_ADDR'))
+                    user_agent = request.headers.get('User-Agent')
+                    
                     Detection.create_detection(
                         user_id=user_id,
                         input_type=input_type,
@@ -214,10 +222,13 @@ def check():
                         result=result['classification'],
                         confidence_score=result['confidence'],
                         reasons=result['reasons'],
-                        ai_analysis=result['ai_analysis']
+                        ai_analysis=result['ai_analysis'],
+                        user_ip=user_ip,
+                        user_agent=user_agent
                     )
+                    logger.info(f"Encrypted detection saved for user: {user_id}")
                 except Exception as save_error:
-                    app.logger.error(f"Failed to save detection: {save_error}")
+                    app.logger.error(f"Failed to save encrypted detection: {save_error}")
                     # Continue without saving - don't let this block the analysis
             
             return render_template('result.html', 
@@ -413,8 +424,11 @@ def ai_content_check():
             # Analyze the file for AI content
             analysis_result = ai_detector.analyze_content(file_path, content_type)
             
-            # Save analysis result to database
+            # Save analysis result with encrypted user activity data
             user_id = session['user_id']
+            user_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.environ.get('REMOTE_ADDR'))
+            user_agent = request.headers.get('User-Agent')
+            
             Detection.create_detection(
                 user_id=user_id,
                 input_type=f"ai_{content_type}",
@@ -422,11 +436,14 @@ def ai_content_check():
                 result=analysis_result['classification'],
                 confidence_score=analysis_result['confidence'],
                 reasons=analysis_result['details'],
-                ai_analysis=analysis_result
+                ai_analysis=analysis_result,
+                user_ip=user_ip,
+                user_agent=user_agent
             )
             
-            # Save analysis result for future reference
-            ai_detector.save_analysis_result(file_path, analysis_result)
+            # Save encrypted analysis result for future reference
+            ai_detector.save_analysis_result(file_path, analysis_result, user_id, user_ip)
+            logger.info(f"Encrypted AI content analysis saved for user: {user_id}")
             
             # Clean up uploaded file for security
             try:
