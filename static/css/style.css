@@ -287,8 +287,112 @@
     border-left: 3px solid rgb(var(--primary-color));
 }
 
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
+/* Enhanced Mobile Responsiveness for All Devices */
+/* Extra Small devices (phones, 576px and down) */
+@media (max-width: 575.98px) {
+    .hero-section {
+        min-height: 70vh;
+        padding: 2rem 0;
+        text-align: center;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+    
+    .lead {
+        font-size: 1rem;
+    }
+    
+    .shield-icon {
+        font-size: 4rem;
+    }
+    
+    .pulse-ring {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .stat-number {
+        font-size: 1.8rem;
+    }
+    
+    .feature-icon i {
+        font-size: 1.8rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .navbar-brand span {
+        display: none;
+    }
+    
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    /* Make forms more mobile-friendly */
+    .form-control {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 0.75rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Stack buttons vertically on mobile */
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 0.5rem;
+        border-radius: 0.375rem !important;
+    }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .hero-section {
+        min-height: 65vh;
+        text-align: center;
+    }
+    
+    .display-4 {
+        font-size: 2.2rem;
+    }
+    
+    .shield-icon {
+        font-size: 4.5rem;
+    }
+    
+    .pulse-ring {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .stat-number {
+        font-size: 1.9rem;
+    }
+    
+    .feature-icon i {
+        font-size: 1.9rem;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
     .hero-section {
         min-height: 60vh;
         text-align: center;
@@ -313,6 +417,41 @@
     
     .feature-icon i {
         font-size: 2rem;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .hero-section {
+        min-height: 80vh;
+    }
+    
+    .display-4 {
+        font-size: 3.5rem;
+    }
+    
+    .shield-icon {
+        font-size: 8rem;
+    }
+    
+    .pulse-ring {
+        width: 150px;
+        height: 150px;
+    }
+}
+
+/* Ultra-wide screens (1400px and up) */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1320px;
+    }
+    
+    .hero-section {
+        min-height: 85vh;
+    }
+    
+    .display-4 {
+        font-size: 4rem;
     }
 }
 
@@ -400,8 +539,9 @@
     transform: translateX(-100%);
 }
 
-/* Mobile responsiveness for carousel */
-@media (max-width: 768px) {
+/* Enhanced mobile responsiveness for carousel and components */
+@media (max-width: 575.98px) {
+    /* Carousel optimizations for small phones */
     .security-visual {
         display: none;
     }
@@ -411,11 +551,106 @@
     }
     
     .carousel-item .card-body {
-        padding: 2rem 1rem;
+        padding: 1.5rem 1rem;
     }
     
     .security-tip-icon {
         margin-bottom: 1rem;
+    }
+    
+    .security-tip-icon i {
+        font-size: 2.5rem !important;
+    }
+    
+    .carousel-item h4 {
+        font-size: 1.3rem;
+        line-height: 1.3;
+        margin-bottom: 1rem;
+    }
+    
+    .carousel-item .lead {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-bottom: 1rem;
+    }
+    
+    .tip-priority {
+        font-size: 0.75rem;
+    }
+    
+    .carousel-indicators {
+        bottom: -40px;
+    }
+    
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 10%;
+    }
+    
+    /* Make tip cards stack properly */
+    .tip-card {
+        margin-bottom: 1rem;
+    }
+    
+    .tip-card .card-body {
+        padding: 1rem;
+    }
+    
+    /* Stats cards mobile optimization */
+    .stat-item {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Navigation improvements */
+    .navbar-toggler {
+        padding: 0.25rem 0.5rem;
+        font-size: 1rem;
+    }
+    
+    .navbar-collapse {
+        margin-top: 1rem;
+    }
+    
+    .nav-link {
+        padding: 0.75rem 1rem;
+        text-align: center;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    /* Carousel for landscape phones and small tablets */
+    .security-visual {
+        display: block;
+    }
+    
+    .security-visual svg {
+        width: 150px;
+        height: 100px;
+    }
+    
+    .carousel-item .card-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .carousel-item h4 {
+        font-size: 1.4rem;
+    }
+    
+    .carousel-item .lead {
+        font-size: 0.95rem;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* Carousel for tablets */
+    .security-visual svg {
+        width: 180px;
+        height: 120px;
+    }
+    
+    .carousel-item .card-body {
+        padding: 2rem;
     }
     
     .carousel-item h4 {
@@ -453,6 +688,211 @@
     background: linear-gradient(90deg, #ff6b6b 0%, #feca57 50%, #48ca9a 100%);
 }
 
+/* Advanced responsive design features */
+
+/* Touch-friendly interactions */
+.btn, .card, .nav-link {
+    min-height: 44px; /* Apple's recommended touch target size */
+    touch-action: manipulation; /* Disable double-tap zoom */
+}
+
+/* Smooth scrolling for better UX */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Responsive images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Responsive tables */
+.table-responsive {
+    border-radius: 0.375rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+@media (max-width: 575.98px) {
+    .table-responsive table {
+        font-size: 0.875rem;
+    }
+    
+    .table-responsive th,
+    .table-responsive td {
+        padding: 0.5rem 0.25rem;
+    }
+}
+
+/* Responsive typography */
+@media (max-width: 575.98px) {
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1.1rem; }
+    h5 { font-size: 1rem; }
+    h6 { font-size: 0.9rem; }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Optimized spacing for mobile */
+@media (max-width: 575.98px) {
+    .py-5 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+    .py-4 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+    .my-5 { margin-top: 2rem !important; margin-bottom: 2rem !important; }
+    .my-4 { margin-top: 1.5rem !important; margin-bottom: 1.5rem !important; }
+}
+
+/* Enhanced form responsiveness */
+@media (max-width: 575.98px) {
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+    
+    .form-floating label {
+        font-size: 0.875rem;
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .input-group .btn {
+        margin-top: 0.5rem;
+        border-radius: 0.375rem !important;
+    }
+}
+
+/* Responsive navigation improvements */
+@media (max-width: 991.98px) {
+    .navbar-nav {
+        text-align: center;
+        padding: 1rem 0;
+    }
+    
+    .navbar-nav .nav-link {
+        padding: 0.75rem 1rem;
+        margin: 0.25rem 0;
+        border-radius: 0.375rem;
+        transition: background-color 0.3s ease;
+    }
+    
+    .navbar-nav .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Card responsiveness */
+@media (max-width: 575.98px) {
+    .card {
+        border-radius: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    .card-header {
+        padding: 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .card-footer {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Alert responsiveness */
+@media (max-width: 575.98px) {
+    .alert {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .alert-heading {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Modal responsiveness */
+@media (max-width: 575.98px) {
+    .modal-dialog {
+        margin: 1rem;
+        max-width: calc(100% - 2rem);
+    }
+    
+    .modal-content {
+        border-radius: 0.75rem;
+    }
+    
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 1rem;
+    }
+}
+
+/* Badge and pill responsiveness */
+@media (max-width: 575.98px) {
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.5rem;
+    }
+    
+    .badge-lg {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Progress bar responsiveness */
+@media (max-width: 575.98px) {
+    .progress {
+        height: 1.25rem;
+        border-radius: 0.625rem;
+    }
+    
+    .progress-bar {
+        font-size: 0.75rem;
+        line-height: 1.25rem;
+    }
+}
+
+/* Responsive utilities */
+.mobile-center {
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .mobile-center {
+        text-align: left;
+    }
+}
+
+.mobile-full-width {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .mobile-full-width {
+        width: auto;
+    }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
@@ -469,6 +909,13 @@
 
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(var(--primary-color), 0.8);
+}
+
+/* Mobile scrollbar optimization */
+@media (max-width: 575.98px) {
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
 }
 
 /* Accessibility Improvements */
