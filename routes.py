@@ -265,3 +265,73 @@ def initialize_tips():
         
         PhishingTip.bulk_insert(basic_tips)
         app.logger.info("Basic security tips added as fallback")
+
+@app.route('/ai-content-check', methods=['GET', 'POST'])
+@login_required
+def ai_content_check():
+    """AI Content Detection Interface for analyzing images and documents"""
+    if request.method == 'POST':
+        try:
+            # Check if file was uploaded
+            if 'file' not in request.files:
+                flash('No file selected. Please choose an image or document to analyze.', 'error')
+                return redirect(url_for('ai_content_check'))
+            
+            file = request.files['file']
+            content_type = request.form.get('content_type', 'image')
+            
+            if file.filename == '':
+                flash('No file selected. Please choose a file to analyze.', 'error')
+                return redirect(url_for('ai_content_check'))
+            
+            # Check if file type is allowed
+            from app import allowed_file, ALLOWED_IMAGE_EXTENSIONS, ALLOWED_DOCUMENT_EXTENSIONS
+            if not allowed_file(file.filename, content_type):
+                allowed_exts = ALLOWED_IMAGE_EXTENSIONS if content_type == 'image' else ALLOWED_DOCUMENT_EXTENSIONS
+                flash(f'Invalid file type. Please upload a {content_type} file with extension: {", ".join(allowed_exts)}', 'error')
+                return redirect(url_for('ai_content_check'))
+            
+            # Save the uploaded file
+            filename = secure_filename(file.filename)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            unique_filename = f"{timestamp}_{filename}"
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            file.save(file_path)
+            
+            # Analyze the file for AI content
+            analysis_result = ai_detector.analyze_content(file_path, content_type)
+            
+            # Save analysis result to database
+            user_id = session['user_id']
+            Detection.create_detection(
+                user_id=user_id,
+                input_type=f"ai_{content_type}",
+                input_content=filename,
+                result=analysis_result['classification'],
+                confidence_score=analysis_result['confidence'],
+                reasons=analysis_result['details'],
+                ai_analysis=analysis_result
+            )
+            
+            # Save analysis result for future reference
+            ai_detector.save_analysis_result(file_path, analysis_result)
+            
+            # Clean up uploaded file for security
+            try:
+                os.remove(file_path)
+            except OSError:
+                pass
+            
+            flash(f'AI Content Analysis Complete! Confidence: {analysis_result["confidence"]:.1%}', 'success')
+            
+            return render_template('ai_content_results.html', 
+                                 filename=filename,
+                                 content_type=content_type,
+                                 result=analysis_result)
+                                 
+        except Exception as e:
+            flash(f'Analysis failed: {str(e)}', 'error')
+            return redirect(url_for('ai_content_check'))
+    
+    # GET request - show upload form
+    return render_template('ai_content_check.html')

@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}AI Content Detection - Upload & Analyze{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="text-center mb-4">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-robot me-2"></i>AI Content Detection
+                </h1>
+                <p class="lead text-muted">
+                    Upload images or documents to analyze if they were created by AI
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Form -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-upload me-2"></i>Upload Content for Analysis
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                        <!-- Content Type Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Content Type</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check p-3 border rounded h-100">
+                                        <input class="form-check-input" type="radio" name="content_type" 
+                                               id="imageType" value="image" checked>
+                                        <label class="form-check-label w-100" for="imageType">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-image fa-2x text-primary me-3"></i>
+                                                <div>
+                                                    <h6 class="mb-1">Image Analysis</h6>
+                                                    <small class="text-muted">JPG, PNG, GIF, BMP, WebP</small>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check p-3 border rounded h-100">
+                                        <input class="form-check-input" type="radio" name="content_type" 
+                                               id="documentType" value="document">
+                                        <label class="form-check-label w-100" for="documentType">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-file-text fa-2x text-primary me-3"></i>
+                                                <div>
+                                                    <h6 class="mb-1">Document Analysis</h6>
+                                                    <small class="text-muted">TXT, DOC, DOCX, PDF</small>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- File Upload Area -->
+                        <div class="mb-4">
+                            <label for="file" class="form-label fw-bold">Choose File</label>
+                            <div class="upload-area border-2 border-dashed rounded p-4 text-center" 
+                                 id="uploadArea" onclick="document.getElementById('file').click()">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">Click to upload or drag & drop</h5>
+                                <p class="text-muted mb-0">Maximum file size: 16MB</p>
+                                <input type="file" class="form-control d-none" id="file" name="file" 
+                                       accept=".jpg,.jpeg,.png,.gif,.bmp,.webp,.txt,.doc,.docx,.pdf">
+                            </div>
+                            <div id="fileInfo" class="mt-2 d-none">
+                                <div class="alert alert-info d-flex align-items-center">
+                                    <i class="fas fa-file me-2"></i>
+                                    <span id="fileName"></span>
+                                    <button type="button" class="btn-close ms-auto" onclick="clearFile()"></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analysis Information -->
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>How AI Detection Works</h6>
+                            <p class="mb-2">Our AI detection system analyzes:</p>
+                            <ul class="mb-0">
+                                <li><strong>Images:</strong> Metadata signatures, pixel patterns, color distribution, statistical properties</li>
+                                <li><strong>Documents:</strong> Writing patterns, vocabulary analysis, sentence structure, AI-specific phrases</li>
+                            </ul>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="analyzeBtn" disabled>
+                                <i class="fas fa-search me-2"></i>Analyze Content
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Information -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="text-center mb-4">Why Use AI Content Detection?</h3>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                    <h5>Verify Authenticity</h5>
+                    <p class="text-muted">Determine if images or documents are genuine or AI-generated</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                    <h5>Advanced Analysis</h5>
+                    <p class="text-muted">Multiple detection methods for accurate results</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                    <h5>Confidence Scores</h5>
+                    <p class="text-muted">Get detailed confidence ratings and explanations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-area {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: var(--bs-light);
+}
+
+.upload-area:hover {
+    border-color: var(--bs-primary) !important;
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+.form-check:has(input:checked) {
+    border-color: var(--bs-primary) !important;
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+@media (max-width: 768px) {
+    .upload-area {
+        padding: 2rem 1rem !important;
+    }
+    
+    .upload-area i {
+        font-size: 2rem !important;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('file');
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const form = document.getElementById('uploadForm');
+    
+    // File input change handler
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            fileName.textContent = file.name + ' (' + formatFileSize(file.size) + ')';
+            fileInfo.classList.remove('d-none');
+            analyzeBtn.disabled = false;
+            uploadArea.style.display = 'none';
+        }
+    });
+    
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('border-primary');
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.classList.remove('border-primary');
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('border-primary');
+        
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            fileInput.files = e.dataTransfer.files;
+            fileInput.dispatchEvent(new Event('change'));
+        }
+    });
+    
+    // Content type change handler
+    document.querySelectorAll('input[name="content_type"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            updateFileAccept();
+        });
+    });
+    
+    // Form submit handler
+    form.addEventListener('submit', function() {
+        analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...';
+        analyzeBtn.disabled = true;
+    });
+    
+    // Update file accept attribute based on content type
+    function updateFileAccept() {
+        const selectedType = document.querySelector('input[name="content_type"]:checked').value;
+        if (selectedType === 'image') {
+            fileInput.accept = '.jpg,.jpeg,.png,.gif,.bmp,.webp';
+        } else {
+            fileInput.accept = '.txt,.doc,.docx,.pdf';
+        }
+    }
+    
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Clear file function
+    window.clearFile = function() {
+        fileInput.value = '';
+        fileInfo.classList.add('d-none');
+        uploadArea.style.display = 'block';
+        analyzeBtn.disabled = true;
+    };
+    
+    // Initialize file accept
+    updateFileAccept();
+});
+</script>
+{% endblock %}

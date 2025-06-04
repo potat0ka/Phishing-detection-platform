@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}AI Content Analysis Results{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="text-center mb-4">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-chart-line me-2"></i>Analysis Results
+                </h1>
+                <p class="lead text-muted">
+                    AI Content Detection for: <strong>{{ filename }}</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Summary -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-8">
+            {% set classification_colors = {
+                'ai_generated': 'danger',
+                'possibly_ai': 'warning', 
+                'likely_real': 'success',
+                'likely_human': 'success',
+                'error': 'secondary'
+            } %}
+            {% set classification_icons = {
+                'ai_generated': 'fas fa-robot',
+                'possibly_ai': 'fas fa-question-circle',
+                'likely_real': 'fas fa-check-circle',
+                'likely_human': 'fas fa-user',
+                'error': 'fas fa-exclamation-triangle'
+            } %}
+            
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-{{ classification_colors[result.classification] }} text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="{{ classification_icons[result.classification] }} me-2"></i>
+                        Detection Summary
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="mb-2">{{ result.explanation }}</h4>
+                            <p class="text-muted mb-0">Content Type: <strong>{{ content_type.title() }}</strong></p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="confidence-meter">
+                                <div class="progress mb-2" style="height: 20px;">
+                                    <div class="progress-bar bg-{{ classification_colors[result.classification] }}" 
+                                         role="progressbar" 
+                                         style="width: {{ (result.confidence * 100)|round }}%"
+                                         aria-valuenow="{{ (result.confidence * 100)|round }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                        {{ (result.confidence * 100)|round }}%
+                                    </div>
+                                </div>
+                                <small class="text-muted">Confidence Score</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Analysis Methods -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-microscope me-2"></i>Analysis Methods
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if result.analysis_methods %}
+                        <div class="row">
+                            {% for method in result.analysis_methods %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ method.method }}</h6>
+                                        <p class="card-text small text-muted mb-2">{{ method.explanation }}</p>
+                                        <div class="progress mb-2" style="height: 15px;">
+                                            {% set method_color = 'success' if method.score < 0.4 else ('warning' if method.score < 0.7 else 'danger') %}
+                                            <div class="progress-bar bg-{{ method_color }}" 
+                                                 role="progressbar" 
+                                                 style="width: {{ (method.score * 100)|round }}%">
+                                                {{ (method.score * 100)|round }}%
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">AI Likelihood: {{ (method.score * 100)|round }}%</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Details -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cogs me-2"></i>Technical Analysis Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if result.details %}
+                        <ul class="list-group list-group-flush">
+                            {% for detail in result.details %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <i class="fas fa-info-circle text-primary me-3"></i>
+                                {{ detail }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">No detailed analysis information available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Understanding the Results -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Understanding Your Results
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Classification Meanings:</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <span class="badge bg-danger me-2">AI Generated</span>
+                                    High confidence this content was created by AI
+                                </li>
+                                <li class="mb-2">
+                                    <span class="badge bg-warning me-2">Possibly AI</span>
+                                    Some indicators suggest AI involvement
+                                </li>
+                                <li class="mb-2">
+                                    <span class="badge bg-success me-2">Likely Real</span>
+                                    Appears to be human-created content
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>What This Means:</h6>
+                            <p class="text-muted">
+                                {% if result.classification == 'ai_generated' %}
+                                    This content shows strong indicators of AI generation. Be cautious if authenticity is important.
+                                {% elif result.classification == 'possibly_ai' %}
+                                    The analysis found some patterns typical of AI-generated content, but it's not conclusive.
+                                {% elif result.classification in ['likely_real', 'likely_human'] %}
+                                    This content appears to be authentic and human-created based on our analysis.
+                                {% else %}
+                                    The analysis encountered an error or couldn't determine the content's origin.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <a href="{{ url_for('ai_content_check') }}" class="btn btn-primary btn-lg me-3">
+                <i class="fas fa-upload me-2"></i>Analyze Another File
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-lg">
+                <i class="fas fa-dashboard me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.confidence-meter {
+    background: rgba(var(--bs-light-rgb), 0.5);
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.progress {
+    background-color: rgba(var(--bs-secondary-rgb), 0.2);
+}
+
+.card {
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .btn-lg {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .me-3 {
+        margin-right: 0 !important;
+    }
+}
+</style>
+{% endblock %}
