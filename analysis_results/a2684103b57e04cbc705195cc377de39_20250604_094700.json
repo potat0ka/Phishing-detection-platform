@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-06-04T09:47:00.134756",
+  "file_path": "uploads/20250604_094700_captured_photo.jpg",
+  "analysis_result": {
+    "classification": "likely_real",
+    "confidence": 0.5377418095928127,
+    "explanation": "Appears to be a real photograph or human-created image",
+    "details": [
+      "Metadata analysis: 0.20",
+      "Pixel patterns: 0.64",
+      "Color distribution: 0.65",
+      "Image statistics: 0.66",
+      "Overall confidence: 0.54"
+    ],
+    "analysis_methods": [
+      {
+        "method": "Metadata Analysis",
+        "score": 0.2,
+        "explanation": "Checks for AI tool signatures in image metadata"
+      },
+      {
+        "method": "Pixel Pattern Analysis",
+        "score": 0.6379348438187524,
+        "explanation": "Analyzes pixel distribution patterns typical of AI generation"
+      },
+      {
+        "method": "Color Distribution Analysis",
+        "score": 0.6507280447431921,
+        "explanation": "Examines color patterns that differ between AI and real images"
+      },
+      {
+        "method": "Image Statistics Analysis",
+        "score": 0.6623043498093061,
+        "explanation": "Studies statistical properties unique to AI generation"
+      }
+    ]
+  }
+}

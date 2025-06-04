@@ -102,10 +102,20 @@
         <div class="col">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-transparent border-0 p-4">
-                    <h5 class="mb-0">
-                        <i class="fas fa-history text-info me-2"></i>
-                        Recent Detection History
-                    </h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-history text-info me-2"></i>
+                            Recent Detection History
+                        </h5>
+                        <div class="d-flex gap-2">
+                            <button id="selectAllBtn" class="btn btn-outline-secondary btn-sm" onclick="toggleSelectAll()">
+                                <i class="fas fa-check-square me-1"></i>Select All
+                            </button>
+                            <button id="deleteSelectedBtn" class="btn btn-outline-danger btn-sm" onclick="deleteSelected()" style="display: none;">
+                                <i class="fas fa-trash me-1"></i>Delete Selected
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     {% if detections %}
@@ -113,6 +123,9 @@
                             <table class="table table-hover mb-0">
                                 <thead class="table-dark">
                                     <tr>
+                                        <th width="5%">
+                                            <input type="checkbox" id="masterCheckbox" onchange="toggleAllCheckboxes()" class="form-check-input">
+                                        </th>
                                         <th>Type</th>
                                         <th>Content</th>
                                         <th>Result</th>
@@ -124,6 +137,9 @@
                                 <tbody>
                                     {% for detection in detections %}
                                     <tr data-detection-id="{{ detection.id }}">
+                                        <td>
+                                            <input type="checkbox" class="form-check-input detection-checkbox" value="{{ detection.id }}" onchange="updateDeleteButton()">
+                                        </td>
                                         <td>
                                             {% if detection.input_type == 'url' %}
                                                 <span class="badge bg-primary">
@@ -283,6 +299,135 @@ function deleteDetection(detectionId) {
 function exportHistory() {
     // Simple alert for now - in real implementation, would generate CSV/PDF
     alert('Export functionality would generate a downloadable report of your detection history.');
+}
+
+// Multiple selection functionality
+function toggleAllCheckboxes() {
+    const masterCheckbox = document.getElementById('masterCheckbox');
+    const checkboxes = document.querySelectorAll('.detection-checkbox');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = masterCheckbox.checked;
+    });
+    
+    updateDeleteButton();
+}
+
+function updateDeleteButton() {
+    const checkedBoxes = document.querySelectorAll('.detection-checkbox:checked');
+    const deleteBtn = document.getElementById('deleteSelectedBtn');
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    
+    if (checkedBoxes.length > 0) {
+        deleteBtn.style.display = 'inline-block';
+        selectAllBtn.innerHTML = `<i class="fas fa-check-square me-1"></i>Selected (${checkedBoxes.length})`;
+    } else {
+        deleteBtn.style.display = 'none';
+        selectAllBtn.innerHTML = '<i class="fas fa-check-square me-1"></i>Select All';
+    }
+    
+    // Update master checkbox state
+    const allCheckboxes = document.querySelectorAll('.detection-checkbox');
+    const masterCheckbox = document.getElementById('masterCheckbox');
+    
+    if (checkedBoxes.length === allCheckboxes.length && allCheckboxes.length > 0) {
+        masterCheckbox.checked = true;
+        masterCheckbox.indeterminate = false;
+    } else if (checkedBoxes.length > 0) {
+        masterCheckbox.checked = false;
+        masterCheckbox.indeterminate = true;
+    } else {
+        masterCheckbox.checked = false;
+        masterCheckbox.indeterminate = false;
+    }
+}
+
+function toggleSelectAll() {
+    const masterCheckbox = document.getElementById('masterCheckbox');
+    masterCheckbox.click();
+}
+
+function deleteSelected() {
+    const checkedBoxes = document.querySelectorAll('.detection-checkbox:checked');
+    const selectedIds = Array.from(checkedBoxes).map(cb => cb.value);
+    
+    if (selectedIds.length === 0) {
+        alert('Please select detections to delete.');
+        return;
+    }
+    
+    const confirmMsg = `Are you sure you want to delete ${selectedIds.length} selected detection${selectedIds.length > 1 ? 's' : ''}?`;
+    
+    if (confirm(confirmMsg)) {
+        // Show loading state
+        const deleteBtn = document.getElementById('deleteSelectedBtn');
+        const originalText = deleteBtn.innerHTML;
+        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Deleting...';
+        deleteBtn.disabled = true;
+        
+        // Delete each selected detection
+        Promise.all(selectedIds.map(id => 
+            fetch(`/delete-detection/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+        ))
+        .then(responses => Promise.all(responses.map(r => r.json())))
+        .then(results => {
+            const successCount = results.filter(r => r.success).length;
+            const failCount = results.length - successCount;
+            
+            if (successCount > 0) {
+                // Remove successful deletions from table
+                selectedIds.forEach(id => {
+                    const row = document.querySelector(`tr[data-detection-id="${id}"]`);
+                    if (row) row.remove();
+                });
+                
+                // Show success message
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-success alert-dismissible fade show';
+                alert.innerHTML = `
+                    <i class="fas fa-check-circle me-2"></i>
+                    Successfully deleted ${successCount} detection${successCount > 1 ? 's' : ''}
+                    ${failCount > 0 ? ` (${failCount} failed)` : ''}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.querySelector('.container').insertBefore(alert, document.querySelector('.container').firstChild);
+                
+                // Auto-dismiss after 4 seconds
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.remove();
+                    }
+                }, 4000);
+                
+                // Reset selection state
+                updateDeleteButton();
+                
+                // Reload page if no detections left
+                const tableBody = document.querySelector('tbody');
+                if (tableBody && tableBody.children.length === 0) {
+                    location.reload();
+                }
+            }
+            
+            if (failCount > 0) {
+                alert(`${failCount} deletion${failCount > 1 ? 's' : ''} failed. Please try again.`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to delete selected detections. Please try again.');
+        })
+        .finally(() => {
+            // Restore button state
+            deleteBtn.innerHTML = originalText;
+            deleteBtn.disabled = false;
+        });
+    }
 }
 
 // Chart for statistics (if Chart.js is available)
