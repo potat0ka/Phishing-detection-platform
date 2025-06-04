@@ -233,7 +233,7 @@ class AIContentDetector:
             # Calculate overall confidence
             scores = [metadata_score, pixel_score, color_score, stats_score]
             average_score = np.mean(scores)
-            confidence = float(min(max(average_score, 0.0), 1.0))
+            confidence = float(min(max(float(average_score), 0.0), 1.0))
             
             # Determine classification
             if confidence >= 0.7:
@@ -384,9 +384,9 @@ class AIContentDetector:
             saturation_ratio = saturation_pixels / total_pixels
             
             # Combine factors
-            uniformity_score = 1.0 - min(variance_uniformity, 1.0)
-            balance_score = 1.0 - min(mean_balance * 4, 1.0)
-            saturation_score = min(saturation_ratio * 10, 1.0)
+            uniformity_score = 1.0 - min(float(variance_uniformity), 1.0)
+            balance_score = 1.0 - min(float(mean_balance) * 4, 1.0)
+            saturation_score = min(float(saturation_ratio) * 10, 1.0)
             
             combined_score = (uniformity_score + balance_score + saturation_score) / 3.0
             return float(max(0.0, min(combined_score, 1.0)))
@@ -425,7 +425,7 @@ class AIContentDetector:
             
             if local_stds:
                 contrast_variance = np.var(local_stds)
-                contrast_score = 1.0 - min(contrast_variance / 1000.0, 1.0)
+                contrast_score = 1.0 - min(float(contrast_variance) / 1000.0, 1.0)
             else:
                 contrast_score = 0.5
             
@@ -495,7 +495,7 @@ class AIContentDetector:
             # Calculate overall confidence
             scores = [metadata_score, structure_score, frame_score]
             average_score = np.mean(scores)
-            confidence = float(min(max(average_score, 0.0), 1.0))
+            confidence = float(min(max(float(average_score), 0.0), 1.0))
             
             # Determine classification and source
             classification, suspected_source, editing_indicators = self._classify_video_result(
@@ -572,7 +572,7 @@ class AIContentDetector:
             # Calculate overall confidence
             scores = [metadata_score, structure_score, pattern_score]
             average_score = np.mean(scores)
-            confidence = float(min(max(average_score, 0.0), 1.0))
+            confidence = float(min(max(float(average_score), 0.0), 1.0))
             
             # Determine classification and source
             classification, suspected_source, editing_indicators = self._classify_audio_result(
