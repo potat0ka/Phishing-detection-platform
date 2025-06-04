@@ -47,6 +47,9 @@ An advanced AI-powered phishing detection web platform with enterprise-level sec
 - MongoDB (optional - JSON fallback available)
 - PostgreSQL (optional - for additional data storage)
 
+### Simple Startup
+The platform uses Flask's built-in development server with simple `python main.py` startup for easy local development.
+
 #### Check Python installation:
 ```bash
 python --version
