@@ -402,8 +402,13 @@ class AIContentDetector:
         that can be detected through mathematical analysis.
         """
         try:
+            # Resize large images to prevent timeout
+            max_size = 800
+            if pil_image.width > max_size or pil_image.height > max_size:
+                pil_image.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
+            
             # Convert to array for analysis
-            pixels = np.array(pil_image.convert('L'))
+            pixels = np.array(pil_image.convert('L'), dtype=np.float32)
             
             # Calculate entropy (measure of randomness)
             histogram = np.histogram(pixels, bins=256, range=(0, 256))[0]
@@ -413,15 +418,24 @@ class AIContentDetector:
             # AI images often have lower entropy (less randomness)
             entropy_score = 1.0 - min(entropy / 8.0, 1.0)  # Normalize entropy
             
-            # Calculate local contrast using standard deviation of local patches
-            patch_size = 8
+            # Calculate local contrast using standard deviation of local patches (optimized)
+            patch_size = 16  # Larger patches for efficiency
             local_stds = []
             
             height, width = pixels.shape
-            for i in range(0, height - patch_size, patch_size):
-                for j in range(0, width - patch_size, patch_size):
+            # Limit number of patches to prevent timeout
+            max_patches = 100
+            patch_count = 0
+            
+            for i in range(0, height - patch_size, patch_size * 2):  # Skip patches for speed
+                for j in range(0, width - patch_size, patch_size * 2):
+                    if patch_count >= max_patches:
+                        break
                     patch = pixels[i:i+patch_size, j:j+patch_size]
-                    local_stds.append(np.std(patch))
+                    local_stds.append(float(np.std(patch)))
+                    patch_count += 1
+                if patch_count >= max_patches:
+                    break
             
             if local_stds:
                 contrast_variance = np.var(local_stds)

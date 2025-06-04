@@ -375,6 +375,16 @@ def ai_content_check():
                 flash('No file selected. Please choose a file to analyze.', 'error')
                 return redirect(url_for('ai_content_check'))
             
+            # Check file size (limit to 10MB to prevent timeouts)
+            MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB in bytes
+            file.seek(0, 2)  # Seek to end of file
+            file_size = file.tell()
+            file.seek(0)  # Reset to beginning
+            
+            if file_size > MAX_FILE_SIZE:
+                flash(f'File too large! Please upload a file smaller than 10MB. Your file is {file_size / (1024*1024):.1f}MB.', 'error')
+                return redirect(url_for('ai_content_check'))
+            
             # Check if file type is allowed
             from app import allowed_file, ALLOWED_IMAGE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, ALLOWED_AUDIO_EXTENSIONS, ALLOWED_DOCUMENT_EXTENSIONS
             if not allowed_file(file.filename, content_type):
