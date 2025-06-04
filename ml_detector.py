@@ -498,9 +498,21 @@ class PhishingDetector:
     def _enhance_with_threat_intelligence(self, url, result):
         """Enhance analysis with comprehensive offline threat intelligence"""
         try:
-            # Use offline threat intelligence for comprehensive analysis
-            threat_analysis = offline_threat_intel.analyze_comprehensive_threat(url, 'url')
-            result['threat_intelligence'] = threat_analysis
+            # Use offline threat intelligence for comprehensive analysis with timeout protection
+            import signal
+            
+            def timeout_handler(signum, frame):
+                raise TimeoutError("Threat intelligence analysis timeout")
+            
+            # Set a 10-second timeout for threat intelligence analysis
+            signal.signal(signal.SIGALRM, timeout_handler)
+            signal.alarm(10)
+            
+            try:
+                threat_analysis = offline_threat_intel.analyze_comprehensive_threat(url, 'url')
+                result['threat_intelligence'] = threat_analysis
+            finally:
+                signal.alarm(0)  # Clear the alarm
             
             # Integrate threat intelligence into risk assessment
             threat_score = threat_analysis.get('threat_score', 0)
@@ -548,8 +560,15 @@ class PhishingDetector:
                             'severity': 'high'
                         })
             
-        except Exception as e:
+        except (TimeoutError, Exception) as e:
             logging.error(f"Threat intelligence enhancement failed: {e}")
+            # Add fallback analysis result to prevent hanging
+            result['threat_intelligence'] = {
+                'threat_level': 'LOW',
+                'threat_score': 0.0,
+                'findings': ['Analysis timed out - using basic detection only'],
+                'error': 'Threat intelligence analysis unavailable'
+            }
             # Add a generic security note even if threat intelligence fails
             if not result.get('user_friendly_reasons'):
                 result['user_friendly_reasons'] = []
