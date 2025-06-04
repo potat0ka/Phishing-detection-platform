@@ -654,7 +654,7 @@ class AIContentDetector:
             # Calculate overall confidence
             scores = [pattern_score, vocab_score, structure_score]
             average_score = np.mean(scores)
-            confidence = float(min(max(average_score, 0.0), 1.0))
+            confidence = float(min(max(float(average_score), 0.0), 1.0))
             
             # Determine classification
             if confidence >= 0.7:
@@ -762,7 +762,7 @@ class AIContentDetector:
         # Calculate sentence length variance
         sentence_lengths = [len(s.split()) for s in sentences]
         if len(sentence_lengths) > 1:
-            length_variance = np.var(sentence_lengths) / float(max(np.mean(sentence_lengths), 1))
+            length_variance = np.var(sentence_lengths) / float(max(float(np.mean(sentence_lengths)), 1))
             
             # AI text often has very consistent sentence lengths
             if length_variance < self.text_params['sentence_length_variance_threshold']:
