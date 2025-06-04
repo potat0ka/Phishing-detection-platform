@@ -87,11 +87,14 @@ class PhishingDetector:
         
         try:
             if input_type == 'url':
-                result = self._analyze_url(content)
+                analysis_result = self._analyze_url(content)
+                result.update(analysis_result)
             elif input_type == 'email':
-                result = self._analyze_email(content)
+                analysis_result = self._analyze_email(content)
+                result.update(analysis_result)
             elif input_type == 'message':
-                result = self._analyze_message(content)
+                analysis_result = self._analyze_message(content)
+                result.update(analysis_result)
             
             # Apply AI enhancement
             result = self._enhance_with_ai(content, result, input_type)
@@ -105,8 +108,19 @@ class PhishingDetector:
             
         except Exception as e:
             logging.error(f"Analysis error: {e}")
-            result['classification'] = 'error'
-            result['reasons'] = ['Analysis failed due to technical error']
+            result.update({
+                'classification': 'error',
+                'confidence': 0.5,
+                'reasons': ['Analysis failed due to technical error'],
+                'user_friendly_reasons': [{
+                    'issue': 'Technical analysis error',
+                    'explanation': 'There was a problem analyzing this content. This doesn\'t mean it\'s safe or dangerous.',
+                    'safety_tip': 'When technical analysis fails, be extra careful and verify through other means.',
+                    'severity': 'medium'
+                }],
+                'ai_analysis': {'error': str(e)},
+                'risk_score': 0.5
+            })
         
         return result
     
