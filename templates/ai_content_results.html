@@ -114,10 +114,10 @@
                         <div class="row">
                             {% for method in result.analysis_methods %}
                             <div class="col-md-6 mb-3">
-                                <div class="card h-100 border-0 bg-light">
+                                <div class="card h-100 border-0 bg-white shadow-sm">
                                     <div class="card-body">
-                                        <h6 class="card-title">{{ method.method }}</h6>
-                                        <p class="card-text small text-muted mb-2">{{ method.explanation }}</p>
+                                        <h6 class="card-title text-dark fw-bold">{{ method.method }}</h6>
+                                        <p class="card-text small text-secondary mb-2">{{ method.explanation }}</p>
                                         <div class="progress mb-2" style="height: 15px;">
                                             {% set method_color = 'success' if method.score < 0.4 else ('warning' if method.score < 0.7 else 'danger') %}
                                             <div class="progress-bar bg-{{ method_color }}" 
@@ -126,7 +126,7 @@
                                                 {{ (method.score * 100)|round }}%
                                             </div>
                                         </div>
-                                        <small class="text-muted">AI Likelihood: {{ (method.score * 100)|round }}%</small>
+                                        <small class="text-dark fw-semibold">AI Likelihood: {{ (method.score * 100)|round }}%</small>
                                     </div>
                                 </div>
                             </div>
@@ -147,18 +147,18 @@
                         <i class="fas fa-cogs me-2"></i>Technical Analysis Details
                     </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body bg-white">
                     {% if result.details %}
                         <ul class="list-group list-group-flush">
                             {% for detail in result.details %}
-                            <li class="list-group-item d-flex align-items-center">
+                            <li class="list-group-item d-flex align-items-center bg-white">
                                 <i class="fas fa-info-circle text-primary me-3"></i>
-                                {{ detail }}
+                                <span class="text-dark">{{ detail }}</span>
                             </li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p class="text-muted mb-0">No detailed analysis information available.</p>
+                        <p class="text-secondary mb-0">No detailed analysis information available.</p>
                     {% endif %}
                 </div>
             </div>
