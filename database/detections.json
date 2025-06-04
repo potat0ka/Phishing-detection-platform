@@ -295,5 +295,25 @@
       "ai_confidence": 0.4
     },
     "created_at": "2025-06-04T09:05:17.465492"
+  },
+  {
+    "id": "726bb65f-26ba-4b32-b3bc-0fbe3557a8e7",
+    "user_id": "70e0a7ff-944f-4322-97be-69df0b336cc9",
+    "input_type": "url",
+    "input_content": "Call using numbers from official websites\r\n    Send a separate email to confirm\r\n    Visit a physical location if possible",
+    "result": "suspicious",
+    "confidence_score": 0.7,
+    "reasons": [
+      "Contains suspicious keywords: confirm",
+      "Contains suspicious characters",
+      "Combined analysis indicates elevated risk (score: 0.45)"
+    ],
+    "ai_analysis": {
+      "text_complexity": 18.0,
+      "sentiment_score": 0.0,
+      "keyword_density": 0.05555555555555555,
+      "ai_confidence": 0.3
+    },
+    "created_at": "2025-06-04T09:06:39.614089"
   }
 ]

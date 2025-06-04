@@ -28,11 +28,75 @@ from security_tips_updater import security_updater  # Security tips management
 from werkzeug.utils import secure_filename  # For secure file uploads
 import json
 import os
+import re
+from urllib.parse import urlparse
 from datetime import datetime, timedelta
 
 # Initialize the AI/ML detector when the app starts
 # This loads the machine learning model for phishing detection
 detector = PhishingDetector()
+
+def validate_input_content(content, input_type):
+    """
+    Validate input content based on type and provide helpful error messages
+    
+    Args:
+        content (str): The content to validate
+        input_type (str): Type of content ('url', 'email', 'message')
+    
+    Returns:
+        str: Error message if validation fails, None if valid
+    """
+    content = content.strip()
+    
+    # Check minimum length
+    if len(content) < 3:
+        return "Please enter at least 3 characters to analyze."
+    
+    # Check maximum length (reasonable limits)
+    if len(content) > 10000:
+        return "Content is too long. Please enter less than 10,000 characters."
+    
+    if input_type == 'url':
+        # Basic URL validation
+        if not content.startswith(('http://', 'https://', 'www.', 'ftp://')):
+            # Check if it looks like a domain without protocol
+            if '.' in content and ' ' not in content:
+                return None  # Allow domain-like strings
+            return "Please enter a valid URL (e.g., https://example.com, www.example.com, or example.com)"
+        
+        # Check for valid URL structure
+        try:
+            parsed = urlparse(content if content.startswith(('http://', 'https://')) else 'http://' + content)
+            if not parsed.netloc:
+                return "Please enter a valid URL with a domain name."
+        except:
+            return "Please enter a valid URL format."
+    
+    elif input_type == 'email':
+        # Basic email content validation (can be email text or headers)
+        if '@' not in content and 'from:' not in content.lower() and 'subject:' not in content.lower():
+            return "Please enter email content, headers, or at least include an email address with @ symbol."
+        
+        # Check for extremely short email content
+        if len(content) < 10:
+            return "Please enter more email content for better analysis (at least 10 characters)."
+    
+    elif input_type == 'message':
+        # Basic message validation
+        if len(content) < 5:
+            return "Please enter at least 5 characters for message analysis."
+        
+        # Check if it's just numbers or special characters
+        if content.replace(' ', '').isdigit():
+            return "Please enter a text message rather than just numbers."
+    
+    # Check for suspicious test inputs
+    test_patterns = ['test', 'asdf', 'qwerty', '123', 'aaa', 'bbb']
+    if content.lower().strip() in test_patterns:
+        return "Please enter real content for analysis rather than test text."
+    
+    return None  # No validation errors
 
 @app.route('/')
 def index():
@@ -127,6 +191,12 @@ def check():
         
         if not input_content:
             flash('Please enter content to analyze.', 'error')
+            return render_template('check.html')
+        
+        # Validate input based on type
+        validation_error = validate_input_content(input_content, input_type)
+        if validation_error:
+            flash(validation_error, 'error')
             return render_template('check.html')
         
         try:
