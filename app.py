@@ -35,7 +35,9 @@ app.secret_key = os.environ.get("SESSION_SECRET", "phishing-detector-secret-key-
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
 ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
-ALLOWED_DOCUMENT_EXTENSIONS = {'txt', 'doc', 'docx', 'pdf'}
+ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'avi', 'mov', 'mkv', 'wmv', 'flv', 'webm'}
+ALLOWED_AUDIO_EXTENSIONS = {'mp3', 'wav', 'flac', 'm4a', 'aac', 'ogg'}
+ALLOWED_DOCUMENT_EXTENSIONS = {'txt', 'doc', 'docx', 'pdf', 'rtf'}
 
 # Create upload directory
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -49,6 +51,10 @@ def allowed_file(filename, file_type):
     
     if file_type == 'image':
         return extension in ALLOWED_IMAGE_EXTENSIONS
+    elif file_type == 'video':
+        return extension in ALLOWED_VIDEO_EXTENSIONS
+    elif file_type == 'audio':
+        return extension in ALLOWED_AUDIO_EXTENSIONS
     elif file_type == 'document':
         return extension in ALLOWED_DOCUMENT_EXTENSIONS
     

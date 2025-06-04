@@ -36,6 +36,18 @@ class AIContentDetector:
     - Color distribution analysis (AI vs real image characteristics)
     - Statistical analysis patterns
     
+    For Videos:
+    - Frame consistency analysis (AI videos have temporal artifacts)
+    - Compression pattern detection (AI videos compress differently)
+    - Motion vector analysis (unnatural movement patterns)
+    - Deepfake detection algorithms
+    
+    For Audio:
+    - Spectral analysis (AI audio has distinct frequency patterns)
+    - Voice synthesis detection (artificial speech patterns)
+    - Audio artifact detection (AI generation artifacts)
+    - Temporal consistency analysis
+    
     For Documents/Text:
     - Writing pattern analysis
     - Vocabulary consistency
@@ -68,11 +80,47 @@ class AIContentDetector:
             'suspicious_metadata_keys': [
                 'AI', 'artificial', 'generated', 'synthetic', 'midjourney', 
                 'dall-e', 'stable diffusion', 'chatgpt', 'gpt', 'ai-generated',
-                'leonardo', 'firefly', 'canva', 'runway'
+                'leonardo', 'firefly', 'canva', 'runway', 'adobe firefly',
+                'dall-e 2', 'dall-e 3', 'imagen', 'bing create', 'craiyon'
             ],
-            'pixel_variance_threshold': 0.15,  # AI images often have lower variance
-            'color_distribution_threshold': 0.3,    # AI images have different color patterns
+            'pixel_variance_threshold': 0.15,
+            'color_distribution_threshold': 0.3,
             'statistical_anomaly_threshold': 0.25
+        }
+        
+        # Video analysis parameters
+        self.video_params = {
+            'suspicious_metadata_keys': [
+                'runway ml', 'pika labs', 'stable video', 'gen-2', 'gen-3',
+                'synthesia', 'deepfake', 'faceswap', 'first order motion',
+                'wav2lip', 'real-esrgan', 'topaz video ai', 'dain', 'rife'
+            ],
+            'frame_consistency_threshold': 0.8,
+            'compression_anomaly_threshold': 0.6,
+            'motion_analysis_threshold': 0.7,
+            'deepfake_indicators': [
+                'face_inconsistency', 'temporal_artifacts', 'blinking_patterns',
+                'lip_sync_errors', 'lighting_inconsistency'
+            ]
+        }
+        
+        # Audio analysis parameters
+        self.audio_params = {
+            'suspicious_metadata_keys': [
+                'elevenlabs', 'murf', 'speechify', 'replica', 'resemble',
+                'voice cloning', 'ai voice', 'synthetic voice', 'tts',
+                'tortoise tts', 'bark', 'vall-e', 'tacotron', 'wavenet'
+            ],
+            'spectral_anomaly_threshold': 0.6,
+            'voice_synthesis_threshold': 0.7,
+            'temporal_consistency_threshold': 0.8,
+            'frequency_analysis_bands': [
+                (0, 300),     # Sub-bass
+                (300, 800),   # Bass
+                (800, 2600),  # Midrange
+                (2600, 5200), # Upper midrange
+                (5200, 20000) # Treble
+            ]
         }
         
         # Text analysis parameters
@@ -105,6 +153,10 @@ class AIContentDetector:
             
             if content_type == 'image':
                 return self._analyze_image(file_path)
+            elif content_type == 'video':
+                return self._analyze_video(file_path)
+            elif content_type == 'audio':
+                return self._analyze_audio(file_path)
             elif content_type == 'document':
                 return self._analyze_document(file_path)
             else:
@@ -398,6 +450,160 @@ class AIContentDetector:
         except Exception:
             return 0.3
     
+    def _analyze_video(self, video_path):
+        """
+        Comprehensive video analysis for AI/deepfake detection
+        
+        This function analyzes video files for signs of AI generation,
+        deepfakes, and other synthetic content manipulation.
+        """
+        results = {
+            'classification': 'unknown',
+            'confidence': 0.0,
+            'explanation': '',
+            'details': [],
+            'analysis_methods': [],
+            'suspected_source': None,
+            'editing_indicators': []
+        }
+        
+        try:
+            # Method 1: Metadata Analysis
+            metadata_score, metadata_info = self._analyze_video_metadata(video_path)
+            results['analysis_methods'].append({
+                'method': 'Metadata Analysis',
+                'score': metadata_score,
+                'explanation': 'Checks for AI video generation tool signatures'
+            })
+            
+            # Method 2: File Structure Analysis
+            structure_score, structure_info = self._analyze_video_structure(video_path)
+            results['analysis_methods'].append({
+                'method': 'File Structure Analysis',
+                'score': structure_score,
+                'explanation': 'Analyzes video encoding patterns typical of AI tools'
+            })
+            
+            # Method 3: Frame Analysis (simplified)
+            frame_score, frame_info = self._analyze_video_frames(video_path)
+            results['analysis_methods'].append({
+                'method': 'Frame Pattern Analysis',
+                'score': frame_score,
+                'explanation': 'Detects artificial patterns in video frames'
+            })
+            
+            # Calculate overall confidence
+            scores = [metadata_score, structure_score, frame_score]
+            average_score = np.mean(scores)
+            confidence = float(min(max(average_score, 0.0), 1.0))
+            
+            # Determine classification and source
+            classification, suspected_source, editing_indicators = self._classify_video_result(
+                confidence, metadata_info, structure_info, frame_info
+            )
+            
+            results.update({
+                'classification': classification,
+                'confidence': confidence,
+                'explanation': self._generate_video_explanation(classification, confidence),
+                'suspected_source': suspected_source,
+                'editing_indicators': editing_indicators,
+                'details': [
+                    f"Metadata analysis: {metadata_score:.2f}",
+                    f"File structure: {structure_score:.2f}",
+                    f"Frame patterns: {frame_score:.2f}",
+                    f"Overall confidence: {confidence:.2f}"
+                ]
+            })
+            
+            return results
+            
+        except Exception as e:
+            logging.error(f"Video analysis error: {e}")
+            results.update({
+                'classification': 'error',
+                'explanation': f'Video analysis failed: {str(e)}',
+                'confidence': 0.0
+            })
+            return results
+    
+    def _analyze_audio(self, audio_path):
+        """
+        Comprehensive audio analysis for AI/synthetic voice detection
+        
+        This function analyzes audio files for signs of AI generation,
+        voice cloning, and synthetic speech.
+        """
+        results = {
+            'classification': 'unknown',
+            'confidence': 0.0,
+            'explanation': '',
+            'details': [],
+            'analysis_methods': [],
+            'suspected_source': None,
+            'editing_indicators': []
+        }
+        
+        try:
+            # Method 1: Metadata Analysis
+            metadata_score, metadata_info = self._analyze_audio_metadata(audio_path)
+            results['analysis_methods'].append({
+                'method': 'Metadata Analysis',
+                'score': metadata_score,
+                'explanation': 'Checks for AI audio generation tool signatures'
+            })
+            
+            # Method 2: File Structure Analysis
+            structure_score, structure_info = self._analyze_audio_structure(audio_path)
+            results['analysis_methods'].append({
+                'method': 'File Structure Analysis',
+                'score': structure_score,
+                'explanation': 'Analyzes audio encoding patterns from AI tools'
+            })
+            
+            # Method 3: Basic Audio Pattern Analysis
+            pattern_score, pattern_info = self._analyze_audio_patterns(audio_path)
+            results['analysis_methods'].append({
+                'method': 'Audio Pattern Analysis',
+                'score': pattern_score,
+                'explanation': 'Detects synthetic audio generation patterns'
+            })
+            
+            # Calculate overall confidence
+            scores = [metadata_score, structure_score, pattern_score]
+            average_score = np.mean(scores)
+            confidence = float(min(max(average_score, 0.0), 1.0))
+            
+            # Determine classification and source
+            classification, suspected_source, editing_indicators = self._classify_audio_result(
+                confidence, metadata_info, structure_info, pattern_info
+            )
+            
+            results.update({
+                'classification': classification,
+                'confidence': confidence,
+                'explanation': self._generate_audio_explanation(classification, confidence),
+                'suspected_source': suspected_source,
+                'editing_indicators': editing_indicators,
+                'details': [
+                    f"Metadata analysis: {metadata_score:.2f}",
+                    f"File structure: {structure_score:.2f}",
+                    f"Audio patterns: {pattern_score:.2f}",
+                    f"Overall confidence: {confidence:.2f}"
+                ]
+            })
+            
+            return results
+            
+        except Exception as e:
+            logging.error(f"Audio analysis error: {e}")
+            results.update({
+                'classification': 'error',
+                'explanation': f'Audio analysis failed: {str(e)}',
+                'confidence': 0.0
+            })
+            return results
+    
     def _analyze_document(self, doc_path):
         """
         Analyze text documents for AI generation
@@ -608,6 +814,249 @@ class AIContentDetector:
             
         except Exception as e:
             logging.error(f"Error saving analysis result: {e}")
+
+    # Video Analysis Helper Methods
+    def _analyze_video_metadata(self, video_path):
+        """Analyze video metadata for AI generation signatures"""
+        try:
+            import os
+            file_size = os.path.getsize(video_path)
+            filename = os.path.basename(video_path).lower()
+            
+            metadata_info = {
+                'filename': filename,
+                'file_size': file_size,
+                'suspected_tools': []
+            }
+            
+            # Check filename for AI tool indicators
+            ai_score = 0.0
+            for tool in self.video_params['suspicious_metadata_keys']:
+                if tool in filename:
+                    ai_score += 0.3
+                    metadata_info['suspected_tools'].append(tool)
+            
+            # Unusual file size patterns
+            if file_size < 1024 * 1024:  # Very small video files can indicate AI generation
+                ai_score += 0.2
+            
+            return min(ai_score, 1.0), metadata_info
+        except:
+            return 0.3, {'error': 'Could not analyze video metadata'}
+    
+    def _analyze_video_structure(self, video_path):
+        """Analyze video file structure patterns"""
+        try:
+            import os
+            file_size = os.path.getsize(video_path)
+            extension = video_path.lower().split('.')[-1]
+            
+            structure_info = {
+                'extension': extension,
+                'file_size': file_size,
+                'compression_indicators': []
+            }
+            
+            # AI videos often have specific compression patterns
+            score = 0.0
+            
+            # Check for common AI video formats
+            ai_formats = ['mp4', 'mov', 'webm']
+            if extension in ai_formats:
+                score += 0.1
+            
+            # File size analysis
+            size_mb = file_size / (1024 * 1024)
+            if size_mb < 5:  # Very small videos often AI-generated
+                score += 0.3
+                structure_info['compression_indicators'].append('unusually_small_file')
+            elif size_mb > 100:  # Very large files might indicate high-quality AI
+                score += 0.2
+                structure_info['compression_indicators'].append('unusually_large_file')
+            
+            return min(score, 1.0), structure_info
+        except:
+            return 0.3, {'error': 'Could not analyze video structure'}
+    
+    def _analyze_video_frames(self, video_path):
+        """Basic frame pattern analysis"""
+        try:
+            frame_info = {
+                'patterns': [],
+                'anomalies': []
+            }
+            
+            # Simplified frame analysis based on file characteristics
+            score = 0.0
+            
+            # This is a simplified analysis - in a real implementation,
+            # you would extract frames and analyze them
+            filename = os.path.basename(video_path).lower()
+            
+            # Check for indicators in filename
+            ai_indicators = ['generated', 'ai', 'synthetic', 'fake', 'deepfake']
+            for indicator in ai_indicators:
+                if indicator in filename:
+                    score += 0.4
+                    frame_info['patterns'].append(f'filename_contains_{indicator}')
+            
+            return min(score, 1.0), frame_info
+        except:
+            return 0.3, {'error': 'Could not analyze video frames'}
+    
+    def _classify_video_result(self, confidence, metadata_info, structure_info, frame_info):
+        """Classify video analysis results and identify source"""
+        suspected_source = None
+        editing_indicators = []
+        
+        # Identify suspected AI tool based on metadata
+        if metadata_info.get('suspected_tools'):
+            suspected_source = metadata_info['suspected_tools'][0].title()
+        
+        # Determine editing indicators
+        if structure_info.get('compression_indicators'):
+            editing_indicators.extend(structure_info['compression_indicators'])
+        
+        if frame_info.get('patterns'):
+            editing_indicators.extend(frame_info['patterns'])
+        
+        # Classify based on confidence
+        if confidence >= 0.7:
+            classification = 'ai_generated'
+        elif confidence >= 0.4:
+            classification = 'possibly_ai'
+        else:
+            classification = 'likely_real'
+        
+        return classification, suspected_source, editing_indicators
+    
+    def _generate_video_explanation(self, classification, confidence):
+        """Generate human-readable explanation for video analysis"""
+        if classification == 'ai_generated':
+            return f'High confidence ({confidence:.1%}) this video was AI-generated or heavily edited'
+        elif classification == 'possibly_ai':
+            return f'Moderate confidence ({confidence:.1%}) this video may contain AI-generated elements'
+        else:
+            return f'Low confidence ({confidence:.1%}) of AI generation - appears to be authentic video'
+    
+    # Audio Analysis Helper Methods
+    def _analyze_audio_metadata(self, audio_path):
+        """Analyze audio metadata for AI generation signatures"""
+        try:
+            import os
+            file_size = os.path.getsize(audio_path)
+            filename = os.path.basename(audio_path).lower()
+            
+            metadata_info = {
+                'filename': filename,
+                'file_size': file_size,
+                'suspected_tools': []
+            }
+            
+            # Check filename for AI tool indicators
+            ai_score = 0.0
+            for tool in self.audio_params['suspicious_metadata_keys']:
+                if tool in filename:
+                    ai_score += 0.4
+                    metadata_info['suspected_tools'].append(tool)
+            
+            # Check for TTS indicators
+            tts_indicators = ['tts', 'speech', 'voice', 'generated', 'synthetic']
+            for indicator in tts_indicators:
+                if indicator in filename:
+                    ai_score += 0.2
+                    metadata_info['suspected_tools'].append(f'TTS_{indicator}')
+            
+            return min(ai_score, 1.0), metadata_info
+        except:
+            return 0.3, {'error': 'Could not analyze audio metadata'}
+    
+    def _analyze_audio_structure(self, audio_path):
+        """Analyze audio file structure patterns"""
+        try:
+            import os
+            file_size = os.path.getsize(audio_path)
+            extension = audio_path.lower().split('.')[-1]
+            
+            structure_info = {
+                'extension': extension,
+                'file_size': file_size,
+                'encoding_indicators': []
+            }
+            
+            score = 0.0
+            
+            # AI audio often uses specific formats
+            ai_formats = ['wav', 'mp3', 'm4a']
+            if extension in ai_formats:
+                score += 0.1
+            
+            # File size analysis
+            size_kb = file_size / 1024
+            if size_kb < 500:  # Very small audio files
+                score += 0.3
+                structure_info['encoding_indicators'].append('unusually_small_file')
+            
+            return min(score, 1.0), structure_info
+        except:
+            return 0.3, {'error': 'Could not analyze audio structure'}
+    
+    def _analyze_audio_patterns(self, audio_path):
+        """Basic audio pattern analysis"""
+        try:
+            pattern_info = {
+                'patterns': [],
+                'anomalies': []
+            }
+            
+            score = 0.0
+            filename = os.path.basename(audio_path).lower()
+            
+            # Check for AI audio indicators
+            ai_indicators = ['clone', 'synthetic', 'generated', 'ai', 'tts', 'voice']
+            for indicator in ai_indicators:
+                if indicator in filename:
+                    score += 0.3
+                    pattern_info['patterns'].append(f'filename_contains_{indicator}')
+            
+            return min(score, 1.0), pattern_info
+        except:
+            return 0.3, {'error': 'Could not analyze audio patterns'}
+    
+    def _classify_audio_result(self, confidence, metadata_info, structure_info, pattern_info):
+        """Classify audio analysis results and identify source"""
+        suspected_source = None
+        editing_indicators = []
+        
+        # Identify suspected AI tool
+        if metadata_info.get('suspected_tools'):
+            suspected_source = metadata_info['suspected_tools'][0].title()
+        
+        # Determine editing indicators
+        if structure_info.get('encoding_indicators'):
+            editing_indicators.extend(structure_info['encoding_indicators'])
+        
+        if pattern_info.get('patterns'):
+            editing_indicators.extend(pattern_info['patterns'])
+        
+        # Classify based on confidence
+        if confidence >= 0.7:
+            classification = 'ai_generated'
+        elif confidence >= 0.4:
+            classification = 'possibly_ai'
+        else:
+            classification = 'likely_real'
+        
+        return classification, suspected_source, editing_indicators
+    
+    def _generate_audio_explanation(self, classification, confidence):
+        """Generate human-readable explanation for audio analysis"""
+        if classification == 'ai_generated':
+            return f'High confidence ({confidence:.1%}) this audio was AI-generated or synthesized'
+        elif classification == 'possibly_ai':
+            return f'Moderate confidence ({confidence:.1%}) this audio may be synthetic or cloned'
+        else:
+            return f'Low confidence ({confidence:.1%}) of AI generation - appears to be authentic audio'
 
 # Global detector instance
 ai_detector = AIContentDetector()

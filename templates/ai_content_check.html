@@ -32,7 +32,7 @@
                         <!-- Content Type Selection -->
                         <div class="mb-4">
                             <label class="form-label fw-bold">Content Type</label>
-                            <div class="row">
+                            <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-check p-3 border rounded h-100">
                                         <input class="form-check-input" type="radio" name="content_type" 
@@ -51,13 +51,43 @@
                                 <div class="col-md-6">
                                     <div class="form-check p-3 border rounded h-100">
                                         <input class="form-check-input" type="radio" name="content_type" 
+                                               id="videoType" value="video">
+                                        <label class="form-check-label w-100" for="videoType">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-video fa-2x text-primary me-3"></i>
+                                                <div>
+                                                    <h6 class="mb-1">Video Analysis</h6>
+                                                    <small class="text-muted">MP4, AVI, MOV, MKV, WebM</small>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check p-3 border rounded h-100">
+                                        <input class="form-check-input" type="radio" name="content_type" 
+                                               id="audioType" value="audio">
+                                        <label class="form-check-label w-100" for="audioType">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-microphone fa-2x text-primary me-3"></i>
+                                                <div>
+                                                    <h6 class="mb-1">Audio Analysis</h6>
+                                                    <small class="text-muted">MP3, WAV, FLAC, M4A, AAC</small>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check p-3 border rounded h-100">
+                                        <input class="form-check-input" type="radio" name="content_type" 
                                                id="documentType" value="document">
                                         <label class="form-check-label w-100" for="documentType">
                                             <div class="d-flex align-items-center">
                                                 <i class="fas fa-file-text fa-2x text-primary me-3"></i>
                                                 <div>
                                                     <h6 class="mb-1">Document Analysis</h6>
-                                                    <small class="text-muted">TXT, DOC, DOCX, PDF</small>
+                                                    <small class="text-muted">TXT, DOC, DOCX, PDF, RTF</small>
                                                 </div>
                                             </div>
                                         </label>
