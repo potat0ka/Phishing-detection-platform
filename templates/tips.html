@@ -433,50 +433,54 @@
         </div>
     </div>
     
-    <!-- Interactive Phishing Test -->
+    <!-- Simple Warning Signs Guide -->
     <div class="card border-0 shadow-lg mt-5">
         <div class="card-body p-5">
             <div class="text-center mb-4">
                 <h4 class="fw-bold">
-                    <i class="fas fa-gamepad text-warning me-2"></i>
-                    Test Your Knowledge
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Common Warning Signs
                 </h4>
-                <p class="text-muted">Can you spot the phishing attempt?</p>
+                <p class="text-muted">Learn to recognize these red flags in emails and messages</p>
             </div>
             
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="card border-warning">
-                        <div class="card-body">
-                            <div class="email-example p-3 bg-light rounded">
-                                <div class="email-header mb-3 pb-2 border-bottom">
-                                    <strong>From:</strong> security@payp4l-verification.com<br>
-                                    <strong>Subject:</strong> URGENT: Verify Your Account Now!
-                                </div>
-                                <div class="email-body">
-                                    <p>Dear Customer,</p>
-                                    <p>Your PayPal account has been temporarily suspended due to unusual activity. 
-                                       To restore access, please verify your information immediately by clicking the link below:</p>
-                                    <p><a href="#" class="btn btn-primary">Verify Account Now</a></p>
-                                    <p>You have 24 hours to complete this verification or your account will be permanently closed.</p>
-                                    <p>Best regards,<br>PayPal Security Team</p>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4 text-center">
-                                <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-success" onclick="checkAnswer(true)">
-                                        <i class="fas fa-check me-2"></i>Legitimate
-                                    </button>
-                                    <button type="button" class="btn btn-danger" onclick="checkAnswer(false)">
-                                        <i class="fas fa-times me-2"></i>Phishing
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div id="testResult" class="mt-3" style="display: none;">
-                                <!-- Result will be shown here -->
-                            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="warning-sign card border-danger h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-clock text-danger fs-1 mb-3"></i>
+                            <h5 class="fw-bold text-danger">Urgent Time Pressure</h5>
+                            <p class="text-muted">Messages saying "act now" or "expires today" try to make you panic and not think carefully.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="warning-sign card border-warning h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-link text-warning fs-1 mb-3"></i>
+                            <h5 class="fw-bold text-warning">Suspicious Links</h5>
+                            <p class="text-muted">Look for misspelled domains like "payp4l.com" instead of "paypal.com".</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="warning-sign card border-info h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-secret text-info fs-1 mb-3"></i>
+                            <h5 class="fw-bold text-info">Generic Greetings</h5>
+                            <p class="text-muted">Real companies use your name, not "Dear Customer" or "Dear User".</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="warning-sign card border-secondary h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-key text-secondary fs-1 mb-3"></i>
+                            <h5 class="fw-bold text-secondary">Asking for Passwords</h5>
+                            <p class="text-muted">Legitimate companies never ask for passwords or personal info via email.</p>
                         </div>
                     </div>
                 </div>
@@ -500,39 +504,7 @@
 </div>
 
 <script>
-function checkAnswer(isLegitimate) {
-    const resultDiv = document.getElementById('testResult');
-    
-    if (isLegitimate) {
-        resultDiv.innerHTML = `
-            <div class="alert alert-danger">
-                <i class="fas fa-times-circle me-2"></i>
-                <strong>Incorrect!</strong> This is a phishing email. Red flags include:
-                <ul class="mt-2 mb-0">
-                    <li>Suspicious domain: "payp4l-verification.com" (notice the "4" instead of "a")</li>
-                    <li>Urgent language creating false pressure</li>
-                    <li>Generic greeting "Dear Customer"</li>
-                    <li>Threatening account closure</li>
-                </ul>
-            </div>
-        `;
-    } else {
-        resultDiv.innerHTML = `
-            <div class="alert alert-success">
-                <i class="fas fa-check-circle me-2"></i>
-                <strong>Correct!</strong> This is indeed a phishing email. You spotted the warning signs:
-                <ul class="mt-2 mb-0">
-                    <li>Suspicious domain with typosquatting</li>
-                    <li>Urgent, threatening language</li>
-                    <li>Generic greeting instead of personal name</li>
-                    <li>Requests immediate action</li>
-                </ul>
-            </div>
-        `;
-    }
-    
-    resultDiv.style.display = 'block';
-}
+// Quiz functionality removed - now using simpler warning signs display
 
 // Animate tip cards on scroll
 const observerOptions = {
