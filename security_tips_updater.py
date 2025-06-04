@@ -10,8 +10,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 import re
 from bs4 import BeautifulSoup
-from app import app, db
-from models import PhishingTip
+from app import app
 
 class SecurityTipsUpdater:
     """Updates security tips with latest threat intelligence and awareness content"""
@@ -307,8 +306,10 @@ class SecurityTipsUpdater:
         
         try:
             with app.app_context():
+                from simple_models import PhishingTip
+                
                 # Clear existing tips to refresh with updated content
-                db.session.query(PhishingTip).delete()
+                PhishingTip.clear_all()
                 
                 # Add comprehensive tips
                 all_tips = self.comprehensive_tips.copy()
@@ -317,36 +318,44 @@ class SecurityTipsUpdater:
                 latest_tips = self.fetch_latest_threat_intelligence()
                 all_tips.extend(latest_tips)
                 
+                # Prepare tips for bulk insert
+                tips_to_insert = []
                 for tip_data in all_tips:
                     try:
                         # Check if tip already exists
-                        existing_tip = PhishingTip.query.filter_by(title=tip_data['title']).first()
+                        existing_tip = PhishingTip.find_by_title(tip_data['title'])
                         
                         if existing_tip:
                             # Update existing tip
-                            existing_tip.content = tip_data['content']
-                            existing_tip.category = tip_data['category']
-                            existing_tip.priority = tip_data['priority']
-                            results['updated'] += 1
-                        else:
-                            # Add new tip
-                            new_tip = PhishingTip(
+                            PhishingTip.update_tip(
                                 title=tip_data['title'],
                                 content=tip_data['content'],
                                 category=tip_data['category'],
                                 priority=tip_data['priority']
                             )
-                            db.session.add(new_tip)
+                            results['updated'] += 1
+                        else:
+                            # Add new tip
+                            tip_insert_data = {
+                                'title': tip_data['title'],
+                                'content': tip_data['content'],
+                                'category': tip_data['category'],
+                                'priority': tip_data['priority'],
+                                'created_at': datetime.now().isoformat()
+                            }
+                            tips_to_insert.append(tip_insert_data)
                             results['added'] += 1
                     
                     except Exception as e:
                         results['errors'].append(f"Error processing tip '{tip_data['title']}': {str(e)}")
                 
-                db.session.commit()
+                # Bulk insert new tips
+                if tips_to_insert:
+                    PhishingTip.bulk_insert(tips_to_insert)
+                
                 logging.info(f"Security tips updated: {results['added']} added, {results['updated']} updated")
                 
         except Exception as e:
-            db.session.rollback()
             results['errors'].append(f"Database error: {str(e)}")
             logging.error(f"Error updating security tips: {e}")
         
@@ -355,14 +364,14 @@ class SecurityTipsUpdater:
     def get_tips_by_category(self, category: str) -> List[Dict]:
         """Get security tips filtered by category"""
         with app.app_context():
-            from models import PhishingTip
-            tips = PhishingTip.query.filter_by(category=category).order_by(PhishingTip.priority).all()
+            from simple_models import PhishingTip
+            tips = PhishingTip.find_by_category(category)
             return [
                 {
-                    'title': tip.title,
-                    'content': tip.content,
-                    'category': tip.category,
-                    'priority': tip.priority
+                    'title': tip.get('title', ''),
+                    'content': tip.get('content', ''),
+                    'category': tip.get('category', ''),
+                    'priority': tip.get('priority', 1)
                 }
                 for tip in tips
             ]
