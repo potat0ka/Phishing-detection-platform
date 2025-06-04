@@ -292,11 +292,15 @@ def ai_content_check():
                 return redirect(url_for('ai_content_check'))
             
             # Save the uploaded file
-            filename = secure_filename(file.filename)
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            unique_filename = f"{timestamp}_{filename}"
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-            file.save(file_path)
+            if file.filename:
+                filename = secure_filename(file.filename)
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                unique_filename = f"{timestamp}_{filename}"
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+                file.save(file_path)
+            else:
+                flash('Invalid filename. Please try again.', 'error')
+                return redirect(url_for('ai_content_check'))
             
             # Analyze the file for AI content
             analysis_result = ai_detector.analyze_content(file_path, content_type)
