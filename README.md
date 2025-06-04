@@ -91,7 +91,7 @@ python --version
 
 4. **Run the application**
    ```bash
-   gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
+   python main.py
    ```
 
 5. **Access the platform**
@@ -120,7 +120,7 @@ python --version
 
 3. **Run the application**
    ```bash
-   gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
+   python main.py
    ```
 
 ## 📋 Project Structure
@@ -250,7 +250,7 @@ venv\Scripts\activate
 python -m pip install --upgrade pip
 
 # Install core dependencies (without TensorFlow)
-pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
+pip install flask werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
 
 # Run the application (TensorFlow-free version)
 python main.py
@@ -399,10 +399,10 @@ RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx libglib2.0-0 libsm6 libxext6 libxrender-dev libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary cryptography pymongo flask-pymongo motor bson
+RUN pip install --no-cache-dir flask werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
 
 EXPOSE 5000
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--reuse-port", "--reload", "main:app"]
+CMD ["python", "main.py"]
 ```
 
 ```bash
@@ -427,7 +427,7 @@ python -m venv venv
 # On Mac/Linux: source venv/bin/activate
 
 # Install core dependencies only (skip TensorFlow)
-pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
+pip install flask werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
 
 # Run the application
 python main.py

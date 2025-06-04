@@ -1,7 +1,6 @@
 # Minimal Requirements for AI Phishing Detection Platform
 # Core Flask Dependencies
 flask==2.3.3
-gunicorn==21.2.0
 werkzeug==2.3.7
 
 # Database and Encryption
