@@ -161,7 +161,7 @@
                                         </td>
                                         <td>
                                             <small class="text-muted">
-                                                {{ detection.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                                {{ detection.created_at[:16].replace('T', ' ') }}
                                             </small>
                                         </td>
                                         <td>
