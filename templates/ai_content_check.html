@@ -98,19 +98,22 @@
 
                         <!-- File Upload Area -->
                         <div class="mb-4">
-                            <label for="file" class="form-label fw-bold">Choose File</label>
-                            <div class="upload-area border-2 border-dashed rounded p-4 text-center" 
-                                 id="uploadArea" onclick="document.getElementById('file').click()">
-                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                                <h5 class="text-muted">Click to upload or drag & drop</h5>
-                                <p class="text-muted mb-0">Maximum file size: 500MB</p>
+                            <label for="file" class="form-label fw-bold text-dark">Choose File</label>
+                            <div class="upload-area border-2 border-dashed rounded p-5 text-center shadow-sm" 
+                                 id="uploadArea" onclick="document.getElementById('file').click()"
+                                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: #fff !important; cursor: pointer; transition: all 0.3s ease;">
+                                <i class="fas fa-cloud-upload-alt fa-4x text-white mb-3"></i>
+                                <h4 class="text-white fw-bold mb-2">Click to upload or drag & drop</h4>
+                                <div class="badge bg-warning text-dark px-3 py-2 fs-6 fw-bold">
+                                    Maximum file size: 500MB
+                                </div>
                                 <input type="file" class="form-control d-none" id="file" name="file" 
                                        accept=".jpg,.jpeg,.png,.gif,.bmp,.webp,.mp4,.avi,.mov,.mkv,.wmv,.flv,.webm,.mp3,.wav,.flac,.m4a,.aac,.ogg,.txt,.doc,.docx,.pdf,.rtf">
                             </div>
-                            <div id="fileInfo" class="mt-2 d-none">
-                                <div class="alert alert-info d-flex align-items-center">
-                                    <i class="fas fa-file me-2"></i>
-                                    <span id="fileName"></span>
+                            <div id="fileInfo" class="mt-3 d-none">
+                                <div class="alert alert-success d-flex align-items-center shadow-sm">
+                                    <i class="fas fa-file text-success me-2 fs-5"></i>
+                                    <span id="fileName" class="text-dark fw-semibold"></span>
                                     <button type="button" class="btn-close ms-auto" onclick="clearFile()"></button>
                                 </div>
                             </div>
