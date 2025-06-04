@@ -31,6 +31,29 @@ app = Flask(__name__)
 # In production, always use a random secret key from environment variables
 app.secret_key = os.environ.get("SESSION_SECRET", "phishing-detector-secret-key-2024")
 
+# Configure file uploads for AI content detection
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+app.config['UPLOAD_FOLDER'] = 'uploads'
+ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
+ALLOWED_DOCUMENT_EXTENSIONS = {'txt', 'doc', 'docx', 'pdf'}
+
+# Create upload directory
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+def allowed_file(filename, file_type):
+    """Check if uploaded file has allowed extension"""
+    if '.' not in filename:
+        return False
+    
+    extension = filename.rsplit('.', 1)[1].lower()
+    
+    if file_type == 'image':
+        return extension in ALLOWED_IMAGE_EXTENSIONS
+    elif file_type == 'document':
+        return extension in ALLOWED_DOCUMENT_EXTENSIONS
+    
+    return False
+
 # ============================================================================
 # SIMPLE JSON DATABASE SYSTEM (Perfect for Learning!)
 # ============================================================================

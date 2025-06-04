@@ -22,9 +22,12 @@ from flask import render_template, request, redirect, url_for, flash, session, j
 from app import app
 from simple_models import User, Detection, PhishingTip  # Our simple database models
 from ml_detector import PhishingDetector  # AI/ML detection engine
+from ai_content_detector import ai_detector  # AI content detection for images/documents
 from utils import is_logged_in, login_required  # Helper functions
 from security_tips_updater import security_updater  # Security tips management
+from werkzeug.utils import secure_filename  # For secure file uploads
 import json
+import os
 from datetime import datetime, timedelta
 
 # Initialize the AI/ML detector when the app starts
