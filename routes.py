@@ -1,13 +1,34 @@
+"""
+Web Routes for AI Phishing Detection Platform
+============================================
+
+This file contains all the web routes (URLs) that users can visit.
+Each function below handles a specific page or action on the website.
+
+Routes included:
+- / (home page)
+- /register (user registration)
+- /login (user login)
+- /logout (user logout)
+- /dashboard (user dashboard)
+- /check (phishing detection)
+- /tips (security tips)
+- /api/quick-check (API endpoint)
+
+Perfect for learning web development concepts!
+"""
+
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
 from app import app
-from simple_models import User, Detection, PhishingTip
-from ml_detector import PhishingDetector
-from utils import is_logged_in, login_required
-from security_tips_updater import security_updater
+from simple_models import User, Detection, PhishingTip  # Our simple database models
+from ml_detector import PhishingDetector  # AI/ML detection engine
+from utils import is_logged_in, login_required  # Helper functions
+from security_tips_updater import security_updater  # Security tips management
 import json
 from datetime import datetime, timedelta
 
-# Initialize ML detector for phishing detection
+# Initialize the AI/ML detector when the app starts
+# This loads the machine learning model for phishing detection
 detector = PhishingDetector()
 
 @app.route('/')

@@ -1,38 +1,73 @@
 """
 Simple JSON-based Models for Phishing Detection Platform
-Perfect for learning backend development without complex database setup
+========================================================
+
+This file contains all our database models using simple JSON files.
+Perfect for learning backend development without complex database setup!
+
+Each model represents a "table" in traditional databases:
+- User: Handles user accounts and authentication
+- Detection: Stores phishing detection results
+- PhishingTip: Manages security tips and educational content
+
+All data is stored in easy-to-read JSON files in the 'database' folder.
 """
 
 import json
-import uuid
+import uuid  # For generating unique IDs
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash  # For secure passwords
 from app import USERS_FILE, DETECTIONS_FILE, TIPS_FILE, load_json_data, save_json_data
 
 class User:
-    """Simple User model using JSON storage"""
+    """
+    User Model - Handles user accounts and authentication
+    
+    This class manages user registration, login, and authentication.
+    All user data is stored in 'database/users.json' file.
+    
+    Each user has:
+    - id: Unique identifier
+    - username: User's chosen username
+    - email: User's email address
+    - password_hash: Securely hashed password (never store plain passwords!)
+    - created_at: When the account was created
+    """
     
     @staticmethod
     def create_user(username, email, password):
-        """Create a new user"""
+        """
+        Create a new user account
+        
+        Args:
+            username (str): Desired username
+            email (str): User's email address
+            password (str): Plain password (will be hashed for security)
+            
+        Returns:
+            str: User ID if successful, None if username/email already exists
+        """
+        # Load existing users from JSON file
         users = load_json_data(USERS_FILE)
         
-        # Check if user already exists
+        # Check if username or email already exists
         for user in users:
             if user.get('username') == username or user.get('email') == email:
-                return None
+                return None  # User already exists
         
+        # Create new user data
         user_data = {
-            'id': str(uuid.uuid4()),
+            'id': str(uuid.uuid4()),  # Generate unique ID
             'username': username,
             'email': email,
-            'password_hash': generate_password_hash(password),
-            'created_at': datetime.now().isoformat()
+            'password_hash': generate_password_hash(password),  # Hash password for security
+            'created_at': datetime.now().isoformat()  # Store creation timestamp
         }
         
+        # Add new user to the list and save
         users.append(user_data)
         save_json_data(USERS_FILE, users)
-        return user_data['id']
+        return user_data['id']  # Return the new user's ID
     
     @staticmethod
     def find_by_username(username):
