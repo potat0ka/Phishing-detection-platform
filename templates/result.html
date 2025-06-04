@@ -170,12 +170,12 @@
                     <div class="card-body pt-0">
                         <div class="reasons-list">
                             {% for reason in result.reasons %}
-                            <div class="reason-item d-flex align-items-start mb-2 p-2 bg-light rounded">
+                            <div class="reason-item d-flex align-items-start mb-2 p-2 bg-white border rounded shadow-sm">
                                 <div class="reason-icon me-3 mt-1">
-                                    <i class="fas fa-cog text-muted"></i>
+                                    <i class="fas fa-cog text-primary"></i>
                                 </div>
                                 <div class="reason-text">
-                                    <small class="text-muted">{{ reason }}</small>
+                                    <small class="text-dark">{{ reason }}</small>
                                 </div>
                             </div>
                             {% endfor %}
@@ -212,28 +212,28 @@
                                     <i class="fas fa-check-circle text-success fs-2 mb-2"></i>
                                     <h6 class="text-success fw-bold">LOW RISK</h6>
                                 {% endif %}
-                                <p class="small text-muted mb-0">Threat Level</p>
+                                <p class="small text-dark mb-0">Threat Level</p>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="stat-card text-center p-3 border rounded">
+                            <div class="stat-card text-center p-3 border rounded bg-white shadow-sm">
                                 <i class="fas fa-percentage text-info fs-4 mb-2"></i>
-                                <h6 class="fw-bold">{{ "%.0f"|format(result.threat_intelligence.confidence) }}%</h6>
-                                <p class="small text-muted mb-0">Confidence</p>
+                                <h6 class="fw-bold text-dark">{{ "%.0f"|format(result.threat_intelligence.confidence) }}%</h6>
+                                <p class="small text-dark mb-0">Confidence</p>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="stat-card text-center p-3 border rounded">
+                            <div class="stat-card text-center p-3 border rounded bg-white shadow-sm">
                                 <i class="fas fa-search text-primary fs-4 mb-2"></i>
-                                <h6 class="fw-bold">{{ result.threat_intelligence.key_findings|length }}</h6>
-                                <p class="small text-muted mb-0">Findings</p>
+                                <h6 class="fw-bold text-dark">{{ result.threat_intelligence.key_findings|length }}</h6>
+                                <p class="small text-dark mb-0">Findings</p>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="stat-card text-center p-3 border rounded">
+                            <div class="stat-card text-center p-3 border rounded bg-white shadow-sm">
                                 <i class="fas fa-clock text-secondary fs-4 mb-2"></i>
-                                <h6 class="fw-bold">Real-time</h6>
-                                <p class="small text-muted mb-0">Analysis</p>
+                                <h6 class="fw-bold text-dark">Real-time</h6>
+                                <p class="small text-dark mb-0">Analysis</p>
                             </div>
                         </div>
                     </div>

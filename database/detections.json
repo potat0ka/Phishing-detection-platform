@@ -315,5 +315,39 @@
       "ai_confidence": 0.3
     },
     "created_at": "2025-06-04T09:06:39.614089"
+  },
+  {
+    "id": "136c627e-4158-42c6-89cf-ece854856084",
+    "user_id": "70e0a7ff-944f-4322-97be-69df0b336cc9",
+    "input_type": "message",
+    "input_content": "Call using numbers from official websites\r\n    Send a separate email to confirm\r\n    Visit a physical location if possible",
+    "result": "safe",
+    "confidence_score": 0.8,
+    "reasons": [],
+    "ai_analysis": {
+      "text_complexity": 18.0,
+      "sentiment_score": 0.0,
+      "keyword_density": 0.05555555555555555,
+      "ai_confidence": 0.3
+    },
+    "created_at": "2025-06-04T09:09:45.909722"
+  },
+  {
+    "id": "ef7a2257-ba8f-43ec-817b-de3045b31e6c",
+    "user_id": "70e0a7ff-944f-4322-97be-69df0b336cc9",
+    "input_type": "url",
+    "input_content": "https://www.phishing.org/phishing-examples",
+    "result": "safe",
+    "confidence_score": 0.8,
+    "reasons": [
+      "Threat intelligence: MINIMAL risk detected"
+    ],
+    "ai_analysis": {
+      "text_complexity": 0.3333333333333333,
+      "sentiment_score": 0.0,
+      "keyword_density": 0.0,
+      "ai_confidence": 0.4
+    },
+    "created_at": "2025-06-04T09:10:16.772530"
   }
 ]
