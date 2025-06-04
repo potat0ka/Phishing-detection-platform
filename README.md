@@ -1,6 +1,6 @@
 # AI Phishing Detection Platform
 
-An advanced AI-powered phishing detection web platform with enterprise-level security and comprehensive user data encryption. Built using Flask, MongoDB, and machine learning technologies to protect users from digital threats.
+An advanced AI-powered phishing detection web platform with enterprise-level security and comprehensive user data encryption. Built using Flask with simple `python main.py` startup for easy local development and deployment.
 
 ## 🔒 Security Features
 
@@ -48,60 +48,63 @@ An advanced AI-powered phishing detection web platform with enterprise-level sec
 - PostgreSQL (optional - for additional data storage)
 
 ### Simple Startup
-The platform uses Flask's built-in development server with simple `python main.py` startup for easy local development.
+The platform uses Flask's built-in development server with simple `python main.py` startup - no complex server configuration required.
 
-#### Check Python installation:
+#### System Requirements
+- **Python**: 3.8 or higher (3.11+ recommended)
+- **Operating System**: Windows, macOS, or Linux
+- **Memory**: 512MB RAM minimum
+- **Storage**: 500MB free space
+
+### 🚀 Quick Installation
+
+#### Method 1: One-Command Setup
 ```bash
-python --version
-# Should show Python 3.11 or higher
+# Clone and run in one go
+git clone <repository-url>
+cd ai-phishing-detection-platform
+pip install -r requirements-minimal.txt
+python main.py
 ```
 
-### Installation
+#### Method 2: Step-by-Step Setup
 
-#### Method 1: Quick Setup (Recommended)
-
-1. **Download the project**
+1. **Clone the repository**
    ```bash
    git clone <repository-url>
    cd ai-phishing-detection-platform
    ```
 
-2. **Install dependencies (Choose Method A or B)**
-
-   **Method A: Minimal Installation (Recommended)**
+2. **Install dependencies**
    ```bash
+   # Option A: Use minimal requirements (recommended)
    pip install -r requirements-minimal.txt
-   ```
-
-   **Method B: Manual Installation**
-   ```bash
-   # Core dependencies (always install these)
-   pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
    
-   # Optional: TensorFlow (install based on your Python version)
-   # For Python 3.8-3.11: pip install tensorflow==2.13.0
-   # For Python 3.9-3.12: pip install tensorflow==2.15.0
-   # For CPU only: pip install tensorflow-cpu
-   # Skip if installation fails - platform works without TensorFlow
+   # Option B: Manual installation
+   pip install flask werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
    ```
 
-3. **Set up environment variables (optional)**
-   ```bash
-   export USER_ENCRYPTION_SECRET="your-secure-encryption-key"
-   export SESSION_SECRET="your-session-secret"
-   export DATABASE_URL="your-mongodb-connection-string"
-   ```
-
-4. **Run the application**
+3. **Start the application**
    ```bash
    python main.py
    ```
 
-5. **Access the platform**
-   - Open your browser to `http://localhost:5000`
-   - The platform will automatically use JSON fallback if MongoDB is not available
-   - All user data will be encrypted with AES-256 encryption
-   - Register an account to start using the phishing detection and AI content analysis features
+4. **Open in browser**
+   - Navigate to `http://localhost:5000`
+   - The platform automatically uses secure JSON storage with AES-256 encryption
+   - Create an account to access all features
+
+### ⚙️ Configuration (Optional)
+```bash
+# Set custom encryption key for production
+export USER_ENCRYPTION_SECRET="your-32-character-encryption-key"
+
+# Set session secret
+export SESSION_SECRET="your-session-secret"
+
+# Configure MongoDB (optional - JSON fallback available)
+export DATABASE_URL="mongodb://localhost:27017/phishing_detector"
+```
 
 #### Alternative: Virtual Environment Setup
 
@@ -184,51 +187,102 @@ export PGDATABASE="postgres_database"
 - **Key Management**: Environment-based with automatic generation fallback
 - **Encryption Scope**: All user personal information and activity logs
 
-## 🎯 Usage Guide
+## 🎯 Feature Overview
 
-### Core Features
+### 🛡️ Phishing Detection
+- **URL Analysis**: Scan suspicious links with confidence scoring
+- **Email Detection**: Analyze email content for phishing indicators  
+- **Message Scanning**: Check text messages and social media content
+- **Threat Intelligence**: Offline database with 1000+ known threats
 
-1. **Phishing Detection**
-   - Analyze URLs, emails, and messages for phishing indicators
-   - Get confidence scores and detailed explanations
-   - View threat intelligence and security recommendations
+### 🤖 AI Content Detection
+- **Image Analysis**: Detect AI-generated vs real photos (up to 500MB)
+- **Video Detection**: Analyze video content for deepfakes and AI generation
+- **Audio Analysis**: Identify synthetic speech and voice cloning
+- **Document Scanning**: Check text documents for AI writing patterns
+- **Device Photo Recognition**: EXIF metadata analysis for authentic photos
 
-2. **AI Content Analysis**
-   - Upload images, videos, audio, or documents (up to 500MB)
-   - Detect AI-generated content with source identification
-   - Analyze device photos vs AI-generated images
-   - OCR text extraction from images
+### 👤 User Management
+- **Encrypted Accounts**: AES-256 encrypted user registration and login
+- **Detection History**: View and manage analysis results with bulk operations
+- **Privacy Protection**: Zero-knowledge architecture - admins cannot access user data
+- **Session Security**: Encrypted session management with automatic timeout
 
-3. **User Dashboard**
-   - View encrypted detection history
-   - Bulk delete selected detections
-   - Monitor account statistics and activity
+### 📚 Security Education
+- **39+ Security Tips**: Comprehensive cybersecurity awareness content
+- **Threat Updates**: Latest phishing trends and attack methods
+- **Interactive Learning**: Real-world examples and prevention techniques
+- **Mobile-Optimized**: Touch-friendly interface for all devices
 
-4. **Security Education**
-   - Access 39+ cybersecurity tips with latest threat intelligence
-   - Learn about phishing prevention techniques
-   - Stay updated on emerging threats
-
-### API Endpoints
-
-- `POST /api/quick-check` - Quick phishing analysis
+### 🔌 API Access
+- `POST /api/quick-check` - Phishing analysis endpoint
 - `GET /tips` - Security education content
-- `POST /ai-content-check` - AI content analysis
-- `DELETE /delete-detection/<id>` - Remove detection history
+- `POST /ai-content-check` - AI detection analysis
+- `DELETE /delete-detection/<id>` - Remove detection records
 
-## 🚀 Deployment
+## 🚀 Deployment Options
 
-### Production Considerations
+### Local Development (Recommended)
+```bash
+# Simple startup for development and testing
+python main.py
+# Platform runs on http://localhost:5000
+```
 
-1. **Set encryption keys** in environment variables
-2. **Configure MongoDB** for production database
-3. **Set up SSL/TLS** for HTTPS encryption
-4. **Configure reverse proxy** (nginx/Apache) if needed
-5. **Set up backup strategy** for encrypted user data
+### Production Deployment
+```bash
+# Set production environment variables
+export USER_ENCRYPTION_SECRET="your-secure-32-char-key"
+export SESSION_SECRET="your-session-secret"
+export FLASK_ENV="production"
 
-### Replit Deployment
+# Install production dependencies
+pip install -r requirements-minimal.txt
 
-This platform is optimized for Replit deployment with automatic configuration detection and JSON fallback for reliable operation in cloud environments.
+# Run with production settings
+python main.py
+```
+
+### Cloud Platform Deployment
+
+**Heroku**
+```bash
+# Add Procfile: web: python main.py
+# Set environment variables in Heroku dashboard
+# Deploy using Heroku CLI
+```
+
+**Railway/Render**
+```bash
+# Use build command: pip install -r requirements-minimal.txt
+# Use start command: python main.py
+# Set PORT=5000 in environment variables
+```
+
+**VPS/Server Deployment**
+```bash
+# Install dependencies
+pip install -r requirements-minimal.txt
+
+# Set up systemd service (optional)
+# Run behind nginx/Apache reverse proxy for HTTPS
+# Configure domain and SSL certificate
+
+# Start application
+python main.py
+```
+
+### Docker Deployment
+```bash
+# Build container
+docker build -t phishing-detector .
+
+# Run with environment variables
+docker run -p 5000:5000 \
+  -e USER_ENCRYPTION_SECRET="your-key" \
+  -e SESSION_SECRET="your-secret" \
+  phishing-detector
+```
 
 ## 🖥️ Platform-Specific Installation
 
@@ -471,6 +525,55 @@ pip install tensorflow-cpu
 
 **Error: OpenCV issues**
 - Solution: Use `pip install opencv-python-headless` instead of `opencv-python`
+
+## ❓ Frequently Asked Questions
+
+### Installation & Setup
+
+**Q: Do I need to install a web server like Apache or Nginx?**
+A: No, the platform includes Flask's built-in development server. Simply run `python main.py` and access `http://localhost:5000`.
+
+**Q: The TensorFlow installation is failing. What should I do?**
+A: Skip TensorFlow installation - the platform works perfectly without it. The AI detection features use scikit-learn instead.
+
+**Q: Can I run this without MongoDB?**
+A: Yes, the platform automatically uses secure JSON file storage with AES-256 encryption as a fallback.
+
+**Q: How do I change the port from 5000?**
+A: Edit `main.py` and change `app.run(host="0.0.0.0", port=5000, debug=True)` to your desired port.
+
+### Security & Privacy
+
+**Q: Is my data secure?**
+A: Yes, all user data is encrypted with AES-256 encryption. Usernames, emails, and activity logs are encrypted at rest.
+
+**Q: Can administrators see my personal information?**
+A: No, the platform uses zero-knowledge architecture. Even administrators cannot decrypt user personal data.
+
+**Q: Where is my data stored?**
+A: Data is stored locally in encrypted JSON files (or MongoDB if configured). No data is sent to external servers.
+
+### Features & Usage
+
+**Q: What file types can I analyze for AI content?**
+A: Images (JPG, PNG, GIF), videos (MP4, AVI, MOV), audio (MP3, WAV), and documents (TXT, PDF) up to 500MB.
+
+**Q: How accurate is the phishing detection?**
+A: The system uses multiple detection methods with conservative thresholds: 85% confidence for definitive AI-generated content.
+
+**Q: Can I use this for commercial purposes?**
+A: Yes, the platform is designed for educational and commercial use with enterprise-level security features.
+
+### Troubleshooting
+
+**Q: The application won't start. What should I check?**
+A: Ensure Python 3.8+ is installed, all dependencies are installed via `pip install -r requirements-minimal.txt`, and port 5000 is available.
+
+**Q: I'm getting import errors. How do I fix this?**
+A: Create a virtual environment, activate it, and reinstall dependencies in isolation from system packages.
+
+**Q: The platform is slow. How can I improve performance?**
+A: Ensure sufficient RAM (512MB minimum), close unnecessary applications, and consider skipping TensorFlow if not needed.
 
 ## Project Structure
 
