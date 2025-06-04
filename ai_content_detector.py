@@ -870,9 +870,12 @@ class AIContentDetector:
             if size_mb < 5:  # Very small videos often AI-generated
                 score += 0.3
                 structure_info['compression_indicators'].append('unusually_small_file')
-            elif size_mb > 100:  # Very large files might indicate high-quality AI
+            elif size_mb > 300:  # Very large files might indicate high-quality AI
                 score += 0.2
                 structure_info['compression_indicators'].append('unusually_large_file')
+            elif 50 < size_mb < 200:  # Typical AI video size range
+                score += 0.1
+                structure_info['compression_indicators'].append('typical_ai_size_range')
             
             return min(score, 1.0), structure_info
         except:
