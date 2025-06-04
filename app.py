@@ -1,130 +1,59 @@
 """
-AI Phishing Detection Platform - Main Application File
-====================================================
+Professional AI Phishing Detection Platform
+==========================================
 
-This is the main Flask application file that sets up:
-1. Flask web application
-2. Simple JSON-based database system (perfect for learning!)
-3. Application configuration
-4. Database initialization
-
-Perfect for beginners learning backend development!
+Flask application with MongoDB backend and comprehensive user data encryption.
 """
 
 import os
 import logging
-import json
-from flask import Flask
-from datetime import datetime
 from pathlib import Path
+from flask import Flask
 
-# Configure logging to see what's happening (great for debugging!)
+# Configure logging
 logging.basicConfig(
-    level=logging.INFO,  # Changed to INFO for cleaner output
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
+logger = logging.getLogger(__name__)
 
-# Create the main Flask application
+# Import configuration
+from config.settings import APP_CONFIG
+
+# Create Flask application
 app = Flask(__name__)
+app.config.from_object(APP_CONFIG)
 
-# Set a secret key for session management (keeps user login secure)
-# In production, always use a random secret key from environment variables
-app.secret_key = os.environ.get("SESSION_SECRET", "phishing-detector-secret-key-2024")
+# Ensure upload directory exists
+upload_dir = Path(APP_CONFIG.UPLOAD_FOLDER)
+upload_dir.mkdir(exist_ok=True)
 
-# Configure file uploads for AI content detection
-app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB max file size
-app.config['UPLOAD_FOLDER'] = 'uploads'
-ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
-ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'avi', 'mov', 'mkv', 'wmv', 'flv', 'webm'}
-ALLOWED_AUDIO_EXTENSIONS = {'mp3', 'wav', 'flac', 'm4a', 'aac', 'ogg'}
-ALLOWED_DOCUMENT_EXTENSIONS = {'txt', 'doc', 'docx', 'pdf', 'rtf'}
+# Initialize database connection
+try:
+    from database.connection import connect_to_database, health_check
+    connect_to_database()
+    if health_check():
+        logger.info("Database connection established successfully")
+    else:
+        logger.warning("Database health check failed")
+except Exception as e:
+    logger.error(f"Database initialization error: {e}")
 
-# Create upload directory
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-def allowed_file(filename, file_type):
+# File upload validation
+def allowed_file(filename: str, file_type: str) -> bool:
     """Check if uploaded file has allowed extension"""
     if '.' not in filename:
         return False
     
     extension = filename.rsplit('.', 1)[1].lower()
-    
-    if file_type == 'image':
-        return extension in ALLOWED_IMAGE_EXTENSIONS
-    elif file_type == 'video':
-        return extension in ALLOWED_VIDEO_EXTENSIONS
-    elif file_type == 'audio':
-        return extension in ALLOWED_AUDIO_EXTENSIONS
-    elif file_type == 'document':
-        return extension in ALLOWED_DOCUMENT_EXTENSIONS
-    
-    return False
+    return extension in APP_CONFIG.ALLOWED_EXTENSIONS.get(file_type, set())
 
-# ============================================================================
-# SIMPLE JSON DATABASE SYSTEM (Perfect for Learning!)
-# ============================================================================
-# Instead of complex databases like PostgreSQL or MongoDB, we use simple JSON files
-# This makes it easy to understand and see exactly what data is stored
+# Import routes after app initialization
+from routes import *
 
-# Create a directory to store our database files
-DATABASE_DIR = Path("database")
-DATABASE_DIR.mkdir(exist_ok=True)  # Create directory if it doesn't exist
-
-# Define our "database tables" as JSON files
-USERS_FILE = DATABASE_DIR / "users.json"          # Stores user accounts
-DETECTIONS_FILE = DATABASE_DIR / "detections.json"  # Stores phishing detection results
-TIPS_FILE = DATABASE_DIR / "tips.json"            # Stores security tips
-
-def init_database_files():
-    """
-    Initialize JSON database files with empty arrays
-    This function creates empty JSON files if they don't exist
-    """
-    for file_path in [USERS_FILE, DETECTIONS_FILE, TIPS_FILE]:
-        if not file_path.exists():
-            with open(file_path, 'w') as f:
-                json.dump([], f)  # Start with empty list
-            logging.info(f"Created database file: {file_path}")
-
-def load_json_data(file_path):
-    """
-    Load data from a JSON file
-    
-    Args:
-        file_path: Path to the JSON file
-        
-    Returns:
-        List of data from the file, or empty list if file doesn't exist
-    """
-    try:
-        with open(file_path, 'r') as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        # If file doesn't exist or is corrupted, return empty list
-        return []
-
-def save_json_data(file_path, data):
-    """
-    Save data to a JSON file
-    
-    Args:
-        file_path: Path to the JSON file
-        data: Data to save (usually a list of dictionaries)
-    """
-    with open(file_path, 'w') as f:
-        json.dump(data, f, indent=2, default=str)  # indent=2 makes it readable
-
-# Initialize our database files when the app starts
-init_database_files()
-
-# Import all our web routes (this must come after database setup)
-import routes
-
-# Initialize default security tips when the app starts
-with app.app_context():
-    from routes import initialize_tips
-    initialize_tips()
-
-# This allows the app to be run directly with: python app.py
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(
+        host='0.0.0.0',
+        port=5000,
+        debug=APP_CONFIG.DEBUG
+    )

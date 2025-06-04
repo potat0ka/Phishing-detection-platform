@@ -19,14 +19,16 @@ Perfect for learning web development concepts!
 """
 
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
-from app import app
-from simple_models import User, Detection, PhishingTip  # Our simple database models
-from ml_detector import PhishingDetector  # AI/ML detection engine
-from ai_content_detector import ai_detector  # AI content detection for images/documents
-from utils import is_logged_in, login_required  # Helper functions
-from security_tips_updater import security_updater  # Security tips management
-from encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data, encryption_manager  # Data encryption
-from werkzeug.utils import secure_filename  # For secure file uploads
+from app import app, allowed_file
+from models.user import User
+from models.detection import Detection
+from ml_detector import PhishingDetector
+from ai_content_detector import ai_detector
+from utils import is_logged_in, login_required
+from security_tips_updater import security_updater
+from utils.encryption import encrypt_sensitive_data, decrypt_sensitive_data
+from config.settings import APP_CONFIG
+from werkzeug.utils import secure_filename
 import json
 import os
 import re
@@ -34,7 +36,6 @@ from urllib.parse import urlparse
 from datetime import datetime, timedelta
 import logging
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Initialize the AI/ML detector when the app starts
