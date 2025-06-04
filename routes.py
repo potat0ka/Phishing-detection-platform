@@ -135,16 +135,20 @@ def check():
             
             # Save detection if user is logged in
             if is_logged_in():
-                user_id = session.get('user_id')
-                Detection.create_detection(
-                    user_id=user_id,
-                    input_type=input_type,
-                    input_content=input_content,
-                    result=result['classification'],
-                    confidence_score=result['confidence'],
-                    reasons=result['reasons'],
-                    ai_analysis=result['ai_analysis']
-                )
+                try:
+                    user_id = session.get('user_id')
+                    Detection.create_detection(
+                        user_id=user_id,
+                        input_type=input_type,
+                        input_content=input_content,
+                        result=result['classification'],
+                        confidence_score=result['confidence'],
+                        reasons=result['reasons'],
+                        ai_analysis=result['ai_analysis']
+                    )
+                except Exception as save_error:
+                    app.logger.error(f"Failed to save detection: {save_error}")
+                    # Continue without saving - don't let this block the analysis
             
             return render_template('result.html', 
                                  result=result, 
