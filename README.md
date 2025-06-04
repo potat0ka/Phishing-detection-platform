@@ -5,6 +5,7 @@ A comprehensive phishing detection web application powered by AI and machine lea
 ## 🌟 Features
 
 - **AI-Powered Detection**: Advanced machine learning algorithms to detect phishing URLs, emails, and messages
+- **AI Content Detection**: Analyze images and documents to detect if they're AI-generated
 - **User Authentication**: Secure user registration and login system
 - **Detection History**: Track your security scans and results
 - **Educational Security Tips**: 45+ comprehensive cybersecurity tips with animated carousel
@@ -16,7 +17,7 @@ A comprehensive phishing detection web application powered by AI and machine lea
 
 ### Prerequisites
 
-You need Python 3.7 or higher installed on your system.
+You need Python 3.11 or higher installed on your system.
 
 #### Check if Python is installed:
 ```bash
@@ -29,7 +30,7 @@ If Python is not installed, download it from [python.org](https://www.python.org
 
 ### 📥 Installation
 
-#### Option 1: Quick Setup (Recommended for beginners)
+#### Quick Setup (Recommended)
 
 1. **Download the project**
    ```bash
@@ -37,21 +38,26 @@ If Python is not installed, download it from [python.org](https://www.python.org
    cd ai-phishing-detector
    ```
 
-2. **Install dependencies**
+2. **Install dependencies using pip**
    ```bash
-   pip install -r requirements.txt
+   pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura
    ```
 
 3. **Run the application**
    ```bash
-   python app.py
+   python main.py
+   ```
+   
+   **OR using Gunicorn (recommended):**
+   ```bash
+   gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
    ```
 
 4. **Open your browser**
    - Go to: `http://localhost:5000`
    - Start using the application!
 
-#### Option 2: Virtual Environment Setup (Recommended for development)
+#### Virtual Environment Setup (Recommended for development)
 
 1. **Create virtual environment**
    ```bash
@@ -66,53 +72,55 @@ If Python is not installed, download it from [python.org](https://www.python.org
 
 2. **Install dependencies**
    ```bash
-   pip install -r requirements.txt
+   pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura
    ```
 
 3. **Run the application**
    ```bash
-   python app.py
+   python main.py
    ```
 
 ### 🖥️ Platform-Specific Instructions
 
 #### Windows
 ```cmd
-# Install Python from python.org if not installed
-# Open Command Prompt or PowerShell
+# Install Python 3.11+ from python.org if not installed
+# Open Command Prompt or PowerShell as Administrator
 git clone <repository-url>
 cd ai-phishing-detector
 python -m venv venv
 venv\Scripts\activate
-pip install -r requirements.txt
-python app.py
+pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura
+python main.py
 ```
 
 #### macOS
 ```bash
-# Install Homebrew if not installed: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-# Install Python: brew install python3
+# Install Homebrew if not installed
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Install Python 3.11+
+brew install python@3.11
 git clone <repository-url>
 cd ai-phishing-detector
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
-python app.py
+pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura
+python main.py
 ```
 
 #### Linux (Ubuntu/Debian)
 ```bash
 # Update package list
 sudo apt update
-# Install Python and pip if not installed
-sudo apt install python3 python3-pip python3-venv git
+# Install Python 3.11 and dependencies
+sudo apt install python3.11 python3.11-pip python3.11-venv git python3.11-dev
 # Clone and setup
 git clone <repository-url>
 cd ai-phishing-detector
-python3 -m venv venv
+python3.11 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
-python app.py
+pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura
+python main.py
 ```
 
 ## 📁 Project Structure
@@ -246,39 +254,140 @@ PORT=5000
 
 ## 🚨 Troubleshooting
 
-### Common Issues
+### Common Issues and Solutions
 
-#### "Module not found" error
+#### 1. "Module not found" error
 ```bash
-# Make sure virtual environment is activated
+# Solution 1: Install missing dependencies
+pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura
+
+# Solution 2: Make sure you're in the right directory
+cd path/to/your/project
+
+# Solution 3: If using virtual environment, activate it first
 source venv/bin/activate  # Mac/Linux
 venv\Scripts\activate     # Windows
-
-# Reinstall dependencies
-pip install -r requirements.txt
 ```
 
-#### "Permission denied" error
+#### 2. "Cannot import name 'app' from 'main'" error
 ```bash
-# On Mac/Linux, use python3 instead of python
-python3 app.py
+# Make sure you run with correct entry point
+python main.py
+
+# NOT python app.py (this is an old instruction)
 ```
 
-#### Port already in use
+#### 3. "Permission denied" or "Access denied" error
 ```bash
-# Kill process using port 5000
+# On Mac/Linux, use python3 and add sudo if needed
+sudo python3 main.py
+
+# On Windows, run Command Prompt as Administrator
+```
+
+#### 4. Port 5000 already in use
+```bash
 # On Mac/Linux:
 lsof -ti:5000 | xargs kill -9
 
 # On Windows:
 netstat -ano | findstr :5000
 taskkill /PID <PID> /F
+
+# Alternative: Use different port
+python main.py --port 8080
 ```
 
-#### Database files not created
-- Check if you have write permissions in the project directory
-- The `database/` folder should be created automatically
-- If issues persist, create the folder manually: `mkdir database`
+#### 5. Database files not created
+```bash
+# Create database directory manually
+mkdir database
+
+# Ensure write permissions
+chmod 755 database/  # Mac/Linux
+```
+
+#### 6. AI Content Detection issues (PIL/OpenCV errors)
+```bash
+# Install image processing dependencies
+pip install Pillow==11.2.1
+
+# On Linux, you might need additional system packages
+sudo apt install python3-dev python3-pip libjpeg-dev zlib1g-dev
+```
+
+#### 7. NLTK download errors
+```python
+# Run this in Python console first
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+```
+
+### Step-by-Step Debug Process
+
+If you're still having issues, follow these steps:
+
+1. **Check Python version**
+   ```bash
+   python --version
+   # Should be 3.11 or higher
+   ```
+
+2. **Verify you're in the correct directory**
+   ```bash
+   ls -la
+   # You should see main.py, app.py, routes.py, etc.
+   ```
+
+3. **Install dependencies one by one**
+   ```bash
+   pip install flask
+   pip install flask-sqlalchemy
+   pip install werkzeug
+   pip install pillow
+   pip install numpy
+   pip install scikit-learn
+   pip install nltk
+   pip install beautifulsoup4
+   pip install requests
+   pip install trafilatura
+   ```
+
+4. **Test basic Flask installation**
+   ```python
+   # Create test.py
+   from flask import Flask
+   app = Flask(__name__)
+   
+   @app.route('/')
+   def hello():
+       return "Flask is working!"
+   
+   if __name__ == '__main__':
+       app.run(debug=True)
+   ```
+
+5. **Run the actual application**
+   ```bash
+   python main.py
+   ```
+
+### Platform-Specific Issues
+
+#### Windows Issues
+- Use `python` instead of `python3`
+- Run Command Prompt as Administrator
+- Install Microsoft Visual C++ Build Tools if compilation errors occur
+
+#### macOS Issues
+- Use `python3` instead of `python`
+- Install Xcode Command Line Tools: `xcode-select --install`
+- Use Homebrew for Python: `brew install python@3.11`
+
+#### Linux Issues
+- Install development packages: `sudo apt install python3-dev build-essential`
+- Use `python3.11` specifically if multiple versions installed
 
 ## 🤝 Contributing
 
