@@ -198,6 +198,23 @@ def tips():
                          trending_threats=trending_threats,
                          stats=stats)
 
+@app.route('/delete-detection/<detection_id>', methods=['DELETE'])
+@login_required
+def delete_detection(detection_id):
+    """Delete a detection from user's history"""
+    try:
+        user_id = session.get('user_id')
+        success = Detection.delete_detection(detection_id, user_id)
+        
+        if success:
+            return jsonify({'success': True, 'message': 'Detection deleted successfully'})
+        else:
+            return jsonify({'success': False, 'error': 'Detection not found or access denied'}), 404
+            
+    except Exception as e:
+        app.logger.error(f"Delete detection error: {e}")
+        return jsonify({'success': False, 'error': 'Failed to delete detection'}), 500
+
 @app.route('/api/quick-check', methods=['POST'])
 def quick_check():
     """Quick API endpoint for checking content"""

@@ -166,6 +166,20 @@ class Detection:
         
         stats["total"] = sum(stats.values())
         return stats
+    
+    @staticmethod
+    def delete_detection(detection_id, user_id):
+        """Delete a detection by ID (only if it belongs to the user)"""
+        detections = load_json_data(DETECTIONS_FILE)
+        
+        # Find and remove the detection if it belongs to the user
+        original_length = len(detections)
+        detections = [d for d in detections if not (d.get('id') == detection_id and d.get('user_id') == user_id)]
+        
+        if len(detections) < original_length:
+            save_json_data(DETECTIONS_FILE, detections)
+            return True
+        return False
 
 class PhishingTip:
     """Simple Phishing Tip model using JSON storage"""
