@@ -53,7 +53,11 @@ class EncryptionManager:
     
     def decrypt_field(self, encrypted_data: str) -> str:
         """Decrypt a single field"""
-        if not encrypted_data:
+        if not encrypted_data or not isinstance(encrypted_data, str):
+            return encrypted_data
+        
+        # Skip decryption for non-encrypted data
+        if not self._is_encrypted_format(encrypted_data):
             return encrypted_data
         
         try:
@@ -63,6 +67,17 @@ class EncryptionManager:
         except Exception as e:
             logger.error(f"Decryption error: {e}")
             return encrypted_data
+    
+    def _is_encrypted_format(self, data: str) -> bool:
+        """Check if data appears to be in encrypted format"""
+        try:
+            # Check if it's base64 encoded and reasonable length for encrypted data
+            if len(data) < 20:  # Too short to be encrypted
+                return False
+            decoded = base64.urlsafe_b64decode(data.encode())
+            return len(decoded) > 16  # Fernet adds at least 16 bytes overhead
+        except:
+            return False
 
 
 # Global encryption instance

@@ -308,8 +308,8 @@ class SecurityTipsUpdater:
             with app.app_context():
                 from simple_models import PhishingTip
                 
-                # Clear existing tips to refresh with updated content
-                PhishingTip.clear_all()
+                # Get comprehensive tips
+                all_tips = self.comprehensive_tips.copy()
                 
                 # Add comprehensive tips
                 all_tips = self.comprehensive_tips.copy()

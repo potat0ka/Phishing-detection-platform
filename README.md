@@ -1,42 +1,61 @@
 # AI Phishing Detection Platform
 
-An advanced AI-powered phishing detection web platform designed to educate and protect users through intelligent security technologies and machine learning innovations.
+An advanced AI-powered phishing detection web platform with enterprise-level security and comprehensive user data encryption. Built using Flask, MongoDB, and machine learning technologies to protect users from digital threats.
 
-## Features
+## 🔒 Security Features
 
-### Core Security Features
-- **AI-Powered Phishing Detection**: Advanced machine learning algorithms to detect phishing URLs, emails, and messages with confidence scoring
-- **Comprehensive AI Content Detection**: Analyze images, videos, audio, and documents to detect AI-generated content with source identification
-- **Offline Threat Intelligence**: Local threat detection without external API dependencies
-- **Real-time Security Assessment**: Domain and URL security evaluation with threat level classification
-- **Device Peripheral Integration**: Camera capture and microphone recording for content analysis
+### Enterprise-Level Data Protection
+- **AES-256 Encryption**: All user data, activity logs, and sensitive information encrypted at rest
+- **MongoDB with JSON Fallback**: Hybrid database architecture ensuring reliability and data integrity
+- **Field-Level Encryption**: Usernames, emails, IP addresses, and user activity individually encrypted
+- **Zero-Knowledge Architecture**: Platform administrators cannot access user personal information
+- **Professional Logging**: Comprehensive audit trails with encrypted activity monitoring
 
-### Enhanced User Experience
-- **Photo to Text (OCR)**: Extract text from images using Tesseract.js with real-time processing
-- **Multiple File Format Support**: Images (JPG, PNG, GIF), videos (MP4, AVI, MOV), audio (MP3, WAV), documents (TXT, PDF)
-- **Bulk Management**: Multiple selection and deletion of detection history
-- **User Authentication**: Secure registration and login with session management
-- **Educational Security Tips**: 39+ comprehensive cybersecurity tips with latest threat intelligence
-- **Mobile-Friendly Design**: Touch-optimized interactions with responsive Bootstrap design
-- **File Upload Validation**: 500MB maximum file size with comprehensive error handling
+### AI-Powered Detection Systems
+- **Phishing Detection**: Advanced machine learning algorithms for URLs, emails, and messages
+- **AI Content Detection**: Analyze images, videos, audio, and documents for AI-generated content
+- **Device Photo Recognition**: EXIF metadata analysis to identify authentic device photos
+- **Conservative Thresholds**: 85% confidence for AI-generated, 65% for possibly AI content
+- **Source Identification**: Detect likely AI generation tools and editing software
 
-## Quick Setup Guide
+### Comprehensive Security Infrastructure
+- **Offline Threat Intelligence**: Local threat detection without external dependencies
+- **Real-time Domain Analysis**: URL security evaluation with threat level classification
+- **Multi-Modal Analysis**: Support for images, videos, audio, and document content
+- **Bulk Operations**: Multiple selection and encrypted deletion of detection history
+
+## 🚀 Platform Features
+
+### User Experience
+- **Responsive Design**: Mobile-optimized with Bootstrap and touch-friendly interactions
+- **File Upload Support**: 500MB maximum with comprehensive validation and security scanning
+- **OCR Integration**: Extract and analyze text from images with real-time processing
+- **Educational Content**: 39+ cybersecurity tips with latest threat intelligence updates
+- **Session Management**: Secure authentication with encrypted user sessions
+
+### Technical Architecture
+- **Flask Backend**: Professional web framework with production-ready configuration
+- **MongoDB Primary**: NoSQL database with automatic JSON fallback for reliability
+- **Encryption Layer**: Transparent data encryption/decryption with key management
+- **Modular Design**: Clean separation of concerns with comprehensive error handling
+- **Production Ready**: Professional logging, error handling, and security best practices
+
+## 🛠️ Quick Setup Guide
 
 ### Prerequisites
-
 - Python 3.11 or higher
-- PostgreSQL database (optional - SQLite will be used as fallback)
+- MongoDB (optional - JSON fallback available)
+- PostgreSQL (optional - for additional data storage)
 
 #### Check Python installation:
 ```bash
 python --version
-# or
-python3 --version
+# Should show Python 3.11 or higher
 ```
 
 ### Installation
 
-#### Method 1: Quick Setup
+#### Method 1: Quick Setup (Recommended)
 
 1. **Download the project**
    ```bash
@@ -46,24 +65,28 @@ python3 --version
 
 2. **Install all dependencies**
    ```bash
-   pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary
+   pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary cryptography pymongo flask-pymongo motor bson
    ```
 
-3. **Run the application**
+3. **Set up environment variables (optional)**
    ```bash
-   python main.py
+   export USER_ENCRYPTION_SECRET="your-secure-encryption-key"
+   export SESSION_SECRET="your-session-secret"
+   export DATABASE_URL="your-mongodb-connection-string"
    ```
-   
-   **Alternative with Gunicorn:**
+
+4. **Run the application**
    ```bash
    gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
    ```
 
-4. **Access the application**
-   - Open browser: `http://localhost:5000`
-   - Register an account and start using the platform
+5. **Access the platform**
+   - Open your browser to `http://localhost:5000`
+   - The platform will automatically use JSON fallback if MongoDB is not available
+   - All user data will be encrypted with AES-256 encryption
+   - Register an account to start using the phishing detection and AI content analysis features
 
-#### Virtual Environment Setup (Recommended for development)
+#### Alternative: Virtual Environment Setup
 
 1. **Create virtual environment**
    ```bash
@@ -78,56 +101,117 @@ python3 --version
 
 2. **Install dependencies**
    ```bash
-   pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython
+   pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary cryptography pymongo flask-pymongo motor bson
    ```
 
 3. **Run the application**
    ```bash
-   python main.py
+   gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
    ```
 
-### 🖥️ Platform-Specific Instructions
+## 📋 Project Structure
 
-#### Windows
-```cmd
-# Install Python 3.11+ from python.org if not installed
-# Open Command Prompt or PowerShell as Administrator
-git clone <repository-url>
-cd ai-phishing-detector
-python -m venv venv
-venv\Scripts\activate
-pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura
-python main.py
+```
+ai-phishing-detection-platform/
+├── main.py                    # Application entry point
+├── app.py                     # Flask application configuration
+├── routes.py                  # Web routes and request handlers
+├── simple_models.py           # MongoDB models with encryption
+├── encryption_utils.py        # AES-256 encryption utilities
+├── ml_detector.py             # Phishing detection algorithms
+├── ai_content_detector.py     # AI content detection system
+├── offline_threat_intel.py    # Local threat intelligence
+├── security_tips_updater.py   # Security awareness content
+├── utils.py                   # Utility functions
+├── templates/                 # HTML templates
+│   ├── base.html              # Base template with Bootstrap
+│   ├── index.html             # Home page
+│   ├── check.html             # Phishing detection interface
+│   ├── ai_content_check.html  # AI content analysis
+│   ├── dashboard.html         # User dashboard
+│   └── tips.html              # Security education
+├── static/                    # Static assets
+│   ├── css/                   # Custom styles
+│   ├── js/                    # JavaScript functionality
+│   └── uploads/               # Temporary file uploads
+└── instance/                  # Instance-specific files
+    ├── users.json             # Encrypted user data (JSON fallback)
+    ├── detections.json        # Encrypted detection history
+    └── tips.json              # Security tips database
 ```
 
-#### macOS
+## 🔐 Security Configuration
+
+### Environment Variables
+
+For production deployment, set these environment variables:
+
 ```bash
-# Install Homebrew if not installed
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-# Install Python 3.11+
-brew install python@3.11
-git clone <repository-url>
-cd ai-phishing-detector
-python3 -m venv venv
-source venv/bin/activate
-pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura
-python main.py
+# Encryption Configuration
+export USER_ENCRYPTION_SECRET="your-secure-encryption-key-32-chars"
+export SESSION_SECRET="your-session-secret-key"
+
+# Database Configuration
+export DATABASE_URL="mongodb://username:password@host:port/database"
+export PGUSER="postgres_username"
+export PGPASSWORD="postgres_password"
+export PGHOST="postgres_host"
+export PGPORT="postgres_port"
+export PGDATABASE="postgres_database"
 ```
 
-#### Linux (Ubuntu/Debian)
-```bash
-# Update package list
-sudo apt update
-# Install Python 3.11 and dependencies
-sudo apt install python3.11 python3.11-pip python3.11-venv git python3.11-dev
-# Clone and setup
-git clone <repository-url>
-cd ai-phishing-detector
-python3.11 -m venv venv
-source venv/bin/activate
-pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura
-python main.py
-```
+### Data Encryption Details
+
+- **Encryption Algorithm**: AES-256 with PBKDF2 key derivation
+- **Encrypted Fields**: Usernames, emails, IP addresses, user agents, file paths
+- **Key Management**: Environment-based with automatic generation fallback
+- **Encryption Scope**: All user personal information and activity logs
+
+## 🎯 Usage Guide
+
+### Core Features
+
+1. **Phishing Detection**
+   - Analyze URLs, emails, and messages for phishing indicators
+   - Get confidence scores and detailed explanations
+   - View threat intelligence and security recommendations
+
+2. **AI Content Analysis**
+   - Upload images, videos, audio, or documents (up to 500MB)
+   - Detect AI-generated content with source identification
+   - Analyze device photos vs AI-generated images
+   - OCR text extraction from images
+
+3. **User Dashboard**
+   - View encrypted detection history
+   - Bulk delete selected detections
+   - Monitor account statistics and activity
+
+4. **Security Education**
+   - Access 39+ cybersecurity tips with latest threat intelligence
+   - Learn about phishing prevention techniques
+   - Stay updated on emerging threats
+
+### API Endpoints
+
+- `POST /api/quick-check` - Quick phishing analysis
+- `GET /tips` - Security education content
+- `POST /ai-content-check` - AI content analysis
+- `DELETE /delete-detection/<id>` - Remove detection history
+
+## 🚀 Deployment
+
+### Production Considerations
+
+1. **Set encryption keys** in environment variables
+2. **Configure MongoDB** for production database
+3. **Set up SSL/TLS** for HTTPS encryption
+4. **Configure reverse proxy** (nginx/Apache) if needed
+5. **Set up backup strategy** for encrypted user data
+
+### Replit Deployment
+
+This platform is optimized for Replit deployment with automatic configuration detection and JSON fallback for reliable operation in cloud environments.
 
 ## Project Structure
 
