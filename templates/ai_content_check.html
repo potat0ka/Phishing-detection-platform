@@ -105,7 +105,7 @@
                                 <h5 class="text-muted">Click to upload or drag & drop</h5>
                                 <p class="text-muted mb-0">Maximum file size: 16MB</p>
                                 <input type="file" class="form-control d-none" id="file" name="file" 
-                                       accept=".jpg,.jpeg,.png,.gif,.bmp,.webp,.txt,.doc,.docx,.pdf">
+                                       accept=".jpg,.jpeg,.png,.gif,.bmp,.webp,.mp4,.avi,.mov,.mkv,.wmv,.flv,.webm,.mp3,.wav,.flac,.m4a,.aac,.ogg,.txt,.doc,.docx,.pdf,.rtf">
                             </div>
                             <div id="fileInfo" class="mt-2 d-none">
                                 <div class="alert alert-info d-flex align-items-center">
@@ -260,8 +260,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedType = document.querySelector('input[name="content_type"]:checked').value;
         if (selectedType === 'image') {
             fileInput.accept = '.jpg,.jpeg,.png,.gif,.bmp,.webp';
-        } else {
-            fileInput.accept = '.txt,.doc,.docx,.pdf';
+        } else if (selectedType === 'video') {
+            fileInput.accept = '.mp4,.avi,.mov,.mkv,.wmv,.flv,.webm';
+        } else if (selectedType === 'audio') {
+            fileInput.accept = '.mp3,.wav,.flac,.m4a,.aac,.ogg';
+        } else if (selectedType === 'document') {
+            fileInput.accept = '.txt,.doc,.docx,.pdf,.rtf';
         }
     }
     

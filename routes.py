@@ -285,9 +285,16 @@ def ai_content_check():
                 return redirect(url_for('ai_content_check'))
             
             # Check if file type is allowed
-            from app import allowed_file, ALLOWED_IMAGE_EXTENSIONS, ALLOWED_DOCUMENT_EXTENSIONS
+            from app import allowed_file, ALLOWED_IMAGE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, ALLOWED_AUDIO_EXTENSIONS, ALLOWED_DOCUMENT_EXTENSIONS
             if not allowed_file(file.filename, content_type):
-                allowed_exts = ALLOWED_IMAGE_EXTENSIONS if content_type == 'image' else ALLOWED_DOCUMENT_EXTENSIONS
+                if content_type == 'image':
+                    allowed_exts = ALLOWED_IMAGE_EXTENSIONS
+                elif content_type == 'video':
+                    allowed_exts = ALLOWED_VIDEO_EXTENSIONS
+                elif content_type == 'audio':
+                    allowed_exts = ALLOWED_AUDIO_EXTENSIONS
+                else:
+                    allowed_exts = ALLOWED_DOCUMENT_EXTENSIONS
                 flash(f'Invalid file type. Please upload a {content_type} file with extension: {", ".join(allowed_exts)}', 'error')
                 return redirect(url_for('ai_content_check'))
             
