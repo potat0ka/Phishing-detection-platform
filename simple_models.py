@@ -11,7 +11,7 @@ import logging
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, USERS_FILE, DETECTIONS_FILE, TIPS_FILE, load_json_data, save_json_data
-from utils.encryption import encrypt_sensitive_data, decrypt_sensitive_data
+from encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +139,7 @@ class User:
         """Find user by ID"""
         try:
             if db is not None:
-                from bson import ObjectId
+                from bson.objectid import ObjectId
                 user_doc = db.users.find_one({'_id': ObjectId(user_id)})
                 if user_doc:
                     decrypted = decrypt_sensitive_data('user', user_doc)
@@ -285,7 +285,7 @@ class Detection:
         """Delete detection by ID if belongs to user"""
         try:
             if db is not None:
-                from bson import ObjectId
+                from bson.objectid import ObjectId
                 result = db.detections.delete_one({
                     '_id': ObjectId(detection_id),
                     'user_id': user_id

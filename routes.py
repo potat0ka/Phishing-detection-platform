@@ -128,7 +128,7 @@ def register():
             return render_template('register.html')
         
         # Create new user
-        user = User.create(username, email, password)
+        user_id = User.create_user(username, email, password)
         
         if user_id:
             flash('Registration successful! Please log in.', 'success')
@@ -396,7 +396,7 @@ def ai_content_check():
             
             # Check if file type is allowed
             if not allowed_file(file.filename or '', content_type):
-                allowed_exts = APP_CONFIG.ALLOWED_EXTENSIONS.get(content_type, set())
+                allowed_exts = ALLOWED_EXTENSIONS.get(content_type, set())
                 flash(f'Invalid file type. Please upload a {content_type} file with extension: {", ".join(allowed_exts)}', 'error')
                 return redirect(url_for('ai_content_check'))
             
