@@ -35,7 +35,7 @@ If Python is not installed, download it from [python.org](https://www.python.org
 1. **Download the project**
    ```bash
    git clone <repository-url>
-   cd ai-phishing-detector
+   cd Phishing-detection-website
    ```
 
 2. **Install dependencies using pip**
