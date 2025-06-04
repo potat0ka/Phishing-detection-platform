@@ -4,272 +4,272 @@
     "content": "Before acting on any email request, especially urgent ones, verify the sender through a phone call or separate communication channel. Attackers often impersonate colleagues, vendors, or authorities.",
     "category": "email",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472038"
+    "created_at": "2025-06-04T10:05:07.579487"
   },
   {
     "title": "Check Email Headers for Authentication",
     "content": "Look for SPF, DKIM, and DMARC authentication in email headers. Legitimate emails from major organizations will have proper authentication. Missing or failed authentication is a red flag.",
     "category": "email",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472070"
+    "created_at": "2025-06-04T10:05:07.579521"
   },
   {
     "title": "Be Suspicious of Unexpected Attachments",
     "content": "Never open attachments from unknown senders or unexpected attachments from known contacts. Common malicious file types include .exe, .scr, .zip, .jar, and macro-enabled Office documents.",
     "category": "email",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472105"
+    "created_at": "2025-06-04T10:05:07.579544"
   },
   {
     "title": "Watch for Email Address Spoofing",
     "content": "Carefully examine the sender's email address. Attackers use similar-looking domains (like \"gmai1.com\" instead of \"gmail.com\") or display names that don't match the actual email address.",
     "category": "email",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472139"
+    "created_at": "2025-06-04T10:05:07.579564"
   },
   {
     "title": "Identify Business Email Compromise (BEC) Tactics",
     "content": "BEC attacks target executives and finance teams with fake invoices, wire transfer requests, or urgent payment demands. Always verify financial requests through established procedures.",
     "category": "email",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472160"
+    "created_at": "2025-06-04T10:05:07.579583"
   },
   {
     "title": "Recognize Spear Phishing Personalization",
     "content": "Spear phishing emails contain personal information to appear legitimate. Even if an email mentions your name, company, or recent activities, verify through independent channels before responding.",
     "category": "email",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472179"
+    "created_at": "2025-06-04T10:05:07.579601"
   },
   {
     "title": "Check for Email Threading Inconsistencies",
     "content": "Attackers may insert malicious emails into existing conversation threads. Check if the reply makes sense contextually and if the sender's tone or language seems different.",
     "category": "email",
     "priority": 2,
-    "created_at": "2025-06-04T09:54:46.472207"
+    "created_at": "2025-06-04T10:05:07.579628"
   },
   {
     "title": "Beware of Calendar Invite Phishing",
     "content": "Malicious calendar invites can contain phishing links or malware. Be cautious of meeting requests from unknown senders or suspicious meeting locations/links.",
     "category": "email",
     "priority": 2,
-    "created_at": "2025-06-04T09:54:46.472230"
+    "created_at": "2025-06-04T10:05:07.579650"
   },
   {
     "title": "Examine URLs Before Clicking",
     "content": "Hover over links to see the actual destination. Look for misspellings, extra characters, or suspicious domains. Type known websites directly into your browser instead of clicking links.",
     "category": "url",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472264"
+    "created_at": "2025-06-04T10:05:07.579669"
   },
   {
     "title": "Verify HTTPS and Certificate Validity",
     "content": "Check for HTTPS (the padlock icon) on websites handling sensitive information. Click the padlock to verify the certificate belongs to the legitimate organization, not just any valid certificate.",
     "category": "url",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472294"
+    "created_at": "2025-06-04T10:05:07.579686"
   },
   {
     "title": "Recognize URL Shortening Service Risks",
     "content": "Shortened URLs hide the actual destination. Use URL expander tools or browser extensions to preview the real URL before clicking. Be especially cautious with shortened links in emails.",
     "category": "url",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472313"
+    "created_at": "2025-06-04T10:05:07.579703"
   },
   {
     "title": "Identify Homograph and IDN Attacks",
     "content": "Attackers use similar-looking characters from different alphabets (like Cyrillic \"\u0430\" instead of Latin \"a\") to create fake domains. Be extra careful with international domain names.",
     "category": "url",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472329"
+    "created_at": "2025-06-04T10:05:07.579721"
   },
   {
     "title": "Check for Suspicious Subdomains",
     "content": "Legitimate sites rarely use long, complex subdomains. Be wary of URLs like \"paypal.security-update.malicious-site.com\" where the real domain is at the end.",
     "category": "url",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472346"
+    "created_at": "2025-06-04T10:05:07.579738"
   },
   {
     "title": "Avoid Clicking Links in Pop-ups",
     "content": "Close pop-ups using the X button or Alt+F4, never by clicking \"OK\" or other buttons within the pop-up. Malicious pop-ups can redirect to dangerous sites even if you click \"Cancel\".",
     "category": "url",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472375"
+    "created_at": "2025-06-04T10:05:07.579754"
   },
   {
     "title": "Be Cautious of QR Codes",
     "content": "QR codes can direct to malicious websites. Only scan QR codes from trusted sources, and preview the URL before visiting if your scanner app allows it.",
     "category": "url",
     "priority": 2,
-    "created_at": "2025-06-04T09:54:46.472395"
+    "created_at": "2025-06-04T10:05:07.579771"
   },
   {
     "title": "Check Website Age and Reputation",
     "content": "Newly registered domains are often used for phishing. Use tools to check domain registration dates and website reputation scores before entering sensitive information.",
     "category": "url",
     "priority": 2,
-    "created_at": "2025-06-04T09:54:46.472411"
+    "created_at": "2025-06-04T10:05:07.579822"
   },
   {
     "title": "Enable Multi-Factor Authentication (MFA)",
     "content": "Use MFA on all accounts that support it, especially email, banking, and social media. Prefer authenticator apps or hardware tokens over SMS when possible, as SMS can be intercepted.",
     "category": "general",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472427"
+    "created_at": "2025-06-04T10:05:07.579844"
   },
   {
     "title": "Use Unique, Strong Passwords",
     "content": "Create unique passwords for each account using a mix of uppercase, lowercase, numbers, and symbols. Use a password manager to generate and store complex passwords securely.",
     "category": "general",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472455"
+    "created_at": "2025-06-04T10:05:07.579867"
   },
   {
     "title": "Keep Software Updated",
     "content": "Enable automatic updates for operating systems, browsers, and applications. Security patches often fix vulnerabilities that attackers actively exploit.",
     "category": "general",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472480"
+    "created_at": "2025-06-04T10:05:07.579885"
   },
   {
     "title": "Verify Requests Through Established Channels",
     "content": "When someone requests sensitive information or urgent action, verify through known phone numbers, in-person conversation, or separate communication channels before complying.",
     "category": "general",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472499"
+    "created_at": "2025-06-04T10:05:07.579902"
   },
   {
     "title": "Be Skeptical of Urgent Requests",
     "content": "Attackers create false urgency to bypass your normal security awareness. Take time to verify urgent requests, especially those involving money, credentials, or sensitive data.",
     "category": "general",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472517"
+    "created_at": "2025-06-04T10:05:07.579918"
   },
   {
     "title": "Monitor Financial Accounts Regularly",
     "content": "Check bank and credit card statements frequently for unauthorized transactions. Set up account alerts for transactions, logins, and changes to account information.",
     "category": "general",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472546"
+    "created_at": "2025-06-04T10:05:07.579933"
   },
   {
     "title": "Use Reputable Antivirus and Anti-malware",
     "content": "Install reputable security software with real-time protection. Keep definitions updated and perform regular full system scans to detect and remove threats.",
     "category": "general",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472565"
+    "created_at": "2025-06-04T10:05:07.579949"
   },
   {
     "title": "Secure Your Home Network",
     "content": "Change default router passwords, use WPA3 encryption, and regularly update router firmware. Create a guest network for visitors to protect your main network.",
     "category": "general",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472587"
+    "created_at": "2025-06-04T10:05:07.579965"
   },
   {
     "title": "Practice Safe Public Wi-Fi Usage",
     "content": "Avoid accessing sensitive accounts on public Wi-Fi. Use a VPN when necessary, ensure websites use HTTPS, and consider using your mobile hotspot instead of public networks.",
     "category": "general",
     "priority": 2,
-    "created_at": "2025-06-04T09:54:46.472623"
+    "created_at": "2025-06-04T10:05:07.579980"
   },
   {
     "title": "Implement the Principle of Least Privilege",
     "content": "Only grant access to information and systems that people need for their job. Regularly review and revoke unnecessary access permissions for employees and applications.",
     "category": "general",
     "priority": 2,
-    "created_at": "2025-06-04T09:54:46.472646"
+    "created_at": "2025-06-04T10:05:07.579996"
   },
   {
     "title": "Back Up Data Regularly",
     "content": "Follow the 3-2-1 backup rule: 3 copies of important data, on 2 different media types, with 1 copy stored offsite. Test backups regularly to ensure they work when needed.",
     "category": "general",
     "priority": 2,
-    "created_at": "2025-06-04T09:54:46.472664"
+    "created_at": "2025-06-04T10:05:07.580013"
   },
   {
     "title": "Report Suspicious Activity",
     "content": "Report phishing attempts to your IT department, the Anti-Phishing Working Group (reportphishing@apwg.org), or the FBI's IC3 (ic3.gov). Reporting helps protect others.",
     "category": "general",
     "priority": 2,
-    "created_at": "2025-06-04T09:54:46.472679"
+    "created_at": "2025-06-04T10:05:07.580029"
   },
   {
     "title": "Recognize Social Engineering Tactics",
     "content": "Attackers use psychological manipulation like authority (impersonating executives), urgency (time pressure), fear (account suspension), and reciprocity (offering help) to bypass security.",
     "category": "general",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472700"
+    "created_at": "2025-06-04T10:05:07.580045"
   },
   {
     "title": "Understand Voice and Video Deepfakes",
     "content": "AI-generated voice and video calls can impersonate trusted individuals. Verify identity through pre-arranged phrases or asking personal questions only the real person would know.",
     "category": "general",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472725"
+    "created_at": "2025-06-04T10:05:07.580061"
   },
   {
     "title": "Be Aware of Supply Chain Attacks",
     "content": "Attackers compromise trusted software or services to reach multiple targets. Only download software from official sources and verify digital signatures when possible.",
     "category": "general",
     "priority": 2,
-    "created_at": "2025-06-04T09:54:46.472742"
+    "created_at": "2025-06-04T10:05:07.580076"
   },
   {
     "title": "Protect Against SIM Swapping",
     "content": "Contact your mobile carrier to add a PIN or password for account changes. Consider using authenticator apps instead of SMS for two-factor authentication.",
     "category": "general",
     "priority": 2,
-    "created_at": "2025-06-04T09:54:46.472757"
+    "created_at": "2025-06-04T10:05:07.580092"
   },
   {
     "title": "Understand Business Email Compromise Evolution",
     "content": "BEC attacks now target personal email accounts, use compromised vendor emails, and leverage AI to mimic writing styles. Always verify financial requests through multiple channels.",
     "category": "email",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472790"
+    "created_at": "2025-06-04T10:05:07.580108"
   },
   {
     "title": "Recognize Ransomware Distribution Methods",
     "content": "Ransomware spreads through phishing emails, compromised websites, malicious ads, and vulnerable remote access tools. Keep backups offline and practice incident response procedures.",
     "category": "general",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472817"
+    "created_at": "2025-06-04T10:05:07.580124"
   },
   {
     "title": "AI-Generated Phishing Content Detection",
     "content": "Attackers increasingly use AI to create convincing phishing emails with perfect grammar and personalized content. Focus on verifying requests through independent channels rather than relying on email quality alone.",
     "category": "email",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472833"
+    "created_at": "2025-06-04T10:05:07.580139"
   },
   {
     "title": "Cryptocurrency-Related Phishing Surge",
     "content": "Phishing attacks targeting cryptocurrency users have increased 40% this year. Be especially cautious of urgent messages about wallet security, token swaps, or investment opportunities.",
     "category": "general",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472849"
+    "created_at": "2025-06-04T10:05:07.580155"
   },
   {
     "title": "Microsoft Teams and Collaboration Tool Abuse",
     "content": "Attackers exploit trusted collaboration platforms to distribute malware and phishing links. Verify file sharing requests and be cautious of external meeting invitations.",
     "category": "general",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472880"
+    "created_at": "2025-06-04T10:05:07.580170"
   },
   {
     "title": "QR Code Phishing (Quishing) Increase",
     "content": "QR code phishing attacks have tripled, especially targeting mobile users. Always preview QR code destinations and be skeptical of QR codes requesting personal information.",
     "category": "url",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472900"
+    "created_at": "2025-06-04T10:05:07.580186"
   },
   {
     "title": "Supply Chain Email Compromises",
     "content": "Attackers compromise legitimate vendor email accounts to send convincing phishing emails to customers. Verify vendor communications through alternative channels.",
     "category": "email",
     "priority": 1,
-    "created_at": "2025-06-04T09:54:46.472916"
+    "created_at": "2025-06-04T10:05:07.580201"
   }
 ]
