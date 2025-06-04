@@ -1,46 +1,52 @@
-# AI Phishing Detection Platform 🛡️
+# AI Phishing Detection Platform
 
-A comprehensive phishing detection web application powered by AI and machine learning. Perfect for learning backend development with a simple JSON-based database system!
+An advanced AI-powered phishing detection web platform designed to educate and protect users through intelligent security technologies and machine learning innovations.
 
-## 🌟 Features
+## Features
 
-- **AI-Powered Detection**: Advanced machine learning algorithms to detect phishing URLs, emails, and messages
-- **AI Content Detection**: Analyze images and documents to detect if they're AI-generated
-- **User Authentication**: Secure user registration and login system
-- **Detection History**: Track your security scans and results
-- **Educational Security Tips**: 45+ comprehensive cybersecurity tips with animated carousel
-- **Real-time Threat Intelligence**: Latest phishing trends and awareness content
-- **Simple JSON Database**: Easy-to-understand data storage perfect for learning
-- **Responsive Design**: Works on desktop, tablet, and mobile devices
+### Core Security Features
+- **AI-Powered Phishing Detection**: Advanced machine learning algorithms to detect phishing URLs, emails, and messages with confidence scoring
+- **Comprehensive AI Content Detection**: Analyze images, videos, audio, and documents to detect AI-generated content with source identification
+- **Offline Threat Intelligence**: Local threat detection without external API dependencies
+- **Real-time Security Assessment**: Domain and URL security evaluation with threat level classification
+- **Device Peripheral Integration**: Camera capture and microphone recording for content analysis
 
-## 🚀 Quick Setup Guide
+### Enhanced User Experience
+- **Photo to Text (OCR)**: Extract text from images using Tesseract.js with real-time processing
+- **Multiple File Format Support**: Images (JPG, PNG, GIF), videos (MP4, AVI, MOV), audio (MP3, WAV), documents (TXT, PDF)
+- **Bulk Management**: Multiple selection and deletion of detection history
+- **User Authentication**: Secure registration and login with session management
+- **Educational Security Tips**: 39+ comprehensive cybersecurity tips with latest threat intelligence
+- **Mobile-Friendly Design**: Touch-optimized interactions with responsive Bootstrap design
+- **File Upload Validation**: 500MB maximum file size with comprehensive error handling
+
+## Quick Setup Guide
 
 ### Prerequisites
 
-You need Python 3.11 or higher installed on your system.
+- Python 3.11 or higher
+- PostgreSQL database (optional - SQLite will be used as fallback)
 
-#### Check if Python is installed:
+#### Check Python installation:
 ```bash
 python --version
 # or
 python3 --version
 ```
 
-If Python is not installed, download it from [python.org](https://www.python.org/downloads/)
+### Installation
 
-### 📥 Installation
-
-#### Quick Setup (Recommended)
+#### Method 1: Quick Setup
 
 1. **Download the project**
    ```bash
    git clone <repository-url>
-   cd Phishing-detection-website
+   cd ai-phishing-detection-platform
    ```
 
-2. **Install dependencies using pip**
+2. **Install all dependencies**
    ```bash
-   pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython
+   pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary
    ```
 
 3. **Run the application**
@@ -48,14 +54,14 @@ If Python is not installed, download it from [python.org](https://www.python.org
    python main.py
    ```
    
-   **OR using Gunicorn (recommended):**
+   **Alternative with Gunicorn:**
    ```bash
    gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
    ```
 
-4. **Open your browser**
-   - Go to: `http://localhost:5000`
-   - Start using the application!
+4. **Access the application**
+   - Open browser: `http://localhost:5000`
+   - Register an account and start using the platform
 
 #### Virtual Environment Setup (Recommended for development)
 
@@ -123,310 +129,135 @@ pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn n
 python main.py
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-ai-phishing-detector/
-├── app.py                      # Main application file (START HERE!)
-├── routes.py                   # Web routes and page handlers
-├── simple_models.py            # Database models (JSON-based)
-├── ml_detector.py              # AI/ML phishing detection engine
-├── security_tips_updater.py    # Security tips management
-├── utils.py                    # Helper functions
+ai-phishing-detection-platform/
 ├── main.py                     # Application entry point
-├── requirements.txt            # Python dependencies
-├── README.md                   # This file!
-├── database/                   # JSON database files (auto-created)
-│   ├── users.json             # User accounts
-│   ├── detections.json        # Detection history
-│   └── tips.json              # Security tips
-├── templates/                  # HTML templates
-│   ├── base.html              # Base template
-│   ├── index.html             # Home page
-│   ├── check.html             # Detection interface
-│   ├── result.html            # Detection results
-│   ├── tips.html              # Security tips page
-│   ├── dashboard.html         # User dashboard
-│   ├── login.html             # Login page
-│   └── register.html          # Registration page
-└── static/                     # Static files (CSS, JS, images)
+├── app.py                      # Flask application configuration
+├── routes.py                   # Web routes and API endpoints
+├── models.py                   # SQLAlchemy database models
+├── ml_detector.py              # Phishing detection AI engine
+├── ai_content_detector.py      # AI-generated content detection
+├── offline_threat_intel.py     # Local threat intelligence system
+├── security_tips_updater.py    # Security awareness content
+├── threat_intelligence.py      # Threat analysis utilities
+├── utils.py                    # Helper functions and utilities
+├── pyproject.toml              # Project dependencies
+├── README.md                   # Project documentation
+├── .env.example                # Environment variables template
+├── uploads/                    # User uploaded files (auto-created)
+├── analysis_results/           # AI analysis results (auto-created)
+├── instance/                   # Flask instance folder
+├── templates/                  # Jinja2 HTML templates
+│   ├── base.html              # Base template with navigation
+│   ├── index.html             # Landing page
+│   ├── check.html             # Phishing detection interface
+│   ├── ai_content_check.html  # AI content detection page
+│   ├── ai_content_results.html # AI analysis results
+│   ├── tips.html              # Security education page
+│   ├── dashboard.html         # User dashboard with history
+│   ├── login.html             # User authentication
+│   └── register.html          # User registration
+└── static/                     # Static assets
     ├── css/
-    │   └── style.css          # Custom styles
-    └── js/
-        └── main.js            # JavaScript functionality
+    │   └── loading-animations.css # Custom loading animations
+    └── uploads/               # Processed upload files
 ```
 
-## 🗄️ Database System (Perfect for Learning!)
+## Database Architecture
 
-This project uses a **simple JSON-based database** instead of complex systems like PostgreSQL or MongoDB. Here's why it's perfect for beginners:
+This project uses a **hybrid database system** combining PostgreSQL for production reliability with JSON fallback for development simplicity.
 
-### Why JSON Database?
-- ✅ **Easy to understand**: Data is stored in readable JSON files
-- ✅ **No setup required**: No database server installation needed
-- ✅ **Portable**: Works on any system without configuration
-- ✅ **Transparent**: You can see exactly what data is stored
-- ✅ **Great for learning**: Understand data storage concepts
+### Database Features
+- **PostgreSQL**: Primary database for user accounts, detection history, and security tips
+- **SQLite Fallback**: Automatic fallback when PostgreSQL is unavailable
+- **JSON Storage**: Analysis results and file metadata stored as JSON
+- **Offline Intelligence**: Local SQLite database for threat intelligence data
 
-### Database Files
-- `database/users.json` - User accounts and authentication
-- `database/detections.json` - Phishing detection results
-- `database/tips.json` - Security tips and educational content
+### Key Components
+- **User Management**: Secure authentication with hashed passwords
+- **Detection History**: Comprehensive logging of all security scans
+- **AI Analysis Results**: Detailed AI content detection metadata
+- **Threat Intelligence**: Local database of malicious domains and IPs
+- **Security Tips**: Educational content with categorization
 
-### Example Data Structure
-```json
-// users.json
-[
-  {
-    "id": "unique-user-id",
-    "username": "john_doe",
-    "email": "john@example.com",
-    "password_hash": "hashed-password",
-    "created_at": "2024-01-01T12:00:00"
-  }
-]
+## AI & Machine Learning Features
 
-// detections.json
-[
-  {
-    "id": "detection-id",
-    "user_id": "user-id",
-    "input_type": "url",
-    "input_content": "suspicious-website.com",
-    "result": "phishing",
-    "confidence_score": 0.85,
-    "created_at": "2024-01-01T12:00:00"
-  }
-]
-```
+### Phishing Detection Capabilities
+- **URL Analysis**: Domain reputation, suspicious patterns, and redirect detection
+- **Email Content Analysis**: NLP-based phishing email detection with grammar analysis
+- **Message Analysis**: Text-based threat detection with pattern matching
+- **Offline Threat Intelligence**: Local database of malicious domains, IPs, and indicators
 
-## 🤖 AI & Machine Learning Features
+### AI Content Detection
+- **Image Analysis**: Detect AI-generated images with metadata analysis and pixel patterns
+- **Video Analysis**: Deepfake and synthetic video detection with frame consistency analysis
+- **Audio Analysis**: AI-generated voice and synthetic speech detection
+- **Document Analysis**: AI-written text detection with writing pattern analysis
+- **Device Photo Recognition**: EXIF data analysis to identify real camera photos
 
-### Detection Capabilities
-- **URL Analysis**: Checks suspicious domains, URL patterns, and redirects
-- **Email Content Analysis**: Detects phishing emails using NLP
-- **Message Analysis**: Analyzes suspicious text messages
-- **Threat Intelligence**: Real-time threat data integration
+### Machine Learning Techniques
+- **Computer Vision**: PIL and OpenCV for image analysis
+- **Statistical Analysis**: Noise patterns, color distribution, and pixel variance
+- **Natural Language Processing**: NLTK for text analysis and pattern detection
+- **Confidence Scoring**: Multi-factor analysis with conservative thresholds
+- **Pattern Recognition**: Rule-based and ML hybrid approaches
 
-### ML Techniques Used
-- **TF-IDF Vectorization**: Text feature extraction
-- **Naive Bayes Classification**: Machine learning model
-- **Pattern Matching**: Rule-based detection
-- **Confidence Scoring**: Reliability assessment
+## Configuration
 
-## 🎓 Learning Opportunities
-
-This project is designed for educational purposes and includes:
-
-### Backend Development Concepts
-- **Web Framework**: Flask (Python)
-- **Database Operations**: CRUD operations with JSON
-- **User Authentication**: Session management and password hashing
-- **API Development**: RESTful endpoints
-- **File I/O**: Reading and writing JSON data
-
-### Frontend Development
-- **Responsive Design**: Bootstrap CSS framework
-- **Interactive UI**: JavaScript and animations
-- **Form Handling**: User input validation
-- **AJAX Requests**: Asynchronous data fetching
-
-### Security Concepts
-- **Password Hashing**: Secure password storage
-- **Session Management**: User authentication
-- **Input Validation**: Preventing injection attacks
-- **CSRF Protection**: Cross-site request forgery prevention
-
-## 🔧 Configuration
-
-### Environment Variables (Optional)
-Create a `.env` file for custom configuration:
+### Environment Variables
+The application automatically handles most configuration, but you can create a `.env` file for customization:
 ```env
 SESSION_SECRET=your-secret-key-here
+DATABASE_URL=postgresql://user:password@localhost/dbname
 DEBUG=True
-PORT=5000
 ```
 
-### Customization
-- **Modify security tips**: Edit `security_tips_updater.py`
-- **Adjust ML model**: Update `ml_detector.py`
-- **Change styling**: Edit `static/css/style.css`
-- **Add new pages**: Create templates and routes
+### Optional Features
+- **Anthropic AI Integration**: Requires `ANTHROPIC_API_KEY` for enhanced AI analysis
+- **PostgreSQL**: Automatically uses SQLite fallback if PostgreSQL unavailable
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
-### Common Issues and Solutions
+### Common Issues
 
-#### 1. "Module not found" error
+#### Missing Dependencies
 ```bash
-# Solution 1: Install missing dependencies
-pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython
-
-# Solution 2: Make sure you're in the right directory
-cd path/to/your/project
-
-# Solution 3: If using virtual environment, activate it first
-source venv/bin/activate  # Mac/Linux
-venv\Scripts\activate     # Windows
+pip install flask flask-sqlalchemy gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary
 ```
 
-#### 2. "Cannot import name 'app' from 'main'" error
+#### Port Already in Use
 ```bash
-# Make sure you run with correct entry point
+# Kill process using port 5000
+# Linux/Mac: lsof -ti:5000 | xargs kill -9
+# Windows: netstat -ano | findstr :5000, then taskkill /PID <PID> /F
+```
+
+#### Python Version Issues
+- Ensure Python 3.11 or higher is installed
+- Use `python3` on Mac/Linux, `python` on Windows
+- Consider using virtual environment for isolation
+
+#### Database Connection
+- PostgreSQL is optional - SQLite fallback is automatic
+- Check DATABASE_URL if using custom PostgreSQL setup
+
+### Quick Verification
+```bash
+# Check if everything works
+python --version  # Should be 3.11+
+cd your-project-directory
 python main.py
-
-# NOT python app.py (this is an old instruction)
+# Open http://localhost:5000
 ```
 
-#### 3. "Permission denied" or "Access denied" error
-```bash
-# On Mac/Linux, use python3 and add sudo if needed
-sudo python3 main.py
+## Support
 
-# On Windows, run Command Prompt as Administrator
-```
+For issues:
+1. Verify all dependencies are installed
+2. Check Python version compatibility  
+3. Review console output for specific error messages
+4. Ensure you're in the correct project directory
 
-#### 4. Port 5000 already in use
-```bash
-# On Mac/Linux:
-lsof -ti:5000 | xargs kill -9
-
-# On Windows:
-netstat -ano | findstr :5000
-taskkill /PID <PID> /F
-
-# Alternative: Use different port
-python main.py --port 8080
-```
-
-#### 5. Database files not created
-```bash
-# Create database directory manually
-mkdir database
-
-# Ensure write permissions
-chmod 755 database/  # Mac/Linux
-```
-
-#### 6. AI Content Detection issues (PIL/OpenCV errors)
-```bash
-# Install image processing dependencies
-pip install Pillow==11.2.1
-
-# On Linux, you might need additional system packages
-sudo apt install python3-dev python3-pip libjpeg-dev zlib1g-dev
-```
-
-#### 7. NLTK download errors
-```python
-# Run this in Python console first
-import nltk
-nltk.download('punkt')
-nltk.download('stopwords')
-```
-
-### Step-by-Step Debug Process
-
-If you're still having issues, follow these steps:
-
-1. **Check Python version**
-   ```bash
-   python --version
-   # Should be 3.11 or higher
-   ```
-
-2. **Verify you're in the correct directory**
-   ```bash
-   ls -la
-   # You should see main.py, app.py, routes.py, etc.
-   ```
-
-3. **Install dependencies one by one**
-   ```bash
-   pip install flask
-   pip install flask-sqlalchemy
-   pip install werkzeug
-   pip install pillow
-   pip install numpy
-   pip install scikit-learn
-   pip install nltk
-   pip install beautifulsoup4
-   pip install requests
-   pip install trafilatura
-   ```
-
-4. **Test basic Flask installation**
-   ```python
-   # Create test.py
-   from flask import Flask
-   app = Flask(__name__)
-   
-   @app.route('/')
-   def hello():
-       return "Flask is working!"
-   
-   if __name__ == '__main__':
-       app.run(debug=True)
-   ```
-
-5. **Run the actual application**
-   ```bash
-   python main.py
-   ```
-
-### Platform-Specific Issues
-
-#### Windows Issues
-- Use `python` instead of `python3`
-- Run Command Prompt as Administrator
-- Install Microsoft Visual C++ Build Tools if compilation errors occur
-
-#### macOS Issues
-- Use `python3` instead of `python`
-- Install Xcode Command Line Tools: `xcode-select --install`
-- Use Homebrew for Python: `brew install python@3.11`
-
-#### Linux Issues
-- Install development packages: `sudo apt install python3-dev build-essential`
-- Use `python3.11` specifically if multiple versions installed
-
-## 🤝 Contributing
-
-This is an educational project! Feel free to:
-- Add new features
-- Improve the ML model
-- Enhance the UI/UX
-- Add more security tips
-- Fix bugs
-
-## 📚 Learning Resources
-
-### Recommended Reading
-- [Flask Documentation](https://flask.palletsprojects.com/)
-- [Python JSON Module](https://docs.python.org/3/library/json.html)
-- [Bootstrap CSS](https://getbootstrap.com/docs/)
-- [Cybersecurity Basics](https://www.cisa.gov/cybersecurity)
-
-### Next Steps for Learning
-1. Add more ML models for better detection
-2. Implement email integration
-3. Add real-time notifications
-4. Create mobile app version
-5. Deploy to cloud platforms
-
-## 📄 License
-
-This project is for educational purposes. Feel free to use and modify for learning!
-
-## 💬 Support
-
-If you encounter any issues:
-1. Check the troubleshooting section above
-2. Ensure all dependencies are installed
-3. Verify Python version compatibility
-4. Check the console output for error messages
-
----
-
-**Happy Learning! 🎉**
-
-This project demonstrates real-world web development concepts in a beginner-friendly way. Take time to explore the code, understand how each component works, and experiment with modifications!
+This educational platform demonstrates advanced AI security concepts with practical implementation. The project combines phishing detection, AI content analysis, and comprehensive security education in a user-friendly interface.
