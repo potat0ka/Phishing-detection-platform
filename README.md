@@ -63,9 +63,23 @@ python --version
    cd ai-phishing-detection-platform
    ```
 
-2. **Install all dependencies**
+2. **Install dependencies (Choose Method A or B)**
+
+   **Method A: Minimal Installation (Recommended)**
    ```bash
-   pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary cryptography pymongo flask-pymongo motor bson
+   pip install -r requirements-minimal.txt
+   ```
+
+   **Method B: Manual Installation**
+   ```bash
+   # Core dependencies (always install these)
+   pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
+   
+   # Optional: TensorFlow (install based on your Python version)
+   # For Python 3.8-3.11: pip install tensorflow==2.13.0
+   # For Python 3.9-3.12: pip install tensorflow==2.15.0
+   # For CPU only: pip install tensorflow-cpu
+   # Skip if installation fails - platform works without TensorFlow
    ```
 
 3. **Set up environment variables (optional)**
@@ -232,17 +246,33 @@ cd ai-phishing-detection-platform
 python -m venv venv
 venv\Scripts\activate
 
-# Install dependencies
-pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary cryptography pymongo flask-pymongo motor bson
+# Upgrade pip first
+python -m pip install --upgrade pip
 
-# Run the application
-gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
+# Install core dependencies (without TensorFlow)
+pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
+
+# Run the application (TensorFlow-free version)
+python main.py
+```
+
+#### TensorFlow Installation (Optional)
+```cmd
+# Check your Python version first
+python --version
+
+# Install TensorFlow based on your Python version:
+# Python 3.8-3.11: pip install tensorflow==2.13.0
+# Python 3.9-3.12: pip install tensorflow==2.15.0
+# For CPU only: pip install tensorflow-cpu
+# If installation fails, skip it - the platform works without TensorFlow
 ```
 
 #### Troubleshooting Windows
-- If `pip install` fails, try: `python -m pip install --upgrade pip`
-- For OpenCV issues: `pip install opencv-python-headless`
-- For TensorFlow issues on older systems: `pip install tensorflow-cpu`
+- **TensorFlow Error**: Skip TensorFlow installation - the platform works perfectly without it
+- **pip install fails**: Try `python -m pip install --upgrade pip`
+- **OpenCV issues**: Use `pip install opencv-python-headless` instead
+- **Permission errors**: Run Command Prompt as Administrator
 
 ### macOS Installation
 
@@ -265,17 +295,28 @@ cd ai-phishing-detection-platform
 python3 -m venv venv
 source venv/bin/activate
 
-# Install dependencies
-pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary cryptography pymongo flask-pymongo motor bson
+# Upgrade pip first
+pip install --upgrade pip
+
+# Install core dependencies (TensorFlow-free)
+pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
 
 # Run the application
-gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
+python main.py
+```
+
+#### TensorFlow Installation (Optional)
+```bash
+# For M1/M2 Macs: pip install tensorflow-macos
+# For Intel Macs: pip install tensorflow==2.13.0
+# Skip if installation fails - platform works without TensorFlow
 ```
 
 #### Troubleshooting macOS
-- For M1/M2 Macs with TensorFlow: `pip install tensorflow-macos`
-- For OpenCV issues: `brew install opencv`
-- For permission issues: Use `pip install --user` instead
+- **TensorFlow Error**: Skip TensorFlow - the platform works perfectly without it
+- **M1/M2 Macs**: Use `pip install tensorflow-macos` if needed
+- **OpenCV issues**: Try `brew install opencv` or use `opencv-python-headless`
+- **Permission issues**: Use `pip install --user` instead
 
 ### Linux Installation (Ubuntu/Debian)
 
@@ -304,11 +345,11 @@ source venv/bin/activate
 # Upgrade pip
 pip install --upgrade pip
 
-# Install dependencies
-pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary cryptography pymongo flask-pymongo motor bson
+# Install core dependencies (TensorFlow-free)
+pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
 
 # Run the application
-gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
+python main.py
 ```
 
 #### For Other Linux Distributions
@@ -330,10 +371,20 @@ sudo pacman -S python python-pip git
 # Follow the same installation steps as Ubuntu
 ```
 
+#### TensorFlow Installation (Optional)
+```bash
+# Install TensorFlow based on your Python version:
+# Python 3.8-3.11: pip install tensorflow==2.13.0
+# Python 3.9-3.12: pip install tensorflow==2.15.0
+# For GPU: pip install tensorflow-gpu (requires CUDA)
+# Skip if installation fails - platform works without TensorFlow
+```
+
 #### Troubleshooting Linux
-- For OpenCV issues: `sudo apt install python3-opencv`
-- For TensorFlow GPU support: `pip install tensorflow-gpu` (requires CUDA)
-- For permission issues: Use virtual environment or `pip install --user`
+- **TensorFlow Error**: Skip TensorFlow installation - the platform works perfectly without it
+- **OpenCV issues**: `sudo apt install python3-opencv` or use `opencv-python-headless`
+- **Permission issues**: Use virtual environment or `pip install --user`
+- **Missing system libraries**: Install with `sudo apt install build-essential python3-dev`
 
 ### Docker Installation (All Platforms)
 
@@ -359,6 +410,64 @@ CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--reuse-port", "--reload", "main:app
 docker build -t ai-phishing-detector .
 docker run -p 5000:5000 ai-phishing-detector
 ```
+
+## 🔧 Quick Fix for TensorFlow Installation Error
+
+If you're getting the TensorFlow installation error on your local device, follow these steps:
+
+### Option 1: Install Without TensorFlow (Recommended)
+```bash
+# Clone the repository
+git clone <repository-url>
+cd ai-phishing-detection-platform
+
+# Create virtual environment
+python -m venv venv
+# On Windows: venv\Scripts\activate
+# On Mac/Linux: source venv/bin/activate
+
+# Install core dependencies only (skip TensorFlow)
+pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
+
+# Run the application
+python main.py
+```
+
+### Option 2: Use the Minimal Requirements File
+```bash
+# Use the provided minimal requirements
+pip install -r requirements-minimal.txt
+python main.py
+```
+
+### Option 3: Install TensorFlow Separately (If Needed)
+```bash
+# Check your Python version first
+python --version
+
+# Install compatible TensorFlow version:
+# Python 3.8-3.11: pip install tensorflow==2.13.0
+# Python 3.9-3.12: pip install tensorflow==2.15.0
+# Python 3.12+: pip install tensorflow (latest)
+
+# If still fails, use CPU-only version:
+pip install tensorflow-cpu
+```
+
+### Common Installation Issues and Solutions
+
+**Error: "No matching distribution found for tensorflow"**
+- Solution: Skip TensorFlow installation - the platform works perfectly without it
+- The AI detection features use scikit-learn and don't require TensorFlow
+
+**Error: "Microsoft Visual C++ 14.0 is required" (Windows)**
+- Solution: Install Microsoft C++ Build Tools or Visual Studio
+
+**Error: "Failed building wheel for psycopg2" (Windows)**
+- Solution: Use `pip install psycopg2-binary` instead
+
+**Error: OpenCV issues**
+- Solution: Use `pip install opencv-python-headless` instead of `opencv-python`
 
 ## Project Structure
 
