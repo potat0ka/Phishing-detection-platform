@@ -230,18 +230,31 @@ class AIContentDetector:
                 'explanation': 'Studies statistical properties unique to AI generation'
             })
             
-            # Calculate overall confidence
+            # Calculate overall confidence with improved weighting
+            # Real device photos often have camera metadata and natural imperfections
+            device_photo_indicators = self._detect_device_photo_indicators(pil_image)
+            
+            # Adjust scores based on device photo indicators
+            if device_photo_indicators['is_likely_device_photo']:
+                # Reduce AI likelihood for photos with device characteristics
+                metadata_score *= 0.3
+                pixel_score *= 0.5
+                color_score *= 0.6
+                stats_score *= 0.4
+            
             scores = [metadata_score, pixel_score, color_score, stats_score]
             average_score = np.mean(scores)
+            
+            # Apply more conservative thresholds for better accuracy
             confidence = float(min(max(float(average_score), 0.0), 1.0))
             
-            # Determine classification
-            if confidence >= 0.7:
+            # More conservative classification thresholds
+            if confidence >= 0.85:
                 classification = 'ai_generated'
-                explanation = 'High confidence this image was AI-generated'
-            elif confidence >= 0.4:
+                explanation = 'Very high confidence this image was AI-generated'
+            elif confidence >= 0.65:
                 classification = 'possibly_ai'
-                explanation = 'Some indicators suggest this might be AI-generated'
+                explanation = 'Some indicators suggest this might be AI-generated, but not conclusive'
             else:
                 classification = 'likely_real'
                 explanation = 'Appears to be a real photograph or human-created image'
@@ -393,6 +406,69 @@ class AIContentDetector:
             
         except Exception:
             return 0.3
+    
+    def _detect_device_photo_indicators(self, pil_image):
+        """
+        Detect indicators that suggest this is a real device photo
+        
+        Real device photos have specific characteristics that AI images lack
+        """
+        indicators = {
+            'is_likely_device_photo': False,
+            'has_exif_data': False,
+            'has_camera_info': False,
+            'has_natural_noise': False,
+            'has_realistic_lighting': False
+        }
+        
+        try:
+            # Check for EXIF data (camera metadata)
+            exif_data = pil_image._getexif()
+            if exif_data:
+                indicators['has_exif_data'] = True
+                
+                # Check for camera-specific tags
+                camera_tags = [271, 272, 306, 36867, 36868]  # Make, Model, DateTime, etc.
+                for tag in camera_tags:
+                    if tag in exif_data:
+                        indicators['has_camera_info'] = True
+                        break
+            
+            # Convert to numpy for analysis
+            img_array = np.array(pil_image.convert('RGB'))
+            
+            # Check for natural noise patterns (real cameras have sensor noise)
+            if len(img_array.shape) == 3:
+                # Calculate noise level in image
+                gray = np.mean(img_array, axis=2)
+                noise_level = np.std(gray - np.mean(gray))
+                
+                # Real photos typically have more natural noise
+                if noise_level > 5.0:  # Threshold for natural noise
+                    indicators['has_natural_noise'] = True
+            
+            # Check for realistic lighting gradients
+            # Real photos have more complex lighting than AI images
+            if len(img_array.shape) == 3:
+                brightness_variance = np.var(np.mean(img_array, axis=2))
+                if brightness_variance > 1000:  # Natural lighting variation
+                    indicators['has_realistic_lighting'] = True
+            
+            # Determine if likely a device photo
+            device_score = sum([
+                indicators['has_exif_data'] * 2,
+                indicators['has_camera_info'] * 3,
+                indicators['has_natural_noise'] * 2,
+                indicators['has_realistic_lighting'] * 1
+            ])
+            
+            # If score >= 4, likely a real device photo
+            indicators['is_likely_device_photo'] = device_score >= 4
+            
+            return indicators
+            
+        except Exception:
+            return indicators
     
     def _analyze_image_statistics(self, pil_image):
         """
