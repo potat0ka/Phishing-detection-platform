@@ -1,8 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
-from app import app, db
-from models import User, Detection, PhishingTip
+from app import app
+from simple_models import User, Detection, PhishingTip
 from ml_detector import PhishingDetector
-# Social automation removed - this is a phishing detection platform
 from utils import is_logged_in, login_required
 from security_tips_updater import security_updater
 import json
@@ -39,30 +38,15 @@ def register():
             flash('Password must be at least 6 characters long.', 'error')
             return render_template('register.html')
         
-        # Check if user exists
-        if User.query.filter_by(username=username).first():
-            flash('Username already exists.', 'error')
-            return render_template('register.html')
-        
-        if User.query.filter_by(email=email).first():
-            flash('Email already registered.', 'error')
-            return render_template('register.html')
-        
         # Create new user
-        user = User()
-        user.username = username
-        user.email = email
-        user.set_password(password)
+        user_id = User.create_user(username, email, password)
         
-        try:
-            db.session.add(user)
-            db.session.commit()
+        if user_id:
             flash('Registration successful! Please log in.', 'success')
             return redirect(url_for('login'))
-        except Exception as e:
-            db.session.rollback()
-            flash('Registration failed. Please try again.', 'error')
-            app.logger.error(f"Registration error: {e}")
+        else:
+            flash('Username or email already exists.', 'error')
+            return render_template('register.html')
     
     return render_template('register.html')
 

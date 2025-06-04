@@ -1,41 +1,53 @@
 import os
 import logging
+import json
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
+from datetime import datetime
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-class Base(DeclarativeBase):
-    pass
-
-db = SQLAlchemy(model_class=Base)
-
-# Create the app
+# Create the Flask app
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "phishing-detector-secret-key-2024")
 
-# Configure the PostgreSQL database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_recycle": 300,
-    "pool_pre_ping": True,
-}
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# Simple JSON-based database for learning
+DATABASE_DIR = Path("database")
+DATABASE_DIR.mkdir(exist_ok=True)
 
-# Initialize the app with the extension
-db.init_app(app)
+USERS_FILE = DATABASE_DIR / "users.json"
+DETECTIONS_FILE = DATABASE_DIR / "detections.json"
+TIPS_FILE = DATABASE_DIR / "tips.json"
 
-with app.app_context():
-    # Import models to ensure tables are created
-    import models
-    db.create_all()
+def init_database_files():
+    """Initialize JSON database files"""
+    for file_path in [USERS_FILE, DETECTIONS_FILE, TIPS_FILE]:
+        if not file_path.exists():
+            with open(file_path, 'w') as f:
+                json.dump([], f)
+            logging.info(f"Created database file: {file_path}")
+
+def load_json_data(file_path):
+    """Load data from JSON file"""
+    try:
+        with open(file_path, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+def save_json_data(file_path, data):
+    """Save data to JSON file"""
+    with open(file_path, 'w') as f:
+        json.dump(data, f, indent=2, default=str)
+
+# Initialize database files
+init_database_files()
 
 # Import routes
 import routes
 
-# Initialize default data
+# Initialize default security tips data
 with app.app_context():
     from routes import initialize_tips
     initialize_tips()
