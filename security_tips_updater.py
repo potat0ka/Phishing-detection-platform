@@ -311,49 +311,15 @@ class SecurityTipsUpdater:
                 # Get comprehensive tips
                 all_tips = self.comprehensive_tips.copy()
                 
-                # Add comprehensive tips
-                all_tips = self.comprehensive_tips.copy()
-                
                 # Add latest threat intelligence
                 latest_tips = self.fetch_latest_threat_intelligence()
                 all_tips.extend(latest_tips)
                 
-                # Prepare tips for bulk insert
-                tips_to_insert = []
-                for tip_data in all_tips:
-                    try:
-                        # Check if tip already exists
-                        existing_tip = PhishingTip.find_by_title(tip_data['title'])
-                        
-                        if existing_tip:
-                            # Update existing tip
-                            PhishingTip.update_tip(
-                                title=tip_data['title'],
-                                content=tip_data['content'],
-                                category=tip_data['category'],
-                                priority=tip_data['priority']
-                            )
-                            results['updated'] += 1
-                        else:
-                            # Add new tip
-                            tip_insert_data = {
-                                'title': tip_data['title'],
-                                'content': tip_data['content'],
-                                'category': tip_data['category'],
-                                'priority': tip_data['priority'],
-                                'created_at': datetime.now().isoformat()
-                            }
-                            tips_to_insert.append(tip_insert_data)
-                            results['added'] += 1
-                    
-                    except Exception as e:
-                        results['errors'].append(f"Error processing tip '{tip_data['title']}': {str(e)}")
+                # Bulk insert all tips
+                inserted_count = PhishingTip.bulk_insert(all_tips)
+                results['added'] = inserted_count
                 
-                # Bulk insert new tips
-                if tips_to_insert:
-                    PhishingTip.bulk_insert(tips_to_insert)
-                
-                logging.info(f"Security tips updated: {results['added']} added, {results['updated']} updated")
+                logging.info(f"Successfully updated {inserted_count} security tips")
                 
         except Exception as e:
             results['errors'].append(f"Database error: {str(e)}")
@@ -365,7 +331,8 @@ class SecurityTipsUpdater:
         """Get security tips filtered by category"""
         with app.app_context():
             from simple_models import PhishingTip
-            tips = PhishingTip.find_by_category(category)
+            all_tips = PhishingTip.get_all_tips()
+            tips = [tip for tip in all_tips if tip.get('category') == category]
             return [
                 {
                     'title': tip.get('title', ''),
