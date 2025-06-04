@@ -24,4 +24,5 @@ dependencies = [
     "pillow>=11.2.1",
     "opencv-python>=4.11.0.86",
     "tensorflow>=2.14.0",
+    "cryptography>=45.0.3",
 ]

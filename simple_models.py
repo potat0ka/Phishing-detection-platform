@@ -6,11 +6,11 @@ This file contains all our database models using simple JSON files.
 Perfect for learning backend development without complex database setup!
 
 Each model represents a "table" in traditional databases:
-- User: Handles user accounts and authentication
-- Detection: Stores phishing detection results
+- User: Handles user accounts and authentication with encryption
+- Detection: Stores phishing detection results with encrypted activity
 - PhishingTip: Manages security tips and educational content
 
-All data is stored in easy-to-read JSON files in the 'database' folder.
+All sensitive data is encrypted to protect user privacy and identity.
 """
 
 import json
@@ -18,6 +18,11 @@ import uuid  # For generating unique IDs
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash  # For secure passwords
 from app import USERS_FILE, DETECTIONS_FILE, TIPS_FILE, load_json_data, save_json_data
+from encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data, encryption_manager
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class User:
     """
@@ -37,7 +42,7 @@ class User:
     @staticmethod
     def create_user(username, email, password):
         """
-        Create a new user account
+        Create a new user account with encrypted sensitive data
         
         Args:
             username (str): Desired username
@@ -50,8 +55,9 @@ class User:
         # Load existing users from JSON file
         users = load_json_data(USERS_FILE)
         
-        # Check if username or email already exists
-        for user in users:
+        # Check if username or email already exists (compare with decrypted data)
+        for encrypted_user in users:
+            user = decrypt_sensitive_data('user', encrypted_user)
             if user.get('username') == username or user.get('email') == email:
                 return None  # User already exists
         
@@ -61,30 +67,39 @@ class User:
             'username': username,
             'email': email,
             'password_hash': generate_password_hash(password),  # Hash password for security
-            'created_at': datetime.now().isoformat()  # Store creation timestamp
+            'created_at': datetime.now().isoformat(),  # Store creation timestamp
+            'privacy_level': 'high',  # Default to high privacy
+            'data_retention_days': 365  # Default data retention
         }
         
+        # Encrypt sensitive user data
+        encrypted_user_data = encrypt_sensitive_data('user', user_data)
+        
         # Add new user to the list and save
-        users.append(user_data)
+        users.append(encrypted_user_data)
         save_json_data(USERS_FILE, users)
+        
+        logger.info(f"Created new user account with encrypted data: {user_data['id']}")
         return user_data['id']  # Return the new user's ID
     
     @staticmethod
     def find_by_username(username):
-        """Find user by username"""
+        """Find user by username (decrypts data for comparison)"""
         users = load_json_data(USERS_FILE)
-        for user in users:
+        for encrypted_user in users:
+            user = decrypt_sensitive_data('user', encrypted_user)
             if user.get('username') == username:
-                return user
+                return user  # Return decrypted user data
         return None
     
     @staticmethod
     def find_by_email(email):
-        """Find user by email"""
+        """Find user by email (decrypts data for comparison)"""
         users = load_json_data(USERS_FILE)
-        for user in users:
+        for encrypted_user in users:
+            user = decrypt_sensitive_data('user', encrypted_user)
             if user.get('email') == email:
-                return user
+                return user  # Return decrypted user data
         return None
     
     @staticmethod
@@ -115,8 +130,8 @@ class Detection:
     """Simple Detection model using JSON storage"""
     
     @staticmethod
-    def create_detection(user_id, input_type, input_content, result, confidence_score, reasons=None, ai_analysis=None):
-        """Create a new detection record"""
+    def create_detection(user_id, input_type, input_content, result, confidence_score, reasons=None, ai_analysis=None, user_ip=None, user_agent=None):
+        """Create a new detection record with encrypted activity data"""
         detections = load_json_data(DETECTIONS_FILE)
         
         detection_data = {
@@ -128,18 +143,31 @@ class Detection:
             'confidence_score': confidence_score,
             'reasons': reasons or [],
             'ai_analysis': ai_analysis or {},
-            'created_at': datetime.now().isoformat()
+            'user_ip': user_ip,
+            'user_agent': user_agent,
+            'created_at': datetime.now().isoformat(),
+            'privacy_protected': True
         }
         
-        detections.append(detection_data)
+        # Encrypt sensitive activity data
+        encrypted_detection_data = encrypt_sensitive_data('activity', detection_data)
+        
+        detections.append(encrypted_detection_data)
         save_json_data(DETECTIONS_FILE, detections)
+        
+        logger.info(f"Created encrypted detection record: {detection_data['id']}")
         return detection_data['id']
     
     @staticmethod
     def find_by_user(user_id, limit=10):
-        """Find detections by user ID"""
+        """Find detections by user ID (decrypts data for display)"""
         detections = load_json_data(DETECTIONS_FILE)
-        user_detections = [d for d in detections if d.get('user_id') == user_id]
+        user_detections = []
+        
+        for encrypted_detection in detections:
+            detection = decrypt_sensitive_data('activity', encrypted_detection)
+            if detection.get('user_id') == user_id:
+                user_detections.append(detection)
         
         # Sort by created_at (newest first) and limit results
         user_detections.sort(key=lambda x: x.get('created_at', ''), reverse=True)
