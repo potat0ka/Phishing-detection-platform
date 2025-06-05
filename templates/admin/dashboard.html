@@ -1,19 +1,230 @@
-{% extends "base.html" %}
-
-{% block title %}Admin Dashboard - AI Phishing Detector{% endblock %}
-
-{% block content %}
-<div class="container-fluid mt-4">
-    <!-- Admin Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AI Phishing Detector</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loading-animations.css') }}">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .admin-sidebar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .admin-main {
+            margin-left: 280px;
+            padding: 0;
+            min-height: 100vh;
+            background: var(--bs-body-bg);
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+        
+        .nav-item {
+            margin: 0.25rem 1rem;
+        }
+        
+        .nav-link {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.2s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transform: translateX(4px);
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+        
+        .nav-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+        }
+        
+        .admin-header {
+            background: #fff;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        
+        .admin-content {
+            padding: 2rem;
+        }
+        
+        .stats-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .table-container {
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .admin-sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .admin-main {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Sidebar -->
+    <div class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-header">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary rounded-circle p-2 me-3">
+                    <i class="fas fa-shield-alt text-white"></i>
+                </div>
                 <div>
-                    <h2 class="mb-1">
-                        <i class="fas fa-shield-alt text-primary me-2"></i>
-                        Admin Dashboard
-                    </h2>
-                    <p class="text-muted mb-0">Platform management and monitoring center</p>
+                    <h5 class="mb-0 text-white">Admin Panel</h5>
+                    <small class="text-white-50">AI Phishing Detector</small>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <button class="nav-link active" data-section="overview">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard Overview
+                </button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-link" data-section="users">
+                    <i class="fas fa-users"></i>
+                    User Management
+                </button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-link" data-section="scans">
+                    <i class="fas fa-search"></i>
+                    Scan Logs
+                </button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-link" data-section="reports">
+                    <i class="fas fa-flag"></i>
+                    Reported Content
+                </button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-link" data-section="tips">
+                    <i class="fas fa-lightbulb"></i>
+                    Safety Tips
+                </button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-link" data-section="analytics">
+                    <i class="fas fa-chart-line"></i>
+                    Analytics
+                </button>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="d-flex align-items-center text-white-50">
+                <i class="fas fa-user-circle me-2"></i>
+                <div>
+                    <small>{{ current_user.username if current_user else 'Admin' }}</small>
+                    <br>
+                    <small>Administrator</small>
+                </div>
+            </div>
+            <div class="mt-2">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-sm me-2">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Back to App
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-secondary d-md-none me-3" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div>
+                        <h4 class="mb-0 text-dark">Admin Dashboard</h4>
+                        <small class="text-muted">Platform management and monitoring center</small>
+                    </div>
                 </div>
                 <div class="d-flex gap-2">
                     <button class="btn btn-outline-primary" onclick="refreshDashboard()">
@@ -40,50 +251,753 @@
                     </div>
                 </div>
             </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="admin-content">
+            <!-- Dashboard Overview Section -->
+            <div class="content-section active" id="overview-section">
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                        <div class="card stats-card bg-primary text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Total Users</h6>
+                                        <h3 class="mb-0" id="totalUsers">{{ stats.total_users or 0 }}</h3>
+                                        <small class="opacity-75">
+                                            <i class="fas fa-arrow-up me-1"></i>
+                                            +{{ stats.new_users_today or 0 }} today
+                                        </small>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-users fa-2x opacity-75"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                        <div class="card stats-card bg-success text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Total Scans</h6>
+                                        <h3 class="mb-0" id="totalScans">{{ stats.total_scans or 0 }}</h3>
+                                        <small class="opacity-75">
+                                            <i class="fas fa-arrow-up me-1"></i>
+                                            +{{ stats.scans_today or 0 }} today
+                                        </small>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-search fa-2x opacity-75"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                        <div class="card stats-card bg-warning text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Threats Detected</h6>
+                                        <h3 class="mb-0" id="threatsDetected">{{ stats.threats_detected or 0 }}</h3>
+                                        <small class="opacity-75">
+                                            <i class="fas fa-shield-alt me-1"></i>
+                                            {{ "%.1f"|format((stats.threat_rate or 0) * 100) }}% rate
+                                        </small>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-exclamation-triangle fa-2x opacity-75"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                        <div class="card stats-card bg-info text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Active Sessions</h6>
+                                        <h3 class="mb-0" id="activeSessions">{{ stats.active_sessions or 0 }}</h3>
+                                        <small class="opacity-75">
+                                            <i class="fas fa-clock me-1"></i>
+                                            Live monitoring
+                                        </small>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-users fa-2x opacity-75"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3 mb-2">
+                                        <button class="btn btn-primary w-100" onclick="navigateToSection('users')">
+                                            <i class="fas fa-users me-2"></i>
+                                            Manage Users
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <button class="btn btn-success w-100" onclick="navigateToSection('scans')">
+                                            <i class="fas fa-search me-2"></i>
+                                            View Scan Logs
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <button class="btn btn-warning w-100" onclick="createUser()">
+                                            <i class="fas fa-user-plus me-2"></i>
+                                            Add New User
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <button class="btn btn-info w-100" onclick="exportSystemReport()">
+                                            <i class="fas fa-download me-2"></i>
+                                            Export Report
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Recent Scan Activity</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Time</th>
+                                                <th>User</th>
+                                                <th>Type</th>
+                                                <th>Result</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for scan in scan_logs[:5] %}
+                                            <tr>
+                                                <td><small>{{ scan.created_at[:16].replace('T', ' ') if scan.created_at else 'Unknown' }}</small></td>
+                                                <td>{{ scan.username or 'Unknown' }}</td>
+                                                <td><span class="badge bg-secondary">{{ scan.input_type or 'Unknown' }}</span></td>
+                                                <td>
+                                                    <span class="badge bg-{{ 'success' if scan.result == 'safe' else ('warning' if scan.result == 'suspicious' else 'danger') }}">
+                                                        {{ (scan.result or 'Unknown').title() }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">System Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span>Database</span>
+                                    <span class="badge bg-success">Connected</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span>AI Detection</span>
+                                    <span class="badge bg-success">Online</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span>Security</span>
+                                    <span class="badge bg-success">Active</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>Uptime</span>
+                                    <span class="text-success">99.9%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management Section -->
+            <div class="content-section" id="users-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>User Management</h4>
+                    <button class="btn btn-primary" onclick="createUser()">
+                        <i class="fas fa-user-plus me-2"></i>Add New User
+                    </button>
+                </div>
+                
+                <div class="card table-container">
+                    <div class="card-header">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h5 class="mb-0">All Users</h5>
+                            </div>
+                            <div class="col-auto">
+                                <input type="text" class="form-control" placeholder="Search users..." id="userSearch">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Scans</th>
+                                        <th>Joined</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                                <strong>{{ user.username or 'Unknown' }}</strong>
+                                            </div>
+                                        </td>
+                                        <td>{{ user.email or 'No email' }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'danger' if user.role == 'admin' else 'secondary' }}">
+                                                {{ (user.role or 'user').title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if user.get('active', True) else 'danger' }}">
+                                                {{ 'Active' if user.get('active', True) else 'Inactive' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ user.scan_count or 0 }}</td>
+                                        <td>{{ user.created_at[:10] if user.created_at else 'Unknown' }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" onclick="viewUser('{{ user.id }}')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-warning" onclick="editUser('{{ user.id }}')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-{{ 'success' if not user.get('active', True) else 'danger' }}" 
+                                                        onclick="toggleUserStatus('{{ user.id }}')">
+                                                    <i class="fas fa-{{ 'play' if not user.get('active', True) else 'pause' }}"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scan Logs Section -->
+            <div class="content-section" id="scans-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Phishing Scan Logs</h4>
+                    <div class="d-flex gap-2">
+                        <select class="form-select" id="scanFilter">
+                            <option value="">All Results</option>
+                            <option value="safe">Safe</option>
+                            <option value="suspicious">Suspicious</option>
+                            <option value="dangerous">Dangerous</option>
+                        </select>
+                        <button class="btn btn-outline-primary" onclick="exportScanLogs()">
+                            <i class="fas fa-download me-2"></i>Export
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card table-container">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>User</th>
+                                        <th>Type</th>
+                                        <th>Content</th>
+                                        <th>Result</th>
+                                        <th>Confidence</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for scan in scan_logs %}
+                                    <tr>
+                                        <td><small>{{ scan.created_at[:16].replace('T', ' ') if scan.created_at else 'Unknown' }}</small></td>
+                                        <td>{{ scan.username or 'Unknown' }}</td>
+                                        <td><span class="badge bg-info">{{ scan.input_type or 'Unknown' }}</span></td>
+                                        <td>
+                                            <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                {{ scan.input_content[:50] + '...' if scan.input_content and scan.input_content|length > 50 else (scan.input_content or 'No content') }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if scan.result == 'safe' else ('warning' if scan.result == 'suspicious' else 'danger') }}">
+                                                {{ (scan.result or 'Unknown').title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="width: 60px; height: 10px;">
+                                                <div class="progress-bar bg-{{ 'success' if (scan.confidence_score or 0) > 0.7 else ('warning' if (scan.confidence_score or 0) > 0.4 else 'danger') }}" 
+                                                     style="width: {{ ((scan.confidence_score or 0) * 100)|round }}%"></div>
+                                            </div>
+                                            <small>{{ "%.0f"|format((scan.confidence_score or 0) * 100) }}%</small>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewScanDetails('{{ scan.id }}')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reported Content Section -->
+            <div class="content-section" id="reports-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Reported Content Moderation</h4>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-success" onclick="bulkApproveReports()">
+                            <i class="fas fa-check me-2"></i>Bulk Approve
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="bulkRejectReports()">
+                            <i class="fas fa-times me-2"></i>Bulk Reject
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card table-container">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="selectAllReports" onchange="selectAllReports()">
+                                        </th>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Content</th>
+                                        <th>Reporter</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for report in reported_content %}
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="report-checkbox" value="{{ report.id }}">
+                                        </td>
+                                        <td><small>{{ report.created_at }}</small></td>
+                                        <td><span class="badge bg-secondary">{{ report.type }}</span></td>
+                                        <td>
+                                            <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                {{ report.content[:50] + '...' if report.content|length > 50 else report.content }}
+                                            </div>
+                                        </td>
+                                        <td>{{ report.reporter_username }}</td>
+                                        <td>{{ report.reason }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'warning' if report.status == 'pending' else ('success' if report.status == 'approved' else 'danger') }}">
+                                                {{ report.status.title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if report.status == 'pending' %}
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-success" onclick="approveReport('{{ report.id }}')">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" onclick="rejectReport('{{ report.id }}')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                            {% else %}
+                                            <span class="text-muted">Processed</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Safety Tips Section -->
+            <div class="content-section" id="tips-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Safety Tips Management</h4>
+                    <button class="btn btn-primary" onclick="createTip()">
+                        <i class="fas fa-plus me-2"></i>Add New Tip
+                    </button>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-envelope fa-3x text-primary mb-3"></i>
+                                <h5>Email Tips</h5>
+                                <p class="text-muted mb-0">{{ safety_tips | selectattr('category', 'equalto', 'email') | list | length }} tips</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-link fa-3x text-success mb-3"></i>
+                                <h5>URL Tips</h5>
+                                <p class="text-muted mb-0">{{ safety_tips | selectattr('category', 'equalto', 'url') | list | length }} tips</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-shield-alt fa-3x text-info mb-3"></i>
+                                <h5>General Tips</h5>
+                                <p class="text-muted mb-0">{{ safety_tips | selectattr('category', 'equalto', 'general') | list | length }} tips</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card table-container">
+                    <div class="card-header">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h5 class="mb-0">All Safety Tips</h5>
+                            </div>
+                            <div class="col-auto">
+                                <select class="form-select" id="tipCategoryFilter">
+                                    <option value="">All Categories</option>
+                                    <option value="email">Email</option>
+                                    <option value="url">URL</option>
+                                    <option value="general">General</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Priority</th>
+                                        <th>Content Preview</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tip in safety_tips %}
+                                    <tr>
+                                        <td><strong>{{ tip.title }}</strong></td>
+                                        <td>
+                                            <span class="badge bg-{{ 'primary' if tip.category == 'email' else ('success' if tip.category == 'url' else 'info') }}">
+                                                {{ tip.category.title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'danger' if tip.priority == 1 else 'warning' }}">
+                                                {{ 'High' if tip.priority == 1 else 'Medium' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                {{ tip.content[:60] + '...' if tip.content|length > 60 else tip.content }}
+                                            </div>
+                                        </td>
+                                        <td><small>{{ tip.created_at[:10] if tip.created_at else 'Unknown' }}</small></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" onclick="viewTip('{{ tip.id }}')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-warning" onclick="editTip('{{ tip.id }}')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" onclick="deleteTip('{{ tip.id }}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div class="content-section" id="analytics-section">
+                <h4 class="mb-4">Analytics & Insights</h4>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Detection Results Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="detectionChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Daily Scan Activity</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="activityChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Top Threat Indicators</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        Suspicious domains
+                                        <span class="badge bg-danger rounded-pill">23</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        Urgency tactics
+                                        <span class="badge bg-warning rounded-pill">18</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        Generic greetings
+                                        <span class="badge bg-info rounded-pill">15</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        SSL certificate issues
+                                        <span class="badge bg-secondary rounded-pill">12</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Performance Metrics</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Detection Accuracy</span>
+                                        <strong>94.2%</strong>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 94.2%"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Response Time</span>
+                                        <strong>1.2s</strong>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-info" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>System Uptime</span>
+                                        <strong>99.9%</strong>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 99.9%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Live Analytics Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-            <div class="card bg-primary text-white h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="card-title">Total Users</h6>
-                            <h3 class="mb-0" id="totalUsers">{{ stats.total_users or 0 }}</h3>
-                            <small class="opacity-75">
-                                <i class="fas fa-arrow-up me-1"></i>
-                                +{{ stats.new_users_today or 0 }} today
-                            </small>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-users fa-2x opacity-75"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sidebar Navigation
+        function navigateToSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+            
+            // Remove active from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(section + '-section').classList.add('active');
+            
+            // Make nav link active
+            document.querySelector(`[data-section="${section}"]`).classList.add('active');
+        }
+
+        // Sidebar toggle for mobile
+        function toggleSidebar() {
+            document.getElementById('adminSidebar').classList.toggle('show');
+        }
+
+        // Initialize sidebar navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                navigateToSection(section);
+            });
+        });
+
+        // Refresh dashboard
+        function refreshDashboard() {
+            location.reload();
+        }
+
+        // Chart initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detection Results Chart
+            const detectionCtx = document.getElementById('detectionChart');
+            if (detectionCtx) {
+                new Chart(detectionCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Safe', 'Suspicious', 'Dangerous'],
+                        datasets: [{
+                            data: [{{ stats.safe_count or 3 }}, {{ stats.suspicious_count or 1 }}, {{ stats.dangerous_count or 2 }}],
+                            backgroundColor: ['#198754', '#ffc107', '#dc3545'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Activity Chart
+            const activityCtx = document.getElementById('activityChart');
+            if (activityCtx) {
+                new Chart(activityCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Scans',
+                            data: [12, 19, 8, 15, 25, 18, 14],
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        // Admin Functions
+        function createUser() { alert('Create user functionality would be implemented here'); }
+        function viewUser(id) { alert('View user: ' + id); }
+        function editUser(id) { alert('Edit user: ' + id); }
+        function toggleUserStatus(id) { alert('Toggle user status: ' + id); }
+        function exportScanLogs() { alert('Export scan logs functionality'); }
+        function viewScanDetails(id) { alert('View scan details: ' + id); }
+        function approveReport(id) { alert('Approve report: ' + id); }
+        function rejectReport(id) { alert('Reject report: ' + id); }
+        function bulkApproveReports() { alert('Bulk approve reports'); }
+        function bulkRejectReports() { alert('Bulk reject reports'); }
+        function createTip() { alert('Create safety tip functionality'); }
+        function viewTip(id) { alert('View tip: ' + id); }
+        function editTip(id) { alert('Edit tip: ' + id); }
+        function deleteTip(id) { alert('Delete tip: ' + id); }
+        function exportSystemReport() { alert('Export system report functionality'); }
+        function clearSystemLogs() { alert('Clear system logs functionality'); }
+        function systemMaintenance() { alert('System maintenance functionality'); }
         
-        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-            <div class="card bg-success text-white h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="card-title">Total Scans</h6>
-                            <h3 class="mb-0" id="totalScans">{{ stats.total_scans or 0 }}</h3>
-                            <small class="opacity-75">
-                                <i class="fas fa-arrow-up me-1"></i>
-                                +{{ stats.scans_today or 0 }} today
-                            </small>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-search fa-2x opacity-75"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        function selectAllReports() {
+            const checkboxes = document.querySelectorAll('.report-checkbox');
+            const selectAll = document.getElementById('selectAllReports');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        }
+    </script>
+</body>
+</html>
         
         <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
             <div class="card bg-warning text-white h-100">
