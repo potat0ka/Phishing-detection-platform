@@ -96,10 +96,10 @@ def allowed_file(filename, file_type):
     # Check if extension is in the allowed list for this file type
     return extension in ALLOWED_EXTENSIONS.get(file_type, set())
 
-# Import MongoDB manager and authentication system
-from mongodb_config import db_manager
+# Import database manager and authentication system
+from models.mongodb_config import db_manager
 from auth_routes import auth_bp, login_required, admin_required, get_current_user
-from encryption_utils import EncryptionManager
+from utils.encryption_utils import EncryptionManager
 
 # Initialize encryption manager
 encryption_manager = EncryptionManager()

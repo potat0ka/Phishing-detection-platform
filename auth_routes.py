@@ -5,8 +5,8 @@ Handles registration, login, logout, and session management with MongoDB backend
 
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from mongodb_config import db_manager
-from encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data
+from models.mongodb_config import db_manager
+from utils.encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data
 import logging
 import re
 import secrets
