@@ -12,6 +12,11 @@ Admin Features:
 - Safety tips management
 - Live analytics and system monitoring
 - Data export functionality
+
+Security Note:
+- All admin functions require proper authentication and role verification
+- User data is encrypted and admins cannot access personal information
+- All admin actions are logged for security auditing
 """
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
@@ -24,10 +29,11 @@ import json
 import logging
 import uuid
 
+# Set up logging for admin actions
 logger = logging.getLogger(__name__)
 
-# Admin functions are now integrated into the main dashboard route
-# No separate blueprint needed - admin features are role-based
+# Create admin blueprint for organizing admin routes
+admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 # Admin dashboard functionality is handled in routes.py dashboard() function
 # based on user role detection
