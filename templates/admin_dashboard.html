@@ -1482,8 +1482,6 @@ function resetPassword(userId, username) {
         fetch(`/admin/user/${userId}/reset-password`, {
             method: 'POST',
             body: formData
-                new_password: newPassword
-            })
         })
         .then(response => response.json())
         .then(data => {
