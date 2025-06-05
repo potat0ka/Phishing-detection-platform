@@ -1,26 +1,42 @@
 /**
- * AI Phishing Detector - Main JavaScript File
- * Handles interactive features, animations, and user experience enhancements
+ * AI Phishing Detection Platform - Modular Application Loader
+ * Professional architecture with clean separation of concerns
+ * 
+ * This file loads all modular components and initializes the application.
+ * Each module handles a specific aspect of the platform functionality.
  */
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('AI Phishing Detector initialized');
-    
-    // Initialize all components
-    initializeAnimations();
-    initializeFormValidations();
-    initializeContentTypeSwitcher();
-    initializeTooltips();
-    initializeLoadingStates();
-    initializeThemeSupport();
-    initializeMobileOptimizations();
-    initializeAnalyticsTracking();
-    
-    // Initialize security carousel features
-    initializeSecurityCarousel();
-    initializeInteractiveSecurityTips();
-    initializeCarouselPerformance();
-    initializeCarouselTouchGestures();
+// Load all module scripts dynamically
+const moduleScripts = [
+    '/static/js/modules/animations.js',
+    '/static/js/modules/forms.js',
+    '/static/js/modules/auth.js',
+    '/static/js/modules/ui.js',
+    '/static/js/modules/analytics.js',
+    '/static/js/app.js'
+];
+
+// Load modules sequentially to ensure proper initialization order
+let loadedModules = 0;
+
+moduleScripts.forEach((scriptPath, index) => {
+    const script = document.createElement('script');
+    script.src = scriptPath;
+    script.onload = () => {
+        loadedModules++;
+        console.log(`Module loaded: ${scriptPath.split('/').pop()}`);
+        
+        // When all modules are loaded, the main app.js will initialize everything
+        if (loadedModules === moduleScripts.length) {
+            console.log('All modules loaded successfully - Application ready');
+        }
+    };
+    script.onerror = () => {
+        console.error(`Failed to load module: ${scriptPath}`);
+        // Continue loading other modules even if one fails
+        loadedModules++;
+    };
+    document.head.appendChild(script);
 });
 
 /**

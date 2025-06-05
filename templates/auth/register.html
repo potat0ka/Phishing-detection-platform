@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}Register - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row min-vh-100">
+        <!-- Left side - Information -->
+        <div class="col-lg-6 bg-gradient d-none d-lg-flex align-items-center justify-content-center text-white"
+             style="background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%);">
+            <div class="text-center px-4">
+                <i class="bi bi-shield-plus" style="font-size: 5rem; opacity: 0.9;"></i>
+                <h3 class="mt-4 mb-3">Join Our Security Community</h3>
+                <p class="lead mb-4">
+                    Create your account to access advanced phishing detection and AI content analysis tools
+                </p>
+                
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <i class="bi bi-lock-fill d-block mb-2" style="font-size: 2rem;"></i>
+                            <small>Encrypted Data</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <i class="bi bi-person-check-fill d-block mb-2" style="font-size: 2rem;"></i>
+                            <small>Privacy First</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <i class="bi bi-graph-down-arrow d-block mb-2" style="font-size: 2rem;"></i>
+                            <small>Threat Analysis</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <i class="bi bi-speedometer2 d-block mb-2" style="font-size: 2rem;"></i>
+                            <small>Real-time Alerts</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right side - Registration Form -->
+        <div class="col-lg-6 d-flex align-items-center justify-content-center">
+            <div class="auth-form-container w-100" style="max-width: 450px;">
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-plus-fill text-primary" style="font-size: 3rem;"></i>
+                    <h2 class="mt-3">Create Account</h2>
+                    <p class="text-muted">Join thousands protecting themselves from digital threats</p>
+                </div>
+
+                <form id="registerForm" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-person"></i>
+                            </span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="username" 
+                                   name="username" 
+                                   placeholder="Choose a username"
+                                   minlength="3"
+                                   required>
+                            <div class="invalid-feedback">
+                                Username must be at least 3 characters long
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-envelope"></i>
+                            </span>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="email" 
+                                   name="email" 
+                                   placeholder="Enter your email"
+                                   required>
+                            <div class="invalid-feedback">
+                                Please provide a valid email address
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-lock"></i>
+                            </span>
+                            <input type="password" 
+                                   class="form-control" 
+                                   id="password" 
+                                   name="password" 
+                                   placeholder="Create a strong password"
+                                   minlength="8"
+                                   required>
+                            <button class="btn btn-outline-secondary toggle-password" 
+                                    type="button" 
+                                    data-target="#password">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <div class="invalid-feedback">
+                                Password must be at least 8 characters with uppercase, lowercase, and number
+                            </div>
+                        </div>
+                        <div class="form-text">
+                            <small class="text-muted">
+                                Must contain: 8+ characters, uppercase, lowercase, and number
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-lock-fill"></i>
+                            </span>
+                            <input type="password" 
+                                   class="form-control" 
+                                   id="confirmPassword" 
+                                   name="confirm_password" 
+                                   placeholder="Confirm your password"
+                                   required>
+                            <button class="btn btn-outline-secondary toggle-password" 
+                                    type="button" 
+                                    data-target="#confirmPassword">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <div class="invalid-feedback">
+                                Passwords must match
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                        <label class="form-check-label" for="agreeTerms">
+                            I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> 
+                            and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                        </label>
+                        <div class="invalid-feedback">
+                            You must agree to the terms and conditions
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mb-3">
+                        Create Account
+                    </button>
+
+                    <div class="text-center">
+                        <p class="mb-0">
+                            Already have an account? 
+                            <a href="{{ url_for('auth.login') }}" class="text-decoration-none">
+                                Sign in here
+                            </a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.auth-form-container {
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    background: var(--bs-body-bg);
+}
+
+.input-group-text {
+    background: transparent;
+    border-right: none;
+}
+
+.input-group .form-control {
+    border-left: none;
+}
+
+.input-group .form-control:focus {
+    border-color: var(--bs-primary);
+    box-shadow: none;
+}
+
+.toggle-password {
+    border-left: none;
+}
+
+.password-strength {
+    height: 5px;
+    border-radius: 3px;
+    margin-top: 5px;
+    background: var(--bs-light);
+    transition: all 0.3s ease;
+}
+
+.password-strength.weak { background: var(--bs-danger); width: 25%; }
+.password-strength.fair { background: var(--bs-warning); width: 50%; }
+.password-strength.good { background: var(--bs-info); width: 75%; }
+.password-strength.strong { background: var(--bs-success); width: 100%; }
+
+@media (max-width: 991.98px) {
+    .auth-form-container {
+        margin: 2rem auto;
+        box-shadow: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+    
+    // Focus on username field
+    document.getElementById('username').focus();
+    
+    // Password strength indicator
+    password.addEventListener('input', function() {
+        updatePasswordStrength(this.value);
+        checkPasswordMatch();
+    });
+    
+    confirmPassword.addEventListener('input', checkPasswordMatch);
+    
+    function updatePasswordStrength(password) {
+        const strength = calculatePasswordStrength(password);
+        // Visual feedback can be added here
+    }
+    
+    function calculatePasswordStrength(password) {
+        let score = 0;
+        if (password.length >= 8) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[a-z]/.test(password)) score++;
+        if (/\d/.test(password)) score++;
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+        
+        return score;
+    }
+    
+    function checkPasswordMatch() {
+        if (confirmPassword.value && password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity('Passwords do not match');
+        } else {
+            confirmPassword.setCustomValidity('');
+        }
+    }
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+});
+</script>
+{% endblock %}

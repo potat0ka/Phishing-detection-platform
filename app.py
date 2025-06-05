@@ -1,26 +1,39 @@
 """
-AI Phishing Detection Platform - Main Application File
-====================================================
+AI Phishing Detection Platform - Professional Flask Application
+==============================================================
 
-Flask application with MongoDB backend and comprehensive user data encryption.
+Modular Flask application with MongoDB backend, authentication system,
+and comprehensive user data encryption using AES-256.
 """
 
 import os
 import json
 import logging
+from datetime import timedelta
 from pathlib import Path
-from flask import Flask
+from flask import Flask, render_template
+from werkzeug.middleware.proxy_fix import ProxyFix
 
-# Configure logging
+# Configure professional logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
-# Create Flask application
+# Create Flask application with professional configuration
 app = Flask(__name__)
+
+# Security configuration
 app.secret_key = os.environ.get("SESSION_SECRET", os.urandom(32))
+app.config['SESSION_PERMANENT'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
+app.config['SESSION_COOKIE_SECURE'] = True if os.environ.get('FLASK_ENV') == 'production' else False
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# Proxy fix for production deployment
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # File upload configuration
 MAX_CONTENT_LENGTH = 500 * 1024 * 1024  # 500MB

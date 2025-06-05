@@ -65,7 +65,7 @@ class MongoDBManager:
     
     def _setup_collections(self):
         """Set up MongoDB collections with proper indexing"""
-        if not self.connected:
+        if not self.connected or not self.db:
             return
             
         try:
@@ -194,7 +194,7 @@ class MongoDBManager:
             return self._json_count_documents(collection_name, query)
     
     # JSON fallback methods
-    def _json_insert_one(self, collection_name: str, document: Dict[str, Any]) -> str:
+    def _json_insert_one(self, collection_name: str, document: Dict[str, Any]) -> Optional[str]:
         """Insert document into JSON file"""
         filepath = self.json_files.get(collection_name)
         if not filepath:
