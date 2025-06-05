@@ -311,7 +311,7 @@
                         <div class="tab-pane fade" id="scans" role="tabpanel">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="mb-0">Recent Phishing Scans</h5>
-                                <button class="btn btn-outline-primary btn-sm">
+                                <button class="btn btn-outline-primary btn-sm" onclick="exportDetections()">
                                     <i class="fas fa-download me-1"></i>Export
                                 </button>
                             </div>
@@ -2881,8 +2881,8 @@ function updateSliderValues() {
     }
 }
 
-function exportScanHistory() {
-    showAlert('Preparing scan history export...', 'info');
+function exportDetections() {
+    showAlert('Preparing scan data export...', 'info');
     
     fetch('/admin/export/detections', {
         method: 'GET'
@@ -2900,18 +2900,23 @@ function exportScanHistory() {
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
-        a.download = `scan_history_${new Date().toISOString().split('T')[0]}.csv`;
+        a.download = `phishing_detections_${new Date().toISOString().split('T')[0]}.csv`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
         
-        showAlert('Scan history exported successfully!', 'success');
+        showAlert('Phishing scan data exported successfully!', 'success');
     })
     .catch(error => {
-        console.error('Error exporting scan history:', error);
-        showAlert('Error exporting scan history. Please try again.', 'danger');
+        console.error('Error exporting detections:', error);
+        showAlert('Error exporting scan data. Please try again.', 'danger');
     });
+}
+
+function exportScanHistory() {
+    // Alias for exportDetections to maintain compatibility
+    exportDetections();
 }
 
 // Initialize confidence threshold display

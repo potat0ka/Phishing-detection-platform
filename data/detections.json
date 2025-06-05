@@ -208,5 +208,125 @@
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0",
     "timestamp": "2025-06-05 09:24:09.681327",
     "_id": "detections_12_458610366"
+  },
+  {
+    "id": "detection_20250605_121310_0",
+    "user_id": "user_1749125333_6273",
+    "content": "https://paypal-security-update.net/verify-account",
+    "result": {
+      "result": "phishing",
+      "category": "phishing",
+      "confidence": 0.95
+    },
+    "timestamp": "2025-06-04T19:13:10.885939",
+    "scan_type": "url",
+    "ip_address": "192.168.1.45",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "_id": "detections_12_2945627278"
+  },
+  {
+    "id": "detection_20250605_121310_1",
+    "user_id": "super_admin_001",
+    "content": "https://amazon-prize-winner.com/claim-reward",
+    "result": {
+      "result": "phishing",
+      "category": "phishing",
+      "confidence": 0.89
+    },
+    "timestamp": "2025-06-05T09:13:10.885939",
+    "scan_type": "url",
+    "ip_address": "192.168.1.71",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "_id": "detections_13_4243404604"
+  },
+  {
+    "id": "detection_20250605_121310_2",
+    "user_id": "user_1749125333_6273",
+    "content": "https://microsoft-office365-verify.info/login",
+    "result": {
+      "result": "phishing",
+      "category": "suspicious",
+      "confidence": 0.78
+    },
+    "timestamp": "2025-06-04T00:13:10.885939",
+    "scan_type": "url",
+    "ip_address": "192.168.1.143",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "_id": "detections_14_2858905322"
+  },
+  {
+    "id": "detection_20250605_121310_3",
+    "user_id": "super_admin_001",
+    "content": "https://google.com",
+    "result": {
+      "result": "safe",
+      "category": "safe",
+      "confidence": 0.02
+    },
+    "timestamp": "2025-06-04T08:13:10.885939",
+    "scan_type": "url",
+    "ip_address": "192.168.1.201",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "_id": "detections_15_1697764557"
+  },
+  {
+    "id": "detection_20250605_121310_4",
+    "user_id": "user_1749125333_6273",
+    "content": "https://github.com",
+    "result": {
+      "result": "safe",
+      "category": "safe",
+      "confidence": 0.01
+    },
+    "timestamp": "2025-06-04T23:13:10.885939",
+    "scan_type": "url",
+    "ip_address": "192.168.1.74",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "_id": "detections_16_1892710067"
+  },
+  {
+    "id": "detection_20250605_121310_5",
+    "user_id": "super_admin_001",
+    "content": "https://bank-urgent-verification.net/secure-login",
+    "result": {
+      "result": "dangerous",
+      "category": "dangerous",
+      "confidence": 0.97
+    },
+    "timestamp": "2025-06-03T17:13:10.885939",
+    "scan_type": "url",
+    "ip_address": "192.168.1.249",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "_id": "detections_17_378535062"
+  },
+  {
+    "id": "detection_20250605_121310_6",
+    "user_id": "user_1749125333_6273",
+    "content": "https://facebook.com",
+    "result": {
+      "result": "safe",
+      "category": "safe",
+      "confidence": 0.03
+    },
+    "timestamp": "2025-06-04T21:13:10.885939",
+    "scan_type": "url",
+    "ip_address": "192.168.1.154",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "_id": "detections_18_4246177013"
+  },
+  {
+    "id": "detection_20250605_121310_7",
+    "user_id": "super_admin_001",
+    "content": "https://crypto-investment-guaranteed.biz/signup",
+    "result": {
+      "result": "phishing",
+      "category": "phishing",
+      "confidence": 0.92
+    },
+    "timestamp": "2025-06-04T18:13:10.885939",
+    "scan_type": "url",
+    "ip_address": "192.168.1.142",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "_id": "detections_19_3233412025"
   }
 ]
