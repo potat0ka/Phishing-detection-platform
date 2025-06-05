@@ -30,5 +30,61 @@
     "encryption_version": "2.0",
     "encrypted_at": "2025-06-05 05:34:19.174787",
     "_id": "users_2_643660768"
+  },
+  {
+    "username": "demo_admin",
+    "email": "admin@demo.com",
+    "password_hash": "scrypt:32768:8:1$6yuz3MkfNus3TTtt$5afd110404f52784f80ba8512c0f69ba1df83488e94aca647af582b5fd077b6a5bea217f64df1a3a01ef8f125b3ea9b57b4a8ab1eddc46429d6fbf6930664231",
+    "role": "admin",
+    "display_name": "Demo Administrator",
+    "created_at": "2025-06-05T07:42:25.816819",
+    "last_login": null,
+    "is_active": true,
+    "login_attempts": 0,
+    "locked_until": null,
+    "email_verified": true,
+    "profile_completed": true,
+    "_id": "users_3_2860995111"
+  },
+  {
+    "username": "demo_user",
+    "email": "user@demo.com",
+    "password_hash": "scrypt:32768:8:1$eYI5dAD5TRmzFK9t$a94bee940ba1ce5a711f6151e6fd3642b5c2e8d706009aef0b39eff9cf9150c41087d69b429584b2cb3939dbdc85f771745506ab0865b54238b506c9c757687f",
+    "role": "user",
+    "display_name": "Demo User",
+    "created_at": "2025-06-05T07:42:25.923321",
+    "last_login": null,
+    "is_active": true,
+    "login_attempts": 0,
+    "locked_until": null,
+    "email_verified": true,
+    "profile_completed": true,
+    "_id": "users_4_4072498817"
+  },
+  {
+    "id": "user_demo_admin",
+    "username": "demo_admin",
+    "email": "admin@demo.com",
+    "password_hash": "scrypt:32768:8:1$BDwWjJs8ZM8UJ3zS$a31098b54171197251da3bc7f0ef8b2881e608ba2e30590863a56041fe61e08a95d57fe606ec194b07170a11b2e2c152a93f502709553f35bf3b2d98338a6654",
+    "role": "admin",
+    "created_at": "2025-06-05T07:43:19.959586",
+    "last_login": null,
+    "is_active": true,
+    "login_attempts": 0,
+    "locked_until": null,
+    "_id": "users_5_3910581000"
+  },
+  {
+    "id": "user_demo_user",
+    "username": "demo_user",
+    "email": "user@demo.com",
+    "password_hash": "scrypt:32768:8:1$3Wvj8QMGcNjVpNGF$3464f46ebbdc3612aa92e2a509a2db2fec8a0bedbaa043ff22196d88f5df71108d20550cec16f8390a24e62d5e5dc540f17c1742ff71936a9db751430cd7cc2c",
+    "role": "user",
+    "created_at": "2025-06-05T07:43:20.056742",
+    "last_login": null,
+    "is_active": true,
+    "login_attempts": 0,
+    "locked_until": null,
+    "_id": "users_6_3214091091"
   }
 ]
