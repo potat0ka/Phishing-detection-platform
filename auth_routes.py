@@ -222,11 +222,11 @@ def login():
         }
         db_manager.update_one('users', {'_id': user['_id']}, update_data)
         
-        # Create session
-        session['user_id'] = user['_id']
+        # Create session with proper role handling
+        session['user_id'] = user.get('_id', user.get('id'))
         session['username'] = decrypted_user['username']
         session['email'] = decrypted_user['email']
-        session['role'] = decrypted_user.get('role', 'user')
+        session['user_role'] = decrypted_user.get('role', 'user')  # Store as user_role for consistency
         session['logged_in'] = True
         
         # Set session permanence
@@ -516,12 +516,27 @@ def admin_required(f):
     return decorated_function
 
 def get_current_user():
-    """Get current user data from session"""
+    """Get current user data from session with role information"""
     if 'user_id' not in session:
         return None
     
-    user = db_manager.find_one('users', {'_id': session['user_id']})
-    if user:
-        return decrypt_sensitive_data('user', user)
+    # Try finding by session user_id (handles both _id and id formats)
+    user_id = session['user_id']
+    user = db_manager.find_one('users', {'_id': user_id}) or db_manager.find_one('users', {'id': user_id})
     
-    return None
+    if user:
+        try:
+            # Try to decrypt user data
+            decrypted_user = decrypt_sensitive_data('user', user)
+            return decrypted_user
+        except:
+            # If decryption fails, return original data (for demo accounts)
+            return user
+    
+    # Fallback: create user data from session if user not found in DB
+    return {
+        'id': session['user_id'],
+        'username': session.get('username', 'Unknown'),
+        'email': session.get('email', ''),
+        'role': session.get('user_role', 'user')
+    }

@@ -26,27 +26,11 @@ import uuid
 
 logger = logging.getLogger(__name__)
 
-# Create admin blueprint
-admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+# Admin functions are now integrated into the main dashboard route
+# No separate blueprint needed - admin features are role-based
 
-@admin_bp.route('/dashboard')
-@admin_required
-def dashboard():
-    """Admin dashboard with comprehensive system overview"""
-    try:
-        # Get all users with scan counts
-        users = get_all_users_with_stats()
-        
-        # Get recent scan logs
-        scan_logs = get_recent_scan_logs(limit=50)
-        
-        # Get reported content
-        reported_content = get_reported_content()
-        
-        # Get safety tips by category
-        email_tips = db_manager.find_many('security_tips', {'category': 'email'})
-        url_tips = db_manager.find_many('security_tips', {'category': 'url'})
-        general_tips = db_manager.find_many('security_tips', {'category': 'general'})
+# Admin dashboard functionality is handled in routes.py dashboard() function
+# based on user role detection
         
         # Calculate system statistics
         stats = calculate_system_stats()
