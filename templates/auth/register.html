@@ -223,6 +223,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/password-toggle.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('registerForm');
@@ -264,48 +265,66 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Enhanced password toggle functionality
-    document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', function() {
-            const target = document.querySelector(this.dataset.target);
-            const icon = this.querySelector('.password-toggle-icon');
-            
-            // Add visual feedback
-            this.classList.add('toggle-active');
-            
-            if (target.type === 'password') {
-                target.type = 'text';
-                icon.classList.remove('bi-eye');
-                icon.classList.add('bi-eye-slash');
-                this.setAttribute('title', 'Hide Password');
+    // Password toggle functionality
+    function initPasswordToggle() {
+        const toggleButtons = document.querySelectorAll('.toggle-password');
+        console.log('Found toggle buttons:', toggleButtons.length);
+        
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
                 
-                // Visual feedback for showing password
-                target.style.backgroundColor = 'rgba(var(--bs-info-rgb), 0.1)';
+                const targetSelector = this.getAttribute('data-target');
+                const target = document.querySelector(targetSelector);
+                const icon = this.querySelector('.password-toggle-icon');
                 
-                // Auto-hide after 30 seconds for security
+                console.log('Toggle clicked, target:', targetSelector, 'element:', target);
+                
+                if (!target || !icon) {
+                    console.error('Target input or icon not found');
+                    return;
+                }
+                
+                // Add visual feedback
+                this.classList.add('toggle-active');
+                
+                if (target.type === 'password') {
+                    target.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                    this.setAttribute('title', 'Hide Password');
+                    
+                    // Visual feedback
+                    target.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
+                    
+                    // Auto-hide after 30 seconds
+                    setTimeout(() => {
+                        if (target.type === 'text') {
+                            target.type = 'password';
+                            icon.classList.remove('bi-eye-slash');
+                            icon.classList.add('bi-eye');
+                            this.setAttribute('title', 'Show Password');
+                            target.style.backgroundColor = '';
+                        }
+                    }, 30000);
+                } else {
+                    target.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                    this.setAttribute('title', 'Show Password');
+                    target.style.backgroundColor = '';
+                }
+                
+                // Remove active state
                 setTimeout(() => {
-                    if (target.type === 'text') {
-                        target.type = 'password';
-                        icon.classList.remove('bi-eye-slash');
-                        icon.classList.add('bi-eye');
-                        this.setAttribute('title', 'Show Password');
-                        target.style.backgroundColor = '';
-                    }
-                }, 30000);
-            } else {
-                target.type = 'password';
-                icon.classList.remove('bi-eye-slash');
-                icon.classList.add('bi-eye');
-                this.setAttribute('title', 'Show Password');
-                target.style.backgroundColor = '';
-            }
-            
-            // Remove active state after animation
-            setTimeout(() => {
-                this.classList.remove('toggle-active');
-            }, 200);
+                    this.classList.remove('toggle-active');
+                }, 200);
+            });
         });
-    });
+    }
+    
+    // Initialize password toggle
+    initPasswordToggle();
     
     // Form validation
     form.addEventListener('submit', function(e) {
