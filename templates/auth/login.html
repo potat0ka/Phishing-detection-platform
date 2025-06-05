@@ -475,13 +475,8 @@
 
 {% block scripts %}
 <script>
-// Initialize authentication when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Focus on username field
-    document.getElementById('username').focus();
-    
-    // Simple and reliable password toggle function
-    window.togglePassword = function(fieldId, button) {
+// Password toggle function - defined globally
+function togglePassword(fieldId, button) {
         const field = document.getElementById(fieldId);
         const icon = button.querySelector('i');
         
@@ -510,12 +505,17 @@ document.addEventListener('DOMContentLoaded', function() {
             field.style.backgroundColor = '';
         }
         
-        // Add visual feedback
-        button.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            button.style.transform = 'scale(1)';
-        }, 150);
-    };
+    // Add visual feedback
+    button.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        button.style.transform = 'scale(1)';
+    }, 150);
+}
+
+// Initialize authentication when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Focus on username field
+    document.getElementById('username').focus();
     
     // Form validation
     const form = document.getElementById('loginForm');

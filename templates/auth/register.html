@@ -223,8 +223,44 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/password-toggle.js') }}"></script>
 <script>
+// Password toggle function - defined globally
+function togglePassword(fieldId, button) {
+    const field = document.getElementById(fieldId);
+    const icon = button.querySelector('i');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+        button.setAttribute('title', 'Hide Password');
+        field.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
+        
+        // Auto-hide after 30 seconds for security
+        setTimeout(() => {
+            if (field.type === 'text') {
+                field.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+                button.setAttribute('title', 'Show Password');
+                field.style.backgroundColor = '';
+            }
+        }, 30000);
+    } else {
+        field.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+        button.setAttribute('title', 'Show Password');
+        field.style.backgroundColor = '';
+    }
+    
+    // Add visual feedback
+    button.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        button.style.transform = 'scale(1)';
+    }, 150);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('registerForm');
     const password = document.getElementById('password');
@@ -265,8 +301,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Simple and reliable password toggle function
-    window.togglePassword = function(fieldId, button) {
+    // Password toggle function - defined globally
+    function togglePassword(fieldId, button) {
         const field = document.getElementById(fieldId);
         const icon = button.querySelector('i');
         
@@ -300,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             button.style.transform = 'scale(1)';
         }, 150);
-    };
+    }
     
     // Form validation
     form.addEventListener('submit', function(e) {
