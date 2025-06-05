@@ -3,27 +3,51 @@
     "id": "report_001",
     "content": "https://secure-bank-login.malicious-site.com/verify",
     "type": "phishing",
-    "status": "active",
+    "status": "rejected",
     "created_at": "2025-06-05",
     "reporter_username": "Security Team",
-    "description": "Suspicious banking phishing site attempting to steal credentials"
+    "description": "Suspicious banking phishing site attempting to steal credentials",
+    "reviewed_by": "super_admin",
+    "reviewed_at": "2025-06-05T12:46:20.539486"
   },
   {
-    "id": "report_002", 
+    "id": "report_002",
     "content": "Urgent: Your account will be suspended. Click here to verify your information immediately.",
     "type": "spam",
-    "status": "pending",
+    "status": "rejected",
     "created_at": "2025-06-04",
     "reporter_username": "Auto System",
-    "description": "Suspicious email with urgency tactics"
+    "description": "Suspicious email with urgency tactics",
+    "reviewed_by": "super_admin",
+    "reviewed_at": "2025-06-05T12:46:31.986939"
   },
   {
     "id": "report_003",
     "content": "https://crypto-investment-guaranteed.biz/signup",
     "type": "scam",
-    "status": "investigating",
+    "status": "rejected",
     "created_at": "2025-06-03",
     "reporter_username": "User Report",
-    "description": "Cryptocurrency investment scam website"
+    "description": "Cryptocurrency investment scam website",
+    "reviewed_by": "super_admin",
+    "reviewed_at": "2025-06-05T12:45:55.607628"
+  },
+  {
+    "id": "report_004",
+    "content": "Click here to claim your $1000 prize! Limited time offer!",
+    "type": "spam",
+    "status": "pending",
+    "created_at": "2025-06-05",
+    "reporter_username": "Security Team",
+    "description": "Suspicious prize claim email with potential phishing links"
+  },
+  {
+    "id": "report_005",
+    "content": "https://paypal-security-verification.com/login",
+    "type": "phishing",
+    "status": "pending",
+    "created_at": "2025-06-05",
+    "reporter_username": "Auto System",
+    "description": "Fake PayPal login page attempting to steal credentials"
   }
 ]

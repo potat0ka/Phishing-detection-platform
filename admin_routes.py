@@ -711,7 +711,7 @@ def get_recent_scan_logs(limit=50):
         return []
 
 def get_reported_content():
-    """Get reported content for moderation"""
+    """Get reported content for moderation - only pending reports"""
     try:
         # Load reports from the reports.json file
         import json
@@ -720,8 +720,13 @@ def get_reported_content():
         reports_file = os.path.join('data', 'reports.json')
         if os.path.exists(reports_file):
             with open(reports_file, 'r') as f:
-                reports = json.load(f)
-            return reports
+                all_reports = json.load(f)
+            # Filter to only show pending reports (not approved or rejected)
+            pending_reports = [
+                report for report in all_reports 
+                if report.get('status', 'pending') not in ['approved', 'rejected']
+            ]
+            return pending_reports
         else:
             # Try database as fallback
             reports = db_manager.find_many('reports', {})

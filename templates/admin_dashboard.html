@@ -684,8 +684,8 @@
                                     </thead>
                                     <tbody>
                                         {% for report in reported_content %}
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input"></td>
+                                        <tr data-report-id="{{ report.id }}">
+                                            <td><input type="checkbox" class="form-check-input report-checkbox" data-report-id="{{ report.id }}"></td>
                                             <td><small>{{ report.created_at }}</small></td>
                                             <td><span class="badge bg-warning">{{ report.type.title() }}</span></td>
                                             <td>
@@ -3178,7 +3178,13 @@ function approveReport(reportId) {
         .then(data => {
             if (data.success) {
                 showAlert(data.message, 'success');
-                setTimeout(() => location.reload(), 1500);
+                // Remove the report row immediately instead of reloading
+                const reportRow = document.querySelector(`tr[data-report-id="${reportId}"]`);
+                if (reportRow) {
+                    reportRow.style.transition = 'opacity 0.3s';
+                    reportRow.style.opacity = '0';
+                    setTimeout(() => reportRow.remove(), 300);
+                }
             } else {
                 showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
             }
@@ -3201,7 +3207,13 @@ function rejectReport(reportId) {
         .then(data => {
             if (data.success) {
                 showAlert(data.message, 'success');
-                setTimeout(() => location.reload(), 1500);
+                // Remove the report row immediately instead of reloading
+                const reportRow = document.querySelector(`tr[data-report-id="${reportId}"]`);
+                if (reportRow) {
+                    reportRow.style.transition = 'opacity 0.3s';
+                    reportRow.style.opacity = '0';
+                    setTimeout(() => reportRow.remove(), 300);
+                }
             } else {
                 showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
             }
