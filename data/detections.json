@@ -208,47 +208,5 @@
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0",
     "timestamp": "2025-06-05 09:24:09.681327",
     "_id": "detections_12_458610366"
-  },
-  {
-    "user_id": "users_4_4072498817",
-    "input_type": "url",
-    "input_content": "https://www.youtube.com/watch?v=XTFsNqaqrjA",
-    "result": "safe",
-    "confidence_score": 0.8,
-    "threat_level": "unknown",
-    "reasons": [
-      "Threat intelligence: MINIMAL risk detected"
-    ],
-    "ai_analysis": {
-      "text_complexity": 0.25,
-      "sentiment_score": 0.0,
-      "keyword_density": 0.0,
-      "ai_confidence": 0.4
-    },
-    "user_ip": "27.34.76.35, 10.83.8.80",
-    "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0",
-    "timestamp": "2025-06-05 10:09:12.949732",
-    "_id": "detections_12_364332895"
-  },
-  {
-    "user_id": "users_4_4072498817",
-    "input_type": "url",
-    "input_content": "https://www.youtube.com/watch?v=XTFsNqaqrjA",
-    "result": "safe",
-    "confidence_score": 0.8,
-    "threat_level": "unknown",
-    "reasons": [
-      "Threat intelligence: MINIMAL risk detected"
-    ],
-    "ai_analysis": {
-      "text_complexity": 0.25,
-      "sentiment_score": 0.0,
-      "keyword_density": 0.0,
-      "ai_confidence": 0.4
-    },
-    "user_ip": "27.34.76.35, 10.83.8.80",
-    "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0",
-    "timestamp": "2025-06-05 10:10:34.670005",
-    "_id": "detections_13_3881083323"
   }
 ]

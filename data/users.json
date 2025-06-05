@@ -53,7 +53,7 @@
     "role": "user",
     "display_name": "Demo User",
     "created_at": "2025-06-05T07:42:25.923321",
-    "last_login": "2025-06-05 10:08:00.480204",
+    "last_login": "2025-06-05 10:15:31.018430",
     "is_active": true,
     "login_attempts": 0,
     "locked_until": null,

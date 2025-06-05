@@ -200,11 +200,11 @@
                                         <td>
                                             <div class="btn-group btn-group-sm" role="group">
                                                 <button class="btn btn-outline-secondary" 
-                                                        onclick="showDetails('{{ detection.id }}')">
+                                                        onclick="showDetails('{{ detection.get('id') or detection.get('_id') }}')">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
                                                 <button class="btn btn-outline-danger" 
-                                                        onclick="deleteDetection('{{ detection.id }}')"
+                                                        onclick="deleteDetection('{{ detection.get('id') or detection.get('_id') }}')"
                                                         title="Delete this detection">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
