@@ -1,1 +1,83 @@
-[]
+[
+  {
+    "id": "tip_7fb67059",
+    "title": "Verify Sender Identity",
+    "content": "Always verify the sender's email address and look for spelling mistakes or suspicious domains.",
+    "category": "email",
+    "priority": 1,
+    "created_at": "2025-06-05T08:07:34.330689",
+    "_id": "security_tips_1_444869435"
+  },
+  {
+    "id": "tip_a2e3b4f8",
+    "title": "Check for Urgency Tactics",
+    "content": "Be suspicious of emails that create a sense of urgency or pressure you to act immediately.",
+    "category": "email",
+    "priority": 1,
+    "created_at": "2025-06-05T08:07:34.330756",
+    "_id": "security_tips_2_2581911594"
+  },
+  {
+    "id": "tip_81e64ce9",
+    "title": "Verify Links Before Clicking",
+    "content": "Hover over links to see the actual destination URL before clicking on them.",
+    "category": "email",
+    "priority": 2,
+    "created_at": "2025-06-05T08:07:34.330939",
+    "_id": "security_tips_3_81258002"
+  },
+  {
+    "id": "tip_e9117836",
+    "title": "Check SSL Certificates",
+    "content": "Look for the padlock icon and \"https://\" in the address bar for secure connections.",
+    "category": "url",
+    "priority": 1,
+    "created_at": "2025-06-05T08:07:34.331001",
+    "_id": "security_tips_4_615441378"
+  },
+  {
+    "id": "tip_b2aa3e71",
+    "title": "Beware of URL Shorteners",
+    "content": "Be cautious with shortened URLs that hide the actual destination website.",
+    "category": "url",
+    "priority": 2,
+    "created_at": "2025-06-05T08:07:34.331064",
+    "_id": "security_tips_5_534114841"
+  },
+  {
+    "id": "tip_f69a6b3c",
+    "title": "Check Domain Spelling",
+    "content": "Look for misspelled domain names that mimic legitimate websites (typosquatting).",
+    "category": "url",
+    "priority": 1,
+    "created_at": "2025-06-05T08:07:34.331151",
+    "_id": "security_tips_6_3901359483"
+  },
+  {
+    "id": "tip_41e00f7c",
+    "title": "Enable Two-Factor Authentication",
+    "content": "Use 2FA on all important accounts to add an extra layer of security.",
+    "category": "general",
+    "priority": 1,
+    "created_at": "2025-06-05T08:07:34.331203",
+    "_id": "security_tips_7_188762801"
+  },
+  {
+    "id": "tip_5a6fe643",
+    "title": "Keep Software Updated",
+    "content": "Regularly update your browser, operating system, and security software.",
+    "category": "general",
+    "priority": 2,
+    "created_at": "2025-06-05T08:07:34.331250",
+    "_id": "security_tips_8_1856976707"
+  },
+  {
+    "id": "tip_2a7c86cc",
+    "title": "Use Strong Passwords",
+    "content": "Create unique, complex passwords and use a password manager to store them securely.",
+    "category": "general",
+    "priority": 1,
+    "created_at": "2025-06-05T08:07:34.331308",
+    "_id": "security_tips_9_1524624968"
+  }
+]

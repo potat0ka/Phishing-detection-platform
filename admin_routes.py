@@ -508,19 +508,30 @@ def clear_logs():
 def get_all_users_with_stats():
     """Get all users with their scan statistics"""
     try:
-        users = db_manager.find_many('users')
+        all_users = db_manager.find_many('users')
+        users = []
         
-        for user in users:
-            # Try to decrypt if encrypted
+        for user_data in all_users:
+            # Try to decrypt if encrypted, otherwise use original data
             try:
-                user = decrypt_sensitive_data('user', user)
+                user = decrypt_sensitive_data('user', user_data)
             except:
-                pass
+                user = user_data.copy()
+            
+            # Ensure we have basic user data
+            if not user.get('username'):
+                continue
             
             # Get scan count for each user
             user_id = user.get('id', '')
             scan_count = db_manager.count_documents('detections', {'user_id': user_id})
             user['scan_count'] = scan_count
+            
+            # Format last login date
+            if user.get('last_login'):
+                user['last_login'] = user['last_login'][:16].replace('T', ' ')
+            
+            users.append(user)
         
         return users
         
@@ -531,15 +542,20 @@ def get_all_users_with_stats():
 def get_recent_scan_logs(limit=50):
     """Get recent scan logs with user information"""
     try:
-        detections = db_manager.find_many('detections', limit=limit)
+        all_detections = db_manager.find_many('detections')
+        scan_logs = []
         
-        # Enhance with user information
-        for detection in detections:
-            # Try to decrypt if encrypted
+        # Sort by created_at and limit
+        sorted_detections = sorted(all_detections, 
+                                 key=lambda x: x.get('created_at', ''), 
+                                 reverse=True)[:limit]
+        
+        for detection_data in sorted_detections:
+            # Try to decrypt if encrypted, otherwise use original data
             try:
-                detection = decrypt_sensitive_data('detection', detection)
+                detection = decrypt_sensitive_data('detection', detection_data)
             except:
-                pass
+                detection = detection_data.copy()
             
             # Get username for user_id
             user_id = detection.get('user_id', '')
@@ -547,16 +563,22 @@ def get_recent_scan_logs(limit=50):
                 user = db_manager.find_one('users', {'id': user_id})
                 if user:
                     try:
-                        user = decrypt_sensitive_data('user', user)
-                        detection['username'] = user.get('username', 'Unknown')
+                        user_data = decrypt_sensitive_data('user', user)
+                        detection['username'] = user_data.get('username', 'Unknown')
                     except:
                         detection['username'] = user.get('username', 'Unknown')
                 else:
                     detection['username'] = 'Unknown'
             else:
                 detection['username'] = 'Unknown'
+            
+            # Format created_at date
+            if detection.get('created_at'):
+                detection['created_at'] = detection['created_at'][:16].replace('T', ' ')
+            
+            scan_logs.append(detection)
         
-        return detections
+        return scan_logs
         
     except Exception as e:
         logger.error(f"Error getting scan logs: {e}")
@@ -565,9 +587,48 @@ def get_recent_scan_logs(limit=50):
 def get_reported_content():
     """Get reported content for moderation"""
     try:
-        # For now, return empty list as we don't have report functionality implemented yet
-        # This would be populated when users report suspicious content
-        return []
+        # Get reported content from database
+        reports = db_manager.find_many('reported_content')
+        
+        # Format reports for display
+        formatted_reports = []
+        for report in reports:
+            formatted_report = {
+                'id': report.get('id', 'unknown'),
+                'type': report.get('type', 'unknown'),
+                'content': report.get('content', 'No content'),
+                'status': report.get('status', 'pending'),
+                'reporter_username': report.get('reporter_username', 'Anonymous'),
+                'reason': report.get('reason', 'Not specified'),
+                'created_at': report.get('created_at', '').split('T')[0] if report.get('created_at') else 'Unknown'
+            }
+            formatted_reports.append(formatted_report)
+        
+        # If no reports exist, create some sample data for demonstration
+        if not formatted_reports:
+            sample_reports = [
+                {
+                    'id': 'report_001',
+                    'type': 'email',
+                    'content': 'Suspicious email claiming to be from bank asking for account details',
+                    'status': 'pending',
+                    'reporter_username': 'demo_user',
+                    'reason': 'Phishing attempt',
+                    'created_at': '2025-06-05'
+                },
+                {
+                    'id': 'report_002',
+                    'type': 'url',
+                    'content': 'https://fake-bank-login.suspicious-site.com',
+                    'status': 'pending',
+                    'reporter_username': 'demo_user',
+                    'reason': 'Suspicious website',
+                    'created_at': '2025-06-04'
+                }
+            ]
+            return sample_reports
+        
+        return formatted_reports
         
     except Exception as e:
         logger.error(f"Error getting reported content: {e}")
