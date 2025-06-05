@@ -157,27 +157,41 @@
                                         </td>
                                         <td>
                                             <div class="content-preview">
-                                                {{ detection.input_content[:50] }}{% if detection.input_content|length > 50 %}...{% endif %}
+                                                {% if detection.get('input_content') %}
+                                                    {{ detection.input_content[:50] }}{% if detection.input_content|length > 50 %}...{% endif %}
+                                                {% elif detection.get('content') %}
+                                                    {{ detection.content[:50] }}{% if detection.content|length > 50 %}...{% endif %}
+                                                {% else %}
+                                                    No content
+                                                {% endif %}
                                             </div>
                                         </td>
                                         <td>
-                                            {% set risk_color = 'success' if detection.result == 'safe' else ('warning' if detection.result == 'suspicious' else 'danger') %}
+                                            {% set result = detection.get('result', 'unknown') %}
+                                            {% set risk_color = 'success' if result == 'safe' else ('warning' if result == 'suspicious' else 'danger') %}
                                             <span class="badge bg-{{ risk_color }}">
-                                                <i class="fas {{ 'fa-shield-alt' if detection.result == 'safe' else ('fa-exclamation-triangle' if detection.result == 'suspicious' else 'fa-times-circle') }} me-1"></i>
-                                                {{ detection.result.title() }}
+                                                <i class="fas {{ 'fa-shield-alt' if result == 'safe' else ('fa-exclamation-triangle' if result == 'suspicious' else 'fa-times-circle') }} me-1"></i>
+                                                {{ result.title() }}
                                             </span>
                                         </td>
                                         <td>
+                                            {% set confidence = detection.get('confidence_score', detection.get('confidence', 0.0)) %}
                                             <div class="progress" style="height: 20px;">
                                                 <div class="progress-bar bg-{{ risk_color }}" 
-                                                     style="width: {{ detection.confidence_score * 100 }}%">
-                                                    {{ "%.1f"|format(detection.confidence_score * 100) }}%
+                                                     style="width: {{ confidence * 100 }}%">
+                                                    {{ "%.1f"|format(confidence * 100) }}%
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
                                             <small class="text-muted">
-                                                {{ detection.created_at[:16].replace('T', ' ') }}
+                                                {% if detection.get('created_at') %}
+                                                    {{ detection.created_at[:16].replace('T', ' ') }}
+                                                {% elif detection.get('timestamp') %}
+                                                    {{ detection.timestamp[:16].replace('T', ' ') }}
+                                                {% else %}
+                                                    Recent
+                                                {% endif %}
                                             </small>
                                         </td>
                                         <td>
