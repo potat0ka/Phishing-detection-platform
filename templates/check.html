@@ -33,18 +33,45 @@
                             <i class="fas fa-graduation-cap me-2"></i>Educational
                         </span>
                     </div>
-                    <div class="stats-row d-flex flex-wrap gap-4">
-                        <div class="stat-item">
-                            <div class="stat-number text-primary fw-bold fs-4">99.8%</div>
-                            <div class="stat-label text-muted small">Accuracy Rate</div>
+                    <div class="stats-section mt-4 p-4 rounded-4 bg-light bg-opacity-50">
+                        <div class="stats-header text-center mb-3">
+                            <h6 class="fw-bold text-dark mb-1">Platform Performance</h6>
+                            <p class="text-muted small mb-0">Real-time security metrics</p>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-number text-success fw-bold fs-4">&lt;2s</div>
-                            <div class="stat-label text-muted small">Analysis Time</div>
+                        <div class="stats-grid row g-3">
+                            <div class="col-4">
+                                <div class="stat-card text-center p-3 rounded-3 bg-white shadow-sm border">
+                                    <div class="stat-icon mb-2">
+                                        <i class="fas fa-bullseye text-primary fs-5"></i>
+                                    </div>
+                                    <div class="stat-number text-primary fw-bold fs-3 mb-1">99.8%</div>
+                                    <div class="stat-label text-muted fw-medium" style="font-size: 0.75rem;">Accuracy Rate</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-card text-center p-3 rounded-3 bg-white shadow-sm border">
+                                    <div class="stat-icon mb-2">
+                                        <i class="fas fa-stopwatch text-success fs-5"></i>
+                                    </div>
+                                    <div class="stat-number text-success fw-bold fs-3 mb-1">&lt;2s</div>
+                                    <div class="stat-label text-muted fw-medium" style="font-size: 0.75rem;">Analysis Time</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-card text-center p-3 rounded-3 bg-white shadow-sm border">
+                                    <div class="stat-icon mb-2">
+                                        <i class="fas fa-shield-alt text-info fs-5"></i>
+                                    </div>
+                                    <div class="stat-number text-info fw-bold fs-3 mb-1">24/7</div>
+                                    <div class="stat-label text-muted fw-medium" style="font-size: 0.75rem;">Protection</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-number text-info fw-bold fs-4">24/7</div>
-                            <div class="stat-label text-muted small">Protection</div>
+                        <div class="stats-footer text-center mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-chart-line me-1"></i>
+                                Updated in real-time
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -366,6 +393,65 @@ document.getElementById('input_content').addEventListener('input', function() {
     transform: scale(1.1);
 }
 
+/* Enhanced stats section styling */
+.stats-section {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.stats-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-color: rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.stat-icon {
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.2);
+}
+
+.stat-number {
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.stat-card:hover .stat-number {
+    transform: scale(1.1);
+}
+
+.stats-header h6 {
+    color: var(--bs-dark);
+    font-weight: 700;
+}
+
+.stats-footer {
+    animation: fadeInUp 0.6s ease-out 0.3s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Enhanced character card styling */
 .character-card {
     transition: all 0.4s ease;
@@ -503,6 +589,15 @@ document.getElementById('input_content').addEventListener('input', function() {
     .security-features {
         justify-content: center;
     }
+    
+    .stats-section {
+        margin-top: 2rem;
+    }
+    
+    .stats-grid .col-4 {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+    }
 }
 
 @media (max-width: 767.98px) {
@@ -516,6 +611,64 @@ document.getElementById('input_content').addEventListener('input', function() {
     
     .character-card {
         padding: 1rem !important;
+    }
+    
+    .stats-section {
+        padding: 1rem !important;
+        margin-top: 1.5rem;
+    }
+    
+    .stats-grid .col-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card {
+        padding: 1rem !important;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem !important;
+    }
+    
+    .security-features .feature-badge {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem !important;
+    }
+    
+    .hero-content p.lead {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .stats-section {
+        padding: 0.75rem !important;
+    }
+    
+    .stat-card {
+        padding: 0.75rem !important;
+    }
+    
+    .stat-number {
+        font-size: 1.25rem !important;
+    }
+    
+    .stat-label {
+        font-size: 0.7rem !important;
+    }
+    
+    .stats-header h6 {
+        font-size: 0.9rem;
+    }
+    
+    .hero-content h1 {
+        font-size: 1.75rem;
+    }
+    
+    .floating-elements {
+        display: none;
     }
 }
 
