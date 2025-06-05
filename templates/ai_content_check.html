@@ -428,8 +428,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const analyzeBtn = document.getElementById('analyzeBtn');
     const form = document.getElementById('uploadForm');
     
-    // Initialize permission system when page loads
-    initializePermissionSystem();
+    // Remove automatic permission initialization
+    // Permissions will be requested only when user clicks camera/microphone buttons
     
     // File input change handler
     fileInput.addEventListener('change', function() {
@@ -516,29 +516,10 @@ document.addEventListener('DOMContentLoaded', function() {
 // to ensure users are only prompted once per device/browser
 
 /**
- * Initialize the permission system on page load
- * Checks localStorage for previous permission decisions
+ * Check if camera and microphone are available (without requesting permissions)
  */
-function initializePermissionSystem() {
-    // Check if user has already made a permission decision
-    const permissionStatus = localStorage.getItem('ai-detector-permissions');
-    const permissionTimestamp = localStorage.getItem('ai-detector-permissions-timestamp');
-    
-    // If no previous decision or decision is older than 30 days, show permission request
-    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-    
-    if (!permissionStatus || !permissionTimestamp || parseInt(permissionTimestamp) < thirtyDaysAgo) {
-        // Show permission modal after a brief delay to let page load
-        setTimeout(() => {
-            showPermissionModal();
-        }, 1000);
-    } else if (permissionStatus === 'granted') {
-        // Show success message if permissions were previously granted
-        showPermissionStatus('success', 'Camera and microphone access enabled for enhanced AI detection features.');
-    } else if (permissionStatus === 'denied') {
-        // Show info message about limited functionality
-        showPermissionStatus('info', 'Limited functionality: Upload files to analyze. For enhanced features, enable camera and microphone access in your browser settings.');
-    }
+function checkMediaSupport() {
+    return navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
 }
 
 /**
@@ -695,25 +676,26 @@ let textCameraStream = null;
 let mediaRecorder = null;
 let recordedChunks = [];
 
-// Start camera function with permission checking
+// Start camera function with proper permission handling
 window.startCamera = async function() {
-    // Check if permissions were granted
-    const permissionStatus = localStorage.getItem('ai-detector-permissions');
-    
-    if (permissionStatus !== 'granted') {
-        showPermissionStatus('warning', 'Camera access required. Please grant permissions first or use file upload instead.');
-        setTimeout(() => {
-            showPermissionModal();
-        }, 1000);
+    // Check browser support first
+    if (!checkMediaSupport()) {
+        showPermissionStatus('warning', 'Camera not supported in this browser. Please use file upload instead.');
         return;
     }
     
     try {
+        // Show the modal first
         const modal = new bootstrap.Modal(document.getElementById('cameraModal'));
         modal.show();
         
+        // Request camera permission only when user clicks the button
         cameraStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { width: 640, height: 480 } 
+            video: { 
+                width: { ideal: 640 },
+                height: { ideal: 480 },
+                facingMode: 'user'
+            } 
         });
         
         const video = document.getElementById('cameraVideo');
@@ -784,32 +766,39 @@ window.stopCamera = function() {
     bootstrap.Modal.getInstance(document.getElementById('cameraModal')).hide();
 };
 
-// Start recording function with permission checking
+// Start recording function with proper permission handling
 window.startRecording = async function() {
-    // Check if permissions were granted
-    const permissionStatus = localStorage.getItem('ai-detector-permissions');
-    
-    if (permissionStatus !== 'granted') {
-        showPermissionStatus('warning', 'Microphone access required. Please grant permissions first or use file upload instead.');
-        setTimeout(() => {
-            showPermissionModal();
-        }, 1000);
+    // Check browser support first
+    if (!checkMediaSupport()) {
+        showPermissionStatus('warning', 'Microphone not supported in this browser. Please use file upload instead.');
         return;
     }
     
     try {
+        // Show the modal first
         const modal = new bootstrap.Modal(document.getElementById('audioModal'));
         modal.show();
+        
+        // Start recording immediately (permission will be requested in startAudioRecording)
+        await startAudioRecording();
+        
     } catch (error) {
         console.error('Audio modal error:', error);
         showPermissionStatus('warning', 'Unable to open audio recording interface. Please use file upload instead.');
     }
 };
 
-// Start audio recording
+// Start audio recording with proper error handling
 window.startAudioRecording = async function() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                sampleRate: 44100
+            }
+        });
+        
         mediaRecorder = new MediaRecorder(stream);
         recordedChunks = [];
         
