@@ -339,8 +339,9 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="badge bg-{{ 'success' if scan.result == 'safe' else ('warning' if scan.result == 'suspicious' else 'danger') }}">
-                                                    {{ (scan.result or 'Unknown').title() }}
+                                                {% set result_value = scan.result.result if scan.result is mapping else (scan.result or 'Unknown') %}
+                                                <span class="badge bg-{{ 'success' if result_value == 'safe' else ('warning' if result_value == 'suspicious' else 'danger') }}">
+                                                    {{ result_value.title() if result_value is string else result_value }}
                                                 </span>
                                             </td>
                                             <td>{{ "%.0f"|format((scan.confidence_score or 0) * 100) }}%</td>

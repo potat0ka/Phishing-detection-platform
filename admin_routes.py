@@ -82,7 +82,7 @@ def admin_dashboard():
     except Exception as e:
         logger.error(f"Error loading admin dashboard: {e}")
         flash('Error loading admin dashboard', 'error')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('index'))
 
 @admin_bp.route('/user/create', methods=['POST'])
 @admin_required
