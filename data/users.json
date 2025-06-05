@@ -14,5 +14,21 @@
     "encryption_version": "2.0",
     "encrypted_at": "2025-06-05 05:22:30.263757",
     "_id": "users_1_2462542316"
+  },
+  {
+    "username": "Z0FBQUFBQm9RU3hiYWdwRkJyM09uWjVEMmZ6NVVBN0FOUmF5VS1fVDFQU1hJSy1YcWp4UC1IZ2NEaUl6TUtFemxzV1VrMGRhaUM5bVE1dHE1a0VXSUhLRVZjemxxWlB5ZVE9PQ==",
+    "email": "Z0FBQUFBQm9RU3hiRUtLcW81N01EYzUxZDViend5U0w1WHVtYW9nWUFvMVNZQnE3WGE0U1JLUTcteVptYWVCN3A1Y1JDcUNFTmRpWk9FaVFvcTQycDNqNW1xcG5BalgtLWRjZ3lwLXRYaHMxdTZTLXdxakZ2TEE9",
+    "password_hash": "scrypt:32768:8:1$F1uvOgQuZOO7pVL4$ca782369d4dcbb31885040e9c1eac87d1106024a0fddfdce5a0b05331a83cee1dad6cd123867c5373bfa0d52808eb26b49198e7a93916f5b74cc0ca7f249a48b",
+    "role": "user",
+    "created_at": "2025-06-05 05:34:19.173987",
+    "last_login": "2025-06-05 05:34:24.559871",
+    "is_active": true,
+    "login_attempts": 0,
+    "locked_until": null,
+    "username_encrypted": true,
+    "email_encrypted": true,
+    "encryption_version": "2.0",
+    "encrypted_at": "2025-06-05 05:34:19.174787",
+    "_id": "users_2_643660768"
   }
 ]

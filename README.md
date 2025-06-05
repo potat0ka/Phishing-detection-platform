@@ -1,6 +1,25 @@
 # AI Phishing Detection Platform
 
-An advanced AI-powered phishing detection web platform with enterprise-level security and comprehensive user data encryption. Built using Flask with simple `python main.py` startup for easy local development and deployment.
+A comprehensive phishing detection system that identifies potential phishing content from websites, emails, messages, and links using advanced AI and machine learning algorithms. Built with Flask, Python, HTML, CSS, and JavaScript for a complete web-based security solution.
+
+## 📋 Project Overview
+
+This platform is a full-featured phishing detection system designed to help users identify and avoid phishing attempts across multiple communication channels. The system combines traditional rule-based detection with modern AI/ML techniques to provide accurate threat assessment.
+
+**Key Capabilities:**
+- Analyze URLs, emails, and text messages for phishing indicators
+- AI-powered content detection for images, videos, audio, and documents
+- Real-time threat intelligence and security assessment
+- User authentication and detection history management
+- Educational content and security awareness training
+
+**Technologies Used:**
+- **Backend**: Python (Flask framework)
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
+- **Database**: MongoDB with JSON fallback
+- **Security**: AES-256 encryption, secure session management
+- **AI/ML**: Scikit-learn, OpenCV, TensorFlow (optional)
+- **UI Framework**: Bootstrap 5 with responsive design
 
 ## 🔒 Security Features
 
