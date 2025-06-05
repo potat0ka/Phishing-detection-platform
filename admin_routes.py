@@ -1156,10 +1156,17 @@ def calculate_system_stats():
         all_detections = db_manager.find_many('detections', {})
         dangerous_detections = 0
         for detection in all_detections:
-            result = detection.get('result', {})
-            category = result.get('category', '')
-            if category in ['phishing', 'suspicious', 'dangerous']:
-                dangerous_detections += 1
+            if isinstance(detection, dict):
+                result = detection.get('result', {})
+                if isinstance(result, dict):
+                    category = result.get('category', '')
+                elif isinstance(result, str):
+                    category = result.lower()
+                else:
+                    category = ''
+                
+                if category in ['phishing', 'suspicious', 'dangerous']:
+                    dangerous_detections += 1
         
         safe_count = total_scans - dangerous_detections
         

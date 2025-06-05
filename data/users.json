@@ -12,51 +12,5 @@
     "last_login": "2025-06-05 11:28:14.585934",
     "login_attempts": 0,
     "locked_until": null
-  },
-  {
-    "username": "Z0FBQUFBQm9RWG5QbWtfSHRxcGdMWGNNbXhZdzJ5blRCOWJ0VXFKWllvVThPVE1zYWZFaGtxTnNfN24wd0xrREJ0dDdHNXNBQTJFY3BWcXg4LTAyNk11LUtyZ0N4MWlTamc9PQ==",
-    "email": "Z0FBQUFBQm9RWG5QSE1PUHlBelN1QVkweFpRR05UaWdCczh0U3dKUHoyVHZXNExFUmQ1dmpwYUxfRXByM3dpNFVQRHIzam1EcHlvM1FhaFA5Mm9rV1lEX2hmRDhUeXkzaVE9PQ==",
-    "password_hash": "scrypt:32768:8:1$XKLxKMqbBOhp3KX3$00111bfd7906a95782464b4ce53ff30d6b6ffb049fd2515fc2c6e5e358a5b24b8b28cf1e4dee7ee28afca94ad8db9d01d96724c87c032fb9f1b58a109f4530b7",
-    "role": "user",
-    "created_at": "2025-06-05 11:04:47.883183",
-    "last_login": "2025-06-05 11:04:51.767551",
-    "is_active": true,
-    "login_attempts": 0,
-    "locked_until": null,
-    "username_encrypted": true,
-    "email_encrypted": true,
-    "encryption_version": "2.0",
-    "encrypted_at": "2025-06-05 11:04:47.884060",
-    "_id": "users_3_3249283284"
-  },
-  {
-    "username": "demo_admin",
-    "email": "admin@demo.com",
-    "password_hash": "scrypt:32768:8:1$RG0GrZYNICwaW8eW$4c8e25cfb0298f89b012274d0e484876f5e72e05f16644dc93a25516f97e64911feb2fc523b90b1d40ea7ac25ef4ad035df6c3c374d98b1289dab1a1dcb7874a",
-    "role": "admin",
-    "display_name": "Demo Administrator",
-    "created_at": "2025-06-05T11:18:37.062888",
-    "last_login": "2025-06-05 11:27:18.116351",
-    "is_active": true,
-    "login_attempts": 0,
-    "locked_until": null,
-    "email_verified": true,
-    "profile_completed": true,
-    "_id": "users_4_3816289094"
-  },
-  {
-    "username": "demo_user",
-    "email": "user@demo.com",
-    "password_hash": "scrypt:32768:8:1$Y3JTVC3J62xWuLT2$e091c772e897be95bf344600f29d8e671890963c6fe005bbc1c6ecc3dc355e721c0b9ef69b6d0406a66cb2908d6f0c8d1ec3272ac4f3badc5a6c80b82f2248c9",
-    "role": "user",
-    "display_name": "Demo User",
-    "created_at": "2025-06-05T11:18:37.162392",
-    "last_login": null,
-    "is_active": true,
-    "login_attempts": 0,
-    "locked_until": null,
-    "email_verified": true,
-    "profile_completed": true,
-    "_id": "users_5_4130915929"
   }
 ]
