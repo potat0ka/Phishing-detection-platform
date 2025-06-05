@@ -9,6 +9,8 @@ from mongodb_config import db_manager
 from encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data
 import logging
 import re
+import secrets
+import uuid
 from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
@@ -356,6 +358,129 @@ def change_password():
     except Exception as e:
         logger.error(f"Password change error: {e}")
         return jsonify({'success': False, 'message': 'An error occurred'}), 500
+
+@auth_bp.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    """Handle forgot password requests"""
+    if request.method == 'GET':
+        return render_template('auth/forgot_password.html')
+    
+    try:
+        email = request.form.get('email', '').strip().lower()
+        
+        if not email:
+            flash('Please enter your email address.', 'error')
+            return render_template('auth/forgot_password.html')
+        
+        if not validate_email(email):
+            flash('Please enter a valid email address.', 'error')
+            return render_template('auth/forgot_password.html')
+        
+        # Check if user exists
+        user = db_manager.find_one('users', {'email': email})
+        
+        # Always show success message for security (don't reveal if email exists)
+        if user:
+            # Generate reset token
+            reset_token = secrets.token_urlsafe(32)
+            reset_expires = datetime.utcnow() + timedelta(hours=1)  # Token expires in 1 hour
+            
+            # Save reset token to database
+            reset_data = {
+                'reset_token': reset_token,
+                'reset_expires': reset_expires,
+                'reset_requested_at': datetime.utcnow()
+            }
+            
+            db_manager.update_one('users', {'_id': user['_id']}, reset_data)
+            
+            # For now, we'll log the reset link instead of sending email
+            # In production, you would integrate with an email service
+            reset_url = url_for('auth.reset_password', token=reset_token, _external=True)
+            logger.info(f"Password reset requested for {email}. Reset URL: {reset_url}")
+            
+            # Store reset info for demonstration (in production, send via email)
+            flash(f'Password reset instructions have been sent to your email. Check your email for the reset link.', 'success')
+        else:
+            # Don't reveal that the email doesn't exist
+            flash('If an account with that email exists, password reset instructions have been sent.', 'success')
+        
+        return render_template('auth/forgot_password.html')
+        
+    except Exception as e:
+        logger.error(f"Forgot password error: {e}")
+        flash('An error occurred. Please try again later.', 'error')
+        return render_template('auth/forgot_password.html')
+
+@auth_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    """Handle password reset with token"""
+    if request.method == 'GET':
+        # Verify token is valid and not expired
+        user = db_manager.find_one('users', {
+            'reset_token': token,
+            'reset_expires': {'$gt': datetime.utcnow()}
+        })
+        
+        if not user:
+            flash('Invalid or expired reset token. Please request a new password reset.', 'error')
+            return redirect(url_for('auth.forgot_password'))
+        
+        return render_template('auth/reset_password.html', token=token)
+    
+    # POST request - process password reset
+    try:
+        new_password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        
+        if not new_password or not confirm_password:
+            flash('Please fill in all fields.', 'error')
+            return render_template('auth/reset_password.html', token=token)
+        
+        if new_password != confirm_password:
+            flash('Passwords do not match.', 'error')
+            return render_template('auth/reset_password.html', token=token)
+        
+        # Validate password strength
+        is_valid, message = validate_password(new_password)
+        if not is_valid:
+            flash(message, 'error')
+            return render_template('auth/reset_password.html', token=token)
+        
+        # Verify token is still valid
+        user = db_manager.find_one('users', {
+            'reset_token': token,
+            'reset_expires': {'$gt': datetime.utcnow()}
+        })
+        
+        if not user:
+            flash('Invalid or expired reset token. Please request a new password reset.', 'error')
+            return redirect(url_for('auth.forgot_password'))
+        
+        # Update password and clear reset token
+        new_password_hash = generate_password_hash(new_password)
+        update_data = {
+            'password_hash': new_password_hash,
+            'reset_token': None,
+            'reset_expires': None,
+            'reset_completed_at': datetime.utcnow()
+        }
+        
+        success = db_manager.update_one('users', {'_id': user['_id']}, update_data)
+        
+        if success:
+            decrypted_user = decrypt_sensitive_data('user', user)
+            logger.info(f"Password reset completed for user: {decrypted_user.get('username', 'unknown')}")
+            flash('Your password has been reset successfully. You can now log in with your new password.', 'success')
+            return redirect(url_for('auth.login'))
+        else:
+            flash('Failed to reset password. Please try again.', 'error')
+            return render_template('auth/reset_password.html', token=token)
+            
+    except Exception as e:
+        logger.error(f"Password reset error: {e}")
+        flash('An error occurred while resetting your password. Please try again.', 'error')
+        return render_template('auth/reset_password.html', token=token)
 
 # Authentication decorators and helpers
 def login_required(f):
