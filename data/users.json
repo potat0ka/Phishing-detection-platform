@@ -42,5 +42,49 @@
     "encryption_version": "2.0",
     "encrypted_at": "2025-06-05 11:04:47.884060",
     "_id": "users_3_3249283284"
+  },
+  {
+    "username": "demo_admin",
+    "email": "admin@demo.com",
+    "password_hash": "scrypt:32768:8:1$RG0GrZYNICwaW8eW$4c8e25cfb0298f89b012274d0e484876f5e72e05f16644dc93a25516f97e64911feb2fc523b90b1d40ea7ac25ef4ad035df6c3c374d98b1289dab1a1dcb7874a",
+    "role": "admin",
+    "display_name": "Demo Administrator",
+    "created_at": "2025-06-05T11:18:37.062888",
+    "last_login": null,
+    "is_active": true,
+    "login_attempts": 0,
+    "locked_until": null,
+    "email_verified": true,
+    "profile_completed": true,
+    "_id": "users_4_3816289094"
+  },
+  {
+    "username": "demo_user",
+    "email": "user@demo.com",
+    "password_hash": "scrypt:32768:8:1$Y3JTVC3J62xWuLT2$e091c772e897be95bf344600f29d8e671890963c6fe005bbc1c6ecc3dc355e721c0b9ef69b6d0406a66cb2908d6f0c8d1ec3272ac4f3badc5a6c80b82f2248c9",
+    "role": "user",
+    "display_name": "Demo User",
+    "created_at": "2025-06-05T11:18:37.162392",
+    "last_login": null,
+    "is_active": true,
+    "login_attempts": 0,
+    "locked_until": null,
+    "email_verified": true,
+    "profile_completed": true,
+    "_id": "users_5_4130915929"
+  },
+  {
+    "id": "user_1749122331_7346",
+    "_id": "users_6_1818415690",
+    "username": "potato",
+    "email": "bige.stha88@gmail.com",
+    "password_hash": "scrypt:32768:8:1$ZQ2QP8DfUfdgMQhe$796aeb6fe94ba1c0dcfec18411756d7109afbb5b16f9e27362967f9ba20ff303c4aaa55183d08f03faaaebcd39690bdc4fc244992306c8c03bcdd3e9878e049f",
+    "role": "user",
+    "active": true,
+    "is_active": true,
+    "created_at": "2025-06-05T11:18:51.208269",
+    "last_login": null,
+    "login_attempts": 0,
+    "locked_until": null
   }
 ]

@@ -399,7 +399,7 @@
                         <div class="tab-pane fade" id="tips" role="tabpanel">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="mb-0">Safety Tips Management</h5>
-                                <button class="btn btn-primary btn-sm">
+                                <button class="btn btn-primary btn-sm" onclick="createSafetyTip()">
                                     <i class="fas fa-plus me-1"></i>Add Tip
                                 </button>
                             </div>
@@ -1398,7 +1398,112 @@ function handleCreateUser() {
 }
 
 function exportUsers() {
-    showAlert('Exporting user data...', 'success');
+    showAlert('Preparing user data export...', 'info');
+    
+    // Make request to export users
+    window.open('/admin/export/users', '_blank');
+    
+    setTimeout(() => {
+        showAlert('User data export started. Check your downloads.', 'success');
+    }, 1000);
+}
+
+function exportDetections() {
+    showAlert('Preparing detection data export...', 'info');
+    
+    // Make request to export detection history
+    window.open('/admin/export/detections', '_blank');
+    
+    setTimeout(() => {
+        showAlert('Detection data export started. Check your downloads.', 'success');
+    }, 1000);
+}
+
+function createSafetyTip() {
+    const modalContent = `
+        <div class="modal fade" id="createTipModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create New Safety Tip</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="createTipForm">
+                            <div class="mb-3">
+                                <label class="form-label">Title</label>
+                                <input type="text" class="form-control" name="title" required placeholder="Enter tip title">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Category</label>
+                                <select class="form-select" name="category" required>
+                                    <option value="email">Email Security</option>
+                                    <option value="url">URL Safety</option>
+                                    <option value="general">General Security</option>
+                                    <option value="phishing">Phishing Detection</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Content</label>
+                                <textarea class="form-control" name="content" rows="4" required placeholder="Enter safety tip content"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="handleCreateTip()">Create Tip</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if present
+    const existingModal = document.getElementById('createTipModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to page and show it
+    document.body.insertAdjacentHTML('beforeend', modalContent);
+    const modal = new bootstrap.Modal(document.getElementById('createTipModal'));
+    modal.show();
+}
+
+function handleCreateTip() {
+    const form = document.getElementById('createTipForm');
+    const formData = new FormData(form);
+    
+    // Validate form
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    // Show loading state
+    showAlert('Creating safety tip...', 'info');
+    
+    fetch('/admin/safety-tips/create', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(data.message, 'success');
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('createTipModal'));
+            modal.hide();
+            // Refresh page to show new tip
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error creating safety tip:', error);
+        showAlert('Error creating safety tip. Please try again.', 'danger');
+    });
 }
 
 function viewUser(userId) {

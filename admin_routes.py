@@ -193,11 +193,16 @@ def get_user(user_id):
             return jsonify({'success': False, 'error': 'User not found'}), 404
         
         # Get user's scan statistics
-        scan_count = len(list(db_manager.find('detections', {'user_id': user_id}))) or 0
-        phishing_detections = len(list(db_manager.find('detections', {
-            'user_id': user_id, 
-            'result.category': {'$in': ['phishing', 'suspicious', 'dangerous']}
-        }))) or 0
+        scan_count = len(db_manager.find_many('detections', {'user_id': user_id})) or 0
+        
+        # Count phishing detections for this user
+        user_detections = db_manager.find_many('detections', {'user_id': user_id})
+        phishing_detections = 0
+        for detection in user_detections:
+            result = detection.get('result', {})
+            category = result.get('category', '')
+            if category in ['phishing', 'suspicious', 'dangerous']:
+                phishing_detections += 1
         
         # Prepare user data (excluding sensitive information)
         user_data = {
@@ -436,16 +441,18 @@ def delete_user(user_id):
                 }), 403
         
         # Delete user's data (scans, reports, etc.)
-        # Note: Using find and delete_one in a loop instead of delete_many
-        user_detections = list(db_manager.find('detections', {'user_id': user_id}))
+        # Delete all user detections
+        user_detections = db_manager.find_many('detections', {'user_id': user_id})
         for detection in user_detections:
             db_manager.delete_one('detections', {'_id': detection.get('_id')})
         
-        user_logs = list(db_manager.find('scan_logs', {'user_id': user_id}))
+        # Delete all user scan logs
+        user_logs = db_manager.find_many('scan_logs', {'user_id': user_id})
         for log in user_logs:
             db_manager.delete_one('scan_logs', {'_id': log.get('_id')})
         
-        user_reports = list(db_manager.find('reports', {'reported_by': user_id}))
+        # Delete all user reports
+        user_reports = db_manager.find_many('reports', {'reported_by': user_id})
         for report in user_reports:
             db_manager.delete_one('reports', {'_id': report.get('_id')})
         
@@ -471,16 +478,189 @@ def delete_user(user_id):
             'message': 'Error occurred while deleting user'
         }), 500
 
+@admin_bp.route('/safety-tips/create', methods=['POST'])
+@admin_required
+def create_safety_tip():
+    """Create a new safety tip"""
+    try:
+        current_user = get_current_user()
+        
+        # Get form data
+        title = request.form.get('title', '').strip()
+        content = request.form.get('content', '').strip()
+        category = request.form.get('category', 'general').strip()
+        
+        # Validate required fields
+        if not all([title, content]):
+            return jsonify({
+                'success': False,
+                'message': 'Title and content are required'
+            }), 400
+        
+        # Create new safety tip
+        tip_id = f"tip_{int(time.time())}_{random.randint(1000, 9999)}"
+        
+        new_tip = {
+            'id': tip_id,
+            '_id': f"tips_{random.randint(1, 999999)}_{random.randint(100000, 999999)}",
+            'title': title,
+            'content': content,
+            'category': category,
+            'created_at': datetime.utcnow().isoformat(),
+            'created_by': current_user.get('username'),
+            'active': True
+        }
+        
+        # Insert tip into database
+        db_manager.insert_one('safety_tips', new_tip)
+        
+        # Log admin action
+        logger.info(f"Admin {current_user.get('username')} created new safety tip: {title}")
+        
+        return jsonify({
+            'success': True,
+            'message': f'Safety tip "{title}" created successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error creating safety tip: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while creating safety tip'
+        }), 500
+
+@admin_bp.route('/export/users', methods=['GET'])
+@admin_required
+def export_users():
+    """Export user data as CSV"""
+    try:
+        import csv
+        from io import StringIO
+        
+        current_user = get_current_user()
+        current_role = current_user.get('role', 'user') if current_user else 'user'
+        
+        # Only Super Admin can export data
+        if current_role != 'super_admin':
+            return jsonify({
+                'success': False,
+                'message': 'Only Super Admin can export data'
+            }), 403
+        
+        # Get all users with statistics
+        users = get_all_users_with_stats()
+        
+        # Create CSV content
+        output = StringIO()
+        writer = csv.writer(output)
+        
+        # Write header
+        writer.writerow(['ID', 'Username', 'Email', 'Role', 'Active', 'Created At', 'Last Login', 'Scan Count'])
+        
+        # Write user data
+        for user in users:
+            writer.writerow([
+                user.get('id', ''),
+                user.get('username', ''),
+                user.get('email', ''),
+                user.get('role', ''),
+                user.get('active', ''),
+                user.get('created_at', ''),
+                user.get('last_login', ''),
+                user.get('scan_count', 0)
+            ])
+        
+        csv_content = output.getvalue()
+        output.close()
+        
+        # Log export action
+        logger.info(f"Super Admin {current_user.get('username')} exported user data")
+        
+        from flask import Response
+        return Response(
+            csv_content,
+            mimetype='text/csv',
+            headers={'Content-Disposition': 'attachment; filename=users_export.csv'}
+        )
+        
+    except Exception as e:
+        logger.error(f"Error exporting users: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while exporting data'
+        }), 500
+
+@admin_bp.route('/export/detections', methods=['GET'])
+@admin_required
+def export_detections():
+    """Export detection history as CSV"""
+    try:
+        import csv
+        from io import StringIO
+        
+        current_user = get_current_user()
+        current_role = current_user.get('role', 'user') if current_user else 'user'
+        
+        # Only Super Admin can export data
+        if current_role != 'super_admin':
+            return jsonify({
+                'success': False,
+                'message': 'Only Super Admin can export data'
+            }), 403
+        
+        # Get all detections
+        detections = db_manager.find_many('detections', {})
+        
+        # Create CSV content
+        output = StringIO()
+        writer = csv.writer(output)
+        
+        # Write header
+        writer.writerow(['ID', 'User ID', 'URL/Content', 'Result', 'Category', 'Confidence', 'Timestamp'])
+        
+        # Write detection data
+        for detection in detections:
+            result = detection.get('result', {})
+            writer.writerow([
+                detection.get('id', ''),
+                detection.get('user_id', ''),
+                detection.get('content', '')[:100],  # Truncate long content
+                result.get('result', ''),
+                result.get('category', ''),
+                result.get('confidence', ''),
+                detection.get('timestamp', '')
+            ])
+        
+        csv_content = output.getvalue()
+        output.close()
+        
+        # Log export action
+        logger.info(f"Super Admin {current_user.get('username')} exported detection data")
+        
+        from flask import Response
+        return Response(
+            csv_content,
+            mimetype='text/csv',
+            headers={'Content-Disposition': 'attachment; filename=detections_export.csv'}
+        )
+        
+    except Exception as e:
+        logger.error(f"Error exporting detections: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while exporting data'
+        }), 500
+
 # Helper functions
 def get_all_users_with_stats():
     """Get all users with their scan statistics"""
     try:
-        users = list(db_manager.find('users', {}))
+        users = db_manager.find_many('users', {})
         user_stats = []
         
         for user in users:
             # Get scan count for each user
-            scan_count = len(list(db_manager.find('detections', {'user_id': user.get('id')})))
+            scan_count = len(db_manager.find_many('detections', {'user_id': user.get('id')}))
             
             user_stats.append({
                 'id': user.get('id'),
@@ -501,7 +681,7 @@ def get_all_users_with_stats():
 def get_recent_scan_logs(limit=50):
     """Get recent scan logs with user information"""
     try:
-        logs = list(db_manager.find('detections', {}, limit=limit))
+        logs = db_manager.find_many('detections', {}, limit=limit)
         return logs[:limit]
     except Exception as e:
         logger.error(f"Error getting scan logs: {e}")
@@ -510,7 +690,7 @@ def get_recent_scan_logs(limit=50):
 def get_reported_content():
     """Get reported content for moderation"""
     try:
-        reports = list(db_manager.find('reports', {}))
+        reports = db_manager.find_many('reports', {})
         return reports
     except Exception as e:
         logger.error(f"Error getting reported content: {e}")
@@ -519,14 +699,18 @@ def get_reported_content():
 def calculate_system_stats():
     """Calculate real-time system statistics"""
     try:
-        total_users = len(list(db_manager.find('users', {})))
-        total_scans = len(list(db_manager.find('detections', {})))
-        active_users = len(list(db_manager.find('users', {'active': True})))
+        total_users = len(db_manager.find_many('users', {}))
+        total_scans = len(db_manager.find_many('detections', {}))
+        active_users = len(db_manager.find_many('users', {'active': True}))
         
         # Count dangerous detections
-        dangerous_detections = len(list(db_manager.find('detections', {
-            'result.category': {'$in': ['phishing', 'suspicious', 'dangerous']}
-        })))
+        all_detections = db_manager.find_many('detections', {})
+        dangerous_detections = 0
+        for detection in all_detections:
+            result = detection.get('result', {})
+            category = result.get('category', '')
+            if category in ['phishing', 'suspicious', 'dangerous']:
+                dangerous_detections += 1
         
         safe_count = total_scans - dangerous_detections
         
