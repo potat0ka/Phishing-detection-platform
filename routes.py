@@ -24,6 +24,7 @@ from mongodb_config import db_manager
 from auth_routes import login_required, admin_required
 from ml_detector import PhishingDetector
 from ai_content_detector import ai_detector
+from explainable_ai import ExplainableAI
 from security_tips_updater import security_updater
 from encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data
 from utils import is_logged_in
@@ -41,6 +42,10 @@ logger = logging.getLogger(__name__)
 # Initialize the AI/ML detector when the app starts
 # This loads the machine learning model for phishing detection
 detector = PhishingDetector()
+
+# Initialize the explainable AI system for educational insights
+# This provides detailed explanations of how AI detection works
+explainer = ExplainableAI()
 
 def validate_input_content(content, input_type):
     """
@@ -233,6 +238,13 @@ def check():
             # Perform phishing detection
             result = detector.analyze(input_content, input_type)
             
+            # Generate explainable AI insights for educational purposes
+            explanation = explainer.explain_phishing_detection(
+                url=input_content if input_type == 'url' else '',
+                content=input_content if input_type != 'url' else '',
+                detection_result=result
+            )
+            
             # Save detection with encrypted user activity data
             if is_logged_in():
                 try:
@@ -249,6 +261,7 @@ def check():
                         'threat_level': result.get('threat_level', 'unknown'),
                         'reasons': result['reasons'],
                         'ai_analysis': result['ai_analysis'],
+                        'explanation': explanation,  # Include educational explanation
                         'user_ip': user_ip,
                         'user_agent': user_agent,
                         'timestamp': datetime.utcnow()
@@ -264,6 +277,7 @@ def check():
             
             return render_template('result.html', 
                                  result=result, 
+                                 explanation=explanation,
                                  input_content=input_content,
                                  input_type=input_type)
         
@@ -435,6 +449,13 @@ def ai_content_check():
             # Analyze the file for AI content
             analysis_result = ai_detector.analyze_content(file_path, content_type)
             
+            # Generate explainable AI insights for educational purposes
+            explanation = explainer.explain_ai_content_detection(
+                file_path=file_path,
+                content_type=content_type,
+                detection_result=analysis_result
+            )
+            
             # Save analysis result with encrypted user activity data
             user_id = session['user_id']
             user_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.environ.get('REMOTE_ADDR'))
@@ -449,6 +470,7 @@ def ai_content_check():
                 'timestamp': datetime.utcnow(),
                 'reasons': analysis_result['details'],
                 'ai_analysis': analysis_result,
+                'explanation': explanation,  # Include educational explanation
                 'user_ip': user_ip,
                 'user_agent': user_agent
             }
@@ -472,7 +494,8 @@ def ai_content_check():
             return render_template('ai_content_results.html', 
                                  filename=filename,
                                  content_type=content_type,
-                                 result=analysis_result)
+                                 result=analysis_result,
+                                 explanation=explanation)
                                  
         except Exception as e:
             flash(f'Analysis failed: {str(e)}', 'error')
