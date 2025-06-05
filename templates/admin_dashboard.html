@@ -286,8 +286,11 @@
                                                         <i class="fas fa-key"></i>
                                                     </button>
                                                     {% if user.role != 'admin' %}
-                                                    <button class="btn btn-outline-danger" onclick="toggleUserStatus('{{ user.id }}')" title="Suspend User">
+                                                    <button class="btn btn-outline-secondary" onclick="toggleUserStatus('{{ user.id }}')" title="Suspend User">
                                                         <i class="fas fa-ban"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger" onclick="deleteUser('{{ user.id }}', '{{ user.username or 'Unknown' }}')" title="Delete User">
+                                                        <i class="fas fa-trash"></i>
                                                     </button>
                                                     {% endif %}
                                                 </div>
@@ -1326,6 +1329,45 @@ function resetPassword(userId) {
 function toggleUserStatus(userId) {
     if (confirm('Change user status?')) {
         showAlert(`User status changed: ${userId}`, 'warning');
+    }
+}
+
+function deleteUser(userId, username) {
+    // Show confirmation dialog with user details
+    const confirmMessage = `Are you sure you want to permanently delete user "${username}"?\n\nThis action will:\n• Remove the user account\n• Delete all their scan history\n• Remove any reported content by this user\n• This action cannot be undone!`;
+    
+    if (confirm(confirmMessage)) {
+        // Show loading state
+        showAlert('Deleting user and associated data...', 'info');
+        
+        // Make the delete request
+        fetch(`/admin/user/${userId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                // Remove the user row from the table
+                const userRow = document.querySelector(`tr input[value="${userId}"]`).closest('tr');
+                if (userRow) {
+                    userRow.remove();
+                }
+                // Update user count
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showAlert(`Error: ${data.error}`, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting user:', error);
+            showAlert('Failed to delete user. Please try again.', 'danger');
+        });
     }
 }
 

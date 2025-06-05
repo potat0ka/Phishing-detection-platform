@@ -128,8 +128,12 @@ def health_check():
         'version': '2.0.0'
     }
 
-# Import routes after app initialization
+# Import and register routes after app initialization
 import routes
+
+# Register admin blueprint
+from admin_routes import admin_bp
+app.register_blueprint(admin_bp)
 
 if __name__ == '__main__':
     logger.info("Starting AI Phishing Detection Platform v2.0.0")

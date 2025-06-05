@@ -180,6 +180,58 @@ def toggle_user_status(user_id):
         logger.error(f"Error toggling user status {user_id}: {e}")
         return jsonify({'success': False, 'error': str(e)})
 
+@admin_bp.route('/user/<user_id>/delete', methods=['POST'])
+@admin_required
+def delete_user(user_id):
+    """Delete a user account permanently"""
+    try:
+        current_user = get_current_user()
+        
+        # Prevent admin from deleting themselves
+        if current_user and current_user.get('id') == user_id:
+            return jsonify({'success': False, 'error': 'You cannot delete your own account'})
+        
+        # Check if user exists
+        user = db_manager.find_one('users', {'id': user_id})
+        if not user:
+            return jsonify({'success': False, 'error': 'User not found'})
+        
+        # Get user's username for logging (try to decrypt if needed)
+        try:
+            decrypted_user = decrypt_sensitive_data('user', user)
+            username = decrypted_user.get('username', 'Unknown')
+        except:
+            username = user.get('username', 'Unknown')
+        
+        # Delete user's associated data first
+        # Delete scan logs
+        detections = db_manager.find_many('detections', {'user_id': user_id})
+        for detection in detections:
+            db_manager.delete_one('detections', {'_id': detection.get('_id') or detection.get('id')})
+        
+        # Delete any reported content by this user
+        reports = db_manager.find_many('reports', {'reporter_id': user_id})
+        for report in reports:
+            db_manager.delete_one('reports', {'_id': report.get('_id') or report.get('id')})
+        
+        # Delete any admin actions logged by this user
+        admin_actions = db_manager.find_many('admin_actions', {'admin_id': user_id})
+        for action in admin_actions:
+            db_manager.delete_one('admin_actions', {'_id': action.get('_id') or action.get('id')})
+        
+        # Finally delete the user account
+        success = db_manager.delete_one('users', {'id': user_id})
+        
+        if success:
+            logger.info(f"Admin deleted user: {username} (ID: {user_id})")
+            return jsonify({'success': True, 'message': f'User {username} and all associated data deleted successfully'})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to delete user'})
+            
+    except Exception as e:
+        logger.error(f"Error deleting user {user_id}: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
 # Safety Tips Management Routes
 @admin_bp.route('/tips', methods=['POST'])
 @admin_required
