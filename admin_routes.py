@@ -620,16 +620,39 @@ def export_detections():
         
         # Write detection data
         for detection in detections:
-            result = detection.get('result', {})
-            writer.writerow([
-                detection.get('id', ''),
-                detection.get('user_id', ''),
-                detection.get('content', '')[:100],  # Truncate long content
-                result.get('result', ''),
-                result.get('category', ''),
-                result.get('confidence', ''),
-                detection.get('timestamp', '')
-            ])
+            # Handle different data structures in detection records
+            if isinstance(detection, dict):
+                # Handle mixed result formats (dict vs string)
+                result = detection.get('result', {})
+                if isinstance(result, dict):
+                    result_value = result.get('result', '')
+                    category = result.get('category', '')
+                    confidence = result.get('confidence', '')
+                else:
+                    result_value = str(result)
+                    category = ''
+                    confidence = detection.get('confidence_score', 0)
+                
+                # Get content from different field names
+                content = (detection.get('content') or 
+                          detection.get('input_content') or 
+                          detection.get('url') or '')
+                
+                # Format confidence as percentage
+                if isinstance(confidence, (int, float)):
+                    confidence_str = f"{confidence * 100:.0f}%" if confidence <= 1 else f"{confidence:.0f}%"
+                else:
+                    confidence_str = str(confidence)
+                
+                writer.writerow([
+                    detection.get('id', detection.get('_id', '')),
+                    detection.get('user_id', ''),
+                    str(content)[:100] if content else '',  # Truncate long content
+                    result_value,
+                    category,
+                    confidence_str,
+                    detection.get('timestamp', detection.get('created_at', ''))
+                ])
         
         csv_content = output.getvalue()
         output.close()
@@ -803,6 +826,156 @@ def bulk_report_action():
     except Exception as e:
         logger.error(f"Error in bulk report action: {e}")
         return jsonify({'success': False, 'message': 'Error occurred during bulk action'}), 500
+
+@admin_bp.route('/reports/<report_id>', methods=['GET'])
+@admin_required
+def get_report(report_id):
+    """Get detailed report information for view details functionality"""
+    try:
+        current_user = get_current_user()
+        
+        # Get report from database
+        report = db_manager.find_one('reports', {'id': report_id})
+        
+        if not report:
+            return jsonify({
+                'success': False,
+                'message': 'Report not found'
+            }), 404
+        
+        # Format report data
+        report_data = {
+            'id': report.get('id'),
+            'content': report.get('content', ''),
+            'type': report.get('type', 'unknown'),
+            'status': report.get('status', 'pending'),
+            'created_at': report.get('created_at', ''),
+            'reporter_username': report.get('reporter_username', 'Unknown'),
+            'description': report.get('description', '')
+        }
+        
+        return jsonify({
+            'success': True,
+            'report': report_data
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting report {report_id}: {e}")
+        return jsonify({'success': False, 'message': 'Error loading report'}), 500
+
+@admin_bp.route('/reports/<report_id>/edit', methods=['POST'])
+@admin_required
+def edit_report_route(report_id):
+    """Edit a report"""
+    try:
+        current_user = get_current_user()
+        
+        # Get form data
+        content = request.form.get('content', '').strip()
+        report_type = request.form.get('type', '').strip()
+        status = request.form.get('status', '').strip()
+        description = request.form.get('description', '').strip()
+        
+        # Validate required fields
+        if not content or not report_type or not status:
+            return jsonify({
+                'success': False,
+                'message': 'Content, type, and status are required'
+            }), 400
+        
+        # Update report
+        update_data = {
+            'content': content,
+            'type': report_type,
+            'status': status,
+            'description': description,
+            'updated_at': datetime.utcnow(),
+            'updated_by': current_user.get('id')
+        }
+        
+        result = db_manager.update_one('reports', {'id': report_id}, update_data)
+        
+        if result:
+            logger.info(f"Admin {current_user.get('username')} edited report {report_id}")
+            return jsonify({
+                'success': True,
+                'message': 'Report updated successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Report not found or update failed'
+            }), 404
+            
+    except Exception as e:
+        logger.error(f"Error editing report {report_id}: {e}")
+        return jsonify({'success': False, 'message': 'Error updating report'}), 500
+
+@admin_bp.route('/reports/<report_id>/resolve', methods=['POST'])
+@admin_required
+def resolve_report_route(report_id):
+    """Mark a report as resolved"""
+    try:
+        current_user = get_current_user()
+        
+        # Update report status to resolved
+        update_data = {
+            'status': 'resolved',
+            'resolved_at': datetime.utcnow(),
+            'resolved_by': current_user.get('id')
+        }
+        
+        result = db_manager.update_one('reports', {'id': report_id}, update_data)
+        
+        if result:
+            logger.info(f"Admin {current_user.get('username')} resolved report {report_id}")
+            return jsonify({
+                'success': True,
+                'message': 'Report marked as resolved'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Report not found'
+            }), 404
+            
+    except Exception as e:
+        logger.error(f"Error resolving report {report_id}: {e}")
+        return jsonify({'success': False, 'message': 'Error resolving report'}), 500
+
+@admin_bp.route('/reports/<report_id>/delete', methods=['DELETE'])
+@admin_required
+def delete_report_route(report_id):
+    """Delete a report"""
+    try:
+        current_user = get_current_user()
+        
+        # Check if report exists first
+        report = db_manager.find_one('reports', {'id': report_id})
+        if not report:
+            return jsonify({
+                'success': False,
+                'message': 'Report not found'
+            }), 404
+        
+        # Delete the report
+        result = db_manager.delete_one('reports', {'id': report_id})
+        
+        if result:
+            logger.info(f"Admin {current_user.get('username')} deleted report {report_id}")
+            return jsonify({
+                'success': True,
+                'message': 'Report deleted successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to delete report'
+            }), 500
+            
+    except Exception as e:
+        logger.error(f"Error deleting report {report_id}: {e}")
+        return jsonify({'success': False, 'message': 'Error deleting report'}), 500
 
 @admin_bp.route('/phishing-db/add', methods=['POST'])
 @admin_required
