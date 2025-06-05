@@ -166,102 +166,43 @@
     }
 }
 
-/* Comprehensive Text Contrast System - Complete Visibility Fix */
-
-/* Dark backgrounds - ensure white text */
-.bg-dark, 
-.bg-primary, 
-.bg-secondary, 
-.bg-success, 
-.bg-danger, 
-.bg-warning, 
-.bg-info,
-.navbar-dark,
-footer.bg-dark,
-.quick-check-section.bg-dark {
-    color: #fff !important;
-}
-
-.bg-dark *, 
-.bg-primary *, 
-.bg-secondary *, 
-.bg-success *, 
-.bg-danger *, 
-.bg-warning *, 
-.bg-info *,
-.navbar-dark *,
-footer.bg-dark *,
-.quick-check-section.bg-dark * {
-    color: #fff !important;
-}
-
-/* Light backgrounds - ensure dark text */
-.bg-light, 
-.bg-white,
-.card:not(.bg-dark):not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info),
-.modal-content,
-.container:not(.bg-dark),
-body {
+/* Universal Text Contrast Protection */
+.bg-light, .bg-white {
     color: #212529 !important;
 }
 
-.bg-light *, 
-.bg-white *,
-.card:not(.bg-dark):not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info) *,
-.modal-content *,
-.container:not(.bg-dark) *,
-body * {
-    color: #212529 !important;
+.bg-light small, .bg-white small {
+    color: #6c757d !important;
 }
 
-/* Override for specific dark elements within light containers */
-.bg-light .bg-dark *,
-.bg-white .bg-dark *,
-.card .bg-dark *,
-.container .bg-dark * {
-    color: #fff !important;
-}
-
-/* Text utility classes - explicit control */
-.text-white {
-    color: #fff !important;
+/* Fallback styles for better accessibility */
+.text-muted {
+    color: #6c757d !important;
 }
 
 .text-dark {
     color: #212529 !important;
 }
 
-.text-muted {
-    color: #6c757d !important;
-}
-
-/* Button contrast system */
-.btn {
+/* Ensure all interactive elements have proper contrast */
+.btn, .badge, .alert {
     min-height: 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
 
-.btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-warning, .btn-info, .btn-dark {
-    color: #fff !important;
+/* Force readable text on light backgrounds */
+.bg-light *, .bg-white * {
+    color: inherit !important;
 }
 
-.btn-light, .btn-outline-primary, .btn-outline-secondary, .btn-outline-success, .btn-outline-danger, .btn-outline-warning, .btn-outline-info {
-    color: #212529 !important;
+.bg-light .text-muted, .bg-white .text-muted {
+    color: #6c757d !important;
 }
 
-/* Special handling for gradient backgrounds */
-[style*="gradient"],
-.upload-area[style*="gradient"],
-.card[style*="gradient"] {
-    color: #fff !important;
-}
-
-[style*="gradient"] *,
-.upload-area[style*="gradient"] *,
-.card[style*="gradient"] * {
-    color: #fff !important;
+.bg-light .fw-bold, .bg-white .fw-bold {
+    color: inherit !important;
 }
 
 /* Specific fixes for statistics boxes */
@@ -306,55 +247,6 @@ body * {
     outline-offset: 2px;
 }
 
-/* Targeted accessibility fixes - only for light backgrounds */
-.modal-body:not(.bg-dark):not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info) .text-white {
-    color: #212529 !important;
-}
-
-/* Preserve original colors but ensure readability on appropriate backgrounds */
-.card-header:not(.bg-dark):not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info),
-.card-body:not(.bg-dark):not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info),
-.card-footer:not(.bg-dark):not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info) {
-    color: #212529;
-}
-
-/* Tables should maintain readability */
-.table:not(.table-dark) td,
-.table:not(.table-dark) th {
-    color: #212529;
-}
-
-.table-dark td,
-.table-dark th {
-    color: #fff;
-}
-
-/* Forms maintain default colors */
-.form-control,
-.form-select,
-.form-check-label {
-    color: #212529;
-}
-
-/* Only fix white text on truly light backgrounds */
-.bg-light .text-white,
-.bg-white .text-white,
-.card-body.bg-light .text-white,
-.card-body.bg-white .text-white {
-    color: #212529 !important;
-}
-
-/* Preserve badge colors with proper contrast */
-.badge {
-    color: #fff;
-}
-
-.badge.bg-light,
-.badge.bg-white {
-    color: #212529;
-    border: 1px solid #dee2e6;
-}
-
 /* High contrast mode support */
 @media (prefers-contrast: high) {
     .threat-card {
@@ -370,317 +262,6 @@ body * {
     .text-muted {
         color: #333333 !important;
     }
-}
-
-/* Complete Form and Input Visibility System */
-
-/* All form elements - comprehensive fix */
-.form-control,
-.form-select,
-.form-check-input,
-.form-range,
-input,
-textarea,
-select {
-    color: #212529 !important;
-    background-color: #fff !important;
-    border: 1px solid #ced4da !important;
-}
-
-.form-control:focus,
-.form-select:focus,
-input:focus,
-textarea:focus,
-select:focus {
-    color: #212529 !important;
-    background-color: #fff !important;
-    border-color: #86b7fe !important;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
-}
-
-.form-control::placeholder,
-input::placeholder,
-textarea::placeholder {
-    color: #6c757d !important;
-    opacity: 1 !important;
-}
-
-/* All labels - universal visibility */
-label,
-.form-label,
-.form-check-label {
-    color: #212529 !important;
-    font-weight: 500 !important;
-}
-
-/* All headings - proper contrast */
-h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .h4, .h5, .h6 {
-    color: #212529 !important;
-}
-
-/* Dark backgrounds override for headings */
-.bg-dark h1, .bg-dark h2, .bg-dark h3, .bg-dark h4, .bg-dark h5, .bg-dark h6,
-.bg-primary h1, .bg-primary h2, .bg-primary h3, .bg-primary h4, .bg-primary h5, .bg-primary h6,
-.bg-secondary h1, .bg-secondary h2, .bg-secondary h3, .bg-secondary h4, .bg-secondary h5, .bg-secondary h6,
-.navbar-dark h1, .navbar-dark h2, .navbar-dark h3, .navbar-dark h4, .navbar-dark h5, .navbar-dark h6 {
-    color: #fff !important;
-}
-
-/* Form help text */
-.form-text,
-.text-muted,
-small.text-muted {
-    color: #6c757d !important;
-}
-
-/* Alert improvements */
-.alert {
-    color: #212529 !important;
-}
-
-.alert-primary { background-color: #cff4fc; border-color: #b6effb; color: #055160 !important; }
-.alert-secondary { background-color: #e2e3e5; border-color: #d3d6d8; color: #41464b !important; }
-.alert-success { background-color: #d1e7dd; border-color: #badbcc; color: #0f5132 !important; }
-.alert-danger { background-color: #f8d7da; border-color: #f5c2c7; color: #842029 !important; }
-.alert-warning { background-color: #fff3cd; border-color: #ffecb5; color: #664d03 !important; }
-.alert-info { background-color: #cff4fc; border-color: #b6effb; color: #055160 !important; }
-
-/* Table text visibility */
-.table {
-    color: #212529 !important;
-}
-
-.table th,
-.table td {
-    color: #212529 !important;
-    border-color: #dee2e6 !important;
-}
-
-.table-dark {
-    color: #fff !important;
-}
-
-.table-dark th,
-.table-dark td {
-    color: #fff !important;
-}
-
-/* Modal improvements */
-.modal-header,
-.modal-body,
-.modal-footer {
-    color: #212529 !important;
-}
-
-.modal-header.bg-primary,
-.modal-header.bg-secondary,
-.modal-header.bg-success,
-.modal-header.bg-danger,
-.modal-header.bg-warning,
-.modal-header.bg-info,
-.modal-header.bg-dark {
-    color: #fff !important;
-}
-
-/* Navigation improvements */
-.nav-link {
-    color: #495057 !important;
-}
-
-.nav-link:hover,
-.nav-link:focus {
-    color: #212529 !important;
-}
-
-.navbar-dark .nav-link {
-    color: rgba(255, 255, 255, 0.75) !important;
-}
-
-.navbar-dark .nav-link:hover,
-.navbar-dark .nav-link:focus {
-    color: #fff !important;
-}
-
-/* Dropdown improvements */
-.dropdown-menu {
-    background-color: #fff !important;
-    border: 1px solid #dee2e6 !important;
-}
-
-.dropdown-item {
-    color: #212529 !important;
-}
-
-.dropdown-item:hover,
-.dropdown-item:focus {
-    background-color: #e9ecef !important;
-    color: #212529 !important;
-}
-
-/* Badge improvements */
-.badge {
-    font-weight: 600 !important;
-}
-
-.badge.bg-light {
-    color: #212529 !important;
-    background-color: #f8f9fa !important;
-}
-
-/* Breadcrumb improvements */
-.breadcrumb-item {
-    color: #6c757d !important;
-}
-
-.breadcrumb-item.active {
-    color: #212529 !important;
-}
-
-/* List group improvements */
-.list-group-item {
-    color: #212529 !important;
-    background-color: #fff !important;
-    border: 1px solid #dee2e6 !important;
-}
-
-.list-group-item:hover {
-    background-color: #f8f9fa !important;
-}
-
-/* Progress bar improvements */
-.progress {
-    background-color: #e9ecef !important;
-}
-
-.progress-bar {
-    color: #fff !important;
-}
-
-/* Universal text visibility emergency fixes */
-p, span, div, a, strong, em, i, b {
-    color: inherit;
-}
-
-/* Ensure dark text on light containers */
-.container p,
-.container span,
-.container div:not(.bg-dark):not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info),
-.container strong,
-.card-body p,
-.card-body span,
-.card-body div,
-.card-body strong {
-    color: #212529 !important;
-}
-
-/* Ensure white text on dark containers */
-.bg-dark p,
-.bg-dark span,
-.bg-dark div,
-.bg-dark strong,
-.bg-primary p,
-.bg-primary span,
-.bg-primary div,
-.bg-primary strong,
-.navbar-dark p,
-.navbar-dark span,
-.navbar-dark div,
-.navbar-dark strong {
-    color: #fff !important;
-}
-
-/* Links visibility */
-a {
-    color: #0d6efd;
-    text-decoration: none;
-}
-
-a:hover,
-a:focus {
-    color: #0a58ca;
-    text-decoration: underline;
-}
-
-.bg-dark a,
-.bg-primary a,
-.bg-secondary a,
-.navbar-dark a {
-    color: #9ec5fe !important;
-}
-
-.bg-dark a:hover,
-.bg-primary a:hover,
-.bg-secondary a:hover,
-.navbar-dark a:hover {
-    color: #cfe2ff !important;
-}
-
-/* Text on gradient backgrounds */
-.hero-section,
-.hero-section *,
-section[style*="gradient"],
-section[style*="gradient"] * {
-    color: #212529 !important;
-}
-
-/* Override for specific gradient sections that should have white text */
-.quick-check-section.bg-dark,
-.quick-check-section.bg-dark * {
-    color: #fff !important;
-}
-
-/* Footer text */
-footer,
-footer * {
-    color: #fff !important;
-}
-
-/* Sidebar text if any */
-.sidebar,
-.sidebar * {
-    color: #212529 !important;
-}
-
-.sidebar.bg-dark,
-.sidebar.bg-dark * {
-    color: #fff !important;
-}
-
-/* Code blocks */
-code,
-pre {
-    background-color: #f8f9fa !important;
-    color: #e83e8c !important;
-    border: 1px solid #dee2e6 !important;
-}
-
-/* Blockquotes */
-blockquote {
-    color: #6c757d !important;
-    border-left: 4px solid #dee2e6 !important;
-}
-
-/* Special utility classes for problematic areas */
-.force-dark-text,
-.force-dark-text * {
-    color: #212529 !important;
-}
-
-.force-light-text,
-.force-light-text * {
-    color: #fff !important;
-}
-
-/* Admin dashboard specific fixes */
-.admin-card,
-.admin-card * {
-    color: #212529 !important;
-}
-
-.admin-card.bg-dark,
-.admin-card.bg-dark * {
-    color: #fff !important;
 }
 
 /* Enhanced Stat Cards */

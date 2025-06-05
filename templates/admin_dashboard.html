@@ -2192,19 +2192,10 @@ function backupDatabase() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Show detailed backup information
-                let backupDetails = data.message;
-                if (data.backup_info) {
-                    backupDetails += `\n\nBackup Details:`;
-                    backupDetails += `\n• File: ${data.backup_info.filename}`;
-                    backupDetails += `\n• Size: ${data.backup_info.size}`;
-                    backupDetails += `\n• Records: ${data.backup_info.records}`;
-                    backupDetails += `\n• Location: ${data.backup_info.path}`;
+                showAlert('Database backup completed successfully', 'success');
+                if (data.download_url) {
+                    window.open(data.download_url, '_blank');
                 }
-                showAlert(backupDetails, 'success');
-                
-                // Show detailed modal with backup information
-                showBackupSuccessModal(data.backup_info);
             } else {
                 showAlert('Error creating backup: ' + (data.message || 'Unknown error'), 'danger');
             }
@@ -2214,63 +2205,6 @@ function backupDatabase() {
             showAlert('Error creating database backup. Please try again.', 'danger');
         });
     }
-}
-
-function showBackupSuccessModal(backupInfo) {
-    const modalContent = `
-        <div class="modal fade" id="backupSuccessModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title">
-                            <i class="fas fa-check-circle me-2"></i>Backup Created Successfully
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <strong>Backup File:</strong><br>
-                                <code>${backupInfo.filename}</code>
-                            </div>
-                            <div class="col-md-6">
-                                <strong>File Size:</strong><br>
-                                ${backupInfo.size}
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <strong>Records Backed Up:</strong><br>
-                                ${backupInfo.records} records
-                            </div>
-                            <div class="col-md-6">
-                                <strong>Location:</strong><br>
-                                <code>${backupInfo.path}</code>
-                            </div>
-                        </div>
-                        <div class="alert alert-info mt-3">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Your database has been successfully backed up. The backup file contains all your data and can be used for restoration if needed.
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    // Remove existing modal if present
-    const existingModal = document.getElementById('backupSuccessModal');
-    if (existingModal) {
-        existingModal.remove();
-    }
-    
-    document.body.insertAdjacentHTML('beforeend', modalContent);
-    const modal = new bootstrap.Modal(document.getElementById('backupSuccessModal'));
-    modal.show();
 }
 
 function optimizeDatabase() {
@@ -2283,13 +2217,7 @@ function optimizeDatabase() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Show detailed optimization results
-                showAlert(data.message, 'success');
-                
-                // Show detailed modal with optimization information
-                if (data.optimization_details) {
-                    showOptimizationSuccessModal(data.optimization_details);
-                }
+                showAlert('Database optimization completed successfully', 'success');
             } else {
                 showAlert('Error optimizing database: ' + (data.message || 'Unknown error'), 'danger');
             }
@@ -2299,78 +2227,6 @@ function optimizeDatabase() {
             showAlert('Error optimizing database. Please try again.', 'danger');
         });
     }
-}
-
-function showOptimizationSuccessModal(optimizationDetails) {
-    const modalContent = `
-        <div class="modal fade" id="optimizationSuccessModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-warning text-dark">
-                        <h5 class="modal-title">
-                            <i class="fas fa-tools me-2"></i>Database Optimization Complete
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row text-center mb-3">
-                            <div class="col-md-4">
-                                <div class="card bg-light">
-                                    <div class="card-body">
-                                        <h4 class="text-primary">${optimizationDetails.files_optimized}</h4>
-                                        <small class="text-muted">Files Optimized</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card bg-light">
-                                    <div class="card-body">
-                                        <h4 class="text-success">${optimizationDetails.space_saved_kb} KB</h4>
-                                        <small class="text-muted">Space Reclaimed</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card bg-light">
-                                    <div class="card-body">
-                                        <h4 class="text-info">${optimizationDetails.records_processed}</h4>
-                                        <small class="text-muted">Records Processed</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle me-2"></i>
-                            <strong>Optimization Complete!</strong><br>
-                            Your database has been cleaned and optimized. Empty values were removed, 
-                            files were reorganized, and memory was freed up for better performance.
-                        </div>
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <strong>What was optimized:</strong><br>
-                            • Removed null and empty values from records<br>
-                            • Reorganized JSON file structure<br>
-                            • Compressed file formatting<br>
-                            • Freed up system memory
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    // Remove existing modal if present
-    const existingModal = document.getElementById('optimizationSuccessModal');
-    if (existingModal) {
-        existingModal.remove();
-    }
-    
-    document.body.insertAdjacentHTML('beforeend', modalContent);
-    const modal = new bootstrap.Modal(document.getElementById('optimizationSuccessModal'));
-    modal.show();
 }
 
 function viewDbStats() {
