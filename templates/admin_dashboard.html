@@ -683,35 +683,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input"></td>
-                                            <td><small>2025-06-05</small></td>
-                                            <td><span class="badge bg-danger">Phishing</span></td>
-                                            <td>
-                                                <div style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;">
-                                                    https://secure-bank-login.malicious-site.com/verify
-                                                </div>
-                                            </td>
-                                            <td><span class="badge bg-danger">Critical</span></td>
-                                            <td><span class="badge bg-warning">Active</span></td>
-                                            <td>Security Team</td>
-                                            <td>
-                                                <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-outline-primary" title="View Details" onclick="viewReportDetails('sample_report_1')">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-warning" title="Edit" onclick="editReport('sample_report_1')">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-success" title="Mark Resolved" onclick="markReportResolved('sample_report_1')">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-danger" title="Delete" onclick="deleteReport('sample_report_1')">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
                                         {% for report in reported_content %}
                                         <tr>
                                             <td><input type="checkbox" class="form-check-input"></td>
