@@ -153,12 +153,22 @@ def login():
             flash('Please enter both username and password', 'error')
             return render_template('auth/login.html')
         
-        # Find user in database
-        user = db_manager.find_one('users', {'username': username})
+        # Find user in database - need to search encrypted data
+        user = None
         
-        if not user:
-            # Try finding by email
-            user = db_manager.find_one('users', {'email': username.lower()})
+        # Get all users and decrypt to find matching username/email
+        all_users = db_manager.find_many('users', {})
+        
+        for user_data in all_users:
+            try:
+                decrypted_user = decrypt_sensitive_data('user', user_data)
+                if (decrypted_user.get('username', '').lower() == username.lower() or 
+                    decrypted_user.get('email', '').lower() == username.lower()):
+                    user = user_data
+                    break
+            except Exception as e:
+                logger.warning(f"Failed to decrypt user data: {e}")
+                continue
         
         if not user:
             flash('Invalid username or password', 'error')
@@ -224,10 +234,8 @@ def login():
             
     except Exception as e:
         logger.error(f"Login error: {e}")
-        return jsonify({
-            'success': False,
-            'message': 'An error occurred during login'
-        }), 500
+        flash('An error occurred during login. Please try again.', 'error')
+        return render_template('auth/login.html')
 
 @auth_bp.route('/logout', methods=['GET', 'POST'])
 def logout():
