@@ -302,13 +302,6 @@
                                             </td>
                                         </tr>
                                         {% endfor %}
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                    {% endif %}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -1325,16 +1318,167 @@ function exportUsers() {
 }
 
 function viewUser(userId) {
-    showAlert(`Viewing user details: ${userId}`, 'info');
+    // Make request to get user details
+    fetch(`/admin/user/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const user = data.user;
+                const modalContent = `
+                    <div class="modal fade" id="userDetailsModal" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">User Details: ${user.username}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Account Information</h6>
+                                            <p><strong>Username:</strong> ${user.username}</p>
+                                            <p><strong>Email:</strong> ${user.email}</p>
+                                            <p><strong>Role:</strong> <span class="badge bg-${user.role === 'admin' || user.role === 'super_admin' ? 'danger' : 'primary'}">${user.role}</span></p>
+                                            <p><strong>Status:</strong> <span class="badge bg-${user.active ? 'success' : 'secondary'}">${user.active ? 'Active' : 'Inactive'}</span></p>
+                                            <p><strong>Created:</strong> ${user.created_at}</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Activity Statistics</h6>
+                                            <p><strong>Total Scans:</strong> ${user.scan_count || 0}</p>
+                                            <p><strong>Phishing Detected:</strong> ${user.phishing_detected || 0}</p>
+                                            <p><strong>Last Login:</strong> ${user.last_login || 'Never'}</p>
+                                            <p><strong>Last Activity:</strong> ${user.last_activity || 'Unknown'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Remove existing modal if present
+                const existingModal = document.getElementById('userDetailsModal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+                
+                // Add modal to page and show it
+                document.body.insertAdjacentHTML('beforeend', modalContent);
+                const modal = new bootstrap.Modal(document.getElementById('userDetailsModal'));
+                modal.show();
+            } else {
+                showAlert(`Error loading user details: ${data.error}`, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user details:', error);
+            showAlert('Failed to load user details. Please try again.', 'danger');
+        });
 }
 
 function editUser(userId) {
     showAlert(`Editing user: ${userId}`, 'info');
 }
 
-function resetPassword(userId) {
-    if (confirm('Reset password for this user?')) {
-        showAlert(`Password reset for user: ${userId}`, 'success');
+function resetPassword(userId, username) {
+    // Show custom password input dialog
+    const newPassword = prompt(`Enter new password for user "${username}":\n\nPassword Requirements:\n• At least 8 characters\n• Include letters and numbers\n• Avoid common passwords`);
+    
+    if (newPassword && newPassword.length >= 8) {
+        // Show loading state
+        showAlert('Resetting user password...', 'info');
+        
+        // Make the password reset request
+        fetch(`/admin/user/${userId}/reset-password`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                new_password: newPassword
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(`Password successfully reset for user "${username}"`, 'success');
+            } else {
+                showAlert(`Error: ${data.error}`, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error resetting password:', error);
+            showAlert('Failed to reset password. Please try again.', 'danger');
+        });
+    } else if (newPassword !== null) {
+        showAlert('Password must be at least 8 characters long.', 'warning');
+    }
+}
+
+function promoteUser(userId, username) {
+    const confirmMessage = `Promote user "${username}" to Sub-Admin role?\n\nThis will grant them:\n• User management permissions\n• Access to admin dashboard\n• Ability to moderate content`;
+    
+    if (confirm(confirmMessage)) {
+        // Show loading state
+        showAlert('Promoting user to Sub-Admin...', 'info');
+        
+        // Make the promotion request
+        fetch(`/admin/user/${userId}/promote`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(`User "${username}" promoted to Sub-Admin successfully!`, 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showAlert(`Error: ${data.error}`, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error promoting user:', error);
+            showAlert('Failed to promote user. Please try again.', 'danger');
+        });
+    }
+}
+
+function demoteUser(userId, username) {
+    const confirmMessage = `Demote user "${username}" to regular user role?\n\nThis will remove:\n• Admin dashboard access\n• User management permissions\n• Content moderation abilities`;
+    
+    if (confirm(confirmMessage)) {
+        // Show loading state
+        showAlert('Demoting user to regular role...', 'info');
+        
+        // Make the demotion request
+        fetch(`/admin/user/${userId}/demote`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(`User "${username}" demoted to regular user successfully!`, 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showAlert(`Error: ${data.error}`, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error demoting user:', error);
+            showAlert('Failed to demote user. Please try again.', 'danger');
+        });
     }
 }
 

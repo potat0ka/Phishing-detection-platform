@@ -35,8 +35,30 @@ logger = logging.getLogger(__name__)
 # Create admin blueprint for organizing admin routes
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
-# Admin dashboard functionality is handled in routes.py dashboard() function
-# based on user role detection
+@admin_bp.route('/')
+@admin_required
+def admin_dashboard():
+    """Main admin dashboard"""
+    current_user = get_current_user()
+    
+    # Get system statistics
+    stats = calculate_system_stats()
+    
+    # Get users with statistics
+    users = get_all_users_with_stats()
+    
+    # Get recent scan logs
+    scan_logs = get_recent_scan_logs(50)
+    
+    # Get reported content
+    reported_content = get_reported_content()
+    
+    return render_template('admin_dashboard.html',
+                         current_user=current_user,
+                         stats=stats,
+                         users=users,
+                         scan_logs=scan_logs,
+                         reported_content=reported_content)
 
 # Helper functions for admin dashboard (used by routes.py)
 
