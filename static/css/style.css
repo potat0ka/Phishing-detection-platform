@@ -263,6 +263,139 @@
         color: #333333 !important;
     }
 }
+
+/* Enhanced Stat Cards */
+.enhanced-stat-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    transform: translateY(0);
+}
+
+.enhanced-stat-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.15),
+        0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stat-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.1;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.enhanced-stat-card:hover .stat-gradient {
+    opacity: 0.15;
+}
+
+.stat-gradient-info {
+    background: linear-gradient(135deg, #0dcaf0 0%, #17a2b8 100%);
+}
+
+.stat-gradient-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #e91e63 100%);
+}
+
+.stat-gradient-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+}
+
+.stat-gradient-success {
+    background: linear-gradient(135deg, #198754 0%, #4caf50 100%);
+}
+
+.stat-content {
+    z-index: 2;
+}
+
+.stat-icon-wrapper {
+    transition: transform 0.3s ease;
+}
+
+.enhanced-stat-card:hover .stat-icon-wrapper {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.stat-title {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.enhanced-stat-card:hover .stat-title {
+    opacity: 1;
+}
+
+.stat-value {
+    font-family: 'JetBrains Mono', 'Monaco', 'Consolas', monospace;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.enhanced-stat-card:hover .stat-value {
+    transform: scale(1.05);
+}
+
+/* Responsive enhancements for stat cards */
+@media (max-width: 768px) {
+    .enhanced-stat-card {
+        margin-bottom: 1rem;
+        padding: 1.5rem !important;
+    }
+    
+    .stat-icon-wrapper i {
+        font-size: 1.5rem !important;
+    }
+    
+    .stat-value {
+        font-size: 1.2rem !important;
+    }
+}
+
+/* Animation for stat cards on page load */
+@keyframes statCardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.enhanced-stat-card {
+    animation: statCardFadeIn 0.6s ease-out forwards;
+}
+
+.enhanced-stat-card:nth-child(1) { animation-delay: 0.1s; }
+.enhanced-stat-card:nth-child(2) { animation-delay: 0.2s; }
+.enhanced-stat-card:nth-child(3) { animation-delay: 0.3s; }
+.enhanced-stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* Subtle pulse animation for interactive feedback */
+@keyframes statPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.enhanced-stat-card:active {
+    animation: statPulse 0.3s ease-in-out;
 }
 
 .shield-icon {

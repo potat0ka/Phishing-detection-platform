@@ -285,31 +285,51 @@
                 <div class="card-body p-4">
                     <div class="row g-4">
                         <div class="col-md-3">
-                            <div class="stat-card text-center p-3 border rounded">
-                                <i class="fas fa-chart-bar text-info fs-4 mb-2"></i>
-                                <div class="fw-bold">Text Complexity</div>
-                                <div class="text-muted">{{ "%.2f"|format(result.ai_analysis.text_complexity) }}</div>
+                            <div class="enhanced-stat-card text-center p-4 rounded-3 h-100 position-relative overflow-hidden">
+                                <div class="stat-gradient stat-gradient-info"></div>
+                                <div class="stat-content position-relative">
+                                    <div class="stat-icon-wrapper mb-3">
+                                        <i class="fas fa-chart-bar text-info fs-2"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-2 stat-title">Text Complexity</h6>
+                                    <div class="stat-value text-info fw-bold fs-4">{{ "%.2f"|format(result.ai_analysis.text_complexity) }}</div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="stat-card text-center p-3 border rounded">
-                                <i class="fas fa-heart text-danger fs-4 mb-2"></i>
-                                <div class="fw-bold">Sentiment</div>
-                                <div class="text-muted">{{ "%.2f"|format(result.ai_analysis.sentiment_score) }}</div>
+                            <div class="enhanced-stat-card text-center p-4 rounded-3 h-100 position-relative overflow-hidden">
+                                <div class="stat-gradient stat-gradient-danger"></div>
+                                <div class="stat-content position-relative">
+                                    <div class="stat-icon-wrapper mb-3">
+                                        <i class="fas fa-heart text-danger fs-2"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-2 stat-title">Sentiment</h6>
+                                    <div class="stat-value text-danger fw-bold fs-4">{{ "%.2f"|format(result.ai_analysis.sentiment_score) }}</div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="stat-card text-center p-3 border rounded">
-                                <i class="fas fa-key text-warning fs-4 mb-2"></i>
-                                <div class="fw-bold">Keyword Density</div>
-                                <div class="text-muted">{{ "%.3f"|format(result.ai_analysis.keyword_density) }}</div>
+                            <div class="enhanced-stat-card text-center p-4 rounded-3 h-100 position-relative overflow-hidden">
+                                <div class="stat-gradient stat-gradient-warning"></div>
+                                <div class="stat-content position-relative">
+                                    <div class="stat-icon-wrapper mb-3">
+                                        <i class="fas fa-key text-warning fs-2"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-2 stat-title">Keyword Density</h6>
+                                    <div class="stat-value text-warning fw-bold fs-4">{{ "%.3f"|format(result.ai_analysis.keyword_density) }}</div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="stat-card text-center p-3 border rounded">
-                                <i class="fas fa-robot text-success fs-4 mb-2"></i>
-                                <div class="fw-bold">AI Confidence</div>
-                                <div class="text-muted">{{ "%.1f"|format(result.ai_analysis.ai_confidence * 100) }}%</div>
+                            <div class="enhanced-stat-card text-center p-4 rounded-3 h-100 position-relative overflow-hidden">
+                                <div class="stat-gradient stat-gradient-success"></div>
+                                <div class="stat-content position-relative">
+                                    <div class="stat-icon-wrapper mb-3">
+                                        <i class="fas fa-robot text-success fs-2"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-2 stat-title">AI Confidence</h6>
+                                    <div class="stat-value text-success fw-bold fs-4">{{ "%.1f"|format(result.ai_analysis.ai_confidence * 100) }}%</div>
+                                </div>
                             </div>
                         </div>
                     </div>
