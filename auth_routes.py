@@ -153,13 +153,20 @@ def login():
             flash('Please enter both username and password', 'error')
             return render_template('auth/login.html')
         
-        # Find user in database - need to search encrypted data
+        # Find user in database - handle both encrypted and non-encrypted data
         user = None
         
-        # Get all users and decrypt to find matching username/email
+        # Get all users and check both encrypted and non-encrypted data
         all_users = db_manager.find_many('users', {})
         
         for user_data in all_users:
+            # First try non-encrypted data (for demo accounts)
+            if (user_data.get('username', '').lower() == username.lower() or 
+                user_data.get('email', '').lower() == username.lower()):
+                user = user_data
+                break
+            
+            # Then try encrypted data
             try:
                 decrypted_user = decrypt_sensitive_data('user', user_data)
                 if (decrypted_user.get('username', '').lower() == username.lower() or 
@@ -167,15 +174,19 @@ def login():
                     user = user_data
                     break
             except Exception as e:
-                logger.warning(f"Failed to decrypt user data: {e}")
+                # Continue if decryption fails - might be non-encrypted data
                 continue
         
         if not user:
             flash('Invalid username or password', 'error')
             return render_template('auth/login.html')
         
-        # Decrypt user data
-        decrypted_user = decrypt_sensitive_data('user', user)
+        # Handle both encrypted and non-encrypted user data
+        try:
+            decrypted_user = decrypt_sensitive_data('user', user)
+        except:
+            # If decryption fails, use original data (for demo accounts)
+            decrypted_user = user
         
         # Check if account is locked
         if decrypted_user.get('locked_until') and datetime.utcnow() < decrypted_user['locked_until']:

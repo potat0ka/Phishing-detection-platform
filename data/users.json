@@ -38,7 +38,7 @@
     "role": "admin",
     "display_name": "Demo Administrator",
     "created_at": "2025-06-05T07:42:25.816819",
-    "last_login": null,
+    "last_login": "2025-06-05 07:52:00.758705",
     "is_active": true,
     "login_attempts": 0,
     "locked_until": null,

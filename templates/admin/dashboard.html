@@ -1,0 +1,585 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Admin Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fas fa-shield-alt text-primary me-2"></i>
+                        Admin Dashboard
+                    </h2>
+                    <p class="text-muted mb-0">Platform management and monitoring center</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="refreshDashboard()">
+                        <i class="fas fa-sync-alt me-1"></i>
+                        Refresh
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-cog me-1"></i>
+                            Actions
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="exportSystemReport()">
+                                <i class="fas fa-download me-2"></i>Export System Report
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="clearSystemLogs()">
+                                <i class="fas fa-trash me-2"></i>Clear Old Logs
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="systemMaintenance()">
+                                <i class="fas fa-tools me-2"></i>System Maintenance
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Analytics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Users</h6>
+                            <h3 class="mb-0" id="totalUsers">{{ stats.total_users or 0 }}</h3>
+                            <small class="opacity-75">
+                                <i class="fas fa-arrow-up me-1"></i>
+                                +{{ stats.new_users_today or 0 }} today
+                            </small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Scans</h6>
+                            <h3 class="mb-0" id="totalScans">{{ stats.total_scans or 0 }}</h3>
+                            <small class="opacity-75">
+                                <i class="fas fa-arrow-up me-1"></i>
+                                +{{ stats.scans_today or 0 }} today
+                            </small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-search fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Threats Detected</h6>
+                            <h3 class="mb-0" id="threatsDetected">{{ stats.threats_detected or 0 }}</h3>
+                            <small class="opacity-75">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                {{ "%.1f"|format((stats.threat_rate or 0) * 100) }}% rate
+                            </small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Active Sessions</h6>
+                            <h3 class="mb-0" id="activeSessions">{{ stats.active_sessions or 0 }}</h3>
+                            <small class="opacity-75">
+                                <i class="fas fa-clock me-1"></i>
+                                Live monitoring
+                            </small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="adminTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-pane" type="button">
+                                <i class="fas fa-users me-1"></i>User Management
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="scans-tab" data-bs-toggle="tab" data-bs-target="#scans-pane" type="button">
+                                <i class="fas fa-search me-1"></i>Scan Logs
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports-pane" type="button">
+                                <i class="fas fa-flag me-1"></i>Reported Content
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tips-tab" data-bs-toggle="tab" data-bs-target="#tips-pane" type="button">
+                                <i class="fas fa-lightbulb me-1"></i>Safety Tips
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics-pane" type="button">
+                                <i class="fas fa-chart-line me-1"></i>Analytics
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="card-body">
+                    <div class="tab-content" id="adminTabContent">
+                        <!-- User Management Tab -->
+                        <div class="tab-pane fade show active" id="users-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">User Management</h5>
+                                <div class="d-flex gap-2">
+                                    <input type="search" class="form-control" placeholder="Search users..." id="userSearch" style="width: 250px;">
+                                    <button class="btn btn-primary" onclick="createUser()">
+                                        <i class="fas fa-plus me-1"></i>Add User
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                            <th>Last Login</th>
+                                            <th>Scans</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody">
+                                        {% for user in users %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-sm me-2">
+                                                        <div class="avatar-title bg-soft-primary text-primary rounded-circle">
+                                                            {{ user.username[0].upper() }}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0">{{ user.username }}</h6>
+                                                        <small class="text-muted">ID: {{ user.id }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{ user.email }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ 'danger' if user.role == 'admin' else 'primary' }}">
+                                                    {{ user.role.title() }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ 'success' if user.is_active else 'secondary' }}">
+                                                    {{ 'Active' if user.is_active else 'Inactive' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if user.last_login %}
+                                                    <small>{{ user.last_login[:16].replace('T', ' ') }}</small>
+                                                {% else %}
+                                                    <small class="text-muted">Never</small>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ user.scan_count or 0 }}</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary" onclick="viewUser('{{ user.id }}')" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-warning" onclick="editUser('{{ user.id }}')" title="Edit User">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    {% if user.username != current_user.username %}
+                                                    <button class="btn btn-outline-{{ 'secondary' if user.is_active else 'success' }}" 
+                                                            onclick="toggleUserStatus('{{ user.id }}')" 
+                                                            title="{{ 'Deactivate' if user.is_active else 'Activate' }} User">
+                                                        <i class="fas fa-{{ 'ban' if user.is_active else 'check' }}"></i>
+                                                    </button>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Scan Logs Tab -->
+                        <div class="tab-pane fade" id="scans-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Phishing Scan Logs</h5>
+                                <div class="d-flex gap-2">
+                                    <select class="form-select" id="scanFilter" style="width: 150px;">
+                                        <option value="all">All Scans</option>
+                                        <option value="safe">Safe</option>
+                                        <option value="suspicious">Suspicious</option>
+                                        <option value="dangerous">Dangerous</option>
+                                    </select>
+                                    <input type="date" class="form-control" id="scanDateFilter" style="width: 150px;">
+                                    <button class="btn btn-outline-primary" onclick="exportScanLogs()">
+                                        <i class="fas fa-download me-1"></i>Export
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date/Time</th>
+                                            <th>User</th>
+                                            <th>Type</th>
+                                            <th>Content</th>
+                                            <th>Result</th>
+                                            <th>Confidence</th>
+                                            <th>IP Address</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="scanLogsTableBody">
+                                        {% for scan in scan_logs %}
+                                        <tr>
+                                            <td>
+                                                <small>{{ scan.created_at[:16].replace('T', ' ') if scan.created_at else 'Unknown' }}</small>
+                                            </td>
+                                            <td>{{ scan.username or 'Unknown' }}</td>
+                                            <td>
+                                                <span class="badge bg-secondary">{{ scan.input_type or 'Unknown' }}</span>
+                                            </td>
+                                            <td>
+                                                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                                                    {{ (scan.input_content or 'No content')[:50] }}...
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ 'success' if scan.result == 'safe' else ('warning' if scan.result == 'suspicious' else 'danger') }}">
+                                                    {{ (scan.result or 'Unknown').title() }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% set confidence = scan.confidence_score or scan.confidence or 0.0 %}
+                                                <div class="progress" style="height: 15px; width: 60px;">
+                                                    <div class="progress-bar bg-{{ 'success' if scan.result == 'safe' else ('warning' if scan.result == 'suspicious' else 'danger') }}" 
+                                                         style="width: {{ confidence * 100 }}%">
+                                                    </div>
+                                                </div>
+                                                <small>{{ "%.0f"|format(confidence * 100) }}%</small>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">{{ scan.user_ip or 'Unknown' }}</small>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary" onclick="viewScanDetails('{{ scan.id }}')" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Reported Content Tab -->
+                        <div class="tab-pane fade" id="reports-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Reported Content Moderation</h5>
+                                <div class="d-flex gap-2">
+                                    <select class="form-select" id="reportFilter" style="width: 150px;">
+                                        <option value="pending">Pending</option>
+                                        <option value="reviewed">Reviewed</option>
+                                        <option value="all">All Reports</option>
+                                    </select>
+                                    <button class="btn btn-primary" onclick="bulkModeration()">
+                                        <i class="fas fa-tasks me-1"></i>Bulk Actions
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="row" id="reportedContentGrid">
+                                {% for report in reported_content %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card border-{{ 'warning' if report.status == 'pending' else 'success' }}">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">Report #{{ report.id }}</small>
+                                            <span class="badge bg-{{ 'warning' if report.status == 'pending' else 'success' }}">
+                                                {{ report.status.title() }}
+                                            </span>
+                                        </div>
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ report.type.title() }} Content</h6>
+                                            <p class="card-text small">
+                                                {{ (report.content or 'No content available')[:100] }}...
+                                            </p>
+                                            <div class="mb-2">
+                                                <strong>Reported by:</strong> {{ report.reporter_username or 'Anonymous' }}<br>
+                                                <strong>Reason:</strong> {{ report.reason or 'Not specified' }}<br>
+                                                <strong>Date:</strong> {{ report.created_at[:10] if report.created_at else 'Unknown' }}
+                                            </div>
+                                            <div class="d-flex gap-1">
+                                                <button class="btn btn-sm btn-success" onclick="approveReport('{{ report.id }}')" 
+                                                        {% if report.status != 'pending' %}disabled{% endif %}>
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="rejectReport('{{ report.id }}')"
+                                                        {% if report.status != 'pending' %}disabled{% endif %}>
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-primary" onclick="viewReportDetails('{{ report.id }}')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Safety Tips Tab -->
+                        <div class="tab-pane fade" id="tips-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Safety Tips Management</h5>
+                                <button class="btn btn-primary" onclick="createTip()">
+                                    <i class="fas fa-plus me-1"></i>Add New Tip
+                                </button>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="list-group" id="tipCategories">
+                                        <button class="list-group-item list-group-item-action active" data-category="email">
+                                            <i class="fas fa-envelope me-2"></i>Email Tips ({{ email_tips|length }})
+                                        </button>
+                                        <button class="list-group-item list-group-item-action" data-category="url">
+                                            <i class="fas fa-link me-2"></i>URL Tips ({{ url_tips|length }})
+                                        </button>
+                                        <button class="list-group-item list-group-item-action" data-category="general">
+                                            <i class="fas fa-shield-alt me-2"></i>General Tips ({{ general_tips|length }})
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div id="tipsContent">
+                                        <div class="tip-category" data-category="email" style="display: block;">
+                                            {% for tip in email_tips %}
+                                            <div class="card mb-2">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <h6 class="card-title">{{ tip.title }}</h6>
+                                                            <p class="card-text small">{{ tip.content }}</p>
+                                                            <small class="text-muted">Priority: {{ tip.priority or 1 }}</small>
+                                                        </div>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <button class="btn btn-outline-primary" onclick="editTip('{{ tip.id }}')">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-danger" onclick="deleteTip('{{ tip.id }}')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        
+                                        <div class="tip-category" data-category="url" style="display: none;">
+                                            {% for tip in url_tips %}
+                                            <div class="card mb-2">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <h6 class="card-title">{{ tip.title }}</h6>
+                                                            <p class="card-text small">{{ tip.content }}</p>
+                                                            <small class="text-muted">Priority: {{ tip.priority or 1 }}</small>
+                                                        </div>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <button class="btn btn-outline-primary" onclick="editTip('{{ tip.id }}')">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-danger" onclick="deleteTip('{{ tip.id }}')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        
+                                        <div class="tip-category" data-category="general" style="display: none;">
+                                            {% for tip in general_tips %}
+                                            <div class="card mb-2">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <h6 class="card-title">{{ tip.title }}</h6>
+                                                            <p class="card-text small">{{ tip.content }}</p>
+                                                            <small class="text-muted">Priority: {{ tip.priority or 1 }}</small>
+                                                        </div>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <button class="btn btn-outline-primary" onclick="editTip('{{ tip.id }}')">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-danger" onclick="deleteTip('{{ tip.id }}')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analytics Tab -->
+                        <div class="tab-pane fade" id="analytics-pane" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Detection Results Overview</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="detectionChart" height="300"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">User Activity Trends</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="activityChart" height="300"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">System Performance Metrics</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-3 text-center">
+                                                    <h4 class="text-primary">{{ "%.1f"|format(analytics.avg_response_time or 0) }}ms</h4>
+                                                    <small class="text-muted">Avg Response Time</small>
+                                                </div>
+                                                <div class="col-md-3 text-center">
+                                                    <h4 class="text-success">{{ "%.1f"|format((analytics.accuracy_rate or 0) * 100) }}%</h4>
+                                                    <small class="text-muted">Detection Accuracy</small>
+                                                </div>
+                                                <div class="col-md-3 text-center">
+                                                    <h4 class="text-info">{{ analytics.total_storage or 0 }}MB</h4>
+                                                    <small class="text-muted">Storage Used</small>
+                                                </div>
+                                                <div class="col-md-3 text-center">
+                                                    <h4 class="text-warning">99.9%</h4>
+                                                    <small class="text-muted">System Uptime</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals for various admin actions will be added via JavaScript -->
+<div id="adminModals"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/admin-dashboard.js') }}"></script>
+
+<style>
+.avatar-sm {
+    width: 2rem;
+    height: 2rem;
+}
+
+.avatar-title {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.bg-soft-primary {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.tip-category {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.table-responsive {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+#reportedContentGrid {
+    max-height: 600px;
+    overflow-y: auto;
+}
+</style>
+{% endblock %}
