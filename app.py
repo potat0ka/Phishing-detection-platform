@@ -70,11 +70,30 @@ Path('analysis_results').mkdir(exist_ok=True)
 Path('data').mkdir(exist_ok=True)
 
 def allowed_file(filename, file_type):
-    """Check if uploaded file has allowed extension"""
+    """
+    Check if uploaded file has allowed extension for security
+    
+    This function validates file extensions to prevent malicious uploads
+    and ensure only supported file types are processed for AI analysis.
+    
+    Args:
+        filename (str): Name of the uploaded file
+        file_type (str): Expected file type ('image', 'video', 'audio', 'document')
+        
+    Returns:
+        bool: True if file extension is allowed, False otherwise
+        
+    Security Note:
+        - Only validates extension, additional content validation happens during analysis
+        - Prevents common attack vectors through malicious file uploads
+    """
     if '.' not in filename:
         return False
     
+    # Extract file extension (everything after the last dot)
     extension = filename.rsplit('.', 1)[1].lower()
+    
+    # Check if extension is in the allowed list for this file type
     return extension in ALLOWED_EXTENSIONS.get(file_type, set())
 
 # Import MongoDB manager and authentication system

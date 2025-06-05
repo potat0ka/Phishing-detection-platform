@@ -19,21 +19,56 @@ logger = logging.getLogger(__name__)
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 def validate_email(email):
-    """Validate email format"""
+    """
+    Validate email format using regex pattern
+    
+    This function ensures email addresses follow standard format:
+    - Contains @ symbol with domain
+    - Valid characters before and after @
+    - Proper domain extension (2+ characters)
+    
+    Args:
+        email (str): Email address to validate
+        
+    Returns:
+        bool: True if email format is valid, False otherwise
+    """
+    # RFC 5322 compliant email pattern (simplified)
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return re.match(pattern, email) is not None
 
 def validate_password(password):
-    """Validate password strength"""
+    """
+    Validate password strength according to security best practices
+    
+    Password requirements:
+    - Minimum 8 characters length
+    - At least one uppercase letter (A-Z)
+    - At least one lowercase letter (a-z)  
+    - At least one number (0-9)
+    
+    This helps protect against brute force attacks and ensures
+    users create secure passwords for their accounts.
+    
+    Args:
+        password (str): Password to validate
+        
+    Returns:
+        tuple: (is_valid: bool, message: str)
+    """
+    # Check minimum length requirement
     if len(password) < 8:
         return False, "Password must be at least 8 characters long"
     
+    # Check for uppercase letter
     if not re.search(r'[A-Z]', password):
         return False, "Password must contain at least one uppercase letter"
     
+    # Check for lowercase letter
     if not re.search(r'[a-z]', password):
         return False, "Password must contain at least one lowercase letter"
     
+    # Check for number
     if not re.search(r'\d', password):
         return False, "Password must contain at least one number"
     
