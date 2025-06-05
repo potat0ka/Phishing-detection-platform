@@ -6,9 +6,26 @@ Professional database setup with error handling and fallback options
 import os
 import logging
 from typing import Optional, Dict, Any
-from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 import json
+
+# Try importing MongoDB with fallback for compatibility issues
+try:
+    from pymongo import MongoClient
+    from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
+    MONGODB_AVAILABLE = True
+except ImportError as e:
+    logging.warning(f"MongoDB not available: {e}")
+    MONGODB_AVAILABLE = False
+    # Mock classes for fallback
+    class MongoClient:
+        def __init__(self, *args, **kwargs):
+            raise ConnectionFailure("MongoDB not available")
+    
+    class ConnectionFailure(Exception):
+        pass
+    
+    class ServerSelectionTimeoutError(Exception):
+        pass
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +44,12 @@ class MongoDBManager:
     
     def init_connection(self):
         """Initialize MongoDB connection with fallback to JSON storage"""
+        if not MONGODB_AVAILABLE:
+            logger.info("MongoDB libraries not available, using JSON file storage")
+            self.connected = False
+            self._setup_json_fallback()
+            return
+            
         try:
             # Try to connect to MongoDB
             mongodb_uri = os.environ.get('MONGODB_URI') or os.environ.get('DATABASE_URL')

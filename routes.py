@@ -253,8 +253,8 @@ def tips():
     except Exception as e:
         app.logger.error(f"Error updating security tips: {e}")
     
-    # Get tips organized by category
-    all_tips = PhishingTip.get_all_tips()
+    # Get tips organized by category from database
+    all_tips = db_manager.find_many('security_tips')
     email_tips = [tip for tip in all_tips if tip.get('category') == 'email']
     url_tips = [tip for tip in all_tips if tip.get('category') == 'url']
     general_tips = [tip for tip in all_tips if tip.get('category') == 'general']
