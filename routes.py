@@ -111,98 +111,13 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    """User registration"""
-    if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        email = request.form.get('email', '').strip()
-        password = request.form.get('password', '')
-        confirm_password = request.form.get('confirm_password', '')
-        
-        if not all([username, email, password, confirm_password]):
-            flash('All fields are required.', 'error')
-            return render_template('register.html')
-        
-        if password != confirm_password:
-            flash('Passwords do not match.', 'error')
-            return render_template('register.html')
-        
-        if len(password) < 6:
-            flash('Password must be at least 6 characters long.', 'error')
-            return render_template('register.html')
-        
-        # Check if user already exists
-        existing_user = db_manager.find_one('users', {'username': username})
-        if existing_user:
-            flash('Username already exists.', 'error')
-            return render_template('register.html')
-        
-        existing_email = db_manager.find_one('users', {'email': email})
-        if existing_email:
-            flash('Email already registered.', 'error')
-            return render_template('register.html')
-        
-        # Create new user with encrypted data
-        from werkzeug.security import generate_password_hash
-        user_data = {
-            'username': username,
-            'email': email,
-            'password_hash': generate_password_hash(password),
-            'role': 'user',
-            'created_at': datetime.utcnow(),
-            'is_active': True
-        }
-        
-        # Encrypt sensitive data
-        encrypted_user_data = encrypt_sensitive_data('user', user_data)
-        user_id = db_manager.insert_one('users', encrypted_user_data)
-        
-        if user_id:
-            flash('Registration successful! Please log in.', 'success')
-            return redirect(url_for('login'))
-        else:
-            flash('Registration failed. Please try again.', 'error')
-            return render_template('register.html')
-    
-    return render_template('register.html')
+    """Redirect to enhanced authentication system"""
+    return redirect(url_for('auth.register'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """User login"""
-    if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        password = request.form.get('password', '')
-        
-        if not username or not password:
-            flash('Username and password are required.', 'error')
-            return render_template('login.html')
-        
-        # Find user in database
-        user = db_manager.find_one('users', {'username': username})
-        if not user:
-            # Try finding by email
-            user = db_manager.find_one('users', {'email': username.lower()})
-        
-        if user:
-            # Decrypt user data
-            decrypted_user = decrypt_sensitive_data('user', user)
-            
-            # Verify password
-            from werkzeug.security import check_password_hash
-            if check_password_hash(decrypted_user['password_hash'], password):
-                # Create session
-                session['user_id'] = user['_id']
-                session['username'] = decrypted_user['username']
-                session['email'] = decrypted_user['email']
-                session['role'] = decrypted_user.get('role', 'user')
-                session['logged_in'] = True
-                flash('Login successful!', 'success')
-                return redirect(url_for('dashboard'))
-            else:
-                flash('Invalid username or password.', 'error')
-        else:
-            flash('Invalid username or password.', 'error')
-    
-    return render_template('login.html')
+    """Redirect to enhanced authentication system"""
+    return redirect(url_for('auth.login'))
 
 @app.route('/logout')
 def logout():
