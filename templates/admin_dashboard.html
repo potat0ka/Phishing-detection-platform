@@ -356,8 +356,8 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="mb-0">Content Moderation</h5>
                                 <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-outline-success">Approve Selected</button>
-                                    <button class="btn btn-outline-danger">Reject Selected</button>
+                                    <button class="btn btn-outline-success" onclick="approveSelectedReports()">Approve Selected</button>
+                                    <button class="btn btn-outline-danger" onclick="rejectSelectedReports()">Reject Selected</button>
                                 </div>
                             </div>
                             <div class="table-responsive">
@@ -384,8 +384,8 @@
                                             <td><span class="badge bg-warning">{{ report.status.title() }}</span></td>
                                             <td>
                                                 <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-outline-success"><i class="fas fa-check"></i></button>
-                                                    <button class="btn btn-outline-danger"><i class="fas fa-times"></i></button>
+                                                    <button class="btn btn-outline-success" onclick="approveReport('{{ report.id }}')"><i class="fas fa-check"></i></button>
+                                                    <button class="btn btn-outline-danger" onclick="rejectReport('{{ report.id }}')"><i class="fas fa-times"></i></button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -2118,6 +2118,132 @@ document.addEventListener('DOMContentLoaded', function() {
 function filterTable(tableType, searchTerm) {
     // Simple table filtering functionality would be implemented here
     console.log(`Filtering ${tableType} table for: ${searchTerm}`);
+}
+
+// Report Management Functions
+function approveReport(reportId) {
+    if (confirm('Approve this report?')) {
+        showAlert('Approving report...', 'info');
+        
+        fetch(`/admin/reports/approve/${reportId}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error approving report:', error);
+            showAlert('Error approving report. Please try again.', 'danger');
+        });
+    }
+}
+
+function rejectReport(reportId) {
+    if (confirm('Reject this report?')) {
+        showAlert('Rejecting report...', 'info');
+        
+        fetch(`/admin/reports/reject/${reportId}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error rejecting report:', error);
+            showAlert('Error rejecting report. Please try again.', 'danger');
+        });
+    }
+}
+
+function approveSelectedReports() {
+    const selectedReports = getSelectedReports();
+    
+    if (selectedReports.length === 0) {
+        showAlert('Please select reports to approve.', 'warning');
+        return;
+    }
+    
+    if (confirm(`Approve ${selectedReports.length} selected reports?`)) {
+        showAlert('Approving selected reports...', 'info');
+        
+        fetch('/admin/reports/bulk-action', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                report_ids: selectedReports,
+                action: 'approve'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error approving reports:', error);
+            showAlert('Error approving reports. Please try again.', 'danger');
+        });
+    }
+}
+
+function rejectSelectedReports() {
+    const selectedReports = getSelectedReports();
+    
+    if (selectedReports.length === 0) {
+        showAlert('Please select reports to reject.', 'warning');
+        return;
+    }
+    
+    if (confirm(`Reject ${selectedReports.length} selected reports?`)) {
+        showAlert('Rejecting selected reports...', 'info');
+        
+        fetch('/admin/reports/bulk-action', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                report_ids: selectedReports,
+                action: 'reject'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error rejecting reports:', error);
+            showAlert('Error rejecting reports. Please try again.', 'danger');
+        });
+    }
+}
+
+function getSelectedReports() {
+    const checkboxes = document.querySelectorAll('.report-checkbox:checked');
+    return Array.from(checkboxes).map(cb => cb.dataset.reportId);
 }
 </script>
 {% endblock %}
