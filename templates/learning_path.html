@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}Your Learning Path - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-map-marked-alt me-3"></i>
+                    Your Personalized Learning Path
+                </h1>
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="alert alert-primary">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <strong>Level:</strong> {{ user_level.title() }}<br>
+                                    <strong>Topic:</strong> {{ detection_type.replace('_', ' ').title() }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Estimated Time:</strong> {{ learning_path.estimated_time }}<br>
+                                    <strong>Modules:</strong> {{ learning_path.learning_modules|length }} modules
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Learning Modules -->
+            <div class="mb-5">
+                <h3 class="fw-bold mb-4">
+                    <i class="fas fa-book-open text-success me-2"></i>
+                    Learning Modules
+                </h3>
+                
+                <div class="modules-container">
+                    {% for module in learning_path.learning_modules %}
+                    <div class="module-card card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-gradient-primary text-white p-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <span class="badge bg-light text-primary me-3">Module {{ module.module }}</span>
+                                    {{ module.title }}
+                                </h5>
+                                <span class="badge bg-white text-primary">{{ module.duration }}</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <!-- Learning Objectives -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold text-primary mb-3">Learning Objectives</h6>
+                                <div class="objectives-list">
+                                    {% for objective in module.objectives %}
+                                    <div class="objective-item d-flex align-items-start mb-2">
+                                        <i class="fas fa-target text-success me-3 mt-1"></i>
+                                        <span>{{ objective }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Module Content -->
+                            <div class="content-overview">
+                                <h6 class="fw-bold text-secondary mb-3">What You'll Learn</h6>
+                                <div class="row g-3">
+                                    {% for content_item in module.content %}
+                                    <div class="col-md-6">
+                                        <div class="content-item p-3 bg-light rounded">
+                                            <div class="d-flex align-items-start">
+                                                <i class="fas fa-chevron-right text-primary me-2 mt-1" style="font-size: 0.8rem;"></i>
+                                                <span class="small">{{ content_item }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Hands-on Activities -->
+            <div class="mb-5">
+                <h3 class="fw-bold mb-4">
+                    <i class="fas fa-hands text-warning me-2"></i>
+                    Hands-on Activities
+                </h3>
+                
+                <div class="row g-4">
+                    {% for activity in learning_path.hands_on_activities %}
+                    <div class="col-md-6">
+                        <div class="activity-card card border-0 shadow-sm h-100">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <h6 class="fw-bold text-dark">{{ activity.activity }}</h6>
+                                    <span class="badge bg-{{ 'success' if activity.difficulty == 'Beginner' else ('warning' if activity.difficulty == 'Intermediate' else 'danger') }}">
+                                        {{ activity.difficulty }}
+                                    </span>
+                                </div>
+                                <p class="text-muted mb-3">{{ activity.description }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        {{ activity.estimated_time }}
+                                    </small>
+                                    <button class="btn btn-sm btn-outline-primary">Start Activity</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Assessment Questions -->
+            <div class="mb-5">
+                <h3 class="fw-bold mb-4">
+                    <i class="fas fa-question-circle text-info me-2"></i>
+                    Knowledge Check
+                </h3>
+                
+                <div class="assessment-container">
+                    {% for question in learning_path.assessment_questions %}
+                    <div class="question-card card border-0 shadow-sm mb-3">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h6 class="fw-bold">Question {{ loop.index }}</h6>
+                                <span class="badge bg-secondary">{{ question.difficulty.title() }}</span>
+                            </div>
+                            <p class="mb-3">{{ question.question }}</p>
+                            
+                            {% if question.type == 'true_false' %}
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="q{{ loop.index }}" id="q{{ loop.index }}_true">
+                                <label class="btn btn-outline-success" for="q{{ loop.index }}_true">True</label>
+                                
+                                <input type="radio" class="btn-check" name="q{{ loop.index }}" id="q{{ loop.index }}_false">
+                                <label class="btn btn-outline-danger" for="q{{ loop.index }}_false">False</label>
+                            </div>
+                            {% elif question.type == 'open_ended' %}
+                            <textarea class="form-control" rows="3" placeholder="Type your answer here..."></textarea>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Additional Resources -->
+            <div class="mb-5">
+                <h3 class="fw-bold mb-4">
+                    <i class="fas fa-external-link-alt text-primary me-2"></i>
+                    Additional Resources
+                </h3>
+                
+                <div class="row g-4">
+                    {% for resource in learning_path.additional_resources %}
+                    <div class="col-md-6">
+                        <div class="resource-card card border-0 shadow-sm h-100">
+                            <div class="card-body p-4">
+                                <h6 class="fw-bold text-primary mb-2">{{ resource.title }}</h6>
+                                <p class="text-muted mb-3">{{ resource.type }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">{{ resource.url }}</small>
+                                    <button class="btn btn-sm btn-primary">View Resource</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Progress Tracking -->
+            <div class="progress-section">
+                <h3 class="fw-bold mb-4">
+                    <i class="fas fa-chart-line text-success me-2"></i>
+                    Track Your Progress
+                </h3>
+                
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-4">
+                        <div class="row g-4">
+                            <div class="col-md-3 text-center">
+                                <div class="progress-metric">
+                                    <div class="metric-circle mx-auto mb-2" style="width: 80px; height: 80px; background: conic-gradient(#28a745 0deg 0deg, #e9ecef 0deg 360deg); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <div class="metric-inner bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                            <span class="fw-bold">0%</span>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Modules Completed</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="progress-metric">
+                                    <div class="metric-circle mx-auto mb-2" style="width: 80px; height: 80px; background: conic-gradient(#ffc107 0deg 0deg, #e9ecef 0deg 360deg); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <div class="metric-inner bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                            <span class="fw-bold">0</span>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Activities Done</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="progress-metric">
+                                    <div class="metric-circle mx-auto mb-2" style="width: 80px; height: 80px; background: conic-gradient(#17a2b8 0deg 0deg, #e9ecef 0deg 360deg); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <div class="metric-inner bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                            <span class="fw-bold">0h</span>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Time Spent</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="progress-metric">
+                                    <div class="metric-circle mx-auto mb-2" style="width: 80px; height: 80px; background: conic-gradient(#6f42c1 0deg 0deg, #e9ecef 0deg 360deg); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <div class="metric-inner bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                            <span class="fw-bold">0%</span>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Overall Progress</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold">Learning Path Progress</span>
+                                <span class="text-muted">0 / {{ learning_path.learning_modules|length }} modules</span>
+                            </div>
+                            <div class="progress" style="height: 15px;">
+                                <div class="progress-bar bg-success" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="text-center mt-5">
+                <div class="btn-group" role="group">
+                    <a href="{{ url_for('learning_path') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Create New Path
+                    </a>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-play me-2"></i>Start Learning
+                    </button>
+                    <button class="btn btn-success">
+                        <i class="fas fa-download me-2"></i>Download PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.module-card {
+    transition: all 0.3s ease;
+}
+
+.module-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.activity-card:hover, .resource-card:hover {
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+
+.question-card {
+    transition: all 0.3s ease;
+}
+
+.question-card:hover {
+    border-color: var(--bs-primary);
+}
+
+.progress-metric:hover .metric-circle {
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+}
+
+.content-item:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+    transition: all 0.3s ease;
+}
+</style>
+{% endblock %}

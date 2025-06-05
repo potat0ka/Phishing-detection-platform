@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Personalized Learning Path - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-graduation-cap me-3"></i>
+                    Personalized Learning Path
+                </h1>
+                <p class="lead text-muted">
+                    Get a customized learning experience tailored to your technical level and interests
+                </p>
+            </div>
+            
+            <!-- Learning Path Form -->
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-gradient-primary text-white p-4">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-graduate me-2"></i>
+                        Create Your Learning Path
+                    </h5>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST">
+                        <!-- Technical Level Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Your Technical Level</label>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="form-check level-card p-3 border rounded h-100">
+                                        <input class="form-check-input" type="radio" name="user_level" 
+                                               id="beginner" value="beginner" checked>
+                                        <label class="form-check-label w-100" for="beginner">
+                                            <div class="text-center">
+                                                <i class="fas fa-seedling fa-2x text-success mb-3"></i>
+                                                <h6 class="fw-bold">Beginner</h6>
+                                                <small class="text-muted">New to cybersecurity and AI concepts</small>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check level-card p-3 border rounded h-100">
+                                        <input class="form-check-input" type="radio" name="user_level" 
+                                               id="intermediate" value="intermediate">
+                                        <label class="form-check-label w-100" for="intermediate">
+                                            <div class="text-center">
+                                                <i class="fas fa-chart-line fa-2x text-warning mb-3"></i>
+                                                <h6 class="fw-bold">Intermediate</h6>
+                                                <small class="text-muted">Some experience with security or technology</small>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check level-card p-3 border rounded h-100">
+                                        <input class="form-check-input" type="radio" name="user_level" 
+                                               id="advanced" value="advanced">
+                                        <label class="form-check-label w-100" for="advanced">
+                                            <div class="text-center">
+                                                <i class="fas fa-rocket fa-2x text-danger mb-3"></i>
+                                                <h6 class="fw-bold">Advanced</h6>
+                                                <small class="text-muted">Experienced with AI/ML and cybersecurity</small>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Detection Type Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">What Would You Like to Learn?</label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-check topic-card p-4 border rounded h-100">
+                                        <input class="form-check-input" type="radio" name="detection_type" 
+                                               id="phishing" value="phishing" checked>
+                                        <label class="form-check-label w-100" for="phishing">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-shield-alt fa-3x text-primary me-4"></i>
+                                                <div>
+                                                    <h6 class="fw-bold mb-2">Phishing Detection</h6>
+                                                    <p class="small text-muted mb-0">
+                                                        Learn how AI detects fraudulent emails, websites, and messages
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check topic-card p-4 border rounded h-100">
+                                        <input class="form-check-input" type="radio" name="detection_type" 
+                                               id="ai_content" value="ai_content">
+                                        <label class="form-check-label w-100" for="ai_content">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-robot fa-3x text-success me-4"></i>
+                                                <div>
+                                                    <h6 class="fw-bold mb-2">AI Content Detection</h6>
+                                                    <p class="small text-muted mb-0">
+                                                        Understand how to identify AI-generated images, videos, and text
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Learning Goals -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">What You'll Learn</h6>
+                            <div class="learning-goals bg-light p-4 rounded">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="goal-item d-flex align-items-start">
+                                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                                            <div>
+                                                <strong>Understanding AI Detection</strong><br>
+                                                <small class="text-muted">How artificial intelligence identifies threats</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="goal-item d-flex align-items-start">
+                                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                                            <div>
+                                                <strong>Hands-on Practice</strong><br>
+                                                <small class="text-muted">Interactive exercises and real examples</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="goal-item d-flex align-items-start">
+                                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                                            <div>
+                                                <strong>Technical Knowledge</strong><br>
+                                                <small class="text-muted">Machine learning concepts made simple</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="goal-item d-flex align-items-start">
+                                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                                            <div>
+                                                <strong>Practical Skills</strong><br>
+                                                <small class="text-muted">Tools and techniques for real-world use</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-route me-2"></i>
+                                Generate My Learning Path
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Benefits Section -->
+            <div class="row g-4 mt-5">
+                <div class="col-md-4">
+                    <div class="benefit-card text-center p-4 border rounded">
+                        <i class="fas fa-user-check fa-3x text-primary mb-3"></i>
+                        <h6 class="fw-bold">Personalized</h6>
+                        <p class="small text-muted">Tailored to your experience level and learning goals</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="benefit-card text-center p-4 border rounded">
+                        <i class="fas fa-clock fa-3x text-success mb-3"></i>
+                        <h6 class="fw-bold">Self-Paced</h6>
+                        <p class="small text-muted">Learn at your own speed with flexible modules</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="benefit-card text-center p-4 border rounded">
+                        <i class="fas fa-certificate fa-3x text-warning mb-3"></i>
+                        <h6 class="fw-bold">Practical</h6>
+                        <p class="small text-muted">Real-world examples and hands-on activities</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.level-card:hover, .topic-card:hover {
+    border-color: var(--bs-primary) !important;
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.level-card input:checked ~ label, .topic-card input:checked ~ label {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+</style>
+{% endblock %}

@@ -504,6 +504,24 @@ def ai_content_check():
     # GET request - show upload form
     return render_template('ai_content_check.html')
 
+@app.route('/learning-path', methods=['GET', 'POST'])
+@login_required
+def learning_path():
+    """Generate personalized learning paths for understanding AI detection"""
+    if request.method == 'POST':
+        user_level = request.form.get('user_level', 'beginner')
+        detection_type = request.form.get('detection_type', 'phishing')
+        
+        # Generate personalized learning path
+        learning_path = explainer.generate_learning_path(user_level, detection_type)
+        
+        return render_template('learning_path.html', 
+                             learning_path=learning_path,
+                             user_level=user_level,
+                             detection_type=detection_type)
+    
+    return render_template('learning_path_form.html')
+
 @app.route('/detection-details/<detection_id>')
 @login_required
 def detection_details(detection_id):
