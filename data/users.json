@@ -5,7 +5,7 @@
     "password_hash": "scrypt:32768:8:1$XI6lwWCu0P6ZsBLy$b8f478395edd01c6db4e1e490ecbb43cad747a8a6b10be8abc8822ed0bcd2f7809c61b8b41915969518be8fefcab5438eeaa3478ee8a578d5d9469d3c2417c8c",
     "role": "user",
     "created_at": "2025-06-05 05:22:30.263546",
-    "last_login": "2025-06-05 05:22:35.872802",
+    "last_login": "2025-06-05 05:27:37.496656",
     "is_active": true,
     "login_attempts": 0,
     "locked_until": null,

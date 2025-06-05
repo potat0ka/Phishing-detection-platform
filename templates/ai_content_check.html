@@ -28,6 +28,54 @@
                     </h5>
                 </div>
                 <div class="card-body p-4">
+                    <!-- Permission Status Alert -->
+                    <div id="permissionAlert" class="alert alert-info d-none" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <span id="permissionMessage"></span>
+                    </div>
+                    
+                    <!-- Permission Request Modal -->
+                    <div class="modal fade" id="permissionModal" tabindex="-1" data-bs-backdrop="static">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-primary text-white">
+                                    <h5 class="modal-title">
+                                        <i class="fas fa-camera me-2"></i>Camera & Microphone Access
+                                    </h5>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="text-center mb-4">
+                                        <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                                        <h6 class="fw-bold">Enhanced AI Detection Features</h6>
+                                    </div>
+                                    <p class="mb-3">To provide the best AI detection experience, we need access to:</p>
+                                    <ul class="list-unstyled mb-4">
+                                        <li class="mb-2">
+                                            <i class="fas fa-camera text-primary me-2"></i>
+                                            <strong>Camera:</strong> For real-time photo capture and analysis
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-microphone text-primary me-2"></i>
+                                            <strong>Microphone:</strong> For audio content analysis and voice detection
+                                        </li>
+                                    </ul>
+                                    <div class="alert alert-success">
+                                        <i class="fas fa-lock me-2"></i>
+                                        <small>Your privacy is protected. Media is processed locally and not stored on our servers.</small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" onclick="denyPermissions()">
+                                        <i class="fas fa-times me-2"></i>Skip for Now
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="requestPermissions()">
+                                        <i class="fas fa-check me-2"></i>Grant Access
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <form method="POST" enctype="multipart/form-data" id="uploadForm">
                         <!-- Content Type Selection -->
                         <div class="mb-4">
@@ -380,6 +428,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const analyzeBtn = document.getElementById('analyzeBtn');
     const form = document.getElementById('uploadForm');
     
+    // Initialize permission system when page loads
+    initializePermissionSystem();
+    
     // File input change handler
     fileInput.addEventListener('change', function() {
         if (this.files && this.files[0]) {
@@ -460,14 +511,203 @@ document.addEventListener('DOMContentLoaded', function() {
     updateFileAccept();
 });
 
+// Permission Management System
+// This system tracks camera and microphone permissions using localStorage
+// to ensure users are only prompted once per device/browser
+
+/**
+ * Initialize the permission system on page load
+ * Checks localStorage for previous permission decisions
+ */
+function initializePermissionSystem() {
+    // Check if user has already made a permission decision
+    const permissionStatus = localStorage.getItem('ai-detector-permissions');
+    const permissionTimestamp = localStorage.getItem('ai-detector-permissions-timestamp');
+    
+    // If no previous decision or decision is older than 30 days, show permission request
+    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+    
+    if (!permissionStatus || !permissionTimestamp || parseInt(permissionTimestamp) < thirtyDaysAgo) {
+        // Show permission modal after a brief delay to let page load
+        setTimeout(() => {
+            showPermissionModal();
+        }, 1000);
+    } else if (permissionStatus === 'granted') {
+        // Show success message if permissions were previously granted
+        showPermissionStatus('success', 'Camera and microphone access enabled for enhanced AI detection features.');
+    } else if (permissionStatus === 'denied') {
+        // Show info message about limited functionality
+        showPermissionStatus('info', 'Limited functionality: Upload files to analyze. For enhanced features, enable camera and microphone access in your browser settings.');
+    }
+}
+
+/**
+ * Show the permission request modal
+ */
+function showPermissionModal() {
+    const modal = new bootstrap.Modal(document.getElementById('permissionModal'));
+    modal.show();
+}
+
+/**
+ * Request camera and microphone permissions
+ * Called when user clicks "Grant Access" button
+ */
+async function requestPermissions() {
+    try {
+        // Request both camera and microphone permissions
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: true, 
+            audio: true 
+        });
+        
+        // If successful, stop the stream immediately (we just needed to check permissions)
+        stream.getTracks().forEach(track => track.stop());
+        
+        // Save successful permission grant to localStorage
+        localStorage.setItem('ai-detector-permissions', 'granted');
+        localStorage.setItem('ai-detector-permissions-timestamp', Date.now().toString());
+        
+        // Close the modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('permissionModal'));
+        modal.hide();
+        
+        // Show success message
+        showPermissionStatus('success', 'Great! Camera and microphone access enabled. You can now use all AI detection features.');
+        
+        // Enable enhanced features
+        enableEnhancedFeatures();
+        
+    } catch (error) {
+        console.log('Permission denied or error:', error);
+        
+        // Save permission denial to localStorage
+        localStorage.setItem('ai-detector-permissions', 'denied');
+        localStorage.setItem('ai-detector-permissions-timestamp', Date.now().toString());
+        
+        // Close the modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('permissionModal'));
+        modal.hide();
+        
+        // Show helpful error message based on the error type
+        if (error.name === 'NotAllowedError') {
+            showPermissionStatus('warning', 'Permissions denied. You can still upload files for analysis. To enable camera features, click the camera icon in your browser\'s address bar.');
+        } else if (error.name === 'NotFoundError') {
+            showPermissionStatus('info', 'No camera or microphone found. File upload is still available for AI detection.');
+        } else {
+            showPermissionStatus('info', 'Unable to access camera/microphone. File upload is available for AI detection.');
+        }
+        
+        // Show fallback instructions
+        showFallbackInstructions();
+    }
+}
+
+/**
+ * Handle when user denies permissions
+ */
+function denyPermissions() {
+    // Save denial to localStorage
+    localStorage.setItem('ai-detector-permissions', 'denied');
+    localStorage.setItem('ai-detector-permissions-timestamp', Date.now().toString());
+    
+    // Close the modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('permissionModal'));
+    modal.hide();
+    
+    // Show informative message
+    showPermissionStatus('info', 'No problem! You can still upload files for AI detection. Camera features can be enabled later in browser settings.');
+}
+
+/**
+ * Show permission status message to user
+ */
+function showPermissionStatus(type, message) {
+    const alertDiv = document.getElementById('permissionAlert');
+    const messageSpan = document.getElementById('permissionMessage');
+    
+    // Remove existing classes
+    alertDiv.className = 'alert d-block';
+    
+    // Add appropriate Bootstrap alert class
+    switch(type) {
+        case 'success':
+            alertDiv.classList.add('alert-success');
+            break;
+        case 'warning':
+            alertDiv.classList.add('alert-warning');
+            break;
+        case 'info':
+            alertDiv.classList.add('alert-info');
+            break;
+        default:
+            alertDiv.classList.add('alert-info');
+    }
+    
+    messageSpan.textContent = message;
+    
+    // Auto-hide success messages after 5 seconds
+    if (type === 'success') {
+        setTimeout(() => {
+            alertDiv.classList.add('d-none');
+        }, 5000);
+    }
+}
+
+/**
+ * Enable enhanced features when permissions are granted
+ */
+function enableEnhancedFeatures() {
+    // You can add code here to enable additional UI elements
+    // that require camera/microphone access
+    console.log('Enhanced AI detection features enabled');
+}
+
+/**
+ * Show fallback instructions when permissions are denied
+ */
+function showFallbackInstructions() {
+    // Add a helpful info section about enabling permissions manually
+    const instructions = `
+        <div class="alert alert-light border mt-3">
+            <h6><i class="fas fa-info-circle me-2"></i>How to Enable Camera & Microphone Access</h6>
+            <small>
+                <strong>Chrome/Edge:</strong> Click the camera icon in the address bar<br>
+                <strong>Firefox:</strong> Click the shield icon next to the address bar<br>
+                <strong>Safari:</strong> Go to Safari > Settings > Websites > Camera/Microphone
+            </small>
+        </div>
+    `;
+    
+    // Only add if not already present
+    if (!document.querySelector('.permission-instructions')) {
+        const container = document.querySelector('.card-body');
+        const instructionsDiv = document.createElement('div');
+        instructionsDiv.className = 'permission-instructions';
+        instructionsDiv.innerHTML = instructions;
+        container.appendChild(instructionsDiv);
+    }
+}
+
 // Camera and audio capture functionality
 let cameraStream = null;
 let textCameraStream = null;
 let mediaRecorder = null;
 let recordedChunks = [];
 
-// Start camera function
+// Start camera function with permission checking
 window.startCamera = async function() {
+    // Check if permissions were granted
+    const permissionStatus = localStorage.getItem('ai-detector-permissions');
+    
+    if (permissionStatus !== 'granted') {
+        showPermissionStatus('warning', 'Camera access required. Please grant permissions first or use file upload instead.');
+        setTimeout(() => {
+            showPermissionModal();
+        }, 1000);
+        return;
+    }
+    
     try {
         const modal = new bootstrap.Modal(document.getElementById('cameraModal'));
         modal.show();
@@ -479,8 +719,17 @@ window.startCamera = async function() {
         const video = document.getElementById('cameraVideo');
         video.srcObject = cameraStream;
     } catch (error) {
-        alert('Camera access denied or not available. Please check your browser permissions.');
         console.error('Camera error:', error);
+        
+        // Handle specific error types with helpful messages
+        if (error.name === 'NotAllowedError') {
+            showPermissionStatus('warning', 'Camera access was denied. Please enable camera access in your browser settings or use file upload.');
+            showFallbackInstructions();
+        } else if (error.name === 'NotFoundError') {
+            showPermissionStatus('info', 'No camera found on this device. You can still use file upload for AI detection.');
+        } else {
+            showPermissionStatus('warning', 'Camera unavailable. Please use file upload for AI detection.');
+        }
     }
 };
 
@@ -535,14 +784,25 @@ window.stopCamera = function() {
     bootstrap.Modal.getInstance(document.getElementById('cameraModal')).hide();
 };
 
-// Start recording function
+// Start recording function with permission checking
 window.startRecording = async function() {
+    // Check if permissions were granted
+    const permissionStatus = localStorage.getItem('ai-detector-permissions');
+    
+    if (permissionStatus !== 'granted') {
+        showPermissionStatus('warning', 'Microphone access required. Please grant permissions first or use file upload instead.');
+        setTimeout(() => {
+            showPermissionModal();
+        }, 1000);
+        return;
+    }
+    
     try {
         const modal = new bootstrap.Modal(document.getElementById('audioModal'));
         modal.show();
     } catch (error) {
-        alert('Microphone access denied or not available. Please check your browser permissions.');
-        console.error('Microphone error:', error);
+        console.error('Audio modal error:', error);
+        showPermissionStatus('warning', 'Unable to open audio recording interface. Please use file upload instead.');
     }
 };
 
@@ -578,7 +838,17 @@ window.startAudioRecording = async function() {
             '<i class="fas fa-microphone fa-3x text-danger mb-3"></i><p class="text-danger fw-bold">Recording in progress...</p>';
         
     } catch (error) {
-        alert('Microphone access denied or not available. Please check your browser permissions.');
+        console.error('Microphone error:', error);
+        
+        // Handle specific error types with helpful messages
+        if (error.name === 'NotAllowedError') {
+            showPermissionStatus('warning', 'Microphone access was denied. Please enable microphone access in your browser settings or use file upload.');
+            showFallbackInstructions();
+        } else if (error.name === 'NotFoundError') {
+            showPermissionStatus('info', 'No microphone found on this device. You can still use file upload for AI detection.');
+        } else {
+            showPermissionStatus('warning', 'Microphone unavailable. Please use file upload for AI detection.');
+        }
         console.error('Recording error:', error);
     }
 };
