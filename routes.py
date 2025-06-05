@@ -248,22 +248,7 @@ def tips():
                          trending_threats=trending_threats,
                          stats=stats)
 
-@app.route('/delete-detection/<detection_id>', methods=['DELETE'])
-@login_required
-def delete_detection(detection_id):
-    """Delete a detection from user's history"""
-    try:
-        user_id = session.get('user_id')
-        success = db_manager.delete_one('detections', {'_id': detection_id, 'user_id': user_id})
-        
-        if success:
-            return jsonify({'success': True, 'message': 'Detection deleted successfully'})
-        else:
-            return jsonify({'success': False, 'error': 'Detection not found or access denied'}), 404
-            
-    except Exception as e:
-        app.logger.error(f"Delete detection error: {e}")
-        return jsonify({'success': False, 'error': 'Failed to delete detection'}), 500
+
 
 @app.route('/api/quick-check', methods=['POST'])
 def quick_check():
@@ -432,3 +417,71 @@ def ai_content_check():
     
     # GET request - show upload form
     return render_template('ai_content_check.html')
+
+@app.route('/detection-details/<detection_id>')
+@login_required
+def detection_details(detection_id):
+    """Get detailed information about a specific detection"""
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({'success': False, 'error': 'User not authenticated'})
+        
+        # Find the detection by ID for this user
+        detection = db_manager.find_one('detections', {
+            'id': detection_id,
+            'user_id': user_id
+        })
+        
+        if not detection:
+            return jsonify({'success': False, 'error': 'Detection not found'})
+        
+        # Decrypt sensitive data if needed
+        try:
+            decrypted_detection = decrypt_sensitive_data('detection', detection)
+        except Exception as e:
+            logger.warning(f"Failed to decrypt detection data: {e}")
+            decrypted_detection = detection
+        
+        # Format the response with proper field handling
+        response_data = {
+            'id': decrypted_detection.get('id', detection_id),
+            'input_type': decrypted_detection.get('input_type', 'Unknown'),
+            'input_content': decrypted_detection.get('input_content', decrypted_detection.get('content', 'No content available')),
+            'result': decrypted_detection.get('result', 'Unknown'),
+            'confidence_score': decrypted_detection.get('confidence_score', decrypted_detection.get('confidence', 0.0)),
+            'created_at': decrypted_detection.get('created_at', decrypted_detection.get('timestamp', 'Unknown')),
+            'analysis_details': decrypted_detection.get('analysis_details', ''),
+            'threat_indicators': decrypted_detection.get('threat_indicators', []),
+            'recommendations': decrypted_detection.get('recommendations', [])
+        }
+        
+        return jsonify({'success': True, 'detection': response_data})
+        
+    except Exception as e:
+        logger.error(f"Error fetching detection details: {e}")
+        return jsonify({'success': False, 'error': 'Failed to fetch detection details'})
+
+@app.route('/delete-detection/<detection_id>', methods=['DELETE'])
+@login_required
+def delete_detection_record(detection_id):
+    """Delete a specific detection from user's history"""
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({'success': False, 'error': 'User not authenticated'})
+        
+        # Delete the detection for this user
+        deleted = db_manager.delete_one('detections', {
+            'id': detection_id,
+            'user_id': user_id
+        })
+        
+        if deleted:
+            return jsonify({'success': True, 'message': 'Detection deleted successfully'})
+        else:
+            return jsonify({'success': False, 'error': 'Detection not found or already deleted'})
+        
+    except Exception as e:
+        logger.error(f"Error deleting detection: {e}")
+        return jsonify({'success': False, 'error': 'Failed to delete detection'})

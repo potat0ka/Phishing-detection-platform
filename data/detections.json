@@ -19,5 +19,24 @@
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0",
     "timestamp": "2025-06-05 07:20:01.072414",
     "_id": "detections_1_802611389"
+  },
+  {
+    "user_id": "users_1_2462542316",
+    "input_type": "message",
+    "input_content": "UndefinedError\r\njinja2.exceptions.UndefinedError: 'dict object' has no attribute 'created_at'",
+    "result": "safe",
+    "confidence_score": 0.8,
+    "threat_level": "unknown",
+    "reasons": [],
+    "ai_analysis": {
+      "text_complexity": 2.6666666666666665,
+      "sentiment_score": -0.125,
+      "keyword_density": 0.0,
+      "ai_confidence": 0.24999999999999997
+    },
+    "user_ip": "27.34.76.35, 10.83.9.76",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0",
+    "timestamp": "2025-06-05 07:26:21.328843",
+    "_id": "detections_2_2265960969"
   }
 ]

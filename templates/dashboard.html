@@ -249,8 +249,6 @@
 
 <script>
 function showDetails(detectionId) {
-    // In a real implementation, you'd fetch details via AJAX
-    // For now, we'll show a placeholder
     const modal = new bootstrap.Modal(document.getElementById('detectionModal'));
     document.getElementById('detectionDetails').innerHTML = `
         <div class="text-center p-4">
@@ -261,6 +259,115 @@ function showDetails(detectionId) {
         </div>
     `;
     modal.show();
+    
+    // Fetch actual detection details
+    fetch(`/detection-details/${detectionId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const detection = data.detection;
+                document.getElementById('detectionDetails').innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">
+                                <i class="fas fa-info-circle text-primary me-2"></i>
+                                Basic Information
+                            </h6>
+                            <div class="mb-3">
+                                <strong>Type:</strong> 
+                                <span class="badge bg-secondary ms-2">${detection.input_type || 'Unknown'}</span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Result:</strong>
+                                <span class="badge bg-${detection.result === 'safe' ? 'success' : (detection.result === 'suspicious' ? 'warning' : 'danger')} ms-2">
+                                    ${detection.result || 'Unknown'}
+                                </span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Confidence:</strong>
+                                <div class="progress mt-2" style="height: 20px;">
+                                    <div class="progress-bar bg-${detection.result === 'safe' ? 'success' : (detection.result === 'suspicious' ? 'warning' : 'danger')}" 
+                                         style="width: ${(detection.confidence_score || detection.confidence || 0) * 100}%">
+                                        ${((detection.confidence_score || detection.confidence || 0) * 100).toFixed(1)}%
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Date:</strong>
+                                <span class="text-muted">${detection.created_at || detection.timestamp || 'Unknown'}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">
+                                <i class="fas fa-file-alt text-info me-2"></i>
+                                Content Analysis
+                            </h6>
+                            <div class="mb-3">
+                                <strong>Original Content:</strong>
+                                <div class="bg-light p-3 rounded mt-2" style="max-height: 150px; overflow-y: auto;">
+                                    <code style="font-size: 0.9em;">${detection.input_content || detection.content || 'No content available'}</code>
+                                </div>
+                            </div>
+                            ${detection.analysis_details ? `
+                                <div class="mb-3">
+                                    <strong>Analysis Details:</strong>
+                                    <div class="bg-light p-3 rounded mt-2" style="max-height: 100px; overflow-y: auto;">
+                                        <small>${detection.analysis_details}</small>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    ${detection.threat_indicators && detection.threat_indicators.length > 0 ? `
+                        <hr>
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                            Threat Indicators
+                        </h6>
+                        <div class="row">
+                            ${detection.threat_indicators.map(indicator => `
+                                <div class="col-md-6 mb-2">
+                                    <div class="alert alert-warning py-2">
+                                        <small><i class="fas fa-shield-alt me-1"></i> ${indicator}</small>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    ${detection.recommendations && detection.recommendations.length > 0 ? `
+                        <hr>
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-lightbulb text-success me-2"></i>
+                            Security Recommendations
+                        </h6>
+                        <ul class="list-unstyled">
+                            ${detection.recommendations.map(rec => `
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    ${rec}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    ` : ''}
+                `;
+            } else {
+                document.getElementById('detectionDetails').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Failed to load detection details: ${data.error || 'Unknown error'}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching detection details:', error);
+            document.getElementById('detectionDetails').innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Failed to load detection details. Please try again.
+                </div>
+            `;
+        });
 }
 
 function deleteDetection(detectionId) {
