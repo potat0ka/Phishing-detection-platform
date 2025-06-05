@@ -50,6 +50,123 @@
     margin: 2rem 0;
 }
 
+/* Enhanced Threat Landscape Styles */
+.alert-gradient {
+    position: relative;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.threat-card {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.threat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.threat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.threat-card:hover::before {
+    left: 100%;
+}
+
+.threat-icon {
+    transition: all 0.3s ease;
+}
+
+.threat-card:hover .threat-icon {
+    transform: scale(1.1);
+}
+
+.threat-stats .bg-light {
+    transition: all 0.3s ease;
+}
+
+.threat-card:hover .threat-stats .bg-light {
+    background-color: rgba(var(--primary-color), 0.1) !important;
+}
+
+/* Badge animations */
+.badge {
+    animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Threat category specific styling */
+.border-danger.border-4:hover {
+    border-left-color: rgba(var(--danger-color), 0.8) !important;
+}
+
+.border-warning.border-4:hover {
+    border-left-color: rgba(var(--warning-color), 0.8) !important;
+}
+
+.border-info.border-4:hover {
+    border-left-color: rgba(var(--info-color), 0.8) !important;
+}
+
+.border-secondary.border-4:hover {
+    border-left-color: rgba(var(--dark-color), 0.8) !important;
+}
+
+.border-success.border-4:hover {
+    border-left-color: rgba(var(--success-color), 0.8) !important;
+}
+
+.border-primary.border-4:hover {
+    border-left-color: rgba(var(--primary-color), 0.8) !important;
+}
+
+/* Stats animation */
+.threat-stats .fw-bold {
+    animation: countUp 1s ease-out;
+}
+
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive threat cards */
+@media (max-width: 768px) {
+    .threat-card {
+        margin-bottom: 1rem;
+    }
+    
+    .threat-icon {
+        padding: 1rem !important;
+    }
+    
+    .threat-stats .col-4 {
+        margin-bottom: 0.5rem;
+    }
+}
+}
+
 .shield-icon {
     font-size: 8rem;
     color: rgb(var(--primary-color));

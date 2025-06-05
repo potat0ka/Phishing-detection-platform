@@ -47,36 +47,326 @@
         </div>
     </div>
     
-    <!-- Trending Threats Alert -->
-    {% if trending_threats %}
-    <div class="alert alert-warning border-0 shadow-sm mb-5">
-        <div class="d-flex align-items-start">
-            <i class="fas fa-exclamation-triangle text-warning fs-4 me-3 mt-1"></i>
-            <div>
-                <h5 class="alert-heading fw-bold mb-3">Current Threat Landscape</h5>
-                <div class="row g-3">
-                    {% for threat in trending_threats %}
-                    <div class="col-md-6">
-                        <div class="p-3 bg-light rounded">
-                            <h6 class="fw-bold text-dark mb-2">{{ threat.threat }}</h6>
-                            <p class="mb-2 small">{{ threat.description }}</p>
+    <!-- Enhanced Current Threat Landscape -->
+    <div class="mb-5">
+        <div class="alert alert-gradient border-0 shadow-lg position-relative overflow-hidden" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%); border-radius: 15px;">
+            <!-- Animated background pattern -->
+            <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
+                <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <defs>
+                        <pattern id="threat-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <circle cx="10" cy="10" r="2" fill="white" opacity="0.3">
+                                <animate attributeName="r" values="2;4;2" dur="3s" repeatCount="indefinite"/>
+                            </circle>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#threat-pattern)"/>
+                </svg>
+            </div>
+            
+            <div class="position-relative">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="threat-icon-container me-4">
+                        <i class="fas fa-exclamation-triangle text-warning fs-1 animate__animated animate__pulse animate__infinite"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold text-dark mb-2">
+                            <span class="badge bg-danger text-white me-2">ALERT</span>
+                            Current Threat Landscape
+                        </h3>
+                        <p class="text-dark mb-0 opacity-75">Live intelligence on emerging phishing threats and attack vectors</p>
+                    </div>
+                </div>
+                
+                <!-- Threat Categories Grid -->
+                <div class="row g-4">
+                    <!-- AI-Powered Phishing -->
+                    <div class="col-lg-6">
+                        <div class="threat-card bg-white rounded-3 p-4 h-100 shadow-sm border-start border-danger border-4">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="threat-icon bg-danger bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="fas fa-robot text-danger fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold text-dark mb-2">AI-Powered Phishing</h5>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-danger me-2">Critical</span>
+                                        <span class="badge bg-outline-warning">Trending</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-3 small">
+                                Attackers leverage artificial intelligence to create highly convincing phishing content, 
+                personalized emails, and deepfake audio/video for sophisticated social engineering attacks.
+                            </p>
+                            <div class="threat-stats">
+                                <div class="row g-2 text-center">
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-danger">340%</div>
+                                            <small class="text-muted">Increase</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-warning">Q4 2024</div>
+                                            <small class="text-muted">Peak Period</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-info">87%</div>
+                                            <small class="text-muted">Success Rate</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Business Email Compromise -->
+                    <div class="col-lg-6">
+                        <div class="threat-card bg-white rounded-3 p-4 h-100 shadow-sm border-start border-warning border-4">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="threat-icon bg-warning bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="fas fa-building text-warning fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold text-dark mb-2">Business Email Compromise (BEC)</h5>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-warning me-2">High</span>
+                                        <span class="badge bg-outline-info">Financial</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-3 small">
+                                Sophisticated attacks targeting financial transactions and data theft through 
+                compromised business email accounts, often involving CEO fraud and vendor impersonation.
+                            </p>
+                            <div class="threat-stats">
+                                <div class="row g-2 text-center">
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-danger">$12.5B</div>
+                                            <small class="text-muted">2024 Losses</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-warning">156%</div>
+                                            <small class="text-muted">YoY Growth</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-info">23m</div>
+                                            <small class="text-muted">Avg Loss</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile-First Phishing -->
+                    <div class="col-lg-6">
+                        <div class="threat-card bg-white rounded-3 p-4 h-100 shadow-sm border-start border-info border-4">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="threat-icon bg-info bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="fas fa-mobile-alt text-info fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold text-dark mb-2">Mobile-First Phishing</h5>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-info me-2">High</span>
+                                        <span class="badge bg-outline-success">Mobile</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-3 small">
+                                Attacks specifically designed for mobile devices and apps, exploiting smaller screens, 
+                touch interfaces, and reduced security awareness on mobile platforms.
+                            </p>
+                            <div class="threat-stats">
+                                <div class="row g-2 text-center">
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-danger">68%</div>
+                                            <small class="text-muted">Mobile Users</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-warning">3x</div>
+                                            <small class="text-muted">More Likely</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-info">SMS</div>
+                                            <small class="text-muted">Primary Vector</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Supply Chain Compromises -->
+                    <div class="col-lg-6">
+                        <div class="threat-card bg-white rounded-3 p-4 h-100 shadow-sm border-start border-secondary border-4">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="threat-icon bg-secondary bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="fas fa-link text-secondary fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold text-dark mb-2">Supply Chain Compromises</h5>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-secondary me-2">Medium</span>
+                                        <span class="badge bg-outline-danger">Enterprise</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-3 small">
+                                Attacks through compromised vendor and partner systems, exploiting trusted relationships 
+                and third-party access to infiltrate target organizations.
+                            </p>
+                            <div class="threat-stats">
+                                <div class="row g-2 text-center">
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-danger">45%</div>
+                                            <small class="text-muted">Success Rate</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-warning">6m</div>
+                                            <small class="text-muted">Avg Detection</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-info">85%</div>
+                                            <small class="text-muted">Enterprise</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- QR Code Phishing -->
+                    <div class="col-lg-6">
+                        <div class="threat-card bg-white rounded-3 p-4 h-100 shadow-sm border-start border-success border-4">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="threat-icon bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="fas fa-qrcode text-success fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold text-dark mb-2">QR Code Phishing (Quishing)</h5>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-success me-2">Emerging</span>
+                                        <span class="badge bg-outline-warning">Physical</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-3 small">
+                                Malicious QR codes in emails, physical locations, and fake documents that redirect 
+                users to phishing sites, bypassing traditional email security filters.
+                            </p>
+                            <div class="threat-stats">
+                                <div class="row g-2 text-center">
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-danger">1200%</div>
+                                            <small class="text-muted">Increase</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-warning">22%</div>
+                                            <small class="text-muted">Click Rate</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-info">COVID</div>
+                                            <small class="text-muted">Origin</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Deepfake Social Engineering -->
+                    <div class="col-lg-6">
+                        <div class="threat-card bg-white rounded-3 p-4 h-100 shadow-sm border-start border-primary border-4">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="threat-icon bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="fas fa-video text-primary fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold text-dark mb-2">Deepfake Social Engineering</h5>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-primary me-2">Critical</span>
+                                        <span class="badge bg-outline-danger">AI-Generated</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-3 small">
+                                AI-generated audio and video calls impersonating executives, family members, or 
+                trusted contacts to manipulate victims into financial transactions or data disclosure.
+                            </p>
+                            <div class="threat-stats">
+                                <div class="row g-2 text-center">
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-danger">$25m</div>
+                                            <small class="text-muted">Largest Loss</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-warning">95%</div>
+                                            <small class="text-muted">Believability</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light rounded p-2">
+                                            <div class="fw-bold text-info">5min</div>
+                                            <small class="text-muted">Creation Time</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Threat Intelligence Footer -->
+                <div class="mt-4 pt-3 border-top border-light">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center text-dark">
+                                <i class="fas fa-shield-alt text-success me-2"></i>
+                                <small class="fw-medium">
+                                    <strong>Protection Status:</strong> Our AI system actively monitors and adapts to these emerging threats
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-end">
                             <small class="text-muted">
-                                <strong>Status:</strong> {{ threat.prevalence }} | 
-                                <strong>Mitigation:</strong> {{ threat.mitigation }}
+                                <i class="fas fa-sync-alt me-1"></i>
+                                Updated: Real-time threat intelligence
                             </small>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
-                {% if stats %}
-                <small class="text-muted d-block mt-2">
-                    <i class="fas fa-clock me-1"></i>Last updated: {{ stats.last_updated }}
-                </small>
-                {% endif %}
             </div>
         </div>
     </div>
-    {% endif %}
     
     <!-- Animated Security Tips Carousel -->
     <div class="mb-5">

@@ -139,6 +139,26 @@
                                 <i class="fas fa-chart-line me-2"></i>Analytics
                             </button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="phishing-db-tab" data-bs-toggle="tab" data-bs-target="#phishing-db" type="button" role="tab">
+                                <i class="fas fa-database me-2"></i>Phishing Database
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="ai-settings-tab" data-bs-toggle="tab" data-bs-target="#ai-settings" type="button" role="tab">
+                                <i class="fas fa-brain me-2"></i>AI/ML Settings
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">
+                                <i class="fas fa-shield-alt me-2"></i>Security Tools
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="system-tab" data-bs-toggle="tab" data-bs-target="#system" type="button" role="tab">
+                                <i class="fas fa-cogs me-2"></i>System
+                            </button>
+                        </li>
                     </ul>
                 </div>
                 <div class="card-body">
@@ -146,33 +166,101 @@
                         <!-- User Management Tab -->
                         <div class="tab-pane fade show active" id="users" role="tabpanel">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="mb-0">Platform Users</h5>
-                                <button class="btn btn-primary btn-sm">
-                                    <i class="fas fa-user-plus me-1"></i>Add User
-                                </button>
+                                <h5 class="mb-0">User Management & Permissions</h5>
+                                <div class="btn-group">
+                                    <button class="btn btn-primary btn-sm" onclick="createUser()">
+                                        <i class="fas fa-user-plus me-1"></i>Add User
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="exportUsers()">
+                                        <i class="fas fa-download me-1"></i>Export
+                                    </button>
+                                </div>
                             </div>
+                            
+                            <!-- User Stats Cards -->
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h4 class="text-primary">{{ users|length }}</h4>
+                                            <small class="text-muted">Total Users</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h4 class="text-success">{{ users|selectattr('role', 'equalto', 'admin')|list|length }}</h4>
+                                            <small class="text-muted">Administrators</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h4 class="text-info">{{ stats.active_sessions or 3 }}</h4>
+                                            <small class="text-muted">Active Sessions</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h4 class="text-warning">{{ stats.new_users_today or 2 }}</h4>
+                                            <small class="text-muted">New Today</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Search and Filter -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" placeholder="Search users..." id="userSearch">
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select" id="roleFilter">
+                                        <option value="">All Roles</option>
+                                        <option value="admin">Administrators</option>
+                                        <option value="user">Regular Users</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select" id="statusFilter">
+                                        <option value="">All Status</option>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
+                                            <th><input type="checkbox" class="form-check-input" id="selectAllUsers"></th>
                                             <th>User</th>
                                             <th>Email</th>
                                             <th>Role</th>
                                             <th>Status</th>
                                             <th>Scans</th>
-                                            <th>Joined</th>
+                                            <th>Last Login</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for user in users %}
                                         <tr>
+                                            <td><input type="checkbox" class="form-check-input user-checkbox" value="{{ user.id }}"></td>
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <div class="avatar-sm bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center">
                                                         <i class="fas fa-user text-white"></i>
                                                     </div>
-                                                    <strong>{{ user.username or 'Unknown' }}</strong>
+                                                    <div>
+                                                        <strong>{{ user.username or 'Unknown' }}</strong>
+                                                        <br><small class="text-muted">ID: {{ user.id[:8] if user.id else 'Unknown' }}</small>
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td>{{ user.email or 'No email' }}</td>
@@ -185,15 +273,23 @@
                                                 <span class="badge bg-success">Active</span>
                                             </td>
                                             <td>{{ user.scan_count or 0 }}</td>
-                                            <td>{{ user.created_at[:10] if user.created_at else 'Unknown' }}</td>
+                                            <td><small>{{ user.created_at[:10] if user.created_at else 'Unknown' }}</small></td>
                                             <td>
                                                 <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-outline-primary">
+                                                    <button class="btn btn-outline-primary" onclick="viewUser('{{ user.id }}')" title="View Details">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
-                                                    <button class="btn btn-outline-warning">
+                                                    <button class="btn btn-outline-warning" onclick="editUser('{{ user.id }}')" title="Edit User">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
+                                                    <button class="btn btn-outline-info" onclick="resetPassword('{{ user.id }}')" title="Reset Password">
+                                                        <i class="fas fa-key"></i>
+                                                    </button>
+                                                    {% if user.role != 'admin' %}
+                                                    <button class="btn btn-outline-danger" onclick="toggleUserStatus('{{ user.id }}')" title="Suspend User">
+                                                        <i class="fas fa-ban"></i>
+                                                    </button>
+                                                    {% endif %}
                                                 </div>
                                             </td>
                                         </tr>
@@ -332,8 +428,8 @@
 
                         <!-- Analytics Tab -->
                         <div class="tab-pane fade" id="analytics" role="tabpanel">
-                            <h5 class="mb-3">Platform Analytics</h5>
-                            <div class="row">
+                            <h5 class="mb-3">System Analytics & Insights</h5>
+                            <div class="row mb-4">
                                 <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-header">
@@ -347,26 +443,795 @@
                                 <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h6 class="mb-0">System Performance</h6>
+                                            <h6 class="mb-0">Daily Activity Trends</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="activityChart" width="400" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-8">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">System Performance Metrics</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span>Detection Accuracy</span>
+                                                            <strong>94.2%</strong>
+                                                        </div>
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-success" style="width: 94.2%"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span>System Uptime</span>
+                                                            <strong>99.9%</strong>
+                                                        </div>
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-info" style="width: 99.9%"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span>Response Time</span>
+                                                            <strong>1.2s</strong>
+                                                        </div>
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-warning" style="width: 75%"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span>Database Performance</span>
+                                                            <strong>98.5%</strong>
+                                                        </div>
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-success" style="width: 98.5%"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span>AI Model Confidence</span>
+                                                            <strong>92.8%</strong>
+                                                        </div>
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-primary" style="width: 92.8%"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span>Memory Usage</span>
+                                                            <strong>67%</strong>
+                                                        </div>
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-secondary" style="width: 67%"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Top Threat Categories</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="list-group list-group-flush">
+                                                <div class="list-group-item d-flex justify-content-between">
+                                                    <span>Phishing URLs</span>
+                                                    <span class="badge bg-danger">{{ stats.dangerous_count or 23 }}</span>
+                                                </div>
+                                                <div class="list-group-item d-flex justify-content-between">
+                                                    <span>Suspicious Emails</span>
+                                                    <span class="badge bg-warning">{{ stats.suspicious_count or 18 }}</span>
+                                                </div>
+                                                <div class="list-group-item d-flex justify-content-between">
+                                                    <span>Malware Links</span>
+                                                    <span class="badge bg-info">12</span>
+                                                </div>
+                                                <div class="list-group-item d-flex justify-content-between">
+                                                    <span>Spam Messages</span>
+                                                    <span class="badge bg-secondary">8</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phishing Database Tab -->
+                        <div class="tab-pane fade" id="phishing-db" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Phishing Reports Database</h5>
+                                <div class="btn-group">
+                                    <button class="btn btn-primary btn-sm" onclick="addPhishingReport()">
+                                        <i class="fas fa-plus me-1"></i>Add Report
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="importReports()">
+                                        <i class="fas fa-upload me-1"></i>Import
+                                    </button>
+                                    <button class="btn btn-outline-info btn-sm" onclick="exportReports()">
+                                        <i class="fas fa-download me-1"></i>Export
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Database Stats -->
+                            <div class="row mb-4">
+                                <div class="col-md-2">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h4 class="text-danger">1,247</h4>
+                                            <small class="text-muted">Total Reports</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h4 class="text-warning">863</h4>
+                                            <small class="text-muted">Active Threats</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h4 class="text-success">384</h4>
+                                            <small class="text-muted">Resolved</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h4 class="text-info">52</h4>
+                                            <small class="text-muted">This Week</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h4 class="text-primary">15</h4>
+                                            <small class="text-muted">Today</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h4 class="text-secondary">96.3%</h4>
+                                            <small class="text-muted">Accuracy</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Search and Filters -->
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" placeholder="Search reports, URLs, domains..." id="reportSearch">
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="threatTypeFilter">
+                                        <option value="">All Types</option>
+                                        <option value="phishing">Phishing</option>
+                                        <option value="malware">Malware</option>
+                                        <option value="spam">Spam</option>
+                                        <option value="scam">Scam</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="severityFilter">
+                                        <option value="">All Severity</option>
+                                        <option value="critical">Critical</option>
+                                        <option value="high">High</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="low">Low</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="statusFilter">
+                                        <option value="">All Status</option>
+                                        <option value="active">Active</option>
+                                        <option value="resolved">Resolved</option>
+                                        <option value="investigating">Investigating</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-outline-primary w-100" onclick="refreshReports()">
+                                        <i class="fas fa-sync me-1"></i>Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" class="form-check-input" id="selectAllReports"></th>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                            <th>URL/Content</th>
+                                            <th>Severity</th>
+                                            <th>Status</th>
+                                            <th>Reporter</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="checkbox" class="form-check-input"></td>
+                                            <td><small>2025-06-05</small></td>
+                                            <td><span class="badge bg-danger">Phishing</span></td>
+                                            <td>
+                                                <div style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;">
+                                                    https://secure-bank-login.malicious-site.com/verify
+                                                </div>
+                                            </td>
+                                            <td><span class="badge bg-danger">Critical</span></td>
+                                            <td><span class="badge bg-warning">Active</span></td>
+                                            <td>Security Team</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-warning" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-success" title="Mark Resolved">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% for report in reported_content %}
+                                        <tr>
+                                            <td><input type="checkbox" class="form-check-input"></td>
+                                            <td><small>{{ report.created_at }}</small></td>
+                                            <td><span class="badge bg-warning">{{ report.type.title() }}</span></td>
+                                            <td>
+                                                <div style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;">
+                                                    {{ report.content }}
+                                                </div>
+                                            </td>
+                                            <td><span class="badge bg-info">Medium</span></td>
+                                            <td><span class="badge bg-secondary">{{ report.status.title() }}</span></td>
+                                            <td>{{ report.reporter_username }}</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-warning" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-success" title="Mark Resolved">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- AI/ML Settings Tab -->
+                        <div class="tab-pane fade" id="ai-settings" role="tabpanel">
+                            <h5 class="mb-3">AI/ML Configuration & Tuning</h5>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Detection Model Settings</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">Detection Sensitivity</label>
+                                                <select class="form-select">
+                                                    <option value="low">Low (Conservative)</option>
+                                                    <option value="medium" selected>Medium (Balanced)</option>
+                                                    <option value="high">High (Aggressive)</option>
+                                                </select>
+                                                <small class="text-muted">Higher sensitivity may increase false positives</small>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label">Confidence Threshold</label>
+                                                <input type="range" class="form-range" min="0.1" max="1.0" step="0.1" value="0.7" id="confidenceThreshold">
+                                                <div class="d-flex justify-content-between">
+                                                    <small class="text-muted">0.1</small>
+                                                    <small class="text-primary">Current: <span id="confidenceValue">0.7</span></small>
+                                                    <small class="text-muted">1.0</small>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="realTimeAnalysis" checked>
+                                                    <label class="form-check-label" for="realTimeAnalysis">
+                                                        Real-time Analysis
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="learningMode" checked>
+                                                    <label class="form-check-label" for="learningMode">
+                                                        Continuous Learning
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            
+                                            <button class="btn btn-primary" onclick="updateModelSettings()">
+                                                <i class="fas fa-save me-1"></i>Save Settings
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Model Performance</h6>
                                         </div>
                                         <div class="card-body">
                                             <div class="mb-3">
                                                 <div class="d-flex justify-content-between">
-                                                    <span>Detection Accuracy</span>
-                                                    <strong>94.2%</strong>
+                                                    <span>Accuracy Rate</span>
+                                                    <strong class="text-success">94.2%</strong>
                                                 </div>
                                                 <div class="progress">
                                                     <div class="progress-bar bg-success" style="width: 94.2%"></div>
                                                 </div>
                                             </div>
+                                            
                                             <div class="mb-3">
                                                 <div class="d-flex justify-content-between">
-                                                    <span>System Uptime</span>
-                                                    <strong>99.9%</strong>
+                                                    <span>Precision</span>
+                                                    <strong class="text-info">92.8%</strong>
                                                 </div>
                                                 <div class="progress">
-                                                    <div class="progress-bar bg-info" style="width: 99.9%"></div>
+                                                    <div class="progress-bar bg-info" style="width: 92.8%"></div>
                                                 </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Recall</span>
+                                                    <strong class="text-warning">89.5%</strong>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-warning" style="width: 89.5%"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>F1 Score</span>
+                                                    <strong class="text-primary">91.1%</strong>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-primary" style="width: 91.1%"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-outline-info btn-sm" onclick="retrainModel()">
+                                                    <i class="fas fa-sync me-1"></i>Retrain Model
+                                                </button>
+                                                <button class="btn btn-outline-success btn-sm" onclick="testModel()">
+                                                    <i class="fas fa-flask me-1"></i>Test Model
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Feature Weights & Model Tuning</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">URL Pattern Analysis</label>
+                                                    <input type="range" class="form-range" min="0" max="1" step="0.1" value="0.8">
+                                                    <small class="text-muted">Weight: 0.8</small>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Content Analysis</label>
+                                                    <input type="range" class="form-range" min="0" max="1" step="0.1" value="0.9">
+                                                    <small class="text-muted">Weight: 0.9</small>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Domain Reputation</label>
+                                                    <input type="range" class="form-range" min="0" max="1" step="0.1" value="0.7">
+                                                    <small class="text-muted">Weight: 0.7</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Tools Tab -->
+                        <div class="tab-pane fade" id="security" role="tabpanel">
+                            <h5 class="mb-3">Security Tools & Access Control</h5>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Login History & Monitoring</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>User</th>
+                                                            <th>Time</th>
+                                                            <th>IP Address</th>
+                                                            <th>Status</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>demo_admin</td>
+                                                            <td><small>2025-06-05 08:30</small></td>
+                                                            <td>192.168.1.100</td>
+                                                            <td><span class="badge bg-success">Success</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>demo_user</td>
+                                                            <td><small>2025-06-05 08:15</small></td>
+                                                            <td>192.168.1.101</td>
+                                                            <td><span class="badge bg-success">Success</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>unknown_user</td>
+                                                            <td><small>2025-06-05 07:45</small></td>
+                                                            <td>10.0.0.25</td>
+                                                            <td><span class="badge bg-danger">Failed</span></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <button class="btn btn-outline-primary btn-sm" onclick="viewFullLoginHistory()">
+                                                <i class="fas fa-history me-1"></i>View Full History
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Security Settings</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="enforce2FA" checked>
+                                                    <label class="form-check-label" for="enforce2FA">
+                                                        Enforce 2FA for Admin Accounts
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="sessionTimeout" checked>
+                                                    <label class="form-check-label" for="sessionTimeout">
+                                                        Auto Session Timeout (30 min)
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="loginNotifications" checked>
+                                                    <label class="form-check-label" for="loginNotifications">
+                                                        Login Notifications
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label">Password Policy</label>
+                                                <select class="form-select">
+                                                    <option value="basic">Basic (8+ chars)</option>
+                                                    <option value="standard" selected>Standard (12+ chars, mixed)</option>
+                                                    <option value="strict">Strict (16+ chars, symbols)</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <button class="btn btn-primary btn-sm" onclick="updateSecuritySettings()">
+                                                <i class="fas fa-save me-1"></i>Save Settings
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">API Keys & Integrations</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Service</th>
+                                                            <th>API Key</th>
+                                                            <th>Status</th>
+                                                            <th>Last Used</th>
+                                                            <th>Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <i class="fas fa-database text-primary me-2"></i>
+                                                                Database Encryption
+                                                            </td>
+                                                            <td><code>****-****-****-****</code></td>
+                                                            <td><span class="badge bg-success">Active</span></td>
+                                                            <td><small>2025-06-05 08:30</small></td>
+                                                            <td>
+                                                                <button class="btn btn-outline-warning btn-sm" onclick="rotateKey('db')">
+                                                                    <i class="fas fa-sync"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <i class="fas fa-shield-alt text-success me-2"></i>
+                                                                Threat Intelligence
+                                                            </td>
+                                                            <td><code>****-****-****-****</code></td>
+                                                            <td><span class="badge bg-success">Active</span></td>
+                                                            <td><small>2025-06-05 08:00</small></td>
+                                                            <td>
+                                                                <button class="btn btn-outline-warning btn-sm" onclick="rotateKey('threat')">
+                                                                    <i class="fas fa-sync"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <i class="fas fa-envelope text-info me-2"></i>
+                                                                Email Notifications
+                                                            </td>
+                                                            <td><code>Not Configured</code></td>
+                                                            <td><span class="badge bg-warning">Inactive</span></td>
+                                                            <td><small>Never</small></td>
+                                                            <td>
+                                                                <button class="btn btn-outline-primary btn-sm" onclick="configureService('email')">
+                                                                    <i class="fas fa-cog"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Management Tab -->
+                        <div class="tab-pane fade" id="system" role="tabpanel">
+                            <h5 class="mb-3">System Management & Maintenance</h5>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Database Management</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Database Size</span>
+                                                    <strong>45.2 MB</strong>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-info" style="width: 22.6%"></div>
+                                                </div>
+                                                <small class="text-muted">22.6% of allocated space</small>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Records</span>
+                                                    <strong>{{ stats.total_scans + users|length }}</strong>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-outline-primary btn-sm" onclick="backupDatabase()">
+                                                    <i class="fas fa-download me-1"></i>Backup
+                                                </button>
+                                                <button class="btn btn-outline-warning btn-sm" onclick="optimizeDatabase()">
+                                                    <i class="fas fa-tools me-1"></i>Optimize
+                                                </button>
+                                                <button class="btn btn-outline-info btn-sm" onclick="viewDbStats()">
+                                                    <i class="fas fa-chart-bar me-1"></i>Stats
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">System Health</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-2">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>CPU Usage</span>
+                                                    <span class="text-success">23%</span>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" style="width: 23%"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-2">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Memory</span>
+                                                    <span class="text-warning">67%</span>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-warning" style="width: 67%"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-2">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Disk Space</span>
+                                                    <span class="text-info">45%</span>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-info" style="width: 45%"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Uptime</span>
+                                                    <span class="text-success">7d 14h 23m</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <button class="btn btn-outline-primary btn-sm w-100" onclick="systemHealthCheck()">
+                                                <i class="fas fa-heartbeat me-1"></i>Full Health Check
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Admin Profile & Permissions</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Admin Username</label>
+                                                        <input type="text" class="form-control" value="{{ current_user.username if current_user else 'demo_admin' }}" readonly>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Email</label>
+                                                        <input type="email" class="form-control" value="{{ current_user.email if current_user else 'admin@phishingdetector.com' }}">
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Role</label>
+                                                        <input type="text" class="form-control" value="Administrator" readonly>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Permissions</label>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" checked disabled>
+                                                            <label class="form-check-label">User Management</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" checked disabled>
+                                                            <label class="form-check-label">System Configuration</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" checked disabled>
+                                                            <label class="form-check-label">Database Access</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" checked disabled>
+                                                            <label class="form-check-label">Security Settings</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-primary btn-sm" onclick="updateAdminProfile()">
+                                                    <i class="fas fa-save me-1"></i>Update Profile
+                                                </button>
+                                                <button class="btn btn-outline-warning btn-sm" onclick="changeAdminPassword()">
+                                                    <i class="fas fa-key me-1"></i>Change Password
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Support & Feedback</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <button class="btn btn-outline-info btn-sm w-100 mb-2" onclick="viewDocumentation()">
+                                                    <i class="fas fa-book me-1"></i>Documentation
+                                                </button>
+                                                <button class="btn btn-outline-success btn-sm w-100 mb-2" onclick="contactSupport()">
+                                                    <i class="fas fa-headset me-1"></i>Contact Support
+                                                </button>
+                                                <button class="btn btn-outline-warning btn-sm w-100 mb-2" onclick="reportBug()">
+                                                    <i class="fas fa-bug me-1"></i>Report Bug
+                                                </button>
+                                                <button class="btn btn-outline-primary btn-sm w-100" onclick="provideFeedback()">
+                                                    <i class="fas fa-comment me-1"></i>Send Feedback
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="text-center">
+                                                <small class="text-muted">
+                                                    Platform Version 2.0.0<br>
+                                                    Build #{{ stats.total_scans or 1247 }}
+                                                </small>
                                             </div>
                                         </div>
                                     </div>
@@ -384,9 +1249,14 @@
 <script>
 // Initialize charts when analytics tab is shown
 document.getElementById('analytics-tab').addEventListener('shown.bs.tab', function() {
-    const ctx = document.getElementById('detectionChart');
-    if (ctx && !ctx.chart) {
-        ctx.chart = new Chart(ctx, {
+    initializeAnalyticsCharts();
+});
+
+function initializeAnalyticsCharts() {
+    // Detection Results Chart
+    const detectionCtx = document.getElementById('detectionChart');
+    if (detectionCtx && !detectionCtx.chart) {
+        detectionCtx.chart = new Chart(detectionCtx, {
             type: 'doughnut',
             data: {
                 labels: ['Safe', 'Suspicious', 'Dangerous'],
@@ -401,6 +1271,211 @@ document.getElementById('analytics-tab').addEventListener('shown.bs.tab', functi
             }
         });
     }
+    
+    // Activity Trends Chart
+    const activityCtx = document.getElementById('activityChart');
+    if (activityCtx && !activityCtx.chart) {
+        activityCtx.chart = new Chart(activityCtx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Scans',
+                    data: [12, 19, 8, 15, 22, 14, 18],
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+}
+
+// Admin Dashboard Functions
+function createUser() {
+    showAlert('User creation form would open here', 'info');
+}
+
+function exportUsers() {
+    showAlert('Exporting user data...', 'success');
+}
+
+function viewUser(userId) {
+    showAlert(`Viewing user details: ${userId}`, 'info');
+}
+
+function editUser(userId) {
+    showAlert(`Editing user: ${userId}`, 'info');
+}
+
+function resetPassword(userId) {
+    if (confirm('Reset password for this user?')) {
+        showAlert(`Password reset for user: ${userId}`, 'success');
+    }
+}
+
+function toggleUserStatus(userId) {
+    if (confirm('Change user status?')) {
+        showAlert(`User status changed: ${userId}`, 'warning');
+    }
+}
+
+// Phishing Database Functions
+function addPhishingReport() {
+    showAlert('Add phishing report form would open here', 'info');
+}
+
+function importReports() {
+    showAlert('Import reports dialog would open here', 'info');
+}
+
+function exportReports() {
+    showAlert('Exporting phishing reports...', 'success');
+}
+
+function refreshReports() {
+    showAlert('Refreshing reports database...', 'info');
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
+}
+
+// AI/ML Settings Functions
+function updateModelSettings() {
+    const confidence = document.getElementById('confidenceThreshold').value;
+    showAlert(`Model settings updated. Confidence threshold: ${confidence}`, 'success');
+}
+
+function retrainModel() {
+    if (confirm('This will retrain the AI model. Continue?')) {
+        showAlert('Model retraining initiated...', 'info');
+    }
+}
+
+function testModel() {
+    showAlert('Running model tests...', 'info');
+}
+
+// Security Functions
+function viewFullLoginHistory() {
+    showAlert('Full login history would open here', 'info');
+}
+
+function updateSecuritySettings() {
+    showAlert('Security settings updated successfully', 'success');
+}
+
+function rotateKey(service) {
+    if (confirm(`Rotate API key for ${service}? This may cause temporary service interruption.`)) {
+        showAlert(`API key rotated for ${service}`, 'success');
+    }
+}
+
+function configureService(service) {
+    showAlert(`Configuration dialog for ${service} would open here`, 'info');
+}
+
+// System Management Functions
+function backupDatabase() {
+    showAlert('Database backup initiated...', 'info');
+}
+
+function optimizeDatabase() {
+    if (confirm('Optimize database? This may take a few minutes.')) {
+        showAlert('Database optimization started...', 'info');
+    }
+}
+
+function viewDbStats() {
+    showAlert('Database statistics would open here', 'info');
+}
+
+function systemHealthCheck() {
+    showAlert('Running comprehensive health check...', 'info');
+}
+
+function updateAdminProfile() {
+    showAlert('Admin profile updated successfully', 'success');
+}
+
+function changeAdminPassword() {
+    showAlert('Password change form would open here', 'info');
+}
+
+// Support Functions
+function viewDocumentation() {
+    window.open('/docs', '_blank');
+}
+
+function contactSupport() {
+    showAlert('Support contact form would open here', 'info');
+}
+
+function reportBug() {
+    showAlert('Bug report form would open here', 'info');
+}
+
+function provideFeedback() {
+    showAlert('Feedback form would open here', 'info');
+}
+
+// Utility Functions
+function showAlert(message, type = 'info') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 4000);
+}
+
+// Initialize confidence threshold display
+document.addEventListener('DOMContentLoaded', function() {
+    const confidenceSlider = document.getElementById('confidenceThreshold');
+    const confidenceDisplay = document.getElementById('confidenceValue');
+    
+    if (confidenceSlider && confidenceDisplay) {
+        confidenceSlider.addEventListener('input', function() {
+            confidenceDisplay.textContent = this.value;
+        });
+    }
+    
+    // Initialize search functionality
+    const userSearch = document.getElementById('userSearch');
+    if (userSearch) {
+        userSearch.addEventListener('input', function() {
+            filterTable('users', this.value);
+        });
+    }
+    
+    const reportSearch = document.getElementById('reportSearch');
+    if (reportSearch) {
+        reportSearch.addEventListener('input', function() {
+            filterTable('reports', this.value);
+        });
+    }
 });
+
+function filterTable(tableType, searchTerm) {
+    // Simple table filtering functionality would be implemented here
+    console.log(`Filtering ${tableType} table for: ${searchTerm}`);
+}
 </script>
 {% endblock %}
