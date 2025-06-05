@@ -73,27 +73,88 @@
             </div>
         </div>
 
-        <!-- Right side - Information -->
-        <div class="col-lg-6 bg-primary d-none d-lg-flex align-items-center justify-content-center text-white">
-            <div class="text-center px-4">
-                <i class="bi bi-shield-shaded" style="font-size: 5rem; opacity: 0.8;"></i>
-                <h3 class="mt-4 mb-3">Protect Yourself from Digital Threats</h3>
-                <p class="lead mb-4">
+        <!-- Right side - Enhanced Information -->
+        <div class="col-lg-6 bg-gradient d-none d-lg-flex align-items-center justify-content-center text-white position-relative overflow-hidden"
+             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            
+            <!-- Animated Background Elements -->
+            <div class="position-absolute w-100 h-100">
+                <div class="floating-element" style="top: 10%; left: 10%;">
+                    <i class="bi bi-shield-check text-white-50" style="font-size: 1.5rem; animation: float 6s ease-in-out infinite;"></i>
+                </div>
+                <div class="floating-element" style="top: 20%; right: 15%;">
+                    <i class="bi bi-cpu text-white-50" style="font-size: 1.2rem; animation: float 4s ease-in-out infinite reverse;"></i>
+                </div>
+                <div class="floating-element" style="bottom: 30%; left: 15%;">
+                    <i class="bi bi-graph-up text-white-50" style="font-size: 1.3rem; animation: float 5s ease-in-out infinite;"></i>
+                </div>
+                <div class="floating-element" style="bottom: 15%; right: 10%;">
+                    <i class="bi bi-eye text-white-50" style="font-size: 1.1rem; animation: float 7s ease-in-out infinite reverse;"></i>
+                </div>
+            </div>
+            
+            <div class="text-center px-4 position-relative z-index-2">
+                <!-- Main Shield with Pulse Animation -->
+                <div class="shield-container mb-4">
+                    <div class="shield-outer">
+                        <i class="bi bi-shield-shaded shield-icon" style="font-size: 5rem; animation: pulse 2s ease-in-out infinite;"></i>
+                        <div class="shield-ring"></div>
+                    </div>
+                </div>
+                
+                <!-- Animated Title -->
+                <h3 class="mt-4 mb-3 fw-bold text-shadow">
+                    <span class="text-gradient">Protect Yourself</span><br>
+                    <span class="text-white">from Digital Threats</span>
+                </h3>
+                
+                <!-- Subtitle with Typewriter Effect -->
+                <p class="lead mb-4 text-shadow">
                     Advanced AI-powered phishing detection platform with comprehensive security analysis
                 </p>
                 
-                <div class="row text-center">
+                <!-- Enhanced Feature Cards -->
+                <div class="row text-center g-3">
                     <div class="col-4">
-                        <i class="bi bi-eye-fill d-block mb-2" style="font-size: 2rem;"></i>
-                        <small>Real-time Detection</small>
+                        <div class="feature-card p-3 rounded-3 bg-white bg-opacity-10 backdrop-blur h-100">
+                            <div class="feature-icon-container mb-2">
+                                <i class="bi bi-eye-fill feature-icon" style="font-size: 2rem; animation: bounce 2s ease-in-out infinite;"></i>
+                            </div>
+                            <small class="fw-semibold">Real-time Detection</small>
+                            <div class="feature-underline"></div>
+                        </div>
                     </div>
                     <div class="col-4">
-                        <i class="bi bi-cpu-fill d-block mb-2" style="font-size: 2rem;"></i>
-                        <small>AI Analysis</small>
+                        <div class="feature-card p-3 rounded-3 bg-white bg-opacity-10 backdrop-blur h-100">
+                            <div class="feature-icon-container mb-2">
+                                <i class="bi bi-cpu-fill feature-icon" style="font-size: 2rem; animation: spin 3s linear infinite;"></i>
+                            </div>
+                            <small class="fw-semibold">AI Analysis</small>
+                            <div class="feature-underline"></div>
+                        </div>
                     </div>
                     <div class="col-4">
-                        <i class="bi bi-graph-up-arrow d-block mb-2" style="font-size: 2rem;"></i>
-                        <small>Track Progress</small>
+                        <div class="feature-card p-3 rounded-3 bg-white bg-opacity-10 backdrop-blur h-100">
+                            <div class="feature-icon-container mb-2">
+                                <i class="bi bi-graph-up-arrow feature-icon" style="font-size: 2rem; animation: slideUp 2.5s ease-in-out infinite;"></i>
+                            </div>
+                            <small class="fw-semibold">Track Progress</small>
+                            <div class="feature-underline"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Stats with Animation -->
+                <div class="security-stats mt-4 pt-4 border-top border-white border-opacity-25">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="stat-number" data-target="99.9">0</div>
+                            <small class="d-block text-white-75">% Accuracy</small>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-number" data-target="24">0</div>
+                            <small class="d-block text-white-75">Hour Protection</small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -127,10 +188,193 @@
     border-left: none;
 }
 
+/* Enhanced Animation Styles */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        transform: scale(1); 
+        opacity: 1; 
+    }
+    50% { 
+        transform: scale(1.05); 
+        opacity: 0.9; 
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes slideUp {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Shield Container Styles */
+.shield-container {
+    position: relative;
+    display: inline-block;
+}
+
+.shield-outer {
+    position: relative;
+    display: inline-block;
+}
+
+.shield-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: pulse 3s ease-in-out infinite;
+}
+
+.shield-ring::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: pulse 3s ease-in-out infinite reverse;
+}
+
+/* Text Effects */
+.text-gradient {
+    background: linear-gradient(45deg, #fff, #e0e7ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Feature Cards */
+.feature-card {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.feature-card:hover::before {
+    left: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.feature-icon-container {
+    position: relative;
+}
+
+.feature-underline {
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #fff, #e0e7ff);
+    margin: 0 auto;
+    transition: width 0.3s ease;
+}
+
+.feature-card:hover .feature-underline {
+    width: 60%;
+}
+
+/* Security Stats */
+.security-stats {
+    backdrop-filter: blur(5px);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.text-white-75 {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* Floating Elements */
+.floating-element {
+    position: absolute;
+    pointer-events: none;
+}
+
+/* Z-index utilities */
+.z-index-2 {
+    z-index: 2;
+}
+
+/* Backdrop blur support */
+.backdrop-blur {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Enhanced responsiveness */
 @media (max-width: 991.98px) {
     .auth-form-container {
         margin: 2rem auto;
         box-shadow: none;
+    }
+    
+    .shield-icon {
+        font-size: 3rem !important;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .feature-card {
+        margin-bottom: 1rem;
+    }
+    
+    .security-stats .row > div {
+        margin-bottom: 1rem;
     }
 }
 </style>
@@ -152,6 +396,161 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         form.classList.add('was-validated');
     });
+    
+    // Animate statistics counters
+    animateStatNumbers();
+    
+    // Add interactive effects to feature cards
+    initializeFeatureCards();
+});
+
+function animateStatNumbers() {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    
+    statNumbers.forEach(stat => {
+        const target = parseFloat(stat.getAttribute('data-target'));
+        const duration = 2000; // 2 seconds
+        const increment = target / (duration / 16); // 60fps
+        let current = 0;
+        
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            
+            // Format number display
+            if (target === 99.9) {
+                stat.textContent = current.toFixed(1);
+            } else {
+                stat.textContent = Math.floor(current);
+            }
+        }, 16);
+    });
+}
+
+function initializeFeatureCards() {
+    const featureCards = document.querySelectorAll('.feature-card');
+    
+    featureCards.forEach((card, index) => {
+        // Stagger the initial animation
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 200);
+        
+        // Add hover sound effect simulation
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Initialize cards with fade-in effect
+    featureCards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.6s ease';
+    });
+}
+
+// Add particle effect on shield hover
+document.addEventListener('DOMContentLoaded', function() {
+    const shield = document.querySelector('.shield-icon');
+    if (shield) {
+        shield.addEventListener('mouseenter', createParticleEffect);
+    }
+});
+
+function createParticleEffect() {
+    const shield = document.querySelector('.shield-container');
+    
+    for (let i = 0; i < 6; i++) {
+        setTimeout(() => {
+            const particle = document.createElement('div');
+            particle.style.cssText = `
+                position: absolute;
+                width: 4px;
+                height: 4px;
+                background: rgba(255, 255, 255, 0.8);
+                border-radius: 50%;
+                pointer-events: none;
+                animation: particle-float 1.5s ease-out forwards;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            `;
+            
+            // Add particle animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes particle-float {
+                    0% {
+                        opacity: 1;
+                        transform: translate(-50%, -50%) scale(0);
+                    }
+                    50% {
+                        opacity: 0.8;
+                        transform: translate(-50%, -50%) scale(1) translateY(-20px);
+                    }
+                    100% {
+                        opacity: 0;
+                        transform: translate(-50%, -50%) scale(0.5) translateY(-40px);
+                    }
+                }
+            `;
+            
+            if (!document.querySelector('#particle-styles')) {
+                style.id = 'particle-styles';
+                document.head.appendChild(style);
+            }
+            
+            shield.appendChild(particle);
+            
+            // Remove particle after animation
+            setTimeout(() => {
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+            }, 1500);
+        }, i * 100);
+    }
+}
+
+// Enhanced typing effect for subtitle
+function initializeTypingEffect() {
+    const subtitle = document.querySelector('.lead');
+    if (!subtitle) return;
+    
+    const text = subtitle.textContent;
+    subtitle.textContent = '';
+    subtitle.style.borderRight = '2px solid rgba(255, 255, 255, 0.7)';
+    
+    let i = 0;
+    const typeWriter = () => {
+        if (i < text.length) {
+            subtitle.textContent += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 50);
+        } else {
+            // Remove cursor after typing is complete
+            setTimeout(() => {
+                subtitle.style.borderRight = 'none';
+            }, 1000);
+        }
+    };
+    
+    // Start typing effect after a delay
+    setTimeout(typeWriter, 1000);
+}
+
+// Initialize all effects
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(initializeTypingEffect, 500);
 });
 </script>
 {% endblock %}
