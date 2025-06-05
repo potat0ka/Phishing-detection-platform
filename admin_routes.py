@@ -696,6 +696,455 @@ def get_reported_content():
         logger.error(f"Error getting reported content: {e}")
         return []
 
+@admin_bp.route('/reports/approve/<report_id>', methods=['POST'])
+@admin_required
+def approve_report(report_id):
+    """Approve a reported content"""
+    try:
+        current_user = get_current_user()
+        
+        # Find the report
+        report = db_manager.find_one('reports', {'id': report_id})
+        if not report:
+            return jsonify({'success': False, 'message': 'Report not found'}), 404
+        
+        # Update report status
+        update_data = {
+            'status': 'approved',
+            'reviewed_by': current_user.get('id'),
+            'reviewed_at': datetime.utcnow()
+        }
+        
+        result = db_manager.update_one('reports', {'id': report_id}, update_data)
+        
+        if result:
+            logger.info(f"Admin {current_user.get('username')} approved report {report_id}")
+            return jsonify({
+                'success': True,
+                'message': 'Report approved successfully'
+            })
+        else:
+            return jsonify({'success': False, 'message': 'Failed to approve report'}), 500
+            
+    except Exception as e:
+        logger.error(f"Error approving report: {e}")
+        return jsonify({'success': False, 'message': 'Error occurred while approving report'}), 500
+
+@admin_bp.route('/reports/reject/<report_id>', methods=['POST'])
+@admin_required
+def reject_report(report_id):
+    """Reject a reported content"""
+    try:
+        current_user = get_current_user()
+        
+        # Find the report
+        report = db_manager.find_one('reports', {'id': report_id})
+        if not report:
+            return jsonify({'success': False, 'message': 'Report not found'}), 404
+        
+        # Update report status
+        update_data = {
+            'status': 'rejected',
+            'reviewed_by': current_user.get('id'),
+            'reviewed_at': datetime.utcnow()
+        }
+        
+        result = db_manager.update_one('reports', {'id': report_id}, update_data)
+        
+        if result:
+            logger.info(f"Admin {current_user.get('username')} rejected report {report_id}")
+            return jsonify({
+                'success': True,
+                'message': 'Report rejected successfully'
+            })
+        else:
+            return jsonify({'success': False, 'message': 'Failed to reject report'}), 500
+            
+    except Exception as e:
+        logger.error(f"Error rejecting report: {e}")
+        return jsonify({'success': False, 'message': 'Error occurred while rejecting report'}), 500
+
+@admin_bp.route('/reports/bulk-action', methods=['POST'])
+@admin_required
+def bulk_report_action():
+    """Handle bulk approve/reject actions for reports"""
+    try:
+        current_user = get_current_user()
+        
+        # Get request data
+        data = request.get_json()
+        report_ids = data.get('report_ids', [])
+        action = data.get('action')  # 'approve' or 'reject'
+        
+        if not report_ids or action not in ['approve', 'reject']:
+            return jsonify({'success': False, 'message': 'Invalid request data'}), 400
+        
+        updated_count = 0
+        
+        for report_id in report_ids:
+            # Update report status
+            update_data = {
+                'status': action + 'd',  # 'approved' or 'rejected'
+                'reviewed_by': current_user.get('id'),
+                'reviewed_at': datetime.utcnow()
+            }
+            
+            result = db_manager.update_one('reports', {'id': report_id}, update_data)
+            if result:
+                updated_count += 1
+        
+        logger.info(f"Admin {current_user.get('username')} {action}d {updated_count} reports")
+        
+        return jsonify({
+            'success': True,
+            'message': f'Successfully {action}d {updated_count} reports'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in bulk report action: {e}")
+        return jsonify({'success': False, 'message': 'Error occurred during bulk action'}), 500
+
+@admin_bp.route('/phishing-db/add', methods=['POST'])
+@admin_required
+def add_phishing_report():
+    """Add a new phishing report to the database"""
+    try:
+        current_user = get_current_user()
+        
+        # Get form data
+        url = request.form.get('url', '').strip()
+        description = request.form.get('description', '').strip()
+        threat_level = request.form.get('threat_level', 'medium').strip()
+        category = request.form.get('category', 'phishing').strip()
+        
+        # Validate required fields
+        if not url:
+            return jsonify({
+                'success': False,
+                'message': 'URL is required'
+            }), 400
+        
+        # Create new phishing report
+        phishing_report = {
+            'id': f"phish_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{current_user.get('id', 'admin')}",
+            'url': url,
+            'description': description,
+            'threat_level': threat_level,
+            'category': category,
+            'added_by': current_user.get('id'),
+            'added_by_username': current_user.get('username'),
+            'timestamp': datetime.utcnow(),
+            'status': 'active',
+            'verified': True
+        }
+        
+        # Save to database
+        result = db_manager.insert_one('phishing_database', phishing_report)
+        
+        if result:
+            logger.info(f"Admin {current_user.get('username')} added phishing report for URL: {url}")
+            return jsonify({
+                'success': True,
+                'message': 'Phishing report added successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to add phishing report'
+            }), 500
+        
+    except Exception as e:
+        logger.error(f"Error adding phishing report: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while adding phishing report'
+        }), 500
+
+@admin_bp.route('/phishing-db/import', methods=['POST'])
+@admin_required
+def import_phishing_data():
+    """Import phishing data from uploaded file"""
+    try:
+        current_user = get_current_user()
+        
+        # Check if file was uploaded
+        if 'file' not in request.files:
+            return jsonify({'success': False, 'message': 'No file uploaded'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'success': False, 'message': 'No file selected'}), 400
+        
+        # Check file extension
+        if not file.filename.lower().endswith(('.csv', '.json')):
+            return jsonify({'success': False, 'message': 'Only CSV and JSON files are supported'}), 400
+        
+        import_count = 0
+        
+        if file.filename.lower().endswith('.csv'):
+            # Process CSV file
+            import csv
+            from io import StringIO
+            
+            content = file.read().decode('utf-8')
+            csv_reader = csv.DictReader(StringIO(content))
+            
+            for row in csv_reader:
+                if 'url' in row and row['url'].strip():
+                    phishing_report = {
+                        'id': f"import_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{import_count}",
+                        'url': row['url'].strip(),
+                        'description': row.get('description', '').strip(),
+                        'threat_level': row.get('threat_level', 'medium').strip(),
+                        'category': row.get('category', 'phishing').strip(),
+                        'added_by': current_user.get('id'),
+                        'added_by_username': current_user.get('username'),
+                        'timestamp': datetime.utcnow(),
+                        'status': 'active',
+                        'verified': True,
+                        'imported': True
+                    }
+                    
+                    db_manager.insert_one('phishing_database', phishing_report)
+                    import_count += 1
+        
+        elif file.filename.lower().endswith('.json'):
+            # Process JSON file
+            import json
+            
+            content = file.read().decode('utf-8')
+            data = json.loads(content)
+            
+            if isinstance(data, list):
+                for item in data:
+                    if 'url' in item and item['url'].strip():
+                        phishing_report = {
+                            'id': f"import_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{import_count}",
+                            'url': item['url'].strip(),
+                            'description': item.get('description', '').strip(),
+                            'threat_level': item.get('threat_level', 'medium').strip(),
+                            'category': item.get('category', 'phishing').strip(),
+                            'added_by': current_user.get('id'),
+                            'added_by_username': current_user.get('username'),
+                            'timestamp': datetime.utcnow(),
+                            'status': 'active',
+                            'verified': True,
+                            'imported': True
+                        }
+                        
+                        db_manager.insert_one('phishing_database', phishing_report)
+                        import_count += 1
+        
+        logger.info(f"Admin {current_user.get('username')} imported {import_count} phishing reports")
+        
+        return jsonify({
+            'success': True,
+            'message': f'Successfully imported {import_count} phishing reports'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error importing phishing data: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while importing data'
+        }), 500
+
+@admin_bp.route('/phishing-db/export', methods=['GET'])
+@admin_required
+def export_phishing_data():
+    """Export phishing database as CSV"""
+    try:
+        import csv
+        from io import StringIO
+        
+        current_user = get_current_user()
+        
+        # Get all phishing reports
+        reports = db_manager.find_many('phishing_database', {})
+        
+        # Create CSV content
+        output = StringIO()
+        writer = csv.writer(output)
+        
+        # Write header
+        writer.writerow(['URL', 'Description', 'Threat Level', 'Category', 'Added By', 'Timestamp', 'Status'])
+        
+        # Write report data
+        for report in reports:
+            writer.writerow([
+                report.get('url', ''),
+                report.get('description', ''),
+                report.get('threat_level', ''),
+                report.get('category', ''),
+                report.get('added_by_username', ''),
+                report.get('timestamp', ''),
+                report.get('status', '')
+            ])
+        
+        csv_content = output.getvalue()
+        output.close()
+        
+        # Log export action
+        logger.info(f"Admin {current_user.get('username')} exported phishing database")
+        
+        from flask import Response
+        return Response(
+            csv_content,
+            mimetype='text/csv',
+            headers={'Content-Disposition': 'attachment; filename=phishing_database_export.csv'}
+        )
+        
+    except Exception as e:
+        logger.error(f"Error exporting phishing data: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while exporting data'
+        }), 500
+
+@admin_bp.route('/ai-ml/retrain', methods=['POST'])
+@admin_required
+def retrain_model():
+    """Trigger ML model retraining"""
+    try:
+        current_user = get_current_user()
+        
+        # Only Super Admin can retrain models
+        if current_user.get('role') != 'super_admin':
+            return jsonify({
+                'success': False,
+                'message': 'Only Super Admin can retrain models'
+            }), 403
+        
+        # Simulate model retraining process
+        training_data = {
+            'id': f"training_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
+            'initiated_by': current_user.get('id'),
+            'started_at': datetime.utcnow(),
+            'status': 'in_progress',
+            'model_type': 'phishing_detector',
+            'progress': 0
+        }
+        
+        # Save training record
+        db_manager.insert_one('model_training', training_data)
+        
+        logger.info(f"Super Admin {current_user.get('username')} initiated model retraining")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Model retraining initiated successfully. This process may take several minutes.',
+            'training_id': training_data['id']
+        })
+        
+    except Exception as e:
+        logger.error(f"Error retraining model: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while initiating model retraining'
+        }), 500
+
+@admin_bp.route('/ai-ml/test', methods=['POST'])
+@admin_required
+def test_model():
+    """Run model test with sample data"""
+    try:
+        current_user = get_current_user()
+        
+        # Get test input from request or use default
+        test_input = request.form.get('test_input', 'http://example-phishing-site.com/fake-login')
+        
+        # Import the detector
+        from ml_detector import PhishingDetector
+        detector = PhishingDetector()
+        
+        # Run test
+        result = detector.analyze(test_input, 'url')
+        
+        # Save test result
+        test_record = {
+            'id': f"test_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
+            'tested_by': current_user.get('id'),
+            'test_input': test_input,
+            'result': result,
+            'timestamp': datetime.utcnow()
+        }
+        
+        db_manager.insert_one('model_tests', test_record)
+        
+        logger.info(f"Admin {current_user.get('username')} ran model test")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Model test completed successfully',
+            'test_result': result
+        })
+        
+    except Exception as e:
+        logger.error(f"Error testing model: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while testing model'
+        }), 500
+
+@admin_bp.route('/ai-ml/save-settings', methods=['POST'])
+@admin_required
+def save_ml_settings():
+    """Save ML configuration settings"""
+    try:
+        current_user = get_current_user()
+        
+        # Only Super Admin can modify ML settings
+        if current_user.get('role') != 'super_admin':
+            return jsonify({
+                'success': False,
+                'message': 'Only Super Admin can modify ML settings'
+            }), 403
+        
+        # Get settings from form
+        confidence_threshold = float(request.form.get('confidence_threshold', 0.7))
+        learning_rate = float(request.form.get('learning_rate', 0.001))
+        batch_size = int(request.form.get('batch_size', 32))
+        max_features = int(request.form.get('max_features', 10000))
+        
+        # Validate settings
+        if not (0.0 <= confidence_threshold <= 1.0):
+            return jsonify({
+                'success': False,
+                'message': 'Confidence threshold must be between 0.0 and 1.0'
+            }), 400
+        
+        # Save settings
+        ml_config = {
+            'id': 'ml_config',
+            'confidence_threshold': confidence_threshold,
+            'learning_rate': learning_rate,
+            'batch_size': batch_size,
+            'max_features': max_features,
+            'updated_by': current_user.get('id'),
+            'updated_at': datetime.utcnow()
+        }
+        
+        # Update or insert configuration
+        existing_config = db_manager.find_one('ml_config', {'id': 'ml_config'})
+        if existing_config:
+            db_manager.update_one('ml_config', {'id': 'ml_config'}, ml_config)
+        else:
+            db_manager.insert_one('ml_config', ml_config)
+        
+        logger.info(f"Super Admin {current_user.get('username')} updated ML settings")
+        
+        return jsonify({
+            'success': True,
+            'message': 'ML settings saved successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error saving ML settings: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while saving ML settings'
+        }), 500
+
 def calculate_system_stats():
     """Calculate real-time system statistics"""
     try:

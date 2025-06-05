@@ -1,0 +1,64 @@
+The platform is almost complete, but several crucial buttons and features are not working as intended across the Admin Dashboard. Please review and fix all of the following issues urgently:
+🧾 1. Scan Log – Export Not Working
+
+    Issue: The Export button in the Scan Log section doesn't trigger any download or response.
+
+    ✅ Expected Fix: On click, export the scan log data as a downloadable .csv or .json file (client- or server-side).
+
+🧾 2. Reported Content – Approve / Reject Not Working
+
+    Issue: The Approve Selected and Reject Selected buttons are not responding or processing the selected reports.
+
+    ✅ Expected Fix: Ensure that:
+
+        Reports can be selected with checkboxes
+
+        Approve/Reject actions update the report status in the DB
+
+        The list refreshes to reflect the updated status
+
+🧾 3. Phishing Database – Add Report / Import / Export / Refresh Not Working
+
+    Issues:
+
+        Add Report: Doesn't open a form or send data to the backend.
+
+        Import: No file upload or backend logic to process file.
+
+        Export: No download triggered.
+
+        Refresh: Button has no effect.
+
+    ✅ Expected Fix:
+
+        Add Report: Open a modal form to add new entry to phishing database.
+
+        Import: Support .csv/.json uploads and insert data into DB.
+
+        Export: Trigger file download with phishing DB data.
+
+        Refresh: Re-fetch latest phishing DB records from backend.
+
+🤖 4. AI/ML Configuration & Tuning – Buttons Non-Functional
+
+    Issue: None of the buttons — Retrain Model, Test Model, or Save Settings — are working.
+
+    ✅ Expected Fixes:
+
+        Retrain Model: Trigger retraining process (backend script).
+
+        Test Model: Run test case (based on sample input or random DB entry).
+
+        Save Settings: Save ML config (thresholds, parameters) to a config file or DB.
+
+✅ Final Notes:
+
+    🔁 Please ensure all buttons in Admin Panel perform real actions — not just front-end clicks.
+
+    💾 Backend should receive the correct payload and return proper responses.
+
+    🧹 Follow clean code practices: split into multiple files, remove unused code, and add clear comments throughout.
+
+    🎯 This is important for learning and future scaling.
+
+Please confirm once these features are fixed and fully functional.

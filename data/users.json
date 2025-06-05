@@ -9,21 +9,7 @@
     "active": true,
     "is_active": true,
     "created_at": "2025-06-05T10:00:00Z",
-    "last_login": "2025-06-05 11:04:22.668196",
-    "login_attempts": 0,
-    "locked_until": null
-  },
-  {
-    "id": "sub_admin_001",
-    "_id": "users_2_3554527208",
-    "username": "sub_admin",
-    "email": "subadmin@phishingdetector.com",
-    "password_hash": "scrypt:32768:8:1$U0MquFdmXeRZxa71$62dc817e430fa8dc129d70a8e0d607c2fbfb31dec8f1078537b2f58eed031424115eb2ef701ab60c7999293f12f1ffe62dc157f70c4baff480b2109428e886d8",
-    "role": "sub_admin",
-    "active": true,
-    "is_active": true,
-    "created_at": "2025-06-05T10:00:00Z",
-    "last_login": "2025-06-05 11:05:18.764058",
+    "last_login": "2025-06-05 11:28:14.585934",
     "login_attempts": 0,
     "locked_until": null
   },
@@ -50,7 +36,7 @@
     "role": "admin",
     "display_name": "Demo Administrator",
     "created_at": "2025-06-05T11:18:37.062888",
-    "last_login": "2025-06-05 11:26:30.172031",
+    "last_login": "2025-06-05 11:27:18.116351",
     "is_active": true,
     "login_attempts": 0,
     "locked_until": null,
@@ -72,19 +58,5 @@
     "email_verified": true,
     "profile_completed": true,
     "_id": "users_5_4130915929"
-  },
-  {
-    "id": "user_1749122331_7346",
-    "_id": "users_6_1818415690",
-    "username": "potato",
-    "email": "bige.stha88@gmail.com",
-    "password_hash": "scrypt:32768:8:1$ZQ2QP8DfUfdgMQhe$796aeb6fe94ba1c0dcfec18411756d7109afbb5b16f9e27362967f9ba20ff303c4aaa55183d08f03faaaebcd39690bdc4fc244992306c8c03bcdd3e9878e049f",
-    "role": "user",
-    "active": true,
-    "is_active": true,
-    "created_at": "2025-06-05T11:18:51.208269",
-    "last_login": null,
-    "login_attempts": 0,
-    "locked_until": null
   }
 ]
