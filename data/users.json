@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "username": "Z0FBQUFBQm9RU21XWnBNNUtDLS1uOHctaDZjaGxSWGtIYkFfSTRvWGlvbElxTDNNRHFSamVGUEItMk5BbllrREtSVEEwVTdka1NhQVhLTWVGd3BLc2pNc3RkRjN6dUdMV3c9PQ==",
+    "email": "Z0FBQUFBQm9RU21XM3VYN3FfWncyWkduMzRWWlg5Tk1VNTNWb2RRY0tBeGJQYk5FMFRRajVGZGF4Yk9SMHZDeXJhMlRPbmEzUlNjdVp4aXRKU3lWZllTbXIydERYUjZtSDlIcFdDTldhTGV0WnVsTldNQU9tY0k9",
+    "password_hash": "scrypt:32768:8:1$XI6lwWCu0P6ZsBLy$b8f478395edd01c6db4e1e490ecbb43cad747a8a6b10be8abc8822ed0bcd2f7809c61b8b41915969518be8fefcab5438eeaa3478ee8a578d5d9469d3c2417c8c",
+    "role": "user",
+    "created_at": "2025-06-05 05:22:30.263546",
+    "last_login": "2025-06-05 05:22:35.872802",
+    "is_active": true,
+    "login_attempts": 0,
+    "locked_until": null,
+    "username_encrypted": true,
+    "email_encrypted": true,
+    "encryption_version": "2.0",
+    "encrypted_at": "2025-06-05 05:22:30.263757",
+    "_id": "users_1_2462542316"
+  }
+]
