@@ -279,17 +279,29 @@
                                                     <button class="btn btn-outline-primary" onclick="viewUser('{{ user.id }}')" title="View Details">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
-                                                    <button class="btn btn-outline-warning" onclick="editUser('{{ user.id }}')" title="Edit User">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-info" onclick="resetPassword('{{ user.id }}')" title="Reset Password">
+                                                    <button class="btn btn-outline-warning" onclick="resetPassword('{{ user.id }}', '{{ user.username }}')" title="Reset Password">
                                                         <i class="fas fa-key"></i>
                                                     </button>
-                                                    {% if user.role != 'admin' %}
-                                                    <button class="btn btn-outline-secondary" onclick="toggleUserStatus('{{ user.id }}')" title="Suspend User">
-                                                        <i class="fas fa-ban"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-danger" onclick="deleteUser('{{ user.id }}', '{{ user.username or 'Unknown' }}')" title="Delete User">
+                                                    {% if current_user.role == 'super_admin' and user.role != 'super_admin' %}
+                                                        {% if user.role == 'user' %}
+                                                            <button class="btn btn-outline-success" onclick="promoteUser('{{ user.id }}', '{{ user.username }}')" title="Promote to Sub-Admin">
+                                                                <i class="fas fa-arrow-up"></i>
+                                                            </button>
+                                                        {% elif user.role in ['sub_admin', 'admin'] %}
+                                                            <button class="btn btn-outline-info" onclick="demoteUser('{{ user.id }}', '{{ user.username }}')" title="Demote Role">
+                                                                <i class="fas fa-arrow-down"></i>
+                                                            </button>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    {% if user.id != current_user.id %}
+                                                        <button class="btn btn-outline-danger" onclick="deleteUser('{{ user.id }}', '{{ user.username }}')" title="Delete User">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                     {% endif %}

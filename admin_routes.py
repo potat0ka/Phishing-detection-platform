@@ -91,27 +91,115 @@ def create_user():
 @admin_bp.route('/user/<user_id>')
 @admin_required
 def get_user(user_id):
-    """Get detailed user information"""
+    """
+    Get detailed user information with comprehensive data
+    
+    Returns user details, activity statistics, and recent activity logs
+    for admin dashboard view details functionality
+    """
     try:
+        # Find user using multiple ID formats (handles data inconsistency)
+        user = None
+        
+        # Try with 'id' field first
         user = db_manager.find_one('users', {'id': user_id})
+        
+        # If not found, try with '_id' field
+        if not user:
+            user = db_manager.find_one('users', {'_id': user_id})
+        
         if not user:
             return jsonify({'success': False, 'error': 'User not found'})
         
-        # Try to decrypt if encrypted
+        # Handle encrypted user data safely
+        display_user = user.copy()
         try:
-            user = decrypt_sensitive_data('user', user)
+            if user.get('username_encrypted') or user.get('email_encrypted'):
+                decrypted_user = decrypt_sensitive_data('user', user)
+                display_user.update(decrypted_user)
+        except Exception as decrypt_error:
+            logger.warning(f"Could not decrypt user data for {user_id}: {decrypt_error}")
+            # Continue with original data if decryption fails
+        
+        # Get comprehensive user statistics
+        user_stats = {}
+        
+        # Count user's detections (handle multiple user ID formats)
+        detection_count = 0
+        detection_count += db_manager.count_documents('detections', {'user_id': user_id})
+        
+        # Also check alternate ID format if exists
+        if user.get('id') and user.get('id') != user_id:
+            detection_count += db_manager.count_documents('detections', {'user_id': user.get('id')})
+        
+        user_stats['total_scans'] = detection_count
+        
+        # Get recent detections for activity timeline
+        recent_detections = []
+        detections = db_manager.find_many('detections', {'user_id': user_id}, limit=5)
+        
+        for detection in detections:
+            detection_summary = {
+                'id': detection.get('id') or detection.get('_id'),
+                'type': detection.get('input_type', 'unknown'),
+                'result': detection.get('result', 'unknown'),
+                'timestamp': detection.get('timestamp') or detection.get('created_at'),
+                'content_preview': (detection.get('input_content') or detection.get('content', ''))[:50]
+            }
+            recent_detections.append(detection_summary)
+        
+        user_stats['recent_activity'] = recent_detections
+        
+        # Count reports made by this user
+        report_count = db_manager.count_documents('reports', {'reporter_id': user_id})
+        user_stats['reports_made'] = report_count
+        
+        # Calculate account age and last activity
+        from datetime import datetime
+        try:
+            created_date = user.get('created_at')
+            if created_date:
+                if isinstance(created_date, str):
+                    created_dt = datetime.fromisoformat(created_date.replace('Z', '+00:00'))
+                else:
+                    created_dt = created_date
+                account_age_days = (datetime.now() - created_dt.replace(tzinfo=None)).days
+                user_stats['account_age_days'] = account_age_days
         except:
-            pass
+            user_stats['account_age_days'] = 0
         
-        # Get user's scan count
-        scan_count = db_manager.count_documents('detections', {'user_id': user_id})
-        user['scan_count'] = scan_count
+        # Last login information
+        last_login = user.get('last_login')
+        user_stats['last_login'] = last_login
         
-        return jsonify({'success': True, 'user': user})
+        # Security information
+        user_stats['login_attempts'] = user.get('login_attempts', 0)
+        user_stats['is_locked'] = bool(user.get('locked_until'))
+        
+        # Clean up sensitive data for display
+        safe_user_data = {
+            'id': user.get('id') or user.get('_id'),
+            'username': display_user.get('username', 'Unknown'),
+            'email': display_user.get('email', 'Unknown'),
+            'role': user.get('role', 'user'),
+            'is_active': user.get('is_active', True),
+            'created_at': user.get('created_at'),
+            'last_login': user.get('last_login'),
+            'login_attempts': user.get('login_attempts', 0),
+            'locked_until': user.get('locked_until'),
+            'email_verified': user.get('email_verified', False),
+            'profile_completed': user.get('profile_completed', False)
+        }
+        
+        return jsonify({
+            'success': True, 
+            'user': safe_user_data,
+            'stats': user_stats
+        })
         
     except Exception as e:
-        logger.error(f"Error getting user {user_id}: {e}")
-        return jsonify({'success': False, 'error': str(e)})
+        logger.error(f"Error getting user details for {user_id}: {e}")
+        return jsonify({'success': False, 'error': f'Failed to load user details: {str(e)}'})
 
 @admin_bp.route('/user/<user_id>', methods=['PUT'])
 @admin_required
@@ -183,54 +271,335 @@ def toggle_user_status(user_id):
 @admin_bp.route('/user/<user_id>/delete', methods=['POST'])
 @admin_required
 def delete_user(user_id):
-    """Delete a user account permanently"""
+    """
+    Delete a user account permanently with comprehensive data cleanup
+    
+    This function handles the complete removal of a user and all associated data:
+    1. Security checks (prevent self-deletion, role restrictions)
+    2. Data cleanup (detections, reports, admin actions)
+    3. User account deletion
+    """
     try:
         current_user = get_current_user()
+        current_user_id = current_user.get('_id') or current_user.get('id') if current_user else None
         
-        # Prevent admin from deleting themselves
-        if current_user and current_user.get('id') == user_id:
+        # Security Check 1: Prevent admin from deleting themselves
+        if current_user_id == user_id:
             return jsonify({'success': False, 'error': 'You cannot delete your own account'})
         
-        # Check if user exists
+        # Security Check 2: Find user using multiple ID formats (handles inconsistent data)
+        user = None
+        
+        # Try with 'id' field first
         user = db_manager.find_one('users', {'id': user_id})
+        
+        # If not found, try with '_id' field
+        if not user:
+            user = db_manager.find_one('users', {'_id': user_id})
+        
         if not user:
             return jsonify({'success': False, 'error': 'User not found'})
         
-        # Get user's username for logging (try to decrypt if needed)
+        # Security Check 3: Role-based restrictions
+        target_user_role = user.get('role', 'user') if user else 'user'
+        current_user_role = (current_user or {}).get('role', 'user')
+        
+        # Super Admin can delete anyone except themselves
+        # Sub-Admin can only delete regular users
+        if current_user_role == 'sub_admin' and target_user_role in ['admin', 'super_admin', 'sub_admin']:
+            return jsonify({'success': False, 'error': 'Sub-admins cannot delete other administrators'})
+        
+        # Get user's username for logging (handle encryption)
+        username = 'Unknown'
         try:
-            decrypted_user = decrypt_sensitive_data('user', user)
-            username = decrypted_user.get('username', 'Unknown')
-        except:
+            if user.get('username_encrypted'):
+                decrypted_user = decrypt_sensitive_data('user', user)
+                username = decrypted_user.get('username', 'Unknown')
+            else:
+                username = user.get('username', 'Unknown')
+        except Exception as decrypt_error:
+            logger.warning(f"Could not decrypt username for user {user_id}: {decrypt_error}")
             username = user.get('username', 'Unknown')
         
-        # Delete user's associated data first
-        # Delete scan logs
+        # Data Cleanup Phase 1: Delete user's detection history
+        # Handle both possible user ID formats in detections
+        detection_count = 0
+        
+        # Delete detections with user_id matching the target user
         detections = db_manager.find_many('detections', {'user_id': user_id})
         for detection in detections:
-            db_manager.delete_one('detections', {'_id': detection.get('_id') or detection.get('id')})
+            detection_id = detection.get('_id') or detection.get('id')
+            if detection_id:
+                deleted = db_manager.delete_one('detections', {'_id': detection_id})
+                if deleted:
+                    detection_count += 1
         
-        # Delete any reported content by this user
+        # Also check for detections with the alternate ID format
+        if user.get('id') and user.get('id') != user_id:
+            alt_detections = db_manager.find_many('detections', {'user_id': user.get('id')})
+            for detection in alt_detections:
+                detection_id = detection.get('_id') or detection.get('id')
+                if detection_id:
+                    deleted = db_manager.delete_one('detections', {'_id': detection_id})
+                    if deleted:
+                        detection_count += 1
+        
+        # Data Cleanup Phase 2: Delete reported content by this user
+        report_count = 0
         reports = db_manager.find_many('reports', {'reporter_id': user_id})
         for report in reports:
-            db_manager.delete_one('reports', {'_id': report.get('_id') or report.get('id')})
+            report_id = report.get('_id') or report.get('id')
+            if report_id:
+                deleted = db_manager.delete_one('reports', {'_id': report_id})
+                if deleted:
+                    report_count += 1
         
-        # Delete any admin actions logged by this user
+        # Data Cleanup Phase 3: Delete admin actions logged by this user
+        action_count = 0
         admin_actions = db_manager.find_many('admin_actions', {'admin_id': user_id})
         for action in admin_actions:
-            db_manager.delete_one('admin_actions', {'_id': action.get('_id') or action.get('id')})
+            action_id = action.get('_id') or action.get('id')
+            if action_id:
+                deleted = db_manager.delete_one('admin_actions', {'_id': action_id})
+                if deleted:
+                    action_count += 1
         
-        # Finally delete the user account
-        success = db_manager.delete_one('users', {'id': user_id})
+        # Final Step: Delete the user account using the correct identifier
+        user_deleted = False
         
-        if success:
-            logger.info(f"Admin deleted user: {username} (ID: {user_id})")
-            return jsonify({'success': True, 'message': f'User {username} and all associated data deleted successfully'})
+        # Try deleting with the ID that was found
+        if user.get('id'):
+            user_deleted = db_manager.delete_one('users', {'id': user.get('id')})
+        
+        # If that didn't work, try with _id
+        if not user_deleted and user.get('_id'):
+            user_deleted = db_manager.delete_one('users', {'_id': user.get('_id')})
+        
+        if user_deleted:
+            # Log comprehensive deletion details
+            logger.info(f"Admin {(current_user or {}).get('username', 'Unknown')} successfully deleted user: {username} (ID: {user_id})")
+            logger.info(f"Cleanup: {detection_count} detections, {report_count} reports, {action_count} admin actions")
+            
+            return jsonify({
+                'success': True, 
+                'message': f'User {username} and all associated data deleted successfully',
+                'details': {
+                    'detections_deleted': detection_count,
+                    'reports_deleted': report_count,
+                    'admin_actions_deleted': action_count
+                }
+            })
         else:
-            return jsonify({'success': False, 'error': 'Failed to delete user'})
+            return jsonify({'success': False, 'error': 'Failed to delete user account'})
             
     except Exception as e:
-        logger.error(f"Error deleting user {user_id}: {e}")
-        return jsonify({'success': False, 'error': str(e)})
+        logger.error(f"Critical error deleting user {user_id}: {e}")
+        return jsonify({'success': False, 'error': f'Deletion failed: {str(e)}'})
+
+@admin_bp.route('/user/<user_id>/reset-password', methods=['POST'])
+@admin_required
+def reset_user_password(user_id):
+    """
+    Reset a user's password with admin-provided value
+    
+    Allows admins to set a custom password for user recovery or temporary access
+    """
+    try:
+        current_user = get_current_user()
+        new_password = request.form.get('new_password', '').strip()
+        
+        if not new_password:
+            return jsonify({'success': False, 'error': 'New password is required'})
+        
+        if len(new_password) < 6:
+            return jsonify({'success': False, 'error': 'Password must be at least 6 characters long'})
+        
+        # Find user using multiple ID formats
+        user = db_manager.find_one('users', {'id': user_id})
+        if not user:
+            user = db_manager.find_one('users', {'_id': user_id})
+        
+        if not user:
+            return jsonify({'success': False, 'error': 'User not found'})
+        
+        # Role-based security check
+        target_user_role = user.get('role', 'user')
+        current_user_role = (current_user or {}).get('role', 'user')
+        
+        # Sub-admins cannot reset passwords for other admins
+        if current_user_role == 'sub_admin' and target_user_role in ['admin', 'super_admin', 'sub_admin']:
+            return jsonify({'success': False, 'error': 'Sub-admins cannot reset passwords for other administrators'})
+        
+        # Generate new password hash
+        from werkzeug.security import generate_password_hash
+        new_password_hash = generate_password_hash(new_password)
+        
+        # Update user password and reset login attempts
+        update_data = {
+            'password_hash': new_password_hash,
+            'login_attempts': 0,
+            'locked_until': None,
+            'updated_at': datetime.utcnow().isoformat()
+        }
+        
+        # Update using correct ID format
+        update_query = {'id': user.get('id')} if user.get('id') else {'_id': user.get('_id')}
+        success = db_manager.update_one('users', update_query, {'$set': update_data})
+        
+        if success:
+            # Get username for logging
+            username = 'Unknown'
+            try:
+                if user.get('username_encrypted'):
+                    decrypted_user = decrypt_sensitive_data('user', user)
+                    username = decrypted_user.get('username', 'Unknown')
+                else:
+                    username = user.get('username', 'Unknown')
+            except:
+                username = user.get('username', 'Unknown')
+            
+            logger.info(f"Admin {(current_user or {}).get('username', 'Unknown')} reset password for user: {username}")
+            return jsonify({'success': True, 'message': f'Password reset successfully for {username}'})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to reset password'})
+            
+    except Exception as e:
+        logger.error(f"Error resetting password for user {user_id}: {e}")
+        return jsonify({'success': False, 'error': f'Password reset failed: {str(e)}'})
+
+@admin_bp.route('/user/<user_id>/promote', methods=['POST'])
+@admin_required
+def promote_user(user_id):
+    """
+    Promote user to sub-admin role (Super Admin only)
+    
+    Implements role hierarchy:
+    - Super Admin can promote users to Sub-Admin
+    - Sub-Admins cannot promote anyone
+    """
+    try:
+        current_user = get_current_user()
+        current_user_role = (current_user or {}).get('role', 'user')
+        
+        # Only Super Admin can promote users
+        if current_user_role != 'super_admin':
+            return jsonify({'success': False, 'error': 'Only Super Admins can promote users'})
+        
+        # Find target user
+        user = db_manager.find_one('users', {'id': user_id})
+        if not user:
+            user = db_manager.find_one('users', {'_id': user_id})
+        
+        if not user:
+            return jsonify({'success': False, 'error': 'User not found'})
+        
+        current_role = user.get('role', 'user')
+        
+        # Determine new role based on current role
+        if current_role == 'user':
+            new_role = 'sub_admin'
+        elif current_role == 'sub_admin':
+            new_role = 'admin'
+        else:
+            return jsonify({'success': False, 'error': 'User already has maximum role'})
+        
+        # Update user role
+        update_data = {
+            'role': new_role,
+            'updated_at': datetime.utcnow().isoformat()
+        }
+        
+        update_query = {'id': user.get('id')} if user.get('id') else {'_id': user.get('_id')}
+        success = db_manager.update_one('users', update_query, {'$set': update_data})
+        
+        if success:
+            # Get username for logging
+            username = 'Unknown'
+            try:
+                if user.get('username_encrypted'):
+                    decrypted_user = decrypt_sensitive_data('user', user)
+                    username = decrypted_user.get('username', 'Unknown')
+                else:
+                    username = user.get('username', 'Unknown')
+            except:
+                username = user.get('username', 'Unknown')
+            
+            logger.info(f"Super Admin {(current_user or {}).get('username', 'Unknown')} promoted {username} to {new_role}")
+            return jsonify({'success': True, 'message': f'User {username} promoted to {new_role.replace("_", " ").title()}'})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to promote user'})
+            
+    except Exception as e:
+        logger.error(f"Error promoting user {user_id}: {e}")
+        return jsonify({'success': False, 'error': f'Promotion failed: {str(e)}'})
+
+@admin_bp.route('/user/<user_id>/demote', methods=['POST'])
+@admin_required
+def demote_user(user_id):
+    """
+    Demote user role (Super Admin only)
+    
+    Allows Super Admin to demote sub-admins back to regular users
+    """
+    try:
+        current_user = get_current_user()
+        current_user_role = (current_user or {}).get('role', 'user')
+        
+        # Only Super Admin can demote users
+        if current_user_role != 'super_admin':
+            return jsonify({'success': False, 'error': 'Only Super Admins can demote users'})
+        
+        # Find target user
+        user = db_manager.find_one('users', {'id': user_id})
+        if not user:
+            user = db_manager.find_one('users', {'_id': user_id})
+        
+        if not user:
+            return jsonify({'success': False, 'error': 'User not found'})
+        
+        current_role = user.get('role', 'user')
+        
+        # Prevent demoting another super admin
+        if current_role == 'super_admin':
+            return jsonify({'success': False, 'error': 'Cannot demote Super Admin'})
+        
+        # Determine new role
+        if current_role == 'admin':
+            new_role = 'sub_admin'
+        elif current_role == 'sub_admin':
+            new_role = 'user'
+        else:
+            return jsonify({'success': False, 'error': 'User already has minimum role'})
+        
+        # Update user role
+        update_data = {
+            'role': new_role,
+            'updated_at': datetime.utcnow().isoformat()
+        }
+        
+        update_query = {'id': user.get('id')} if user.get('id') else {'_id': user.get('_id')}
+        success = db_manager.update_one('users', update_query, {'$set': update_data})
+        
+        if success:
+            # Get username for logging
+            username = 'Unknown'
+            try:
+                if user.get('username_encrypted'):
+                    decrypted_user = decrypt_sensitive_data('user', user)
+                    username = decrypted_user.get('username', 'Unknown')
+                else:
+                    username = user.get('username', 'Unknown')
+            except:
+                username = user.get('username', 'Unknown')
+            
+            logger.info(f"Super Admin {(current_user or {}).get('username', 'Unknown')} demoted {username} to {new_role}")
+            return jsonify({'success': True, 'message': f'User {username} demoted to {new_role.replace("_", " ").title()}'})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to demote user'})
+            
+    except Exception as e:
+        logger.error(f"Error demoting user {user_id}: {e}")
+        return jsonify({'success': False, 'error': f'Demotion failed: {str(e)}'})
 
 # Safety Tips Management Routes
 @admin_bp.route('/tips', methods=['POST'])
