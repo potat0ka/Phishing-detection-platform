@@ -477,34 +477,34 @@
 <script>
 // Password toggle function - defined globally
 function togglePassword(fieldId, button) {
-        const field = document.getElementById(fieldId);
-        const icon = button.querySelector('i');
+    const field = document.getElementById(fieldId);
+    const icon = button.querySelector('i');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+        button.setAttribute('title', 'Hide Password');
+        field.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
         
-        if (field.type === 'password') {
-            field.type = 'text';
-            icon.classList.remove('bi-eye');
-            icon.classList.add('bi-eye-slash');
-            button.setAttribute('title', 'Hide Password');
-            field.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
-            
-            // Auto-hide after 30 seconds for security
-            setTimeout(() => {
-                if (field.type === 'text') {
-                    field.type = 'password';
-                    icon.classList.remove('bi-eye-slash');
-                    icon.classList.add('bi-eye');
-                    button.setAttribute('title', 'Show Password');
-                    field.style.backgroundColor = '';
-                }
-            }, 30000);
-        } else {
-            field.type = 'password';
-            icon.classList.remove('bi-eye-slash');
-            icon.classList.add('bi-eye');
-            button.setAttribute('title', 'Show Password');
-            field.style.backgroundColor = '';
-        }
-        
+        // Auto-hide after 30 seconds for security
+        setTimeout(() => {
+            if (field.type === 'text') {
+                field.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+                button.setAttribute('title', 'Show Password');
+                field.style.backgroundColor = '';
+            }
+        }, 30000);
+    } else {
+        field.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+        button.setAttribute('title', 'Show Password');
+        field.style.backgroundColor = '';
+    }
+    
     // Add visual feedback
     button.style.transform = 'scale(0.95)';
     setTimeout(() => {
