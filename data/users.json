@@ -1,44 +1,27 @@
 [
   {
     "id": "super_admin_001",
-    "username": "Z0FBQUFBQm9RWFV6RnBJVHVxNmRLUlFvdnBIa192MDZYSTA2WlN6VTB1M2huOWxSTldoQlMwbENjSEZnV1I1cFVtTV9zUjhCV0N1VzdEU0l5UWd2YnRKZkU1cTNDM1hFRHc9PQ==",
-    "email": "Z0FBQUFBQm9RWFV6UjFFd0pyTXlmeU9yRV9mYW9hZENSbFVTRmJ4NFZ6cUZVMm1McnhCcE9ISUF4dXhrdXZvR3J1M0h1ZGVROGl0TEpJZUhtdkwxdHRVYUNZS05jaHlBZUx0TmtscHhlMXZjVHdOeWlGUmVmOE09",
-    "password_hash": "scrypt:32768:8:1$lXWpylvVI3aAILZb$b14c9f10532cde2e91b31a5394acb8d7f174dbbf3aba303113121ca1cdeda24de2f861d980f136eb9f8589f65ff5b664c85c09b814a3dd27b561c8543f1407b1",
+    "_id": "users_1_738192204",
+    "username": "super_admin",
+    "email": "superadmin@phishingdetector.com",
+    "password_hash": "scrypt:32768:8:1$6VW1urvHQLWk1Ucm$0bfbccb7ed2308a1f06f0d1665b5237fec010ff52b697b128f10e313c60c0f2ad16c16cc6e2b966c4e6af5fb36889ea0555ff64c01d4840188aa93588eb69251",
     "role": "super_admin",
     "active": true,
+    "is_active": true,
     "created_at": "2025-06-05T10:00:00Z",
-    "username_encrypted": true,
-    "email_encrypted": true,
-    "encryption_version": "2.0",
-    "encrypted_at": "2025-06-05 10:45:07.966059",
-    "_id": "users_1_2755693070"
+    "last_login": "2025-06-05 10:46:03.088979",
+    "login_attempts": 0,
+    "locked_until": null
   },
   {
     "id": "sub_admin_001",
-    "username": "Z0FBQUFBQm9RWFV6U05xUEd3bHJxSnRaY1FrR2N3RTFTTEd1dEdGOG50S1AxSDByTXc2cEtmbm54S0haZ0RjYTJiY2Jlc1hQMmJ5LVBFZHMzUXlCcmI4Q1h5SWlWaVN4N3c9PQ==",
-    "email": "Z0FBQUFBQm9RWFV6emRtMXlpeDRaN2NMU1U0R1A5V3A3YkNUbzBlcVYtR0RiNE1Yc0FhX2NQLTNRUG9wZjVRY3ptVjFWcnVGVEVlWE1iYnBlVVBKUUpRcGotaHZleXNnRWF6eHdfQ0d6LTlVNnctQ3RFdnJZVzg9",
-    "password_hash": "scrypt:32768:8:1$4gkJwtIFvMOyrV0B$8674b8af5a28ccb8c9cfd0d1f67621d02de16b6fbd0f4945e46ede7fd109c7fed2b3b50b0ec3f2c4611ef73510b80cfd4c402b51fa7ceab4c989ea9f7a7a3e33",
+    "_id": "users_2_3554527208",
+    "username": "sub_admin",
+    "email": "subadmin@phishingdetector.com",
+    "password_hash": "scrypt:32768:8:1$U0MquFdmXeRZxa71$62dc817e430fa8dc129d70a8e0d607c2fbfb31dec8f1078537b2f58eed031424115eb2ef701ab60c7999293f12f1ffe62dc157f70c4baff480b2109428e886d8",
     "role": "sub_admin",
     "active": true,
-    "created_at": "2025-06-05T10:00:00Z",
-    "username_encrypted": true,
-    "email_encrypted": true,
-    "encryption_version": "2.0",
-    "encrypted_at": "2025-06-05 10:45:07.967529",
-    "_id": "users_2_3921515614"
-  },
-  {
-    "id": "user_001",
-    "username": "Z0FBQUFBQm9RWFV6ZHhHdFVsMFNuTjVsZnB6eXdab3J4bHlCRmEzZU5oYlR1OTJ5aUJrOFRJZEtfT2RCM3lublNTT09WdC1pbnVBTjZaMHRxRWtFMzdyT3BNZTI0N2RKZEE9PQ==",
-    "email": "Z0FBQUFBQm9RWFV6RXp3cHdqUE5RM2hwNUJMYktzc0NhYUlXYXA2cTJJMG1yWHlYZXYxN3Jqd0Q0LUdNNWFMTTdTb2RZU29Vc0pCQVJFbktxRG0zZTk1dUVtNXNyY1AyVVE9PQ==",
-    "password_hash": "scrypt:32768:8:1$yMXXQoCQVjvhxVGM$cc896d0068098fb0f3a056b459ba07d018559e2ef452a427a371aabbe90b3100d2ce42bbc66003b6ab8bb1260cae32712c6041b9578e52fba5f80576a2c1eed9",
-    "role": "user",
-    "active": true,
-    "created_at": "2025-06-05T10:00:00Z",
-    "username_encrypted": true,
-    "email_encrypted": true,
-    "encryption_version": "2.0",
-    "encrypted_at": "2025-06-05 10:45:07.969243",
-    "_id": "users_3_434070004"
+    "is_active": true,
+    "created_at": "2025-06-05T10:00:00Z"
   }
 ]
