@@ -348,7 +348,143 @@
     }
 }
 
-/* Removed overly aggressive text color override */
+/* Specific fixes for reported contrast issues */
+.form-label.fw-bold,
+.form-label.text-dark {
+    color: #212529 !important;
+    font-weight: 700 !important;
+}
+
+/* Fix "Choose File" label visibility */
+label[for="file"].form-label.fw-bold.text-dark {
+    color: #212529 !important;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    display: inline-block;
+}
+
+/* Fix "Capture & Create Content" heading */
+h6.text-dark.fw-bold {
+    color: #212529 !important;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    display: inline-block;
+}
+
+/* Fix "Content to Analyze" and similar labels */
+.form-label.fw-bold {
+    color: #212529 !important;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+}
+
+/* Ensure all form labels are visible */
+.card-body .form-label,
+.container .form-label,
+label.form-label {
+    color: #212529 !important;
+    font-weight: 600 !important;
+}
+
+/* Fix heading text on light backgrounds */
+h1, h2, h3, h4, h5, h6 {
+    color: inherit;
+}
+
+.card-body h1, 
+.card-body h2, 
+.card-body h3, 
+.card-body h4, 
+.card-body h5, 
+.card-body h6 {
+    color: #212529 !important;
+}
+
+/* Ensure form text is visible */
+.form-text {
+    color: #6c757d !important;
+}
+
+/* Fix any remaining invisible text issues */
+.text-dark {
+    color: #212529 !important;
+}
+
+/* Enhanced accessibility for specific problem areas */
+.lead.text-muted {
+    color: #495057 !important;
+    font-weight: 500 !important;
+}
+
+/* Quick check section headers */
+.display-5.fw-bold,
+h1.display-5.fw-bold {
+    color: #212529 !important;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.5);
+}
+
+/* Upload area and form improvements */
+.upload-area h4 {
+    color: #fff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.upload-area .badge {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+    font-weight: 700 !important;
+}
+
+/* Ensure proper contrast for all interactive elements */
+.btn-outline-primary:not(:hover),
+.btn-outline-info:not(:hover),
+.btn-outline-secondary:not(:hover) {
+    color: #212529 !important;
+    border-color: #212529 !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-info:hover,
+.btn-outline-secondary:hover {
+    color: #fff !important;
+}
+
+/* Card content visibility */
+.card-body p,
+.card-body small,
+.card-body .text-muted {
+    color: #495057 !important;
+}
+
+/* Form check labels */
+.form-check-label h6 {
+    color: #212529 !important;
+}
+
+.form-check-label small.text-muted {
+    color: #6c757d !important;
+}
+
+/* Gradient card text fixes */
+.card[style*="gradient"] .text-dark,
+.card[style*="gradient"] h6 {
+    color: #212529 !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+/* Alert text visibility */
+.alert-info,
+.alert-success,
+.alert-warning {
+    color: #212529 !important;
+}
+
+.alert-info .fa,
+.alert-success .fa,
+.alert-warning .fa {
+    color: inherit !important;
+}
 
 /* Enhanced Stat Cards */
 .enhanced-stat-card {
