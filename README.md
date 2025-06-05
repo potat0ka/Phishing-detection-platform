@@ -1,35 +1,36 @@
 # 🛡️ AI Phishing Detection Platform
 
-A comprehensive, enterprise-grade phishing detection system that identifies potential phishing content from websites, emails, messages, and links using advanced AI and machine learning algorithms. Built with Flask, Python, HTML, CSS, and JavaScript for a complete web-based security solution.
+A comprehensive, enterprise-grade cybersecurity platform that detects phishing threats and AI-generated content using advanced machine learning algorithms. This platform provides real-time analysis of URLs, emails, messages, and multimedia content with role-based administration and complete audit capabilities.
 
 ## 📋 Project Overview
 
-This platform is a full-featured phishing detection system designed to help users identify and avoid phishing attempts across multiple communication channels. The system combines traditional rule-based detection with modern AI/ML techniques to provide accurate threat assessment.
+This platform is a full-featured security solution designed to protect users from phishing attacks and identify AI-generated content across multiple media types. The system combines traditional rule-based detection with modern AI/ML techniques to provide accurate threat assessment and content authenticity verification.
 
 **Key Capabilities:**
-- Analyze URLs, emails, and text messages for phishing indicators
-- AI-powered content detection for images, videos, audio, and documents
-- Real-time threat intelligence and security assessment
-- User authentication with role-based access control
-- Educational content and security awareness training
-- Admin dashboard with comprehensive management tools
+- **Phishing Detection**: Analyze URLs, emails, and text messages for phishing indicators
+- **AI Content Detection**: Identify AI-generated images, videos, audio, and documents
+- **Real-time Analysis**: Instant threat assessment with confidence scoring
+- **Role-based Access Control**: Super Admin, Sub Admin, and User roles with granular permissions
+- **Comprehensive Analytics**: System-wide monitoring and reporting capabilities
+- **Educational Resources**: 39+ security tips and cybersecurity awareness content
+- **Data Security**: AES-256 encryption with zero-knowledge architecture
 
 **Technologies Used:**
-- **Backend**: Python (Flask framework)
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
+- **Backend**: Python 3.11+ (Flask framework)
+- **Frontend**: HTML5, CSS3, JavaScript (Bootstrap 5 responsive design)
 - **Database**: MongoDB with JSON fallback for reliability
 - **Security**: AES-256 encryption, secure session management
-- **AI/ML**: Scikit-learn, OpenCV, NLTK for content analysis
-- **UI Framework**: Bootstrap 5 with responsive design
+- **AI/ML**: Scikit-learn, OpenCV, NLTK, PIL for content analysis
+- **File Processing**: Support for images, videos, audio, and documents up to 500MB
 
 ## 🚀 Quick Start Guide
 
 ### Prerequisites
 - **Python**: 3.8 or higher (3.11+ recommended)
 - **Operating System**: Windows, macOS, or Linux
-- **Memory**: 1GB RAM minimum (2GB recommended)
-- **Storage**: 1GB free space
-- **Internet**: Required for initial setup
+- **Memory**: 2GB RAM minimum (4GB recommended for AI analysis)
+- **Storage**: 2GB free space
+- **Internet**: Required for initial setup and threat intelligence updates
 
 ### Installation Steps
 
@@ -73,7 +74,7 @@ source venv/bin/activate
 pip install --upgrade pip
 
 # Install all required packages
-pip install flask werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
+pip install flask werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python cryptography pymongo flask-pymongo psycopg2-binary
 ```
 
 #### 4. Start the Application
@@ -81,23 +82,183 @@ pip install flask werkzeug pillow numpy scikit-learn nltk beautifulsoup4 request
 # Start the Flask development server
 python main.py
 
-# Alternative commands if main.py doesn't work:
-# python app.py
-# flask run
+# The application will start on http://localhost:5000
 ```
 
 #### 5. Access the Platform
 1. Open your web browser
 2. Navigate to: `http://localhost:5000`
-3. Alternative addresses if localhost doesn't work:
-   - `http://127.0.0.1:5000`
-   - `http://0.0.0.0:5000`
+3. You'll see the homepage with the security expert avatar and quick detection tools
 
 #### 6. Create Your First Account
 1. Click "Register" to create a new account
-2. Fill in username, email, and secure password
+2. Fill in username, email, and secure password (8+ characters, mixed case, numbers)
 3. Login with your credentials
-4. Start using the phishing detection features
+4. Start using the phishing detection and AI content analysis features
+
+## 👥 User Roles and Permissions
+
+### User Role Hierarchy
+
+#### 🔴 Super Admin (Highest Level)
+**Full Platform Control:**
+- **User Management**: Create, edit, promote, demote, and delete any user
+- **System Administration**: Database backups, optimization, health checks
+- **Role Management**: Promote users to Sub Admin or demote from any role
+- **ML Model Training**: Retrain models, adjust settings, run accuracy tests
+- **Security Settings**: Configure encryption, API keys, security policies
+- **Data Export**: Export all system data including users and detections
+- **Audit Access**: View complete login history and system audit logs
+- **Content Moderation**: Manage reported content and safety tips
+
+#### 🟡 Sub Admin (Limited Administrative)
+**User Management Only:**
+- **User Operations**: Create, edit, and delete regular users only
+- **User Monitoring**: View user statistics and detection patterns
+- **Content Management**: Add and edit safety tips
+- **Report Handling**: Review and moderate reported content
+- **Data Export**: Export user lists and detection summaries
+- **Restrictions**: Cannot promote/demote users or access Super Admin functions
+
+#### 🟢 Regular User (Standard Access)
+**Core Security Features:**
+- **Phishing Detection**: Analyze URLs, emails, and messages
+- **AI Content Analysis**: Upload and analyze images, videos, audio, documents
+- **Personal Dashboard**: View own detection history and statistics
+- **Profile Management**: Update account settings and password
+- **Educational Access**: Browse security tips and learning resources
+- **Data Control**: Export and delete own detection history
+
+### Creating Admin Accounts
+
+#### Method 1: First-Time Setup (Automatic Super Admin)
+```bash
+# When you first register, you become Super Admin automatically
+# Navigate to /admin after registration to access admin features
+```
+
+#### Method 2: Manual Role Assignment
+```python
+# Run this script to promote existing users
+from mongodb_config import MongoDBManager
+from encryption_utils import decrypt_sensitive_data, encrypt_sensitive_data
+
+db = MongoDBManager()
+
+# Find and promote user
+users = db.find_many("users")
+for user_data in users:
+    try:
+        user = decrypt_sensitive_data("user", user_data)
+        if user.get("username") == "your_username_here":
+            # Set role (super_admin, sub_admin, or user)
+            user["role"] = "super_admin"
+            user["is_admin"] = True
+            
+            # Save changes
+            encrypted_data = encrypt_sensitive_data("user", user)
+            encrypted_data["_id"] = user_data["_id"]
+            db.update_one("users", {"_id": user_data["_id"]}, encrypted_data)
+            print(f"User {user['username']} promoted to super admin")
+            break
+    except Exception as e:
+        continue
+```
+
+## 🛠️ Core Features
+
+### 🛡️ Phishing Detection Engine
+
+#### URL Analysis
+- **Link Verification**: Real-time scanning of suspicious URLs
+- **Domain Reputation**: Check against known phishing databases
+- **Redirect Detection**: Follow and analyze URL redirections
+- **SSL Certificate Validation**: Verify website security certificates
+- **Confidence Scoring**: 0-100% threat assessment with detailed explanations
+
+#### Email Content Analysis
+- **Header Inspection**: Analyze email headers for spoofing indicators
+- **Link Extraction**: Identify and verify all embedded links
+- **Attachment Scanning**: Security analysis of email attachments
+- **Sender Verification**: Check sender reputation and authenticity
+- **Social Engineering Detection**: Identify manipulation tactics
+
+#### Message Scanning
+- **Text Pattern Analysis**: Detect phishing keywords and phrases
+- **Urgency Detection**: Identify high-pressure tactics
+- **Contact Information Verification**: Validate phone numbers and addresses
+- **Link Analysis**: Check embedded links in messages
+
+### 🤖 AI Content Detection System
+
+#### Image Analysis (Up to 500MB)
+- **AI Generation Detection**: Identify AI-created vs authentic photos
+- **Metadata Analysis**: EXIF data inspection for authenticity
+- **Pixel Pattern Recognition**: Statistical analysis of image characteristics
+- **Device Photo Indicators**: Detect real camera vs AI-generated signatures
+- **Source Identification**: Identify likely AI generation tools used
+
+#### Video Analysis
+- **Deepfake Detection**: Advanced algorithms to identify manipulated videos
+- **Frame Consistency**: Analyze temporal consistency across frames
+- **Compression Patterns**: Detect AI-specific encoding signatures
+- **Motion Analysis**: Identify unnatural movement patterns
+
+#### Audio Analysis
+- **Voice Synthesis Detection**: Identify AI-generated speech
+- **Spectral Analysis**: Analyze frequency patterns for authenticity
+- **Voice Cloning Detection**: Detect artificially cloned voices
+- **Audio Artifact Analysis**: Identify AI generation artifacts
+
+#### Document Analysis
+- **Writing Pattern Detection**: Identify AI text generation patterns
+- **Vocabulary Analysis**: Analyze word choice and sentence structure
+- **Content Flow**: Detect unnatural text progression
+- **Source Attribution**: Identify likely AI writing tools
+
+### 📊 Admin Dashboard Features
+
+#### User Management
+- **User Overview**: Complete user list with registration dates and activity
+- **Role Management**: Promote, demote, and assign user roles
+- **Account Actions**: Reset passwords, deactivate accounts, delete users
+- **Privacy Protection**: View encrypted user data without personal details
+- **Bulk Operations**: Perform actions on multiple users simultaneously
+
+#### System Analytics
+- **Detection Statistics**: Real-time phishing and AI detection metrics
+- **User Activity**: Platform usage patterns and engagement metrics
+- **Performance Monitoring**: System response times and accuracy rates
+- **Threat Intelligence**: Emerging phishing patterns and trends
+- **Resource Usage**: Storage, memory, and processing utilization
+
+#### Content Moderation
+- **Reported Content**: Review and moderate user-reported suspicious content
+- **Safety Tips Management**: Add, edit, and organize security education content
+- **Audit Logs**: Complete system activity and security event logs
+- **Data Export**: Generate reports in CSV and JSON formats
+
+#### System Management
+- **Database Operations**: Backup, optimize, and maintain data integrity
+- **ML Model Training**: Retrain detection models with new data
+- **Security Settings**: Configure encryption, session timeouts, file limits
+- **API Management**: Rotate keys and manage external service connections
+
+### 📚 Educational Resources
+
+#### Security Awareness
+- **39+ Security Tips**: Comprehensive cybersecurity education content
+- **Phishing Examples**: Real-world examples with detailed explanations
+- **Best Practices**: Guidelines for safe online behavior
+- **Current Threats**: Latest phishing trends and attack methods
+- **Interactive Learning**: Hands-on security awareness training
+
+#### Safety Guidelines
+- **Email Security**: Identify suspicious emails and attachments
+- **Password Security**: Create and manage strong passwords
+- **Safe Browsing**: Tips for secure web navigation
+- **Social Engineering**: Recognize manipulation tactics
+- **Mobile Security**: Smartphone and tablet security practices
 
 ## 🗄️ Database Configuration
 
@@ -105,9 +266,10 @@ python main.py
 The platform uses a hybrid database approach for maximum reliability:
 - **Primary**: MongoDB for scalable document storage
 - **Fallback**: JSON files for automatic failover when MongoDB is unavailable
-- **Security**: All data is encrypted using AES-256 encryption
+- **Security**: All data encrypted using AES-256 field-level encryption
+- **Backup**: Automatic data backup and recovery capabilities
 
-### MongoDB Setup (Optional but Recommended)
+### MongoDB Setup (Recommended for Production)
 
 #### Install MongoDB
 
@@ -137,268 +299,148 @@ sudo systemctl start mongodb
 sudo systemctl enable mongodb
 ```
 
-### Environment Configuration (Optional)
+### Environment Configuration
 Create a `.env` file in the project root for custom settings:
 ```bash
-# Security Configuration
-USER_ENCRYPTION_SECRET=your-32-character-encryption-key
-SESSION_SECRET=your-session-secret-key
+# Security Configuration (Required for production)
+USER_ENCRYPTION_SECRET=your-32-character-encryption-key-here
+SESSION_SECRET=your-session-secret-key-here
 
-# Database Configuration (optional - uses JSON fallback by default)
+# Database Configuration
 DATABASE_URL=mongodb://localhost:27017/phishing_detector
 
 # Application Settings
 FLASK_ENV=development
 FLASK_DEBUG=True
+MAX_CONTENT_LENGTH=524288000  # 500MB file upload limit
 ```
 
-## 👥 User Roles and Admin Setup
+## 🔒 Security Architecture
 
-### User Types
+### Data Protection
+- **AES-256 Encryption**: All sensitive data encrypted at rest and in transit
+- **Field-Level Encryption**: Individual encryption of user data fields
+- **Zero-Knowledge Architecture**: Admins cannot access encrypted user personal data
+- **Secure Sessions**: Encrypted session management with automatic timeout
+- **Password Security**: Bcrypt hashing with salt for password storage
 
-#### Regular Users
-**What they can do:**
-- Create account and login securely
-- Analyze URLs, emails, and messages for phishing threats
-- Upload files (images, videos, audio, documents) for AI content analysis
-- View their personal detection history
-- Access security education content and tips
-- Manage their profile and account settings
-- Export their detection data
+### Privacy Protection
+- **Data Minimization**: Collect only necessary information
+- **User Control**: Users can export and delete their data
+- **Audit Logging**: All system actions logged and monitored
+- **Secure File Handling**: Temporary file cleanup and secure processing
+- **GDPR Compliance**: Privacy-by-design architecture
 
-**What they cannot do:**
-- Access other users' data or detection history
-- View system-wide analytics or statistics
-- Manage other users or system settings
-
-#### Admin Users
-**Additional capabilities beyond regular users:**
-- View system-wide usage statistics and analytics
-- Monitor platform performance and security metrics
-- Access aggregated detection data (no personal user data)
-- Manage system security settings
-- View audit logs and security events
-- Update security tips and educational content
-- Perform system backup and maintenance
-
-**Privacy Protection:**
-- Admins cannot view encrypted user personal data
-- Zero-knowledge architecture protects user privacy
-- All admin actions are logged and audited
-
-### Creating Admin Users
-
-#### Method 1: Create Demo Admin Account
-The platform includes a script to create demo accounts:
-```bash
-# Run the demo account creator
-python create_demo_accounts.py
-
-# This creates:
-# Admin: username="demo_admin", password="admin123"
-# User: username="demo_user", password="user123"
-```
-
-#### Method 2: Promote Regular User to Admin
-1. Create a regular user account through the web interface
-2. Run the following script to promote them:
-```python
-# Edit and run this script
-from mongodb_config import MongoDBManager
-from encryption_utils import decrypt_sensitive_data, encrypt_sensitive_data
-
-db = MongoDBManager()
-
-# Find the user you want to promote
-users = db.find_many("users")
-for user_data in users:
-    try:
-        user = decrypt_sensitive_data("user", user_data)
-        if user.get("username") == "your_username_here":
-            # Promote to admin
-            user["role"] = "admin"
-            user["is_admin"] = True
-            
-            # Encrypt and save
-            encrypted_data = encrypt_sensitive_data("user", user)
-            encrypted_data["_id"] = user_data["_id"]
-            
-            db.update_one("users", {"_id": user_data["_id"]}, encrypted_data)
-            print(f"User {user['username']} promoted to admin")
-            break
-    except Exception as e:
-        continue
-```
-
-### Accessing Admin Dashboard
-1. Login with an admin account
-2. Navigate to: `http://localhost:5000/admin`
-3. Or click "Admin Dashboard" in the navigation menu (only visible to admins)
-
-## 🛠️ Features Overview
-
-### Core Detection Capabilities
-
-#### 🛡️ Phishing Detection
-- **URL Analysis**: Comprehensive scanning of suspicious links and websites
-- **Email Content Analysis**: Advanced detection of phishing attempts in emails
-- **Message Scanning**: Analysis of text messages and social media content
-- **Link Verification**: Real-time assessment of hyperlinks and redirects
-- **Confidence Scoring**: Percentage-based threat assessment with detailed explanations
-- **Threat Intelligence**: Offline database of known phishing indicators
-
-#### 🤖 AI Content Detection
-- **Image Analysis**: Detect AI-generated vs authentic photos (up to 500MB files)
-- **Video Analysis**: Identify deepfakes and AI-generated video content
-- **Audio Detection**: Recognize synthetic speech and voice cloning attempts
-- **Document Scanning**: Analyze text documents for AI writing patterns
-- **Device Photo Recognition**: EXIF metadata analysis for authentic device photos
-- **Source Identification**: Identify likely AI generation tools used
-
-### User Management Features
-
-#### 👤 Authentication System
-- **Secure Registration**: Strong password requirements with visual indicators
-- **Encrypted Sessions**: AES-256 encrypted user sessions and data storage
-- **Password Security**: Secure hash storage with salt
-- **Session Management**: Automatic timeout and secure session handling
-- **Privacy Protection**: Zero-knowledge architecture
-
-#### 📊 User Dashboard
-- **Detection History**: Complete history of all scans and analysis results
-- **Bulk Operations**: Select and delete multiple detection records
-- **Profile Management**: Update account settings and preferences
-- **Activity Tracking**: Monitor usage patterns and security events
-- **Data Export**: Download detection history in CSV/JSON formats
-
-### Educational Features
-
-#### 📚 Security Education
-- **39+ Security Tips**: Comprehensive cybersecurity awareness content
-- **Current Threat Landscape**: Latest phishing trends and attack methods
-- **Interactive Learning**: Real-world examples and prevention techniques
-- **Best Practices**: Guidelines for safe online behavior
-- **Mobile Optimization**: Educational content optimized for all devices
-
-#### 🎯 Safety Guidelines
-- **Phishing Prevention**: Step-by-step guides to avoid threats
-- **Email Security**: Identify suspicious emails and attachments
-- **Social Engineering**: Recognize manipulation tactics
-- **Password Security**: Create and manage strong passwords
-- **Safe Browsing**: Tips for secure web navigation
-
-### Administrative Features
-
-#### 🔧 Admin Dashboard
-- **User Management**: View registered users (privacy-protected)
-- **System Monitoring**: Track platform usage and performance
-- **Security Oversight**: Monitor threat detection patterns
-- **Content Management**: Update security tips and education
-- **Analytics**: Comprehensive system and usage analytics
-
-#### 📈 Analytics and Reporting
-- **Detection Statistics**: Track phishing and AI detection rates
-- **User Analytics**: Platform usage patterns and trends
-- **Threat Intelligence**: Monitor emerging phishing patterns
-- **Performance Metrics**: System response times and accuracy
+### Threat Protection
+- **Input Validation**: Comprehensive sanitization of all user inputs
+- **File Upload Security**: Strict file type and size validation
+- **SQL Injection Prevention**: Parameterized queries and ORM protection
+- **XSS Protection**: Content Security Policy and output encoding
+- **CSRF Protection**: Anti-CSRF tokens on all forms
 
 ## 📂 Project Structure
 
 ```
 ai-phishing-detection-platform/
-├── main.py                    # Application entry point and server startup
-├── app.py                     # Flask application configuration and setup
-├── routes.py                  # Main web routes and request handlers
-├── auth_routes.py             # Authentication routes (login, register, logout)
-├── admin_routes.py            # Admin dashboard routes and functionality
-├── mongodb_config.py          # Database connection and management
+├── main.py                    # Application entry point
+├── app.py                     # Flask application configuration
+├── routes.py                  # Main web routes
+├── auth_routes.py             # Authentication system
+├── admin_routes.py            # Admin dashboard functionality
+├── mongodb_config.py          # Database management
 ├── encryption_utils.py        # AES-256 encryption utilities
-├── ml_detector.py             # Phishing detection algorithms
-├── ai_content_detector.py     # AI content detection system
-├── offline_threat_intel.py    # Local threat intelligence database
-├── security_tips_updater.py   # Security awareness content management
-├── utils.py                   # Utility functions and helpers
-├── create_demo_accounts.py    # Demo account creation script
-├── templates/                 # HTML templates with Jinja2
-│   ├── base.html              # Base template with Bootstrap framework
-│   ├── index.html             # Landing page and home
-│   ├── auth/                  # Authentication templates
-│   │   ├── login.html         # User login form
-│   │   └── register.html      # User registration form
+├── ml_detector.py             # ML phishing detection
+├── ai_content_detector.py     # AI content analysis
+├── offline_threat_intel.py    # Threat intelligence database
+├── security_tips_updater.py   # Security education content
+├── utils.py                   # Utility functions
+├── simple_models.py           # ML model definitions
+├── threat_intelligence.py     # Threat data management
+├── templates/                 # HTML templates
+│   ├── base.html              # Base template with Bootstrap
+│   ├── index.html             # Homepage with avatar
+│   ├── login.html             # User authentication
+│   ├── register.html          # User registration
 │   ├── check.html             # Phishing detection interface
-│   ├── ai_content_check.html  # AI content analysis interface
-│   ├── result.html            # Analysis results display
-│   ├── ai_content_results.html # AI content results display
-│   ├── dashboard.html         # User dashboard and history
+│   ├── ai_content_check.html  # AI content analysis
+│   ├── result.html            # Detection results
+│   ├── ai_content_results.html # AI analysis results
+│   ├── dashboard.html         # User dashboard
 │   ├── admin_dashboard.html   # Admin control panel
-│   └── tips.html              # Security education content
-├── static/                    # Static web assets
-│   ├── css/                   # Custom stylesheets
-│   │   ├── style.css          # Main application styles
+│   └── tips.html              # Security education
+├── static/                    # Static assets
+│   ├── css/
+│   │   ├── style.css          # Main styles with avatar animations
 │   │   └── loading-animations.css # Loading animations
-│   ├── js/                    # JavaScript functionality
-│   │   ├── modules/           # Modular JavaScript components
-│   │   │   ├── animations.js  # UI animations and effects
-│   │   │   ├── auth.js        # Authentication functionality
-│   │   │   ├── forms.js       # Form handling and validation
-│   │   │   ├── ui.js          # User interface interactions
-│   │   │   └── analytics.js   # Analytics and tracking
-│   │   ├── main.js            # Main application JavaScript
+│   ├── js/
+│   │   ├── modules/           # Modular JavaScript
+│   │   │   ├── animations.js  # UI animations
+│   │   │   ├── auth.js        # Authentication
+│   │   │   ├── forms.js       # Form handling
+│   │   │   ├── ui.js          # User interface
+│   │   │   └── analytics.js   # Analytics
+│   │   ├── main.js            # Main application JS
 │   │   ├── app.js             # Application initialization
-│   │   └── mascot-loader.js   # Loading screen mascot
-│   └── uploads/               # Temporary file upload storage
-├── instance/                  # Instance-specific data files
-│   ├── users.json             # Encrypted user data (JSON fallback)
-│   ├── detections.json        # Encrypted detection history
-│   ├── tips.json              # Security tips database
-│   └── audit_logs.json        # System activity logs
-├── data/                      # Application data files
-│   └── threat_intelligence/   # Threat intelligence databases
+│   │   └── mascot-loader.js   # Loading screen
+│   ├── images/
+│   │   └── hero-avatar.png    # Homepage avatar image
+│   └── uploads/               # Temporary upload storage
+├── data/                      # Application data
+│   ├── users.json             # Encrypted user database
+│   ├── detections.json        # Detection history
+│   ├── tips.json              # Security tips
+│   ├── reports.json           # Content reports
+│   └── ml_models/             # Machine learning models
 ├── uploads/                   # File upload processing
-└── requirements.txt           # Python dependencies list
+├── backups/                   # Database backups
+└── instance/                  # Instance configuration
 ```
 
-## 🔒 Security Features
+## 🚀 Advanced Usage
 
-### Data Protection
-- **AES-256 Encryption**: All sensitive data encrypted at rest
-- **Field-Level Encryption**: Individual encryption of user data fields
-- **Secure Sessions**: Encrypted session management with automatic timeout
-- **Password Security**: Bcrypt hashing with salt for password storage
-- **Zero-Knowledge Architecture**: Admins cannot access encrypted user data
+### Machine Learning Model Training
 
-### Privacy Protection
-- **Data Minimization**: Only collect necessary information
-- **User Control**: Users can export and delete their data
-- **Audit Logging**: All system actions are logged and monitored
-- **Secure File Handling**: Temporary file cleanup and secure processing
-- **HTTPS Ready**: SSL/TLS support for production deployment
+The platform includes real ML model training capabilities:
 
-## 🚀 Production Deployment
+```python
+# Retrain phishing detection model
+from admin_routes import retrain_model
 
-### Environment Variables for Production
+# Collect data from database
+# Train actual scikit-learn models
+# Calculate real accuracy metrics
+# Save trained models for production use
+```
+
+### System Administration
+
+#### Database Backup and Optimization
 ```bash
-# Security (Required for production)
-USER_ENCRYPTION_SECRET=your-production-encryption-key-32-chars
-SESSION_SECRET=your-production-session-secret-key
-
-# Database (Recommended for production)
-DATABASE_URL=mongodb://username:password@host:port/database
-# Or MongoDB Atlas
-DATABASE_URL=mongodb+srv://username:password@cluster.mongodb.net/database
-
-# Application Settings
-FLASK_ENV=production
-FLASK_DEBUG=False
+# Access admin dashboard at /admin
+# Use "System Management" section
+# Click "Backup Database" for full backup
+# Click "Optimize Database" for performance tuning
 ```
 
-### Production Checklist
-- [ ] Set strong encryption keys in environment variables
-- [ ] Use MongoDB for database (not JSON fallback)
-- [ ] Configure HTTPS/SSL certificates
-- [ ] Set up proper backup procedures
-- [ ] Monitor system logs and performance
-- [ ] Regular security updates and patches
+#### Performance Monitoring
+- Real-time system health checks
+- Database performance metrics
+- Detection accuracy tracking
+- Resource utilization monitoring
+
+#### Security Auditing
+- Complete login history tracking
+- System action audit logs
+- Security event monitoring
+- Threat pattern analysis
+
+### API Integration
+
+The platform is designed for easy API integration:
+- RESTful endpoints for detection services
+- JSON response format for all operations
+- Authentication token support
+- Rate limiting and security controls
 
 ## 🛠️ Troubleshooting
 
@@ -406,66 +448,108 @@ FLASK_DEBUG=False
 
 #### "Port 5000 is already in use"
 ```bash
-# Try different port
-python main.py --port 8080
-
-# Or find and kill process using port 5000
+# Find and kill process using port 5000
 # Windows: netstat -ano | findstr :5000
-# macOS/Linux: lsof -ti:5000 | xargs kill
+# macOS/Linux: lsof -ti:5000 | xargs kill -9
+
+# Or use different port
+python main.py --port 8080
 ```
 
 #### "Module not found" errors
 ```bash
 # Ensure virtual environment is activated
+source venv/bin/activate  # macOS/Linux
+venv\Scripts\activate     # Windows
+
 # Install missing dependencies
 pip install -r requirements.txt
-
-# Or install individual packages
-pip install flask werkzeug pillow numpy
 ```
 
 #### Database connection issues
 ```bash
-# Check if MongoDB is running
+# Check MongoDB status
 # Windows: services.msc (look for MongoDB)
 # macOS: brew services list | grep mongodb
 # Linux: sudo systemctl status mongodb
 
-# Platform will automatically fallback to JSON files if MongoDB unavailable
+# Platform automatically falls back to JSON if MongoDB unavailable
 ```
 
-#### File upload issues
+#### File upload failures
+- Check file size (max 500MB)
+- Verify file type is supported
+- Ensure sufficient disk space
+- Check uploads directory permissions
+
+### Performance Optimization
+
+#### For Large Deployments
 ```bash
-# Check uploads directory permissions
-# Ensure sufficient disk space
-# Verify file size limits (default: 500MB)
+# Increase file upload limits
+export MAX_CONTENT_LENGTH=1073741824  # 1GB
+
+# Enable MongoDB for better performance
+export DATABASE_URL=mongodb://localhost:27017/phishing_detector
+
+# Use production settings
+export FLASK_ENV=production
+export FLASK_DEBUG=False
 ```
+
+#### Memory Management
+- The AI content detector loads models on-demand
+- File uploads are processed and cleaned automatically
+- Database connections are pooled and managed efficiently
+
+## 🔮 Current Capabilities
+
+### Fully Functional Features
+✅ **User Authentication**: Complete registration, login, and session management  
+✅ **Phishing Detection**: Real-time URL, email, and message analysis  
+✅ **AI Content Detection**: Image, video, audio, and document analysis  
+✅ **Role-based Access**: Super Admin, Sub Admin, and User roles with proper permissions  
+✅ **Admin Dashboard**: Complete user management, analytics, and system administration  
+✅ **Database Management**: MongoDB with JSON fallback and encryption  
+✅ **ML Model Training**: Real scikit-learn model training with accuracy metrics  
+✅ **Data Export**: CSV and JSON export functionality  
+✅ **Security Education**: 39+ security tips and awareness content  
+✅ **File Processing**: Support for multiple file types up to 500MB  
+✅ **System Monitoring**: Real-time health checks and performance metrics  
+✅ **Content Moderation**: Report management and content review  
+✅ **Audit Logging**: Complete system activity tracking  
+
+### Code Quality
+✅ **Modular Architecture**: Well-organized, maintainable codebase  
+✅ **Comprehensive Documentation**: Detailed comments explaining ML concepts  
+✅ **Error Handling**: Robust error management and user feedback  
+✅ **Security Best Practices**: Encryption, validation, and secure coding  
+✅ **Responsive Design**: Mobile-friendly interface with Bootstrap 5  
+✅ **Real Backend Operations**: No placeholder or mock data  
+
+## 📧 Support and Documentation
 
 ### Getting Help
-1. Check the console/terminal output for error messages
-2. Verify all dependencies are installed correctly
-3. Ensure Python version is 3.8 or higher
-4. Check file permissions in the project directory
-5. Try running with admin/sudo privileges if needed
+1. Check console/terminal output for error messages
+2. Review the troubleshooting section above
+3. Verify all dependencies are installed correctly
+4. Ensure database connectivity (MongoDB or JSON fallback)
 
-## 📝 License and Credits
+### Learning Resources
+- **Beginner-Friendly**: Comprehensive comments throughout codebase
+- **Educational Focus**: Platform designed for learning cybersecurity concepts
+- **Real-World Application**: Practical phishing detection and AI analysis
+- **Professional Development**: Industry-standard security practices
 
-This AI Phishing Detection Platform was developed as a comprehensive security education and threat detection tool. The system incorporates multiple security best practices and modern web development techniques to provide a robust, user-friendly platform for cybersecurity awareness and protection.
-
-**Key Contributors:**
-- Advanced phishing detection algorithms
-- AI content analysis capabilities
-- Responsive web design and user experience
-- Enterprise-grade security architecture
-- Educational content and security awareness
-
-**Technical Acknowledgments:**
-- Flask web framework for robust backend architecture
-- Bootstrap 5 for responsive, accessible user interface
-- MongoDB for scalable data storage with JSON fallback
-- Scikit-learn and OpenCV for machine learning capabilities
-- Advanced encryption libraries for data protection
+### Contributing
+The platform is designed as a learning tool with:
+- Clean, well-documented code
+- Modular architecture for easy extension
+- Educational comments explaining complex concepts
+- Real-world security applications
 
 ---
 
-🛡️ **Stay Safe Online** - This platform is designed to educate and protect users from evolving cybersecurity threats. Regular updates ensure protection against the latest phishing and social engineering attacks.
+**Built with ❤️ for cybersecurity education and real-world threat protection**
+
+*This platform demonstrates advanced cybersecurity concepts, machine learning applications, and secure web development practices. Perfect for final semester projects, security research, and practical cybersecurity learning.*
