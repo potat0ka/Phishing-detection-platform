@@ -737,28 +737,35 @@ def approve_report(report_id):
     try:
         current_user = get_current_user()
         
-        # Find the report
-        report = db_manager.find_one('reports', {'id': report_id})
-        if not report:
+        # Load reports from JSON file
+        try:
+            with open('data/reports.json', 'r') as f:
+                reports = json.load(f)
+        except FileNotFoundError:
+            return jsonify({'success': False, 'message': 'Reports database not found'}), 404
+        
+        # Find and update the report
+        report_found = False
+        for report in reports:
+            if report['id'] == report_id:
+                report['status'] = 'approved'
+                report['reviewed_by'] = current_user.get('username')
+                report['reviewed_at'] = datetime.now().isoformat()
+                report_found = True
+                break
+        
+        if not report_found:
             return jsonify({'success': False, 'message': 'Report not found'}), 404
         
-        # Update report status
-        update_data = {
-            'status': 'approved',
-            'reviewed_by': current_user.get('id'),
-            'reviewed_at': datetime.utcnow()
-        }
+        # Save updated reports
+        with open('data/reports.json', 'w') as f:
+            json.dump(reports, f, indent=2)
         
-        result = db_manager.update_one('reports', {'id': report_id}, update_data)
-        
-        if result:
-            logger.info(f"Admin {current_user.get('username')} approved report {report_id}")
-            return jsonify({
-                'success': True,
-                'message': 'Report approved successfully'
-            })
-        else:
-            return jsonify({'success': False, 'message': 'Failed to approve report'}), 500
+        logger.info(f"Admin {current_user.get('username')} approved report {report_id}")
+        return jsonify({
+            'success': True,
+            'message': 'Report approved successfully'
+        })
             
     except Exception as e:
         logger.error(f"Error approving report: {e}")
@@ -771,28 +778,35 @@ def reject_report(report_id):
     try:
         current_user = get_current_user()
         
-        # Find the report
-        report = db_manager.find_one('reports', {'id': report_id})
-        if not report:
+        # Load reports from JSON file
+        try:
+            with open('data/reports.json', 'r') as f:
+                reports = json.load(f)
+        except FileNotFoundError:
+            return jsonify({'success': False, 'message': 'Reports database not found'}), 404
+        
+        # Find and update the report
+        report_found = False
+        for report in reports:
+            if report['id'] == report_id:
+                report['status'] = 'rejected'
+                report['reviewed_by'] = current_user.get('username')
+                report['reviewed_at'] = datetime.now().isoformat()
+                report_found = True
+                break
+        
+        if not report_found:
             return jsonify({'success': False, 'message': 'Report not found'}), 404
         
-        # Update report status
-        update_data = {
-            'status': 'rejected',
-            'reviewed_by': current_user.get('id'),
-            'reviewed_at': datetime.utcnow()
-        }
+        # Save updated reports
+        with open('data/reports.json', 'w') as f:
+            json.dump(reports, f, indent=2)
         
-        result = db_manager.update_one('reports', {'id': report_id}, update_data)
-        
-        if result:
-            logger.info(f"Admin {current_user.get('username')} rejected report {report_id}")
-            return jsonify({
-                'success': True,
-                'message': 'Report rejected successfully'
-            })
-        else:
-            return jsonify({'success': False, 'message': 'Failed to reject report'}), 500
+        logger.info(f"Admin {current_user.get('username')} rejected report {report_id}")
+        return jsonify({
+            'success': True,
+            'message': 'Report rejected successfully'
+        })
             
     except Exception as e:
         logger.error(f"Error rejecting report: {e}")
@@ -813,19 +827,26 @@ def bulk_report_action():
         if not report_ids or action not in ['approve', 'reject']:
             return jsonify({'success': False, 'message': 'Invalid request data'}), 400
         
+        # Load reports from JSON file
+        try:
+            with open('data/reports.json', 'r') as f:
+                reports = json.load(f)
+        except FileNotFoundError:
+            return jsonify({'success': False, 'message': 'Reports database not found'}), 404
+        
         updated_count = 0
         
-        for report_id in report_ids:
-            # Update report status
-            update_data = {
-                'status': action + 'd',  # 'approved' or 'rejected'
-                'reviewed_by': current_user.get('id'),
-                'reviewed_at': datetime.utcnow()
-            }
-            
-            result = db_manager.update_one('reports', {'id': report_id}, update_data)
-            if result:
+        # Update each selected report
+        for report in reports:
+            if report['id'] in report_ids:
+                report['status'] = action + 'd'  # 'approved' or 'rejected'
+                report['reviewed_by'] = current_user.get('username')
+                report['reviewed_at'] = datetime.now().isoformat()
                 updated_count += 1
+        
+        # Save updated reports
+        with open('data/reports.json', 'w') as f:
+            json.dump(reports, f, indent=2)
         
         logger.info(f"Admin {current_user.get('username')} {action}d {updated_count} reports")
         
