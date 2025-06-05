@@ -26,6 +26,7 @@ from ml_detector import PhishingDetector
 from ai_content_detector import ai_detector
 from security_tips_updater import security_updater
 from encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data
+from utils import is_logged_in
 from werkzeug.utils import secure_filename
 import json
 import os
@@ -129,14 +130,37 @@ def register():
             flash('Password must be at least 6 characters long.', 'error')
             return render_template('register.html')
         
-        # Create new user
-        user_id = User.create_user(username, email, password)
+        # Check if user already exists
+        existing_user = db_manager.find_one('users', {'username': username})
+        if existing_user:
+            flash('Username already exists.', 'error')
+            return render_template('register.html')
+        
+        existing_email = db_manager.find_one('users', {'email': email})
+        if existing_email:
+            flash('Email already registered.', 'error')
+            return render_template('register.html')
+        
+        # Create new user with encrypted data
+        from werkzeug.security import generate_password_hash
+        user_data = {
+            'username': username,
+            'email': email,
+            'password_hash': generate_password_hash(password),
+            'role': 'user',
+            'created_at': datetime.utcnow(),
+            'is_active': True
+        }
+        
+        # Encrypt sensitive data
+        encrypted_user_data = encrypt_sensitive_data('user', user_data)
+        user_id = db_manager.insert_one('users', encrypted_user_data)
         
         if user_id:
             flash('Registration successful! Please log in.', 'success')
             return redirect(url_for('login'))
         else:
-            flash('Username or email already exists.', 'error')
+            flash('Registration failed. Please try again.', 'error')
             return render_template('register.html')
     
     return render_template('register.html')
@@ -152,13 +176,29 @@ def login():
             flash('Username and password are required.', 'error')
             return render_template('login.html')
         
-        user = User.authenticate(username, password)
+        # Find user in database
+        user = db_manager.find_one('users', {'username': username})
+        if not user:
+            # Try finding by email
+            user = db_manager.find_one('users', {'email': username.lower()})
         
         if user:
-            session['user_id'] = user['id']
-            session['username'] = user['username']
-            flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))
+            # Decrypt user data
+            decrypted_user = decrypt_sensitive_data('user', user)
+            
+            # Verify password
+            from werkzeug.security import check_password_hash
+            if check_password_hash(decrypted_user['password_hash'], password):
+                # Create session
+                session['user_id'] = user['_id']
+                session['username'] = decrypted_user['username']
+                session['email'] = decrypted_user['email']
+                session['role'] = decrypted_user.get('role', 'user')
+                session['logged_in'] = True
+                flash('Login successful!', 'success')
+                return redirect(url_for('dashboard'))
+            else:
+                flash('Invalid username or password.', 'error')
         else:
             flash('Invalid username or password.', 'error')
     
@@ -177,11 +217,18 @@ def dashboard():
     """User dashboard with detection history"""
     user_id = session.get('user_id')
     
-    # Get user's recent detections
-    recent_detections = Detection.find_by_user(user_id, limit=10)
+    # Get user's recent detections from database
+    recent_detections = db_manager.find_many('detections', {'user_id': user_id}, limit=10)
     
-    # Get user statistics
-    stats = Detection.get_user_stats(user_id)
+    # Calculate user statistics
+    total_detections = db_manager.count_documents('detections', {'user_id': user_id})
+    high_risk_count = db_manager.count_documents('detections', {'user_id': user_id, 'threat_level': 'high'})
+    
+    stats = {
+        'total_detections': total_detections,
+        'high_risk_detections': high_risk_count,
+        'safe_detections': total_detections - high_risk_count
+    }
     
     return render_template('dashboard.html', 
                          detections=recent_detections, 
@@ -286,7 +333,7 @@ def delete_detection(detection_id):
     """Delete a detection from user's history"""
     try:
         user_id = session.get('user_id')
-        success = Detection.delete_detection(detection_id, user_id)
+        success = db_manager.delete_one('detections', {'_id': detection_id, 'user_id': user_id})
         
         if success:
             return jsonify({'success': True, 'message': 'Detection deleted successfully'})
@@ -326,7 +373,7 @@ def initialize_tips():
     """Initialize default phishing tips"""
     try:
         # Check if tips already exist
-        existing_tips = PhishingTip.get_all_tips()
+        existing_tips = db_manager.find_many('security_tips')
         if existing_tips:
             app.logger.info(f"Tips already initialized: {len(existing_tips)} tips found")
             return
