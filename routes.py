@@ -19,15 +19,17 @@ Perfect for learning web development concepts!
 """
 
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
-from app import app, allowed_file, ALLOWED_EXTENSIONS
-from simple_models import User, Detection, PhishingTip
+from app import app, allowed_file, ALLOWED_EXTENSIONS, get_current_user
+from mongodb_config import db_manager
+from auth_routes import login_required, admin_required
 from ml_detector import PhishingDetector
 from ai_content_detector import ai_detector
-from utils import is_logged_in, login_required
 from security_tips_updater import security_updater
+from encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data
 from werkzeug.utils import secure_filename
 import json
 import os
+from datetime import datetime
 import re
 from urllib.parse import urlparse
 from datetime import datetime, timedelta

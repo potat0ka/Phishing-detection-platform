@@ -48,9 +48,10 @@ ALLOWED_EXTENSIONS = {
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Ensure upload directory exists
-upload_dir = Path(UPLOAD_FOLDER)
-upload_dir.mkdir(exist_ok=True)
+# Create necessary directories
+Path(app.config['UPLOAD_FOLDER']).mkdir(exist_ok=True)
+Path('analysis_results').mkdir(exist_ok=True)
+Path('data').mkdir(exist_ok=True)
 
 def allowed_file(filename, file_type):
     """Check if uploaded file has allowed extension"""
@@ -60,66 +61,61 @@ def allowed_file(filename, file_type):
     extension = filename.rsplit('.', 1)[1].lower()
     return extension in ALLOWED_EXTENSIONS.get(file_type, set())
 
-# Initialize MongoDB connection
-try:
-    from pymongo import MongoClient
-    
-    # MongoDB configuration
-    MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb://localhost:27017/')
-    DATABASE_NAME = os.getenv('DB_NAME', 'phishing_detector')
-    
-    mongo_client = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=5000)
-    
-    # Test connection
-    mongo_client.admin.command('ping')
-    db = mongo_client[DATABASE_NAME]
-    
-    # Create indexes for performance
-    db.users.create_index("created_at")
-    db.detections.create_index([("user_id", 1), ("created_at", -1)])
-    
-    logger.info(f"Connected to MongoDB database: {DATABASE_NAME}")
-    
-except Exception as e:
-    logger.warning(f"MongoDB connection failed, using JSON fallback: {e}")
-    # Fallback to JSON database system
-    DATABASE_DIR = Path("database")
-    DATABASE_DIR.mkdir(exist_ok=True)
-    
-    USERS_FILE = DATABASE_DIR / "users.json"
-    DETECTIONS_FILE = DATABASE_DIR / "detections.json"
-    TIPS_FILE = DATABASE_DIR / "tips.json"
-    
-    def init_database_files():
-        """Initialize JSON database files"""
-        for file_path in [USERS_FILE, DETECTIONS_FILE, TIPS_FILE]:
-            if not file_path.exists():
-                with open(file_path, 'w') as f:
-                    json.dump([], f)
-    
-    def load_json_data(file_path):
-        """Load data from JSON file"""
-        try:
-            if file_path.exists():
-                with open(file_path, 'r') as f:
-                    return json.load(f)
-        except Exception as e:
-            logger.error(f"Error loading JSON data: {e}")
-        return []
-    
-    def save_json_data(file_path, data):
-        """Save data to JSON file"""
-        try:
-            with open(file_path, 'w') as f:
-                json.dump(data, f, indent=2, default=str)
-        except Exception as e:
-            logger.error(f"Error saving JSON data: {e}")
-    
-    init_database_files()
-    db = None  # Indicate JSON mode
+# Import MongoDB manager and authentication system
+from mongodb_config import db_manager
+from auth_routes import auth_bp, login_required, admin_required, get_current_user
+from encryption_utils import EncryptionManager
+
+# Initialize encryption manager
+encryption_manager = EncryptionManager()
+
+# Register authentication blueprint
+app.register_blueprint(auth_bp)
+
+# Log database connection status
+logger.info(f"Database: {'MongoDB' if db_manager.connected else 'JSON Fallback'}")
+
+# Global template variables
+@app.context_processor
+def inject_global_vars():
+    """Inject global variables into all templates"""
+    return {
+        'db_connected': db_manager.connected,
+        'app_version': '2.0.0',
+        'current_user': get_current_user()
+    }
+
+# Error handlers
+@app.errorhandler(404)
+def not_found_error(error):
+    """Handle 404 errors"""
+    return render_template('errors/404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    """Handle 500 errors"""
+    logger.error(f"Internal server error: {error}")
+    return render_template('errors/500.html'), 500
+
+@app.errorhandler(413)
+def too_large(error):
+    """Handle file too large errors"""
+    return render_template('errors/413.html'), 413
+
+# Application health check
+@app.route('/health')
+def health_check():
+    """Health check endpoint for monitoring"""
+    return {
+        'status': 'healthy',
+        'database': 'connected' if db_manager.connected else 'fallback',
+        'version': '2.0.0'
+    }
 
 # Import routes after app initialization
 import routes
 
 if __name__ == '__main__':
+    logger.info("Starting AI Phishing Detection Platform v2.0.0")
+    logger.info(f"Database: {'MongoDB' if db_manager.connected else 'JSON Fallback'}")
     app.run(host='0.0.0.0', port=5000, debug=True)
