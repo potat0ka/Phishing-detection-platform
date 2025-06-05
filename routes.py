@@ -20,14 +20,20 @@ Perfect for learning web development concepts!
 
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
 from app import app, allowed_file, ALLOWED_EXTENSIONS, get_current_user
-from mongodb_config import db_manager
+from models.mongodb_config import db_manager
 from auth_routes import login_required, admin_required
 from ml_detector import PhishingDetector
-from ai_content_detector import ai_detector
-from explainable_ai import ExplainableAI
+from utils.ai_content_detector import AIContentDetector
+
+# Initialize AI content detector
+ai_detector = AIContentDetector()
+from utils.explainable_ai import ExplainableAI
+
+# Initialize explainable AI system
+explainer = ExplainableAI()
 from security_tips_updater import security_updater
-from encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data
-from utils import is_logged_in
+from utils.encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data
+# Remove unused import - is_logged_in functionality is handled by login_required decorator
 from werkzeug.utils import secure_filename
 import json
 import os

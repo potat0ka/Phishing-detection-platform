@@ -21,8 +21,8 @@ Security Note:
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from auth_routes import admin_required, get_current_user
-from mongodb_config import db_manager
-from encryption_utils import decrypt_sensitive_data, encrypt_sensitive_data
+from models.mongodb_config import db_manager
+from utils.encryption_utils import decrypt_sensitive_data, encrypt_sensitive_data
 from werkzeug.security import generate_password_hash
 from datetime import datetime, timedelta
 import json
