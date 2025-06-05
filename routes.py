@@ -252,7 +252,7 @@ def check():
             )
             
             # Save detection with encrypted user activity data
-            if is_logged_in():
+            if session.get('user_id'):
                 try:
                     user_id = session.get('user_id')
                     user_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.environ.get('REMOTE_ADDR'))

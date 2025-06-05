@@ -494,7 +494,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>
-                                            <input type="checkbox" id="selectAllUsers" onchange="selectAllUsers()">
+                                            <input type="checkbox" id="selectAllUsers" onclick="selectAllUsers()" onchange="selectAllUsers()">
                                         </th>
                                         <th>User</th>
                                         <th>Email</th>
@@ -1045,15 +1045,18 @@
         }
         
         function selectAllUsers() {
-            const checkboxes = document.querySelectorAll('.user-checkbox');
             const selectAll = document.getElementById('selectAllUsers');
-            console.log('Select all users clicked:', selectAll.checked, 'Found checkboxes:', checkboxes.length);
+            const checkboxes = document.querySelectorAll('.user-checkbox');
             
-            checkboxes.forEach(cb => {
-                cb.checked = selectAll.checked;
+            // Debug logging
+            console.log('Select all clicked. Checked:', selectAll.checked, 'Found checkboxes:', checkboxes.length);
+            
+            // Set all individual checkboxes to match the select all checkbox
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
             });
             
-            // Update visual feedback
+            // Update visual feedback and bulk actions
             updateUserSelectionDisplay();
         }
         
