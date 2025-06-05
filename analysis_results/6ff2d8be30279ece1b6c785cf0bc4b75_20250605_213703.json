@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-06-05T21:37:03.498283",
+  "file_path": "uploads/20250605_213702_pngwing.com.png",
+  "analysis_result": {
+    "classification": "likely_real",
+    "confidence": 0.4336945271404278,
+    "explanation": "Appears to be a real photograph or human-created image",
+    "details": [
+      "Metadata analysis: 0.20",
+      "Pixel patterns: 0.49",
+      "Color distribution: 0.51",
+      "Image statistics: 0.54",
+      "Overall confidence: 0.43"
+    ],
+    "analysis_methods": [
+      {
+        "method": "Metadata Analysis",
+        "score": 0.2,
+        "explanation": "Checks for AI tool signatures in image metadata"
+      },
+      {
+        "method": "Pixel Pattern Analysis",
+        "score": 0.4851818785378745,
+        "explanation": "Analyzes pixel distribution patterns typical of AI generation"
+      },
+      {
+        "method": "Color Distribution Analysis",
+        "score": 0.5135470480767093,
+        "explanation": "Examines color patterns that differ between AI and real images"
+      },
+      {
+        "method": "Image Statistics Analysis",
+        "score": 0.5360491819471273,
+        "explanation": "Studies statistical properties unique to AI generation"
+      }
+    ]
+  }
+}

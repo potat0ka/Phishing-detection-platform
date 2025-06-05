@@ -328,5 +328,683 @@
     "ip_address": "192.168.1.142",
     "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     "_id": "detections_19_3233412025"
+  },
+  {
+    "user_id": "users_1_738192204",
+    "input_type": "url",
+    "input_content": "https://www.figma.com/design/eIcYNJDdGN9HcbxIH0kEjQ/Untitled?node-id=0-1&p=f&t=0kHpQ7gsVukPoXTR-0",
+    "result": "safe",
+    "confidence_score": 0.8,
+    "threat_level": "unknown",
+    "reasons": [
+      "Threat intelligence: MINIMAL risk detected"
+    ],
+    "ai_analysis": {
+      "text_complexity": 0.25,
+      "sentiment_score": 0.0,
+      "keyword_density": 0.0,
+      "ai_confidence": 0.4
+    },
+    "explanation": {
+      "detection_type": "Phishing Detection",
+      "input_summary": {
+        "url": "https://www.figma.com/design/eIcYNJDdGN9HcbxIH0kEjQ/Untitled?node-id=0-1&p=f&t=0kHpQ7gsVukPoXTR-0",
+        "content_length": 0,
+        "analysis_timestamp": "N/A"
+      },
+      "decision_process": [
+        {
+          "step": 1,
+          "title": "Initial URL Analysis",
+          "description": "The AI first examines the URL structure for suspicious patterns",
+          "details": [
+            "Checking for misspelled domains (typosquatting)",
+            "Analyzing subdomain structure and length",
+            "Detecting suspicious URL shorteners",
+            "Examining special characters and encoding"
+          ],
+          "educational_note": "URLs are the first line of defense - they often reveal malicious intent"
+        },
+        {
+          "step": 2,
+          "title": "Domain Reputation Check",
+          "description": "The system checks the domain against known threat databases",
+          "details": [
+            "Consulting offline threat intelligence database",
+            "Analyzing domain age and registration details",
+            "Checking for previous security incidents",
+            "Examining domain popularity and traffic patterns"
+          ],
+          "educational_note": "Domain reputation is crucial - new or flagged domains are high-risk"
+        },
+        {
+          "step": 3,
+          "title": "Content Pattern Analysis",
+          "description": "If content is provided, the AI analyzes text patterns and structure",
+          "details": [
+            "Detecting urgency keywords and phrases",
+            "Analyzing grammar and spelling patterns",
+            "Checking for social engineering techniques",
+            "Examining call-to-action language"
+          ],
+          "educational_note": "Phishing content often uses psychological manipulation techniques"
+        },
+        {
+          "step": 4,
+          "title": "Machine Learning Classification",
+          "description": "Advanced ML algorithms process all features to make final decision",
+          "details": [
+            "Combining multiple feature scores",
+            "Applying trained classification models",
+            "Calculating confidence percentages",
+            "Generating risk assessment"
+          ],
+          "educational_note": "ML models learn from thousands of examples to recognize patterns"
+        }
+      ],
+      "feature_analysis": [
+        {
+          "name": "Url Structure",
+          "weight": 0.25,
+          "description": "How the URL is constructed and formatted",
+          "educational_note": "Phishing URLs often have suspicious patterns like extra subdomains or misspelled domains",
+          "analysis_result": {
+            "score": 0.30000000000000004,
+            "findings": [
+              "URL structure appears normal with no obvious suspicious patterns"
+            ],
+            "explanation": "URL structure analysis checks for suspicious patterns and formatting"
+          },
+          "importance": "High"
+        },
+        {
+          "name": "Domain Reputation",
+          "weight": 0.3,
+          "description": "Historical reputation and trustworthiness of the domain",
+          "educational_note": "New or previously flagged domains are more likely to be malicious",
+          "analysis_result": {
+            "score": 0.0,
+            "findings": [
+              "Domain appears to have normal characteristics"
+            ],
+            "explanation": "Domain reputation analysis checks historical trustworthiness"
+          },
+          "importance": "High"
+        },
+        {
+          "name": "Content Analysis",
+          "weight": 0.2,
+          "description": "Analysis of webpage content and text patterns",
+          "educational_note": "Phishing sites often copy legitimate content with subtle changes",
+          "analysis_result": {
+            "score": 0.0,
+            "findings": [
+              "No content provided for analysis"
+            ],
+            "explanation": "Content analysis examines text patterns and suspicious phrases"
+          },
+          "importance": "Medium"
+        },
+        {
+          "name": "Security Indicators",
+          "weight": 0.15,
+          "description": "SSL certificates, HTTPS usage, and security headers",
+          "educational_note": "Legitimate sites typically have proper security certificates",
+          "analysis_result": {
+            "score": 0.0,
+            "findings": [
+              "URL uses HTTPS encryption for secure data transmission"
+            ],
+            "explanation": "Security indicators check for HTTPS, certificates, and security headers"
+          },
+          "importance": "Medium"
+        },
+        {
+          "name": "Behavioral Patterns",
+          "weight": 0.1,
+          "description": "Unusual redirects, popup behaviors, and user interaction patterns",
+          "educational_note": "Phishing sites often use deceptive techniques to steal information",
+          "analysis_result": {
+            "score": 0.0,
+            "findings": [
+              "No suspicious behavioral patterns detected"
+            ],
+            "explanation": "Behavioral analysis detects unusual redirect and interaction patterns"
+          },
+          "importance": "Low"
+        }
+      ],
+      "confidence_breakdown": {
+        "overall_confidence": 0.8,
+        "confidence_level": "Very Low",
+        "reliability_assessment": "Low reliability - insufficient evidence for confident classification",
+        "interpretation": "The AI has low confidence, suggesting the content is ambiguous or lacks clear indicators",
+        "factors_affecting_confidence": [
+          "Quality and completeness of input data",
+          "Number of detectable features and patterns",
+          "Consistency across multiple analysis methods",
+          "Comparison to known examples in training data",
+          "Presence of clear vs ambiguous indicators"
+        ]
+      },
+      "educational_insights": {
+        "what_is_phishing": {
+          "definition": "Phishing is a cybercrime where attackers impersonate legitimate organizations to steal sensitive information like passwords, credit card numbers, or personal data.",
+          "common_methods": [
+            "Fake emails that look like they're from banks or popular services",
+            "Suspicious websites that mimic legitimate login pages",
+            "Text messages with urgent requests and malicious links",
+            "Social media messages with too-good-to-be-true offers"
+          ]
+        },
+        "how_ai_detects_phishing": {
+          "machine_learning": "AI systems learn from thousands of examples of legitimate and malicious content to recognize patterns that humans might miss",
+          "pattern_recognition": "The AI analyzes URL structure, content patterns, metadata, and behavioral indicators simultaneously",
+          "continuous_learning": "Detection models are regularly updated with new threat intelligence to catch evolving attack methods"
+        },
+        "key_warning_signs": [
+          "Urgent language demanding immediate action",
+          "Requests for sensitive information via email or text",
+          "Suspicious URLs that don't match the supposed sender",
+          "Poor grammar, spelling, or formatting",
+          "Generic greetings instead of personalized messages",
+          "Threats of account suspension or legal action"
+        ],
+        "protection_tips": [
+          "Always verify requests through official channels",
+          "Check URLs carefully before clicking",
+          "Use multi-factor authentication when available",
+          "Keep software and browsers updated",
+          "Be skeptical of unsolicited communications",
+          "Report suspicious messages to authorities"
+        ]
+      },
+      "learning_resources": [
+        {
+          "title": "Understanding URL Structure",
+          "description": "Learn how to analyze URLs for suspicious patterns and phishing indicators",
+          "topic": "URL Analysis"
+        },
+        {
+          "title": "Email Security Best Practices",
+          "description": "Comprehensive guide to identifying and avoiding phishing emails",
+          "topic": "Email Security"
+        },
+        {
+          "title": "Social Engineering Tactics",
+          "description": "Understanding psychological manipulation techniques used in phishing attacks",
+          "topic": "Social Engineering"
+        },
+        {
+          "title": "Machine Learning in Cybersecurity",
+          "description": "How AI and ML are used to detect and prevent cyber threats",
+          "topic": "AI Security"
+        }
+      ]
+    },
+    "user_ip": "27.34.76.35, 10.83.5.116",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 OPR/119.0.0.0",
+    "timestamp": "2025-06-05 21:35:30.628474",
+    "_id": "detections_20_1423473631"
+  },
+  {
+    "user_id": "users_1_738192204",
+    "input_type": "ai_image",
+    "input_content": "pngwing.com.png",
+    "result": "likely_real",
+    "confidence_score": 0.4336945271404278,
+    "timestamp": "2025-06-05 21:37:03.496436",
+    "reasons": [
+      "Metadata analysis: 0.20",
+      "Pixel patterns: 0.49",
+      "Color distribution: 0.51",
+      "Image statistics: 0.54",
+      "Overall confidence: 0.43"
+    ],
+    "ai_analysis": {
+      "classification": "likely_real",
+      "confidence": 0.4336945271404278,
+      "explanation": "Appears to be a real photograph or human-created image",
+      "details": [
+        "Metadata analysis: 0.20",
+        "Pixel patterns: 0.49",
+        "Color distribution: 0.51",
+        "Image statistics: 0.54",
+        "Overall confidence: 0.43"
+      ],
+      "analysis_methods": [
+        {
+          "method": "Metadata Analysis",
+          "score": 0.2,
+          "explanation": "Checks for AI tool signatures in image metadata"
+        },
+        {
+          "method": "Pixel Pattern Analysis",
+          "score": 0.4851818785378745,
+          "explanation": "Analyzes pixel distribution patterns typical of AI generation"
+        },
+        {
+          "method": "Color Distribution Analysis",
+          "score": 0.5135470480767093,
+          "explanation": "Examines color patterns that differ between AI and real images"
+        },
+        {
+          "method": "Image Statistics Analysis",
+          "score": 0.5360491819471273,
+          "explanation": "Studies statistical properties unique to AI generation"
+        }
+      ]
+    },
+    "explanation": {
+      "detection_type": "AI Content Detection",
+      "input_summary": {
+        "file_type": "image",
+        "file_path": "20250605_213702_pngwing.com.png",
+        "analysis_timestamp": "N/A"
+      },
+      "decision_process": [
+        {
+          "step": 1,
+          "title": "Metadata Extraction",
+          "description": "The AI first examines the image's metadata for generation signatures",
+          "details": [
+            "Checking EXIF data for camera information",
+            "Analyzing creation timestamps and software signatures",
+            "Detecting AI tool watermarks or signatures",
+            "Examining file compression patterns"
+          ],
+          "educational_note": "Metadata often contains clues about how an image was created"
+        },
+        {
+          "step": 2,
+          "title": "Pixel Pattern Analysis",
+          "description": "Statistical analysis of pixel distributions and mathematical patterns",
+          "details": [
+            "Calculating pixel value distributions",
+            "Analyzing color histogram patterns",
+            "Detecting mathematical regularities",
+            "Examining noise patterns and artifacts"
+          ],
+          "educational_note": "AI-generated images have distinct mathematical signatures"
+        },
+        {
+          "step": 3,
+          "title": "Frequency Domain Analysis",
+          "description": "Examining the image in frequency space to detect AI signatures",
+          "details": [
+            "Applying Fourier transform analysis",
+            "Detecting periodic patterns in frequency domain",
+            "Analyzing high-frequency noise characteristics",
+            "Comparing frequency signatures to known AI patterns"
+          ],
+          "educational_note": "Real photos and AI images have different frequency characteristics"
+        },
+        {
+          "step": 4,
+          "title": "AI Classification",
+          "description": "Machine learning models combine all features for final classification",
+          "details": [
+            "Processing extracted features through neural networks",
+            "Comparing patterns to trained AI detection models",
+            "Calculating confidence scores for each classification",
+            "Generating final authenticity assessment"
+          ],
+          "educational_note": "Multiple AI techniques work together for accurate detection"
+        }
+      ],
+      "feature_analysis": [
+        {
+          "name": "Pixel Patterns",
+          "weight": 0.3,
+          "description": "Statistical analysis of pixel distributions and patterns",
+          "educational_note": "AI-generated images have specific mathematical signatures in pixel arrangements",
+          "analysis_result": {
+            "score": -0.03105053510221336,
+            "findings": [
+              "Pixel patterns appear consistent with authentic content",
+              "No strong mathematical signatures of AI generation detected"
+            ],
+            "explanation": "Pixel pattern analysis examines statistical distributions in image data"
+          },
+          "importance": "High"
+        },
+        {
+          "name": "Metadata Analysis",
+          "weight": 0.25,
+          "description": "Examination of file metadata and creation information",
+          "educational_note": "AI tools often leave traces in image metadata that can be detected",
+          "analysis_result": {
+            "score": 0.04450345696471517,
+            "findings": [
+              "Metadata analysis examines file creation information",
+              "Checking for AI tool signatures and timestamps",
+              "EXIF data provides clues about content origin"
+            ],
+            "explanation": "Metadata analysis checks file information and creation signatures"
+          },
+          "importance": "High"
+        },
+        {
+          "name": "Frequency Analysis",
+          "weight": 0.2,
+          "description": "Analysis of frequency domain characteristics",
+          "educational_note": "Real photos and AI images have different frequency signatures",
+          "analysis_result": {
+            "score": 0.093328084033123,
+            "findings": [
+              "Frequency domain analysis reveals spectral characteristics",
+              "AI-generated content often has distinct frequency signatures",
+              "Comparing frequency patterns to known AI generation models"
+            ],
+            "explanation": "Frequency analysis examines spectral characteristics of the content"
+          },
+          "importance": "Medium"
+        },
+        {
+          "name": "Texture Analysis",
+          "weight": 0.15,
+          "description": "Examination of texture patterns and surface details",
+          "educational_note": "AI often struggles with consistent texture generation",
+          "analysis_result": {
+            "score": -0.09032549741043511,
+            "findings": [
+              "Texture analysis examines surface patterns and consistency",
+              "AI often struggles with maintaining consistent textures",
+              "Looking for unnatural smoothing or repetitive patterns"
+            ],
+            "explanation": "Texture analysis examines surface patterns and consistency"
+          },
+          "importance": "Medium"
+        },
+        {
+          "name": "Artifact Detection",
+          "weight": 0.1,
+          "description": "Detection of AI generation artifacts and inconsistencies",
+          "educational_note": "AI generation process can leave telltale artifacts in the final output",
+          "analysis_result": {
+            "score": 0.03557140804941127,
+            "findings": [
+              "Searching for telltale AI generation artifacts",
+              "Examining compression patterns and digital signatures",
+              "Looking for inconsistencies that reveal synthetic origin"
+            ],
+            "explanation": "Artifact detection looks for telltale signs of AI generation"
+          },
+          "importance": "Low"
+        }
+      ],
+      "confidence_breakdown": {
+        "overall_confidence": 0.4336945271404278,
+        "confidence_level": "Very Low",
+        "reliability_assessment": "Low reliability - insufficient evidence for confident classification",
+        "interpretation": "The AI has low confidence, suggesting the content is ambiguous or lacks clear indicators",
+        "factors_affecting_confidence": [
+          "Quality and completeness of input data",
+          "Number of detectable features and patterns",
+          "Consistency across multiple analysis methods",
+          "Comparison to known examples in training data",
+          "Presence of clear vs ambiguous indicators"
+        ]
+      },
+      "educational_insights": {
+        "what_is_ai_content": {
+          "definition": "AI-generated content is media (images, videos, audio, text) created by artificial intelligence algorithms rather than humans or traditional recording devices.",
+          "why_it_matters": "As AI generation becomes more sophisticated, it's important to distinguish between authentic and synthetic content for security, authenticity, and trust."
+        },
+        "detection_principles": {
+          "statistical_analysis": "AI detection looks for mathematical patterns and statistical signatures that are characteristic of machine-generated content",
+          "artifact_detection": "AI generation processes often leave subtle artifacts or inconsistencies that can be detected with specialized algorithms",
+          "metadata_analysis": "Digital forensics techniques examine file metadata and creation information for clues about content origin"
+        },
+        "specific_techniques": {
+          "pixel_analysis": "Examining pixel value distributions and mathematical patterns unique to AI image generation",
+          "frequency_analysis": "Analyzing the image in frequency domain to detect artificial generation signatures",
+          "neural_network_detection": "Using specialized neural networks trained to recognize AI-generated image characteristics"
+        }
+      },
+      "learning_resources": [
+        {
+          "title": "Introduction to AI Content Generation",
+          "description": "Understanding how artificial intelligence creates digital content",
+          "topic": "AI Fundamentals"
+        },
+        {
+          "title": "Digital Forensics and Authentication",
+          "description": "Techniques for verifying the authenticity of digital media",
+          "topic": "Digital Forensics"
+        },
+        {
+          "title": "Computer Vision and Image Analysis",
+          "description": "How AI systems analyze and understand visual content",
+          "topic": "Computer Vision"
+        },
+        {
+          "title": "Deepfake and Synthetic Media Detection",
+          "description": "Advanced techniques for detecting AI-generated visual content",
+          "topic": "Deepfake Detection"
+        }
+      ]
+    },
+    "user_ip": "27.34.76.35, 10.83.6.106",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 OPR/119.0.0.0",
+    "_id": "detections_21_2893723205"
+  },
+  {
+    "user_id": "users_1_738192204",
+    "input_type": "url",
+    "input_content": "https://www.figma.com/design/eIcYNJDdGN9HcbxIH0kEjQ/Untitled?node-id=0-1&p=f&t=0kHpQ7gsVukPoXTR-0",
+    "result": "safe",
+    "confidence_score": 0.8,
+    "threat_level": "unknown",
+    "reasons": [
+      "Threat intelligence: MINIMAL risk detected"
+    ],
+    "ai_analysis": {
+      "text_complexity": 0.25,
+      "sentiment_score": 0.0,
+      "keyword_density": 0.0,
+      "ai_confidence": 0.4
+    },
+    "explanation": {
+      "detection_type": "Phishing Detection",
+      "input_summary": {
+        "url": "https://www.figma.com/design/eIcYNJDdGN9HcbxIH0kEjQ/Untitled?node-id=0-1&p=f&t=0kHpQ7gsVukPoXTR-0",
+        "content_length": 0,
+        "analysis_timestamp": "N/A"
+      },
+      "decision_process": [
+        {
+          "step": 1,
+          "title": "Initial URL Analysis",
+          "description": "The AI first examines the URL structure for suspicious patterns",
+          "details": [
+            "Checking for misspelled domains (typosquatting)",
+            "Analyzing subdomain structure and length",
+            "Detecting suspicious URL shorteners",
+            "Examining special characters and encoding"
+          ],
+          "educational_note": "URLs are the first line of defense - they often reveal malicious intent"
+        },
+        {
+          "step": 2,
+          "title": "Domain Reputation Check",
+          "description": "The system checks the domain against known threat databases",
+          "details": [
+            "Consulting offline threat intelligence database",
+            "Analyzing domain age and registration details",
+            "Checking for previous security incidents",
+            "Examining domain popularity and traffic patterns"
+          ],
+          "educational_note": "Domain reputation is crucial - new or flagged domains are high-risk"
+        },
+        {
+          "step": 3,
+          "title": "Content Pattern Analysis",
+          "description": "If content is provided, the AI analyzes text patterns and structure",
+          "details": [
+            "Detecting urgency keywords and phrases",
+            "Analyzing grammar and spelling patterns",
+            "Checking for social engineering techniques",
+            "Examining call-to-action language"
+          ],
+          "educational_note": "Phishing content often uses psychological manipulation techniques"
+        },
+        {
+          "step": 4,
+          "title": "Machine Learning Classification",
+          "description": "Advanced ML algorithms process all features to make final decision",
+          "details": [
+            "Combining multiple feature scores",
+            "Applying trained classification models",
+            "Calculating confidence percentages",
+            "Generating risk assessment"
+          ],
+          "educational_note": "ML models learn from thousands of examples to recognize patterns"
+        }
+      ],
+      "feature_analysis": [
+        {
+          "name": "Url Structure",
+          "weight": 0.25,
+          "description": "How the URL is constructed and formatted",
+          "educational_note": "Phishing URLs often have suspicious patterns like extra subdomains or misspelled domains",
+          "analysis_result": {
+            "score": 0.30000000000000004,
+            "findings": [
+              "URL structure appears normal with no obvious suspicious patterns"
+            ],
+            "explanation": "URL structure analysis checks for suspicious patterns and formatting"
+          },
+          "importance": "High"
+        },
+        {
+          "name": "Domain Reputation",
+          "weight": 0.3,
+          "description": "Historical reputation and trustworthiness of the domain",
+          "educational_note": "New or previously flagged domains are more likely to be malicious",
+          "analysis_result": {
+            "score": 0.0,
+            "findings": [
+              "Domain appears to have normal characteristics"
+            ],
+            "explanation": "Domain reputation analysis checks historical trustworthiness"
+          },
+          "importance": "High"
+        },
+        {
+          "name": "Content Analysis",
+          "weight": 0.2,
+          "description": "Analysis of webpage content and text patterns",
+          "educational_note": "Phishing sites often copy legitimate content with subtle changes",
+          "analysis_result": {
+            "score": 0.0,
+            "findings": [
+              "No content provided for analysis"
+            ],
+            "explanation": "Content analysis examines text patterns and suspicious phrases"
+          },
+          "importance": "Medium"
+        },
+        {
+          "name": "Security Indicators",
+          "weight": 0.15,
+          "description": "SSL certificates, HTTPS usage, and security headers",
+          "educational_note": "Legitimate sites typically have proper security certificates",
+          "analysis_result": {
+            "score": 0.0,
+            "findings": [
+              "URL uses HTTPS encryption for secure data transmission"
+            ],
+            "explanation": "Security indicators check for HTTPS, certificates, and security headers"
+          },
+          "importance": "Medium"
+        },
+        {
+          "name": "Behavioral Patterns",
+          "weight": 0.1,
+          "description": "Unusual redirects, popup behaviors, and user interaction patterns",
+          "educational_note": "Phishing sites often use deceptive techniques to steal information",
+          "analysis_result": {
+            "score": 0.0,
+            "findings": [
+              "No suspicious behavioral patterns detected"
+            ],
+            "explanation": "Behavioral analysis detects unusual redirect and interaction patterns"
+          },
+          "importance": "Low"
+        }
+      ],
+      "confidence_breakdown": {
+        "overall_confidence": 0.8,
+        "confidence_level": "Very Low",
+        "reliability_assessment": "Low reliability - insufficient evidence for confident classification",
+        "interpretation": "The AI has low confidence, suggesting the content is ambiguous or lacks clear indicators",
+        "factors_affecting_confidence": [
+          "Quality and completeness of input data",
+          "Number of detectable features and patterns",
+          "Consistency across multiple analysis methods",
+          "Comparison to known examples in training data",
+          "Presence of clear vs ambiguous indicators"
+        ]
+      },
+      "educational_insights": {
+        "what_is_phishing": {
+          "definition": "Phishing is a cybercrime where attackers impersonate legitimate organizations to steal sensitive information like passwords, credit card numbers, or personal data.",
+          "common_methods": [
+            "Fake emails that look like they're from banks or popular services",
+            "Suspicious websites that mimic legitimate login pages",
+            "Text messages with urgent requests and malicious links",
+            "Social media messages with too-good-to-be-true offers"
+          ]
+        },
+        "how_ai_detects_phishing": {
+          "machine_learning": "AI systems learn from thousands of examples of legitimate and malicious content to recognize patterns that humans might miss",
+          "pattern_recognition": "The AI analyzes URL structure, content patterns, metadata, and behavioral indicators simultaneously",
+          "continuous_learning": "Detection models are regularly updated with new threat intelligence to catch evolving attack methods"
+        },
+        "key_warning_signs": [
+          "Urgent language demanding immediate action",
+          "Requests for sensitive information via email or text",
+          "Suspicious URLs that don't match the supposed sender",
+          "Poor grammar, spelling, or formatting",
+          "Generic greetings instead of personalized messages",
+          "Threats of account suspension or legal action"
+        ],
+        "protection_tips": [
+          "Always verify requests through official channels",
+          "Check URLs carefully before clicking",
+          "Use multi-factor authentication when available",
+          "Keep software and browsers updated",
+          "Be skeptical of unsolicited communications",
+          "Report suspicious messages to authorities"
+        ]
+      },
+      "learning_resources": [
+        {
+          "title": "Understanding URL Structure",
+          "description": "Learn how to analyze URLs for suspicious patterns and phishing indicators",
+          "topic": "URL Analysis"
+        },
+        {
+          "title": "Email Security Best Practices",
+          "description": "Comprehensive guide to identifying and avoiding phishing emails",
+          "topic": "Email Security"
+        },
+        {
+          "title": "Social Engineering Tactics",
+          "description": "Understanding psychological manipulation techniques used in phishing attacks",
+          "topic": "Social Engineering"
+        },
+        {
+          "title": "Machine Learning in Cybersecurity",
+          "description": "How AI and ML are used to detect and prevent cyber threats",
+          "topic": "AI Security"
+        }
+      ]
+    },
+    "user_ip": "27.34.76.35, 10.83.6.106",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 OPR/119.0.0.0",
+    "timestamp": "2025-06-05 21:37:40.025593",
+    "_id": "detections_22_3910162408"
   }
 ]
