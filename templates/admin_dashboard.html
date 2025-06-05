@@ -2846,6 +2846,74 @@ function showAlert(message, type = 'info') {
     }, 4000);
 }
 
+// Detection Model Settings - Slider Functions
+function updateSliderValues() {
+    // Update confidence threshold display
+    const confidenceSlider = document.getElementById('confidenceThreshold');
+    const confidenceDisplay = document.getElementById('confidenceValue');
+    
+    if (confidenceSlider && confidenceDisplay) {
+        confidenceDisplay.textContent = Math.round(confidenceSlider.value * 100) + '%';
+    }
+    
+    // Update learning rate display
+    const learningRateSlider = document.getElementById('learningRate');
+    const learningRateDisplay = document.getElementById('learningRateValue');
+    
+    if (learningRateSlider && learningRateDisplay) {
+        learningRateDisplay.textContent = parseFloat(learningRateSlider.value).toFixed(4);
+    }
+    
+    // Update batch size display
+    const batchSizeSlider = document.getElementById('batchSize');
+    const batchSizeDisplay = document.getElementById('batchSizeValue');
+    
+    if (batchSizeSlider && batchSizeDisplay) {
+        batchSizeDisplay.textContent = batchSizeSlider.value;
+    }
+    
+    // Update max features display
+    const maxFeaturesSlider = document.getElementById('maxFeatures');
+    const maxFeaturesDisplay = document.getElementById('maxFeaturesValue');
+    
+    if (maxFeaturesSlider && maxFeaturesDisplay) {
+        maxFeaturesDisplay.textContent = maxFeaturesSlider.value;
+    }
+}
+
+function exportScanHistory() {
+    showAlert('Preparing scan history export...', 'info');
+    
+    fetch('/admin/export/detections', {
+        method: 'GET'
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.blob();
+        } else {
+            throw new Error('Export failed');
+        }
+    })
+    .then(blob => {
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `scan_history_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        showAlert('Scan history exported successfully!', 'success');
+    })
+    .catch(error => {
+        console.error('Error exporting scan history:', error);
+        showAlert('Error exporting scan history. Please try again.', 'danger');
+    });
+}
+
 // Initialize confidence threshold display
 document.addEventListener('DOMContentLoaded', function() {
     const confidenceSlider = document.getElementById('confidenceThreshold');
@@ -2853,8 +2921,41 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (confidenceSlider && confidenceDisplay) {
         confidenceSlider.addEventListener('input', function() {
-            confidenceDisplay.textContent = this.value;
+            confidenceDisplay.textContent = Math.round(this.value * 100) + '%';
         });
+        // Initialize display
+        confidenceDisplay.textContent = Math.round(confidenceSlider.value * 100) + '%';
+    }
+    
+    // Add event listeners for all sliders
+    const learningRateSlider = document.getElementById('learningRate');
+    const learningRateDisplay = document.getElementById('learningRateValue');
+    
+    if (learningRateSlider && learningRateDisplay) {
+        learningRateSlider.addEventListener('input', function() {
+            learningRateDisplay.textContent = parseFloat(this.value).toFixed(4);
+        });
+        learningRateDisplay.textContent = parseFloat(learningRateSlider.value).toFixed(4);
+    }
+    
+    const batchSizeSlider = document.getElementById('batchSize');
+    const batchSizeDisplay = document.getElementById('batchSizeValue');
+    
+    if (batchSizeSlider && batchSizeDisplay) {
+        batchSizeSlider.addEventListener('input', function() {
+            batchSizeDisplay.textContent = this.value;
+        });
+        batchSizeDisplay.textContent = batchSizeSlider.value;
+    }
+    
+    const maxFeaturesSlider = document.getElementById('maxFeatures');
+    const maxFeaturesDisplay = document.getElementById('maxFeaturesValue');
+    
+    if (maxFeaturesSlider && maxFeaturesDisplay) {
+        maxFeaturesSlider.addEventListener('input', function() {
+            maxFeaturesDisplay.textContent = this.value;
+        });
+        maxFeaturesDisplay.textContent = maxFeaturesSlider.value;
     }
     
     // Initialize search functionality

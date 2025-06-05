@@ -1639,3 +1639,161 @@ def change_admin_password():
             'success': False,
             'message': 'Error occurred while changing password'
         }), 500
+
+@admin_bp.route('/support/submit', methods=['POST'])
+@admin_required
+def submit_support_request():
+    """Submit a support request"""
+    try:
+        current_user = get_current_user()
+        
+        # Get form data
+        subject = request.form.get('subject', '').strip()
+        priority = request.form.get('priority', 'medium').strip()
+        message = request.form.get('message', '').strip()
+        
+        if not subject or not message:
+            return jsonify({
+                'success': False,
+                'message': 'Subject and message are required'
+            }), 400
+        
+        # Create ticket ID
+        ticket_id = f"SUPP-{datetime.utcnow().strftime('%Y%m%d')}-{len(db_manager.find_many('support_tickets', {})) + 1:04d}"
+        
+        # Save support request
+        support_ticket = {
+            'id': ticket_id,
+            'user_id': current_user.get('id'),
+            'username': current_user.get('username'),
+            'subject': subject,
+            'priority': priority,
+            'message': message,
+            'status': 'open',
+            'created_at': datetime.utcnow(),
+            'type': 'support_request'
+        }
+        
+        db_manager.insert_one('support_tickets', support_ticket)
+        
+        logger.info(f"Support request submitted by {current_user.get('username')}: {ticket_id}")
+        
+        return jsonify({
+            'success': True,
+            'ticket_id': ticket_id,
+            'message': 'Support request submitted successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error submitting support request: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while submitting support request'
+        }), 500
+
+@admin_bp.route('/support/bug-report', methods=['POST'])
+@admin_required
+def submit_bug_report():
+    """Submit a bug report"""
+    try:
+        current_user = get_current_user()
+        
+        # Get form data
+        category = request.form.get('category', '').strip()
+        severity = request.form.get('severity', 'medium').strip()
+        steps = request.form.get('steps', '').strip()
+        behavior = request.form.get('behavior', '').strip()
+        environment = request.form.get('environment', '').strip()
+        
+        if not category or not steps or not behavior:
+            return jsonify({
+                'success': False,
+                'message': 'Category, steps to reproduce, and behavior description are required'
+            }), 400
+        
+        # Create report ID
+        report_id = f"BUG-{datetime.utcnow().strftime('%Y%m%d')}-{len(db_manager.find_many('bug_reports', {})) + 1:04d}"
+        
+        # Save bug report
+        bug_report = {
+            'id': report_id,
+            'user_id': current_user.get('id'),
+            'username': current_user.get('username'),
+            'category': category,
+            'severity': severity,
+            'steps_to_reproduce': steps,
+            'expected_vs_actual': behavior,
+            'environment': environment,
+            'status': 'open',
+            'created_at': datetime.utcnow(),
+            'type': 'bug_report'
+        }
+        
+        db_manager.insert_one('bug_reports', bug_report)
+        
+        logger.info(f"Bug report submitted by {current_user.get('username')}: {report_id}")
+        
+        return jsonify({
+            'success': True,
+            'report_id': report_id,
+            'message': 'Bug report submitted successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error submitting bug report: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while submitting bug report'
+        }), 500
+
+@admin_bp.route('/support/feedback', methods=['POST'])
+@admin_required
+def submit_feedback():
+    """Submit feedback"""
+    try:
+        current_user = get_current_user()
+        
+        # Get form data
+        feedback_type = request.form.get('type', '').strip()
+        rating = request.form.get('rating', '')
+        feedback_text = request.form.get('feedback', '').strip()
+        contact_me = request.form.get('contact_me') == 'on'
+        
+        if not feedback_type or not feedback_text:
+            return jsonify({
+                'success': False,
+                'message': 'Feedback type and message are required'
+            }), 400
+        
+        # Create feedback ID
+        feedback_id = f"FEED-{datetime.utcnow().strftime('%Y%m%d')}-{len(db_manager.find_many('feedback', {})) + 1:04d}"
+        
+        # Save feedback
+        feedback_entry = {
+            'id': feedback_id,
+            'user_id': current_user.get('id'),
+            'username': current_user.get('username'),
+            'type': feedback_type,
+            'rating': int(rating) if rating.isdigit() else None,
+            'feedback': feedback_text,
+            'contact_me': contact_me,
+            'created_at': datetime.utcnow(),
+            'status': 'new'
+        }
+        
+        db_manager.insert_one('feedback', feedback_entry)
+        
+        logger.info(f"Feedback submitted by {current_user.get('username')}: {feedback_id}")
+        
+        return jsonify({
+            'success': True,
+            'feedback_id': feedback_id,
+            'message': 'Thank you for your feedback!'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error submitting feedback: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while submitting feedback'
+        }), 500
