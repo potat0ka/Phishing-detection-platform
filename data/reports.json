@@ -36,18 +36,22 @@
     "id": "report_004",
     "content": "Click here to claim your $1000 prize! Limited time offer!",
     "type": "spam",
-    "status": "pending",
+    "status": "rejected",
     "created_at": "2025-06-05",
     "reporter_username": "Security Team",
-    "description": "Suspicious prize claim email with potential phishing links"
+    "description": "Suspicious prize claim email with potential phishing links",
+    "reviewed_by": "super_admin",
+    "reviewed_at": "2025-06-05T12:51:44.846920"
   },
   {
     "id": "report_005",
     "content": "https://paypal-security-verification.com/login",
     "type": "phishing",
-    "status": "pending",
+    "status": "rejected",
     "created_at": "2025-06-05",
     "reporter_username": "Auto System",
-    "description": "Fake PayPal login page attempting to steal credentials"
+    "description": "Fake PayPal login page attempting to steal credentials",
+    "reviewed_by": "super_admin",
+    "reviewed_at": "2025-06-05T12:51:47.902869"
   }
 ]

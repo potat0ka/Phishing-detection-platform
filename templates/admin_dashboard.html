@@ -3239,57 +3239,9 @@ function getSelectedReports() {
     return Array.from(selectedCheckboxes).map(checkbox => checkbox.getAttribute('data-report-id'));
 }
 
-function approveReport(reportId) {
-    if (confirm('Approve this report?')) {
-        showAlert('Approving report...', 'info');
-        
-        fetch(`/admin/reports/approve/${reportId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showAlert('Report approved successfully', 'success');
-                setTimeout(() => location.reload(), 1500);
-            } else {
-                showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
-            }
-        })
-        .catch(error => {
-            console.error('Error approving report:', error);
-            showAlert('Error approving report. Please try again.', 'danger');
-        });
-    }
-}
 
-function rejectReport(reportId) {
-    if (confirm('Reject this report?')) {
-        showAlert('Rejecting report...', 'info');
-        
-        fetch(`/admin/reports/reject/${reportId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showAlert('Report rejected successfully', 'success');
-                setTimeout(() => location.reload(), 1500);
-            } else {
-                showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
-            }
-        })
-        .catch(error => {
-            console.error('Error rejecting report:', error);
-            showAlert('Error rejecting report. Please try again.', 'danger');
-        });
-    }
-}
+
+
 
 function approveSelectedReports() {
     const selectedReports = getSelectedReports();
@@ -3316,7 +3268,17 @@ function approveSelectedReports() {
         .then(data => {
             if (data.success) {
                 showAlert(data.message, 'success');
-                setTimeout(() => location.reload(), 1500);
+                // Remove approved reports from the display
+                selectedReports.forEach(reportId => {
+                    const reportRow = document.querySelector(`tr[data-report-id="${reportId}"]`);
+                    if (reportRow) {
+                        reportRow.style.transition = 'opacity 0.3s';
+                        reportRow.style.opacity = '0';
+                        setTimeout(() => reportRow.remove(), 300);
+                    }
+                });
+                // Uncheck the select all checkbox
+                document.getElementById('selectAllReports').checked = false;
             } else {
                 showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
             }
@@ -3353,7 +3315,17 @@ function rejectSelectedReports() {
         .then(data => {
             if (data.success) {
                 showAlert(data.message, 'success');
-                setTimeout(() => location.reload(), 1500);
+                // Remove rejected reports from the display
+                selectedReports.forEach(reportId => {
+                    const reportRow = document.querySelector(`tr[data-report-id="${reportId}"]`);
+                    if (reportRow) {
+                        reportRow.style.transition = 'opacity 0.3s';
+                        reportRow.style.opacity = '0';
+                        setTimeout(() => reportRow.remove(), 300);
+                    }
+                });
+                // Uncheck the select all checkbox
+                document.getElementById('selectAllReports').checked = false;
             } else {
                 showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
             }
