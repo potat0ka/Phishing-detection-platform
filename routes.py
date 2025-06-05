@@ -262,17 +262,23 @@ def check():
                     user_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.environ.get('REMOTE_ADDR'))
                     user_agent = request.headers.get('User-Agent')
                     
-                    Detection.create_detection(
-                        user_id=user_id,
-                        input_type=input_type,
-                        input_content=input_content,
-                        result=result['classification'],
-                        confidence_score=result['confidence'],
-                        reasons=result['reasons'],
-                        ai_analysis=result['ai_analysis'],
-                        user_ip=user_ip,
-                        user_agent=user_agent
-                    )
+                    detection_data = {
+                        'user_id': user_id,
+                        'input_type': input_type,
+                        'input_content': input_content,
+                        'result': result['classification'],
+                        'confidence_score': result['confidence'],
+                        'threat_level': result.get('threat_level', 'unknown'),
+                        'reasons': result['reasons'],
+                        'ai_analysis': result['ai_analysis'],
+                        'user_ip': user_ip,
+                        'user_agent': user_agent,
+                        'timestamp': datetime.utcnow()
+                    }
+                    
+                    # Encrypt sensitive detection data
+                    encrypted_detection = encrypt_sensitive_data('detection', detection_data)
+                    db_manager.insert_one('detections', encrypted_detection)
                     logger.info(f"Encrypted detection saved for user: {user_id}")
                 except Exception as save_error:
                     app.logger.error(f"Failed to save encrypted detection: {save_error}")
@@ -413,7 +419,9 @@ def initialize_tips():
             }
         ]
         
-        PhishingTip.bulk_insert(basic_tips)
+        # Insert basic tips into database
+        for tip in basic_tips:
+            db_manager.insert_one('security_tips', tip)
         app.logger.info("Basic security tips added as fallback")
 
 @app.route('/ai-content-check', methods=['GET', 'POST'])
@@ -469,17 +477,22 @@ def ai_content_check():
             user_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.environ.get('REMOTE_ADDR'))
             user_agent = request.headers.get('User-Agent')
             
-            Detection.create_detection(
-                user_id=user_id,
-                input_type=f"ai_{content_type}",
-                input_content=filename,
-                result=analysis_result['classification'],
-                confidence_score=analysis_result['confidence'],
-                reasons=analysis_result['details'],
-                ai_analysis=analysis_result,
-                user_ip=user_ip,
-                user_agent=user_agent
-            )
+            detection_data = {
+                'user_id': user_id,
+                'input_type': f"ai_{content_type}",
+                'input_content': filename,
+                'result': analysis_result['classification'],
+                'confidence_score': analysis_result['confidence'],
+                'timestamp': datetime.utcnow(),
+                'reasons': analysis_result['details'],
+                'ai_analysis': analysis_result,
+                'user_ip': user_ip,
+                'user_agent': user_agent
+            }
+            
+            # Encrypt and save detection data
+            encrypted_detection = encrypt_sensitive_data('detection', detection_data)
+            db_manager.insert_one('detections', encrypted_detection)
             
             # Save encrypted analysis result for future reference
             ai_detector.save_analysis_result(file_path, analysis_result, user_id, user_ip)
