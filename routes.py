@@ -207,8 +207,8 @@ def user_dashboard():
     
     return render_template('dashboard.html', 
                          current_user=current_user,
-                         user_stats=user_stats,
-                         recent_detections=recent_detections,
+                         stats=user_stats,
+                         detections=recent_detections,
                          is_admin=False,
                          user_role=user_role)
 

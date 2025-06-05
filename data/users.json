@@ -9,7 +9,7 @@
     "active": true,
     "is_active": true,
     "created_at": "2025-06-05T10:00:00Z",
-    "last_login": "2025-06-05 10:49:17.568962",
+    "last_login": "2025-06-05 11:04:22.668196",
     "login_attempts": 0,
     "locked_until": null
   },
@@ -26,5 +26,21 @@
     "last_login": "2025-06-05 10:50:30.478630",
     "login_attempts": 0,
     "locked_until": null
+  },
+  {
+    "username": "Z0FBQUFBQm9RWG5QbWtfSHRxcGdMWGNNbXhZdzJ5blRCOWJ0VXFKWllvVThPVE1zYWZFaGtxTnNfN24wd0xrREJ0dDdHNXNBQTJFY3BWcXg4LTAyNk11LUtyZ0N4MWlTamc9PQ==",
+    "email": "Z0FBQUFBQm9RWG5QSE1PUHlBelN1QVkweFpRR05UaWdCczh0U3dKUHoyVHZXNExFUmQ1dmpwYUxfRXByM3dpNFVQRHIzam1EcHlvM1FhaFA5Mm9rV1lEX2hmRDhUeXkzaVE9PQ==",
+    "password_hash": "scrypt:32768:8:1$XKLxKMqbBOhp3KX3$00111bfd7906a95782464b4ce53ff30d6b6ffb049fd2515fc2c6e5e358a5b24b8b28cf1e4dee7ee28afca94ad8db9d01d96724c87c032fb9f1b58a109f4530b7",
+    "role": "user",
+    "created_at": "2025-06-05 11:04:47.883183",
+    "last_login": "2025-06-05 11:04:51.767551",
+    "is_active": true,
+    "login_attempts": 0,
+    "locked_until": null,
+    "username_encrypted": true,
+    "email_encrypted": true,
+    "encryption_version": "2.0",
+    "encrypted_at": "2025-06-05 11:04:47.884060",
+    "_id": "users_3_3249283284"
   }
 ]

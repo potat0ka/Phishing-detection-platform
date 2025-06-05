@@ -240,9 +240,24 @@ def demote_user(user_id):
 @admin_bp.route('/user/<user_id>/delete', methods=['POST'])
 @admin_required
 def delete_user(user_id):
-    """Delete a user account permanently with comprehensive data cleanup"""
+    """
+    Delete a user account permanently with comprehensive data cleanup
+    
+    Role Permissions:
+    - Super Admin: Can delete any user except self
+    - Sub Admin: Cannot delete Super Admin or other Sub Admins
+    """
     try:
         current_user = get_current_user()
+        current_user_id = session.get('user_id')
+        current_role = current_user.get('role', 'user') if current_user else 'user'
+        
+        # Prevent self-deletion
+        if user_id == current_user_id:
+            return jsonify({
+                'success': False,
+                'message': 'Cannot delete your own account'
+            }), 400
         
         # Find user to delete
         user = db_manager.find_one('users', {'id': user_id})
@@ -252,13 +267,23 @@ def delete_user(user_id):
         if not user:
             return jsonify({'success': False, 'error': 'User not found'})
         
-        # Security checks
-        if str(user.get('id')) == str(current_user.get('id')):
-            return jsonify({'success': False, 'error': 'Cannot delete your own account'})
+        # Get target user role for permission checking
+        target_role = user.get('role', 'user')
         
-        # Super Admin cannot be deleted by Sub-Admin
-        if user.get('role') == 'super_admin' and current_user.get('role') != 'super_admin':
-            return jsonify({'success': False, 'error': 'Sub-Admin cannot delete Super Admin'})
+        # Role-based deletion restrictions
+        if current_role == 'sub_admin':
+            if target_role in ['super_admin', 'sub_admin']:
+                return jsonify({
+                    'success': False,
+                    'message': 'Sub Admin cannot delete Super Admin or other Sub Admins'
+                }), 403
+        
+        # Only Super Admin can delete admin-level users
+        if current_role not in ['super_admin'] and target_role in ['super_admin', 'sub_admin']:
+            return jsonify({
+                'success': False,
+                'message': 'Insufficient permissions to delete this user'
+            }), 403
         
         # Get username for logging
         username = user.get('username', 'Unknown')
