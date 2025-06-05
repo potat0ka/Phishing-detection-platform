@@ -1628,7 +1628,7 @@ def rotate_api_key():
 @admin_bp.route('/system/backup-database', methods=['POST'])
 @admin_required
 def backup_database():
-    """Create database backup"""
+    """Create database backup by copying all JSON data files"""
     try:
         current_user = get_current_user()
         
@@ -1639,37 +1639,86 @@ def backup_database():
                 'message': 'Only Super Admin can create database backups'
             }), 403
         
-        # Create backup record
-        backup_record = {
-            'id': f"backup_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
-            'created_by': current_user.get('id'),
-            'created_at': datetime.utcnow(),
-            'status': 'completed',
-            'file_size': '2.5 MB',  # Simulated
-            'records_count': len(db_manager.find_many('users', {})) + len(db_manager.find_many('detections', {}))
-        }
+        import os
+        import shutil
+        import zipfile
+        from datetime import datetime
         
-        db_manager.insert_one('database_backups', backup_record)
+        # Create backup directory if it doesn't exist
+        backup_dir = 'backups'
+        if not os.path.exists(backup_dir):
+            os.makedirs(backup_dir)
         
-        logger.info(f"Super Admin {current_user.get('username')} created database backup")
+        # Create timestamp for backup
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        backup_filename = f"database_backup_{timestamp}.zip"
+        backup_path = os.path.join(backup_dir, backup_filename)
+        
+        # Create ZIP file with all data files
+        with zipfile.ZipFile(backup_path, 'w', zipfile.ZIP_DEFLATED) as backup_zip:
+            # Add all JSON data files
+            data_dir = 'data'
+            if os.path.exists(data_dir):
+                for filename in os.listdir(data_dir):
+                    if filename.endswith('.json'):
+                        file_path = os.path.join(data_dir, filename)
+                        backup_zip.write(file_path, f"data/{filename}")
+            
+            # Add database directory if it exists
+            db_dir = 'database'
+            if os.path.exists(db_dir):
+                for root, dirs, files in os.walk(db_dir):
+                    for file in files:
+                        file_path = os.path.join(root, file)
+                        arcname = os.path.relpath(file_path, '.')
+                        backup_zip.write(file_path, arcname)
+        
+        # Get backup file size
+        file_size = os.path.getsize(backup_path)
+        file_size_mb = round(file_size / (1024 * 1024), 2)
+        
+        # Count total records
+        total_records = 0
+        try:
+            # Count users
+            with open('data/users.json', 'r') as f:
+                users = json.load(f)
+                total_records += len(users)
+        except:
+            pass
+        
+        try:
+            # Count reports
+            with open('data/reports.json', 'r') as f:
+                reports = json.load(f)
+                total_records += len(reports)
+        except:
+            pass
+        
+        logger.info(f"Super Admin {current_user.get('username')} created database backup: {backup_filename}")
         
         return jsonify({
             'success': True,
-            'message': 'Database backup completed successfully',
-            'backup_id': backup_record['id']
+            'message': f'Database backup created successfully: {backup_filename}',
+            'backup_info': {
+                'filename': backup_filename,
+                'size': f'{file_size_mb} MB',
+                'records': total_records,
+                'path': backup_path
+            }
         })
         
     except Exception as e:
         logger.error(f"Error creating database backup: {e}")
         return jsonify({
             'success': False,
-            'message': 'Error occurred while creating database backup'
+            'message': f'Error occurred while creating database backup: {str(e)}'
         }), 500
 
 @admin_bp.route('/system/optimize-database', methods=['POST'])
 @admin_required
 def optimize_database():
-    """Optimize database performance"""
+    """Optimize database performance by cleaning up and reorganizing JSON files"""
     try:
         current_user = get_current_user()
         
@@ -1680,30 +1729,81 @@ def optimize_database():
                 'message': 'Only Super Admin can optimize database'
             }), 403
         
-        # Simulate optimization process
-        optimization_record = {
-            'id': f"optimization_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
-            'optimized_by': current_user.get('id'),
-            'optimized_at': datetime.utcnow(),
-            'tables_optimized': 8,
-            'space_reclaimed': '156 KB',
-            'performance_improvement': '12%'
+        import os
+        import json
+        import gc
+        
+        optimization_results = {
+            'files_optimized': 0,
+            'space_before': 0,
+            'space_after': 0,
+            'records_cleaned': 0
         }
         
-        db_manager.insert_one('database_optimizations', optimization_record)
+        # Optimize JSON data files
+        data_dir = 'data'
+        if os.path.exists(data_dir):
+            for filename in os.listdir(data_dir):
+                if filename.endswith('.json'):
+                    file_path = os.path.join(data_dir, filename)
+                    
+                    # Get original file size
+                    original_size = os.path.getsize(file_path)
+                    optimization_results['space_before'] += original_size
+                    
+                    try:
+                        # Load, clean, and rewrite JSON with proper formatting
+                        with open(file_path, 'r') as f:
+                            data = json.load(f)
+                        
+                        # Clean up data (remove None values, empty strings, etc.)
+                        if isinstance(data, list):
+                            cleaned_data = []
+                            for item in data:
+                                if isinstance(item, dict):
+                                    cleaned_item = {k: v for k, v in item.items() if v is not None and v != ''}
+                                    if cleaned_item:  # Only keep non-empty items
+                                        cleaned_data.append(cleaned_item)
+                            data = cleaned_data
+                            optimization_results['records_cleaned'] += len(data)
+                        
+                        # Rewrite file with optimized formatting
+                        with open(file_path, 'w') as f:
+                            json.dump(data, f, indent=2, separators=(',', ': '), ensure_ascii=False)
+                        
+                        # Get new file size
+                        new_size = os.path.getsize(file_path)
+                        optimization_results['space_after'] += new_size
+                        optimization_results['files_optimized'] += 1
+                        
+                    except Exception as e:
+                        logger.warning(f"Could not optimize {filename}: {e}")
+                        optimization_results['space_after'] += original_size
+        
+        # Force garbage collection
+        gc.collect()
+        
+        # Calculate space savings
+        space_saved = optimization_results['space_before'] - optimization_results['space_after']
+        space_saved_kb = round(space_saved / 1024, 2)
         
         logger.info(f"Super Admin {current_user.get('username')} optimized database")
         
         return jsonify({
             'success': True,
-            'message': 'Database optimization completed successfully'
+            'message': f'Database optimization completed: {optimization_results["files_optimized"]} files optimized, {space_saved_kb} KB space reclaimed',
+            'optimization_details': {
+                'files_optimized': optimization_results['files_optimized'],
+                'space_saved_kb': space_saved_kb,
+                'records_processed': optimization_results['records_cleaned']
+            }
         })
         
     except Exception as e:
         logger.error(f"Error optimizing database: {e}")
         return jsonify({
             'success': False,
-            'message': 'Error occurred while optimizing database'
+            'message': f'Error occurred while optimizing database: {str(e)}'
         }), 500
 
 @admin_bp.route('/system/database-stats', methods=['GET'])
