@@ -566,5 +566,5 @@ mkdir -p data uploads
 
 **Author**: Bigendra Shrestha  
 **Project**: Final Semester - AI Phishing Detection Platform  
-**Institution**: [Your Institution Name]  
+**Institution**: Saraswati Multiple Campus
 **Year**: 2024-2025
