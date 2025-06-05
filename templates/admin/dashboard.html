@@ -493,8 +493,9 @@
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>
-                                            <input type="checkbox" id="selectAllUsers" onclick="selectAllUsers()" onchange="selectAllUsers()">
+                                        <th width="40">
+                                            <input type="checkbox" id="selectAllUsers" onclick="selectAllUsers()" onchange="selectAllUsers()" style="display: none;">
+                                            <i class="fas fa-check-square text-primary" id="selectAllIcon" onclick="toggleSelectAll()" style="cursor: pointer; font-size: 16px;"></i>
                                         </th>
                                         <th>User</th>
                                         <th>Email</th>
@@ -1044,14 +1045,22 @@
             }
         }
         
-        function selectAllUsers() {
+        function toggleSelectAll() {
             const selectAll = document.getElementById('selectAllUsers');
+            const selectAllIcon = document.getElementById('selectAllIcon');
             const checkboxes = document.querySelectorAll('.user-checkbox');
             
-            // Debug logging
-            console.log('Select all clicked. Checked:', selectAll.checked, 'Found checkboxes:', checkboxes.length);
+            // Toggle the hidden checkbox state
+            selectAll.checked = !selectAll.checked;
             
-            // Set all individual checkboxes to match the select all checkbox
+            // Update icon appearance
+            if (selectAll.checked) {
+                selectAllIcon.className = 'fas fa-check-square text-success';
+            } else {
+                selectAllIcon.className = 'fas fa-square text-secondary';
+            }
+            
+            // Set all individual checkboxes to match
             checkboxes.forEach(checkbox => {
                 checkbox.checked = selectAll.checked;
             });
@@ -1060,9 +1069,15 @@
             updateUserSelectionDisplay();
         }
         
+        function selectAllUsers() {
+            // This function is kept for compatibility but main logic moved to toggleSelectAll
+            toggleSelectAll();
+        }
+        
         function updateSelectAllUsers() {
             const checkboxes = document.querySelectorAll('.user-checkbox');
             const selectAll = document.getElementById('selectAllUsers');
+            const selectAllIcon = document.getElementById('selectAllIcon');
             const checkedCount = document.querySelectorAll('.user-checkbox:checked').length;
             
             console.log('Update select all:', checkedCount, 'of', checkboxes.length);
@@ -1070,12 +1085,15 @@
             if (checkedCount === 0) {
                 selectAll.indeterminate = false;
                 selectAll.checked = false;
+                selectAllIcon.className = 'fas fa-square text-secondary';
             } else if (checkedCount === checkboxes.length) {
                 selectAll.indeterminate = false;
                 selectAll.checked = true;
+                selectAllIcon.className = 'fas fa-check-square text-success';
             } else {
                 selectAll.indeterminate = true;
                 selectAll.checked = false;
+                selectAllIcon.className = 'fas fa-minus-square text-warning';
             }
             
             updateUserSelectionDisplay();
