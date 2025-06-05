@@ -4,15 +4,56 @@
 
 {% block content %}
 <div class="container py-5">
-    <!-- Header -->
+    <!-- Header with Character -->
     <div class="text-center mb-5">
         <h1 class="display-5 fw-bold">
             <i class="fas fa-graduation-cap text-warning me-3"></i>
             Phishing Safety Tips
         </h1>
-        <p class="lead text-muted">
+        <p class="lead text-muted mb-4">
             Learn how to protect yourself from phishing attacks with these expert tips
         </p>
+        
+        <!-- Character Section -->
+        <div class="d-flex justify-content-center mb-4">
+            <div class="character-container text-center" style="max-width: 280px;">
+                <div class="character-card p-3 rounded-3 position-relative overflow-hidden" 
+                     style="background: transparent;">
+                    <!-- Character image -->
+                    <div class="character-image-wrapper position-relative">
+                        <img src="{{ url_for('static', filename='images/safety-tips-avatar.jpg') }}" 
+                             alt="Security Expert" 
+                             class="character-image img-fluid rounded-3 shadow"
+                             style="max-height: 200px; width: auto; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.2);">
+                        
+                        <!-- Status indicator -->
+                        <div class="status-indicator position-absolute top-0 end-0 mt-2 me-2">
+                            <div class="status-dot bg-success rounded-circle shadow-sm" 
+                                 style="width: 12px; height: 12px; animation: pulse-dot 2s infinite;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Character info -->
+                    <div class="character-info mt-3">
+                        <div class="character-title mb-2">
+                            <h6 class="fw-bold text-white mb-1">Security Advisor</h6>
+                            <p class="text-muted mb-2" style="font-size: 0.8rem;">Your Safety Guide</p>
+                        </div>
+                        
+                        <div class="character-badges d-flex flex-column gap-1">
+                            <div class="badge bg-warning text-dark px-3 py-1 rounded-pill shadow-sm fw-semibold" style="font-size: 0.75rem;">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                Security Expert
+                            </div>
+                            <div class="badge bg-success text-white px-3 py-1 rounded-pill shadow-sm fw-semibold" style="font-size: 0.75rem;">
+                                <i class="fas fa-graduation-cap me-1"></i>
+                                Ready to Teach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- Quick Stats -->
