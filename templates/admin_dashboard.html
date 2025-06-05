@@ -1310,7 +1310,91 @@ function initializeAnalyticsCharts() {
 
 // Admin Dashboard Functions
 function createUser() {
-    showAlert('User creation form would open here', 'info');
+    const modalContent = `
+        <div class="modal fade" id="createUserModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create New User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="createUserForm">
+                            <div class="mb-3">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-control" name="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Role</label>
+                                <select class="form-select" name="role" required>
+                                    <option value="user">Regular User</option>
+                                    {% if current_user.role == 'super_admin' %}
+                                    <option value="sub_admin">Sub Admin</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Temporary Password</label>
+                                <input type="password" class="form-control" name="password" required minlength="8">
+                                <div class="form-text">Minimum 8 characters required</div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="handleCreateUser()">Create User</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if present
+    const existingModal = document.getElementById('createUserModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to page and show it
+    document.body.insertAdjacentHTML('beforeend', modalContent);
+    const modal = new bootstrap.Modal(document.getElementById('createUserModal'));
+    modal.show();
+}
+
+function handleCreateUser() {
+    const form = document.getElementById('createUserForm');
+    const formData = new FormData(form);
+    
+    // Validate form
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    // Show loading state
+    showAlert('Creating user...', 'info');
+    
+    fetch('/admin/user/create', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(data.message, 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error creating user:', error);
+        showAlert('Error creating user. Please try again.', 'danger');
+    });
 }
 
 function exportUsers() {
@@ -1392,12 +1476,12 @@ function resetPassword(userId, username) {
         showAlert('Resetting user password...', 'info');
         
         // Make the password reset request
+        const formData = new FormData();
+        formData.append('password', newPassword);
+        
         fetch(`/admin/user/${userId}/reset-password`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+            body: formData
                 new_password: newPassword
             })
         })

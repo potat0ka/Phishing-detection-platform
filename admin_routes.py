@@ -28,6 +28,8 @@ from datetime import datetime, timedelta
 import json
 import logging
 import uuid
+import time
+import random
 
 # Set up logging for admin actions
 logger = logging.getLogger(__name__)
@@ -77,6 +79,99 @@ def admin_dashboard():
                          users=users,
                          scan_logs=scan_logs,
                          reported_content=reported_content)
+
+@admin_bp.route('/user/create', methods=['POST'])
+@admin_required
+def create_user():
+    """
+    Create a new user account (Admin functionality)
+    
+    Role Permissions:
+    - Super Admin: Can create users with any role
+    - Sub Admin: Can create regular users only
+    """
+    try:
+        current_user = get_current_user()
+        current_role = current_user.get('role', 'user') if current_user else 'user'
+        
+        # Get form data
+        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+        role = request.form.get('role', 'user').strip()
+        
+        # Validate required fields
+        if not all([username, email, password]):
+            return jsonify({
+                'success': False,
+                'message': 'Username, email, and password are required'
+            }), 400
+        
+        # Role-based restrictions
+        if current_role == 'sub_admin' and role in ['super_admin', 'sub_admin']:
+            return jsonify({
+                'success': False,
+                'message': 'Sub Admin can only create regular users'
+            }), 403
+        
+        # Validate password strength
+        if len(password) < 8:
+            return jsonify({
+                'success': False,
+                'message': 'Password must be at least 8 characters long'
+            }), 400
+        
+        # Check if user already exists
+        existing_user = db_manager.find_one('users', {'username': username})
+        if existing_user:
+            return jsonify({
+                'success': False,
+                'message': 'Username already exists'
+            }), 400
+        
+        existing_email = db_manager.find_one('users', {'email': email})
+        if existing_email:
+            return jsonify({
+                'success': False,
+                'message': 'Email already exists'
+            }), 400
+        
+        # Create new user
+        password_hash = generate_password_hash(password)
+        user_id = f"user_{int(time.time())}_{random.randint(1000, 9999)}"
+        
+        new_user = {
+            'id': user_id,
+            '_id': f"users_{random.randint(1, 999999)}_{random.randint(100000, 999999)}",
+            'username': username,
+            'email': email,
+            'password_hash': password_hash,
+            'role': role,
+            'active': True,
+            'is_active': True,
+            'created_at': datetime.utcnow().isoformat(),
+            'last_login': None,
+            'login_attempts': 0,
+            'locked_until': None
+        }
+        
+        # Insert user into database
+        db_manager.insert_one('users', new_user)
+        
+        # Log admin action
+        logger.info(f"Admin {current_role} {current_user.get('username')} created new user {username} with role {role}")
+        
+        return jsonify({
+            'success': True,
+            'message': f'User "{username}" created successfully with role "{role}"'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error creating user: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while creating user'
+        }), 500
 
 @admin_bp.route('/user/<user_id>')
 @admin_required
