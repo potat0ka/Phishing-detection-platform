@@ -480,53 +480,42 @@ document.addEventListener('DOMContentLoaded', function() {
     // Focus on username field
     document.getElementById('username').focus();
     
-    // Enhanced password toggle functionality
-    const toggleButtons = document.querySelectorAll('.toggle-password');
-    
-    toggleButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
+    // Simple and reliable password toggle function
+    window.togglePassword = function(fieldId, button) {
+        const field = document.getElementById(fieldId);
+        const icon = button.querySelector('i');
+        
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+            button.setAttribute('title', 'Hide Password');
+            field.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
             
-            const targetSelector = this.getAttribute('data-target');
-            const target = document.querySelector(targetSelector);
-            const icon = this.querySelector('i');
-            
-            if (!target || !icon) return;
-            
-            // Add visual feedback
-            this.classList.add('toggle-active');
-            
-            if (target.type === 'password') {
-                // Show password
-                target.type = 'text';
-                icon.className = 'bi bi-eye-slash password-toggle-icon';
-                this.setAttribute('title', 'Hide Password');
-                target.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
-                
-                // Auto-hide after 30 seconds
-                setTimeout(() => {
-                    if (target.type === 'text') {
-                        target.type = 'password';
-                        icon.className = 'bi bi-eye password-toggle-icon';
-                        this.setAttribute('title', 'Show Password');
-                        target.style.backgroundColor = '';
-                    }
-                }, 30000);
-            } else {
-                // Hide password
-                target.type = 'password';
-                icon.className = 'bi bi-eye password-toggle-icon';
-                this.setAttribute('title', 'Show Password');
-                target.style.backgroundColor = '';
-            }
-            
-            // Remove active state
+            // Auto-hide after 30 seconds for security
             setTimeout(() => {
-                this.classList.remove('toggle-active');
-            }, 200);
-        });
-    });
+                if (field.type === 'text') {
+                    field.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                    button.setAttribute('title', 'Show Password');
+                    field.style.backgroundColor = '';
+                }
+            }, 30000);
+        } else {
+            field.type = 'password';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+            button.setAttribute('title', 'Show Password');
+            field.style.backgroundColor = '';
+        }
+        
+        // Add visual feedback
+        button.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            button.style.transform = 'scale(1)';
+        }, 150);
+    };
     
     // Form validation
     const form = document.getElementById('loginForm');
