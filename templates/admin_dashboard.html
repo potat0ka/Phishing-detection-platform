@@ -1676,6 +1676,16 @@ function toggleUserStatus(userId) {
 }
 
 function deleteUser(userId, username) {
+    // Validate inputs
+    if (!userId || userId === 'undefined' || userId === 'null') {
+        showAlert('Error: Invalid user ID. Cannot delete user.', 'danger');
+        return;
+    }
+    
+    if (!username) {
+        username = 'this user';
+    }
+    
     // Show confirmation dialog with user details
     const confirmMessage = `Are you sure you want to permanently delete user "${username}"?\n\nThis action will:\n• Remove the user account\n• Delete all their scan history\n• Remove any reported content by this user\n• This action cannot be undone!`;
     
@@ -1902,9 +1912,34 @@ function exportReports() {
 
 function refreshReports() {
     showAlert('Refreshing phishing database...', 'info');
-    setTimeout(() => {
-        location.reload();
-    }, 1000);
+    
+    // Reload only the phishing database section, not the entire page
+    fetch('/admin/phishing-db/refresh', {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Phishing database refreshed successfully', 'success');
+            // Refresh only the phishing database tab content
+            setTimeout(() => {
+                // If we're currently on the phishing tab, reload just that section
+                const phishingTab = document.querySelector('#phishing-tab');
+                if (phishingTab && phishingTab.classList.contains('active')) {
+                    location.reload();
+                } else {
+                    showAlert('Phishing database updated in background', 'info');
+                }
+            }, 1000);
+        } else {
+            showAlert('Error refreshing database: ' + (data.message || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error refreshing phishing database:', error);
+        // Fallback to page reload
+        setTimeout(() => location.reload(), 1000);
+    });
 }
 
 // AI/ML Settings Functions
@@ -2009,65 +2044,788 @@ function testModel() {
 
 // Security Functions
 function viewFullLoginHistory() {
-    showAlert('Full login history would open here', 'info');
+    showAlert('Loading full login history...', 'info');
+    
+    fetch('/admin/security/login-history', {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Create modal to display login history
+            const historyModal = `
+                <div class="modal fade" id="loginHistoryModal" tabindex="-1">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Complete Login History</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>User</th>
+                                                <th>IP Address</th>
+                                                <th>User Agent</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${data.history.map(log => `
+                                                <tr>
+                                                    <td>${log.timestamp}</td>
+                                                    <td>${log.username}</td>
+                                                    <td>${log.ip_address}</td>
+                                                    <td>${log.user_agent}</td>
+                                                    <td><span class="badge bg-${log.success ? 'success' : 'danger'}">${log.success ? 'Success' : 'Failed'}</span></td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="exportLoginHistory()">Export CSV</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', historyModal);
+            const modal = new bootstrap.Modal(document.getElementById('loginHistoryModal'));
+            modal.show();
+        } else {
+            showAlert('Error loading login history: ' + (data.message || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error loading login history:', error);
+        showAlert('Error loading login history. Please try again.', 'danger');
+    });
 }
 
 function updateSecuritySettings() {
-    showAlert('Security settings updated successfully', 'success');
+    const form = document.querySelector('#security form');
+    if (!form) {
+        showAlert('Security settings form not found', 'danger');
+        return;
+    }
+    
+    const formData = new FormData(form);
+    
+    showAlert('Updating security settings...', 'info');
+    
+    fetch('/admin/security/update-settings', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Security settings updated successfully', 'success');
+        } else {
+            showAlert('Error updating settings: ' + (data.message || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating security settings:', error);
+        showAlert('Error updating security settings. Please try again.', 'danger');
+    });
 }
 
 function rotateKey(service) {
     if (confirm(`Rotate API key for ${service}? This may cause temporary service interruption.`)) {
-        showAlert(`API key rotated for ${service}`, 'success');
+        showAlert(`Rotating API key for ${service}...`, 'info');
+        
+        fetch('/admin/security/rotate-key', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ service: service })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(`API key rotated for ${service} successfully`, 'success');
+            } else {
+                showAlert('Error rotating key: ' + (data.message || 'Unknown error'), 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error rotating API key:', error);
+            showAlert('Error rotating API key. Please try again.', 'danger');
+        });
     }
 }
 
 function configureService(service) {
-    showAlert(`Configuration dialog for ${service} would open here`, 'info');
+    showAlert(`Opening configuration for ${service}...`, 'info');
+    
+    // Create configuration modal
+    const configModal = `
+        <div class="modal fade" id="serviceConfigModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Configure ${service}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="serviceConfigForm">
+                            <input type="hidden" name="service" value="${service}">
+                            <div class="mb-3">
+                                <label class="form-label">Service Status</label>
+                                <select class="form-select" name="status">
+                                    <option value="enabled">Enabled</option>
+                                    <option value="disabled">Disabled</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Configuration Settings</label>
+                                <textarea class="form-control" name="config" rows="4" placeholder="Enter JSON configuration"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="saveServiceConfig()">Save Configuration</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', configModal);
+    const modal = new bootstrap.Modal(document.getElementById('serviceConfigModal'));
+    modal.show();
 }
 
 // System Management Functions
 function backupDatabase() {
-    showAlert('Database backup initiated...', 'info');
+    if (confirm('Create database backup? This may take a few minutes.')) {
+        showAlert('Database backup initiated...', 'info');
+        
+        fetch('/admin/system/backup-database', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Database backup completed successfully', 'success');
+                if (data.download_url) {
+                    window.open(data.download_url, '_blank');
+                }
+            } else {
+                showAlert('Error creating backup: ' + (data.message || 'Unknown error'), 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error creating database backup:', error);
+            showAlert('Error creating database backup. Please try again.', 'danger');
+        });
+    }
 }
 
 function optimizeDatabase() {
-    if (confirm('Optimize database? This may take a few minutes.')) {
+    if (confirm('Optimize database? This may take a few minutes and will improve performance.')) {
         showAlert('Database optimization started...', 'info');
+        
+        fetch('/admin/system/optimize-database', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Database optimization completed successfully', 'success');
+            } else {
+                showAlert('Error optimizing database: ' + (data.message || 'Unknown error'), 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error optimizing database:', error);
+            showAlert('Error optimizing database. Please try again.', 'danger');
+        });
     }
 }
 
 function viewDbStats() {
-    showAlert('Database statistics would open here', 'info');
+    showAlert('Loading database statistics...', 'info');
+    
+    fetch('/admin/system/database-stats', {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Create modal to display database stats
+            const statsModal = `
+                <div class="modal fade" id="dbStatsModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Database Statistics</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Database Info</h6>
+                                        <ul class="list-unstyled">
+                                            <li><strong>Type:</strong> ${data.stats.db_type}</li>
+                                            <li><strong>Size:</strong> ${data.stats.db_size}</li>
+                                            <li><strong>Tables:</strong> ${data.stats.table_count}</li>
+                                            <li><strong>Records:</strong> ${data.stats.total_records}</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Performance</h6>
+                                        <ul class="list-unstyled">
+                                            <li><strong>Uptime:</strong> ${data.stats.uptime}</li>
+                                            <li><strong>Connections:</strong> ${data.stats.connections}</li>
+                                            <li><strong>Avg Query Time:</strong> ${data.stats.avg_query_time}</li>
+                                            <li><strong>Cache Hit Rate:</strong> ${data.stats.cache_hit_rate}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', statsModal);
+            const modal = new bootstrap.Modal(document.getElementById('dbStatsModal'));
+            modal.show();
+        } else {
+            showAlert('Error loading database statistics: ' + (data.message || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error loading database statistics:', error);
+        showAlert('Error loading database statistics. Please try again.', 'danger');
+    });
 }
 
 function systemHealthCheck() {
     showAlert('Running comprehensive health check...', 'info');
+    
+    fetch('/admin/system/health-check', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Create modal to display health check results
+            const healthModal = `
+                <div class="modal fade" id="healthCheckModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">System Health Check Results</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <h6>Overall Status: <span class="badge bg-${data.health.overall_status === 'healthy' ? 'success' : 'danger'}">${data.health.overall_status.toUpperCase()}</span></h6>
+                                </div>
+                                <div class="row">
+                                    ${data.health.checks.map(check => `
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">${check.component}</h6>
+                                                    <p class="card-text">
+                                                        <span class="badge bg-${check.status === 'ok' ? 'success' : 'danger'}">${check.status.toUpperCase()}</span>
+                                                        <br><small>${check.message}</small>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="exportHealthReport()">Export Report</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', healthModal);
+            const modal = new bootstrap.Modal(document.getElementById('healthCheckModal'));
+            modal.show();
+        } else {
+            showAlert('Error running health check: ' + (data.message || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error running health check:', error);
+        showAlert('Error running health check. Please try again.', 'danger');
+    });
 }
 
 function updateAdminProfile() {
-    showAlert('Admin profile updated successfully', 'success');
+    const form = document.querySelector('#profile form');
+    if (!form) {
+        showAlert('Profile form not found', 'danger');
+        return;
+    }
+    
+    const formData = new FormData(form);
+    
+    showAlert('Updating admin profile...', 'info');
+    
+    fetch('/admin/profile/update', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Admin profile updated successfully', 'success');
+        } else {
+            showAlert('Error updating profile: ' + (data.message || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating admin profile:', error);
+        showAlert('Error updating admin profile. Please try again.', 'danger');
+    });
 }
 
 function changeAdminPassword() {
-    showAlert('Password change form would open here', 'info');
+    // Create password change modal
+    const passwordModal = `
+        <div class="modal fade" id="changePasswordModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Change Admin Password</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="changePasswordForm">
+                            <div class="mb-3">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" class="form-control" name="current_password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">New Password</label>
+                                <input type="password" class="form-control" name="new_password" required minlength="8">
+                                <div class="form-text">Password must be at least 8 characters long</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control" name="confirm_password" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="handlePasswordChange()">Change Password</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', passwordModal);
+    const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+    modal.show();
+}
+
+function handlePasswordChange() {
+    const form = document.getElementById('changePasswordForm');
+    const formData = new FormData(form);
+    
+    // Validate passwords match
+    const newPassword = formData.get('new_password');
+    const confirmPassword = formData.get('confirm_password');
+    
+    if (newPassword !== confirmPassword) {
+        showAlert('New passwords do not match', 'danger');
+        return;
+    }
+    
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    showAlert('Changing password...', 'info');
+    
+    fetch('/admin/profile/change-password', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Password changed successfully', 'success');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
+            modal.hide();
+        } else {
+            showAlert('Error changing password: ' + (data.message || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error changing password:', error);
+        showAlert('Error changing password. Please try again.', 'danger');
+    });
 }
 
 // Support Functions
 function viewDocumentation() {
-    window.open('/docs', '_blank');
+    // Create documentation modal since /docs doesn't exist
+    const docsModal = `
+        <div class="modal fade" id="documentationModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">AI Phishing Detection Platform Documentation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="accordion" id="docsAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#admin-guide">
+                                        Admin Dashboard Guide
+                                    </button>
+                                </h2>
+                                <div id="admin-guide" class="accordion-collapse collapse show" data-bs-parent="#docsAccordion">
+                                    <div class="accordion-body">
+                                        <h6>User Management</h6>
+                                        <ul>
+                                            <li>Create, edit, and delete user accounts</li>
+                                            <li>Promote/demote user roles (Super Admin only)</li>
+                                            <li>Reset user passwords</li>
+                                            <li>Export user data as CSV</li>
+                                        </ul>
+                                        <h6>Content Moderation</h6>
+                                        <ul>
+                                            <li>Review reported content</li>
+                                            <li>Approve/reject reports individually or in bulk</li>
+                                            <li>Monitor phishing detection accuracy</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#security-guide">
+                                        Security & System Management
+                                    </button>
+                                </h2>
+                                <div id="security-guide" class="accordion-collapse collapse" data-bs-parent="#docsAccordion">
+                                    <div class="accordion-body">
+                                        <h6>Security Tools</h6>
+                                        <ul>
+                                            <li>View login history and suspicious activities</li>
+                                            <li>Configure security settings</li>
+                                            <li>Rotate API keys for services</li>
+                                        </ul>
+                                        <h6>System Management</h6>
+                                        <ul>
+                                            <li>Create database backups</li>
+                                            <li>Optimize database performance</li>
+                                            <li>Run system health checks</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', docsModal);
+    const modal = new bootstrap.Modal(document.getElementById('documentationModal'));
+    modal.show();
 }
 
 function contactSupport() {
-    showAlert('Support contact form would open here', 'info');
+    const supportModal = `
+        <div class="modal fade" id="supportModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Contact Support</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="supportForm">
+                            <div class="mb-3">
+                                <label class="form-label">Subject</label>
+                                <select class="form-select" name="subject" required>
+                                    <option value="">Select subject...</option>
+                                    <option value="technical">Technical Issue</option>
+                                    <option value="account">Account Problem</option>
+                                    <option value="billing">Billing Question</option>
+                                    <option value="feature">Feature Request</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Priority</label>
+                                <select class="form-select" name="priority" required>
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Message</label>
+                                <textarea class="form-control" name="message" rows="4" required placeholder="Please describe your issue or question in detail..."></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="submitSupportRequest()">Send Request</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', supportModal);
+    const modal = new bootstrap.Modal(document.getElementById('supportModal'));
+    modal.show();
 }
 
 function reportBug() {
-    showAlert('Bug report form would open here', 'info');
+    const bugModal = `
+        <div class="modal fade" id="bugReportModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Report Bug</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="bugReportForm">
+                            <div class="mb-3">
+                                <label class="form-label">Bug Category</label>
+                                <select class="form-select" name="category" required>
+                                    <option value="">Select category...</option>
+                                    <option value="ui">User Interface</option>
+                                    <option value="functionality">Functionality</option>
+                                    <option value="performance">Performance</option>
+                                    <option value="security">Security</option>
+                                    <option value="data">Data/Database</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Severity</label>
+                                <select class="form-select" name="severity" required>
+                                    <option value="low">Low - Minor inconvenience</option>
+                                    <option value="medium" selected>Medium - Affects functionality</option>
+                                    <option value="high">High - Major feature broken</option>
+                                    <option value="critical">Critical - System unusable</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Steps to Reproduce</label>
+                                <textarea class="form-control" name="steps" rows="3" required placeholder="1. Go to...&#10;2. Click on...&#10;3. See error..."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Expected vs Actual Behavior</label>
+                                <textarea class="form-control" name="behavior" rows="3" required placeholder="Expected: What should happen&#10;Actual: What actually happened"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Browser/Environment</label>
+                                <input type="text" class="form-control" name="environment" placeholder="e.g., Chrome 91, Firefox 89, Mobile Safari">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" onclick="submitBugReport()">Submit Bug Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', bugModal);
+    const modal = new bootstrap.Modal(document.getElementById('bugReportModal'));
+    modal.show();
 }
 
 function provideFeedback() {
-    showAlert('Feedback form would open here', 'info');
+    const feedbackModal = `
+        <div class="modal fade" id="feedbackModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Send Feedback</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="feedbackForm">
+                            <div class="mb-3">
+                                <label class="form-label">Feedback Type</label>
+                                <select class="form-select" name="type" required>
+                                    <option value="">Select type...</option>
+                                    <option value="suggestion">Suggestion</option>
+                                    <option value="praise">Praise</option>
+                                    <option value="complaint">Complaint</option>
+                                    <option value="feature">Feature Request</option>
+                                    <option value="general">General Feedback</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Overall Rating</label>
+                                <div class="rating-stars d-flex">
+                                    <input type="radio" name="rating" value="5" id="star5" class="d-none">
+                                    <label for="star5" class="text-warning fs-4 me-1" style="cursor: pointer;">★</label>
+                                    <input type="radio" name="rating" value="4" id="star4" class="d-none">
+                                    <label for="star4" class="text-warning fs-4 me-1" style="cursor: pointer;">★</label>
+                                    <input type="radio" name="rating" value="3" id="star3" class="d-none">
+                                    <label for="star3" class="text-warning fs-4 me-1" style="cursor: pointer;">★</label>
+                                    <input type="radio" name="rating" value="2" id="star2" class="d-none">
+                                    <label for="star2" class="text-warning fs-4 me-1" style="cursor: pointer;">★</label>
+                                    <input type="radio" name="rating" value="1" id="star1" class="d-none">
+                                    <label for="star1" class="text-warning fs-4 me-1" style="cursor: pointer;">★</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Your Feedback</label>
+                                <textarea class="form-control" name="feedback" rows="4" required placeholder="Please share your thoughts, suggestions, or experiences..."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="contact_me" id="contactMe">
+                                    <label class="form-check-label" for="contactMe">
+                                        I'm willing to be contacted about this feedback
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-success" onclick="submitFeedback()">Send Feedback</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', feedbackModal);
+    const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+    modal.show();
+}
+
+function submitSupportRequest() {
+    const form = document.getElementById('supportForm');
+    const formData = new FormData(form);
+    
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    showAlert('Submitting support request...', 'info');
+    
+    fetch('/admin/support/submit', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Support request submitted successfully! Ticket ID: ' + data.ticket_id, 'success');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('supportModal'));
+            modal.hide();
+        } else {
+            showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting support request:', error);
+        showAlert('Error submitting support request. Please try again.', 'danger');
+    });
+}
+
+function submitBugReport() {
+    const form = document.getElementById('bugReportForm');
+    const formData = new FormData(form);
+    
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    showAlert('Submitting bug report...', 'info');
+    
+    fetch('/admin/support/bug-report', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Bug report submitted successfully! Report ID: ' + data.report_id, 'success');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('bugReportModal'));
+            modal.hide();
+        } else {
+            showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting bug report:', error);
+        showAlert('Error submitting bug report. Please try again.', 'danger');
+    });
+}
+
+function submitFeedback() {
+    const form = document.getElementById('feedbackForm');
+    const formData = new FormData(form);
+    
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    showAlert('Submitting feedback...', 'info');
+    
+    fetch('/admin/support/feedback', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Thank you for your feedback! Reference ID: ' + data.feedback_id, 'success');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('feedbackModal'));
+            modal.hide();
+        } else {
+            showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting feedback:', error);
+        showAlert('Error submitting feedback. Please try again.', 'danger');
+    });
 }
 
 // Utility Functions
