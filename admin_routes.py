@@ -31,43 +31,9 @@ logger = logging.getLogger(__name__)
 
 # Admin dashboard functionality is handled in routes.py dashboard() function
 # based on user role detection
-        
-        # Calculate system statistics
-        stats = calculate_system_stats()
-        
-        # Calculate analytics data
-        analytics = calculate_analytics_data()
-        
-        return render_template('admin/dashboard.html',
-                             users=users,
-                             scan_logs=scan_logs,
-                             reported_content=reported_content,
-                             email_tips=email_tips,
-                             url_tips=url_tips,
-                             general_tips=general_tips,
-                             stats=stats,
-                             analytics=analytics,
-                             current_user=get_current_user())
-                             
-    except Exception as e:
-        logger.error(f"Error loading admin dashboard: {e}")
-        flash('Error loading dashboard data', 'error')
-        return redirect(url_for('dashboard'))
 
-@admin_bp.route('/live-stats')
-@admin_required
-def live_stats():
-    """API endpoint for real-time statistics updates"""
-    try:
-        stats = calculate_system_stats()
-        return jsonify({'success': True, 'stats': stats})
-    except Exception as e:
-        logger.error(f"Error getting live stats: {e}")
-        return jsonify({'success': False, 'error': str(e)})
+# Helper functions for admin dashboard (used by routes.py)
 
-# User Management Routes
-@admin_bp.route('/users', methods=['POST'])
-@admin_required
 def create_user():
     """Create a new user account"""
     try:

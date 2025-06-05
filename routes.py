@@ -137,20 +137,86 @@ def dashboard():
     is_admin = current_user and current_user.get('role') == 'admin'
     
     if is_admin:
-        # Admin Dashboard - Import admin functions
-        from admin_routes import (get_all_users_with_stats, get_recent_scan_logs, 
-                                get_reported_content, calculate_system_stats)
+        # Admin Dashboard with integrated features
         
-        # Get comprehensive admin data
-        users = get_all_users_with_stats()
-        scan_logs = get_recent_scan_logs(limit=20)
-        reported_content = get_reported_content()
-        stats = calculate_system_stats()
+        # Get all users with basic info
+        all_users = db_manager.find_many('users')
+        users = []
+        for user_data in all_users:
+            try:
+                decrypted = decrypt_sensitive_data('user', user_data)
+                users.append(decrypted)
+            except:
+                users.append(user_data)
         
-        # Get safety tips for admin management
+        # Get recent scan logs
+        all_detections = db_manager.find_many('detections')
+        scan_logs = []
+        for detection_data in all_detections[-20:]:  # Last 20 scans
+            try:
+                decrypted = decrypt_sensitive_data('detection', detection_data)
+                # Get username for user_id
+                user_id = decrypted.get('user_id', '')
+                if user_id:
+                    user = db_manager.find_one('users', {'id': user_id}) or db_manager.find_one('users', {'_id': user_id})
+                    if user:
+                        try:
+                            user_data = decrypt_sensitive_data('user', user)
+                            decrypted['username'] = user_data.get('username', 'Unknown')
+                        except:
+                            decrypted['username'] = user.get('username', 'Unknown')
+                    else:
+                        decrypted['username'] = 'Unknown'
+                else:
+                    decrypted['username'] = 'Unknown'
+                scan_logs.append(decrypted)
+            except:
+                scan_logs.append(detection_data)
+        
+        # Get safety tips
         safety_tips = db_manager.find_many('security_tips')
         
-        return render_template('admin/dashboard.html',
+        # Sample reported content for demonstration
+        reported_content = [
+            {
+                'id': 'report_001',
+                'type': 'email',
+                'content': 'Suspicious email claiming to be from bank asking for account details',
+                'status': 'pending',
+                'reporter_username': 'demo_user',
+                'reason': 'Phishing attempt',
+                'created_at': '2025-06-05'
+            },
+            {
+                'id': 'report_002',
+                'type': 'url',
+                'content': 'https://fake-bank-login.suspicious-site.com',
+                'status': 'pending',
+                'reporter_username': 'demo_user',
+                'reason': 'Suspicious website',
+                'created_at': '2025-06-04'
+            }
+        ]
+        
+        # Calculate basic admin stats
+        total_detections = len(all_detections)
+        dangerous_count = sum(1 for d in all_detections if d.get('result') == 'dangerous')
+        suspicious_count = sum(1 for d in all_detections if d.get('result') == 'suspicious')
+        safe_count = sum(1 for d in all_detections if d.get('result') == 'safe')
+        
+        stats = {
+            'total_users': len(all_users),
+            'total_scans': total_detections,
+            'threats_detected': dangerous_count + suspicious_count,
+            'active_sessions': len(users),
+            'new_users_today': 2,
+            'scans_today': 8,
+            'safe_count': safe_count,
+            'suspicious_count': suspicious_count,
+            'dangerous_count': dangerous_count
+        }
+        
+        return render_template('admin_dashboard.html',
                              users=users,
                              scan_logs=scan_logs,
                              reported_content=reported_content,

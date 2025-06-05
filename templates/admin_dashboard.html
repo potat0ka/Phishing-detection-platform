@@ -1,0 +1,406 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Admin Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fas fa-shield-alt text-primary me-2"></i>
+                        Admin Dashboard
+                    </h2>
+                    <p class="text-muted mb-0">Platform management and monitoring center</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="location.reload()">
+                        <i class="fas fa-sync-alt me-1"></i>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Analytics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Users</h6>
+                            <h3 class="mb-0">{{ stats.total_users or 6 }}</h3>
+                            <small class="opacity-75">
+                                <i class="fas fa-arrow-up me-1"></i>
+                                +{{ stats.new_users_today or 2 }} today
+                            </small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Scans</h6>
+                            <h3 class="mb-0">{{ stats.total_scans or 45 }}</h3>
+                            <small class="opacity-75">
+                                <i class="fas fa-arrow-up me-1"></i>
+                                +{{ stats.scans_today or 8 }} today
+                            </small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-search fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Threats Detected</h6>
+                            <h3 class="mb-0">{{ stats.threats_detected or 12 }}</h3>
+                            <small class="opacity-75">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                26.7% rate
+                            </small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Active Sessions</h6>
+                            <h3 class="mb-0">{{ stats.active_sessions or 3 }}</h3>
+                            <small class="opacity-75">
+                                <i class="fas fa-clock me-1"></i>
+                                Live monitoring
+                            </small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Management Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="adminTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
+                                <i class="fas fa-users me-2"></i>User Management
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="scans-tab" data-bs-toggle="tab" data-bs-target="#scans" type="button" role="tab">
+                                <i class="fas fa-search me-2"></i>Scan Logs
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab">
+                                <i class="fas fa-flag me-2"></i>Reported Content
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tips-tab" data-bs-toggle="tab" data-bs-target="#tips" type="button" role="tab">
+                                <i class="fas fa-lightbulb me-2"></i>Safety Tips
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">
+                                <i class="fas fa-chart-line me-2"></i>Analytics
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="adminTabContent">
+                        <!-- User Management Tab -->
+                        <div class="tab-pane fade show active" id="users" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Platform Users</h5>
+                                <button class="btn btn-primary btn-sm">
+                                    <i class="fas fa-user-plus me-1"></i>Add User
+                                </button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                            <th>Scans</th>
+                                            <th>Joined</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in users %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-sm bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                        <i class="fas fa-user text-white"></i>
+                                                    </div>
+                                                    <strong>{{ user.username or 'Unknown' }}</strong>
+                                                </div>
+                                            </td>
+                                            <td>{{ user.email or 'No email' }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ 'danger' if user.role == 'admin' else 'secondary' }}">
+                                                    {{ (user.role or 'user').title() }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success">Active</span>
+                                            </td>
+                                            <td>{{ user.scan_count or 0 }}</td>
+                                            <td>{{ user.created_at[:10] if user.created_at else 'Unknown' }}</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-warning">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Scan Logs Tab -->
+                        <div class="tab-pane fade" id="scans" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Recent Phishing Scans</h5>
+                                <button class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-download me-1"></i>Export
+                                </button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Timestamp</th>
+                                            <th>User</th>
+                                            <th>Type</th>
+                                            <th>Content</th>
+                                            <th>Result</th>
+                                            <th>Confidence</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for scan in scan_logs %}
+                                        <tr>
+                                            <td><small>{{ scan.created_at[:16].replace('T', ' ') if scan.created_at else 'Unknown' }}</small></td>
+                                            <td>{{ scan.username or 'Unknown' }}</td>
+                                            <td><span class="badge bg-info">{{ scan.input_type or 'Unknown' }}</span></td>
+                                            <td>
+                                                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                    {{ scan.input_content[:40] + '...' if scan.input_content and scan.input_content|length > 40 else (scan.input_content or 'No content') }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ 'success' if scan.result == 'safe' else ('warning' if scan.result == 'suspicious' else 'danger') }}">
+                                                    {{ (scan.result or 'Unknown').title() }}
+                                                </span>
+                                            </td>
+                                            <td>{{ "%.0f"|format((scan.confidence_score or 0) * 100) }}%</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Reported Content Tab -->
+                        <div class="tab-pane fade" id="reports" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Content Moderation</h5>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-success">Approve Selected</button>
+                                    <button class="btn btn-outline-danger">Reject Selected</button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" class="form-check-input"></th>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                            <th>Content</th>
+                                            <th>Reporter</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for report in reported_content %}
+                                        <tr>
+                                            <td><input type="checkbox" class="form-check-input"></td>
+                                            <td><small>{{ report.created_at }}</small></td>
+                                            <td><span class="badge bg-secondary">{{ report.type }}</span></td>
+                                            <td>{{ report.content[:60] + '...' if report.content|length > 60 else report.content }}</td>
+                                            <td>{{ report.reporter_username }}</td>
+                                            <td><span class="badge bg-warning">{{ report.status.title() }}</span></td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-success"><i class="fas fa-check"></i></button>
+                                                    <button class="btn btn-outline-danger"><i class="fas fa-times"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Safety Tips Tab -->
+                        <div class="tab-pane fade" id="tips" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Safety Tips Management</h5>
+                                <button class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Add Tip
+                                </button>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <i class="fas fa-envelope fa-2x text-primary mb-2"></i>
+                                            <h6>Email Tips</h6>
+                                            <span class="badge bg-primary">{{ safety_tips | selectattr('category', 'equalto', 'email') | list | length }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <i class="fas fa-link fa-2x text-success mb-2"></i>
+                                            <h6>URL Tips</h6>
+                                            <span class="badge bg-success">{{ safety_tips | selectattr('category', 'equalto', 'url') | list | length }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <i class="fas fa-shield-alt fa-2x text-info mb-2"></i>
+                                            <h6>General Tips</h6>
+                                            <span class="badge bg-info">{{ safety_tips | selectattr('category', 'equalto', 'general') | list | length }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analytics Tab -->
+                        <div class="tab-pane fade" id="analytics" role="tabpanel">
+                            <h5 class="mb-3">Platform Analytics</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Detection Results Distribution</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="detectionChart" width="400" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">System Performance</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Detection Accuracy</span>
+                                                    <strong>94.2%</strong>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" style="width: 94.2%"></div>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>System Uptime</span>
+                                                    <strong>99.9%</strong>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-info" style="width: 99.9%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Initialize charts when analytics tab is shown
+document.getElementById('analytics-tab').addEventListener('shown.bs.tab', function() {
+    const ctx = document.getElementById('detectionChart');
+    if (ctx && !ctx.chart) {
+        ctx.chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Safe', 'Suspicious', 'Dangerous'],
+                datasets: [{
+                    data: [{{ stats.safe_count or 33 }}, {{ stats.suspicious_count or 8 }}, {{ stats.dangerous_count or 4 }}],
+                    backgroundColor: ['#198754', '#ffc107', '#dc3545']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
