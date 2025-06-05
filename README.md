@@ -21,132 +21,209 @@ This platform is a full-featured phishing detection system designed to help user
 - **AI/ML**: Scikit-learn, OpenCV, TensorFlow (optional)
 - **UI Framework**: Bootstrap 5 with responsive design
 
-## 🔒 Security Features
+## 🚀 Features
 
-### Enterprise-Level Data Protection
-- **AES-256 Encryption**: All user data, activity logs, and sensitive information encrypted at rest
-- **MongoDB with JSON Fallback**: Hybrid database architecture ensuring reliability and data integrity
-- **Field-Level Encryption**: Usernames, emails, IP addresses, and user activity individually encrypted
-- **Zero-Knowledge Architecture**: Platform administrators cannot access user personal information
-- **Professional Logging**: Comprehensive audit trails with encrypted activity monitoring
+### Core Detection Capabilities
 
-### AI-Powered Detection Systems
-- **Phishing Detection**: Advanced machine learning algorithms for URLs, emails, and messages
-- **AI Content Detection**: Analyze images, videos, audio, and documents for AI-generated content
-- **Device Photo Recognition**: EXIF metadata analysis to identify authentic device photos
-- **Conservative Thresholds**: 85% confidence for AI-generated, 65% for possibly AI content
-- **Source Identification**: Detect likely AI generation tools and editing software
+#### 🛡️ Phishing Detection
+- **URL Analysis**: Scan suspicious links and websites for phishing indicators
+- **Email Content Analysis**: Detect phishing attempts in email messages
+- **Message Scanning**: Analyze text messages and social media content for threats
+- **Link Verification**: Real-time assessment of hyperlinks and redirects
+- **Confidence Scoring**: Percentage-based threat assessment with detailed explanations
 
-### Comprehensive Security Infrastructure
+#### 🤖 AI Content Detection
+- **Image Analysis**: Detect AI-generated vs authentic photos (supports up to 500MB files)
+- **Video Analysis**: Identify deepfakes and AI-generated video content
+- **Audio Detection**: Recognize synthetic speech and voice cloning attempts
+- **Document Scanning**: Analyze text documents for AI writing patterns
+- **Device Photo Recognition**: EXIF metadata analysis to verify authentic device photos
+- **Source Identification**: Identify likely AI generation tools and software used
+
+### User Management System
+
+#### 👤 User Authentication
+- **Secure Registration**: Account creation with strong password requirements
+- **Encrypted Login**: AES-256 encrypted user sessions and data storage
+- **Password Security**: Visual strength indicators and secure hash storage
+- **Session Management**: Automatic timeout and secure session handling
+- **Privacy Protection**: Zero-knowledge architecture protecting user data
+
+#### 📊 User Dashboard
+- **Detection History**: View all previous scans and analysis results
+- **Bulk Operations**: Select and delete multiple detection records
+- **User Profile**: Manage account settings and preferences
+- **Activity Logs**: Track usage patterns and security events
+- **Export Data**: Download detection history in various formats
+
+### Administrative Features
+
+#### 🔧 Admin Dashboard
+- **User Management**: View and manage registered users (without accessing personal data)
+- **System Monitoring**: Track platform usage and performance metrics
+- **Security Oversight**: Monitor threat detection patterns and system health
+- **Content Management**: Update security tips and educational content
+- **Database Administration**: Backup and maintenance operations
+
+#### 📈 Analytics and Reporting
+- **Detection Statistics**: Track phishing and AI detection rates
+- **User Analytics**: Understand platform usage patterns
+- **Threat Intelligence**: Monitor emerging phishing trends
+- **Performance Metrics**: System response times and accuracy rates
+
+### Educational and Safety Features
+
+#### 📚 Security Education
+- **39+ Security Tips**: Comprehensive cybersecurity awareness content
+- **Interactive Learning**: Real-world examples and prevention techniques
+- **Threat Updates**: Latest phishing trends and attack methods
+- **Best Practices**: Guidelines for safe online behavior
+- **Mobile-Friendly**: Optimized educational content for all devices
+
+#### 🎯 Safety Guidelines
+- **Phishing Prevention**: Step-by-step guides to avoid common threats
+- **Email Security**: How to identify suspicious emails and attachments
+- **Social Engineering**: Recognize manipulation tactics and scams
+- **Password Security**: Create and manage strong, unique passwords
+- **Safe Browsing**: Tips for secure web navigation
+
+### Technical Features
+
+#### 🔒 Security Infrastructure
+- **AES-256 Encryption**: All user data encrypted at rest and in transit
+- **MongoDB with JSON Fallback**: Reliable database architecture with automatic failover
 - **Offline Threat Intelligence**: Local threat detection without external dependencies
-- **Real-time Domain Analysis**: URL security evaluation with threat level classification
-- **Multi-Modal Analysis**: Support for images, videos, audio, and document content
-- **Bulk Operations**: Multiple selection and encrypted deletion of detection history
+- **Field-Level Encryption**: Individual encryption of sensitive data fields
+- **Audit Logging**: Comprehensive activity tracking and security monitoring
 
-## 🚀 Platform Features
+#### 🌐 User Interface and Experience
+- **Responsive Design**: Mobile-optimized interface with touch-friendly controls
+- **Bootstrap Framework**: Professional, consistent UI across all devices
+- **Real-time Feedback**: Instant results and progress indicators
+- **Interactive Elements**: Drag-and-drop file uploads and dynamic content
+- **Accessibility**: WCAG-compliant design for users with disabilities
 
-### User Experience
-- **Responsive Design**: Mobile-optimized with Bootstrap and touch-friendly interactions
-- **File Upload Support**: 500MB maximum with comprehensive validation and security scanning
-- **OCR Integration**: Extract and analyze text from images with real-time processing
-- **Educational Content**: 39+ cybersecurity tips with latest threat intelligence updates
-- **Session Management**: Secure authentication with encrypted user sessions
+#### 🔌 API and Integration
+- **REST API**: Programmatic access to detection services
+- **File Upload API**: Support for images, videos, audio, and documents
+- **Bulk Processing**: Analyze multiple files or URLs simultaneously
+- **Export Functions**: JSON, CSV, and PDF report generation
+- **Webhook Support**: Real-time notifications for detection events
 
-### Technical Architecture
-- **Flask Backend**: Professional web framework with production-ready configuration
-- **MongoDB Primary**: NoSQL database with automatic JSON fallback for reliability
-- **Encryption Layer**: Transparent data encryption/decryption with key management
-- **Modular Design**: Clean separation of concerns with comprehensive error handling
-- **Production Ready**: Professional logging, error handling, and security best practices
-
-## 🛠️ Quick Setup Guide
+## 🚀 How to Run Locally (Any Device)
 
 ### Prerequisites
-- Python 3.11 or higher
-- MongoDB (optional - JSON fallback available)
-- PostgreSQL (optional - for additional data storage)
-
-### Simple Startup
-The platform uses Flask's built-in development server with simple `python main.py` startup - no complex server configuration required.
-
-#### System Requirements
-- **Python**: 3.8 or higher (3.11+ recommended)
+- **Python**: 3.8 or higher (3.11+ recommended for best performance)
 - **Operating System**: Windows, macOS, or Linux
-- **Memory**: 512MB RAM minimum
+- **Memory**: 512MB RAM minimum (1GB recommended)
 - **Storage**: 500MB free space
+- **Internet**: Required for initial setup and dependency installation
 
-### 🚀 Quick Installation
+### Step-by-Step Installation Guide
 
-#### Method 1: One-Command Setup
+#### Step 1: Clone the Repository
 ```bash
-# Clone and run in one go
+# Clone the project to your local machine
 git clone <repository-url>
 cd ai-phishing-detection-platform
-pip install -r requirements-minimal.txt
+
+# Alternative: Download ZIP file and extract
+# Then navigate to the extracted folder in terminal/command prompt
+```
+
+#### Step 2: Set Up Python Virtual Environment (Recommended)
+
+**For Windows:**
+```cmd
+# Open Command Prompt or PowerShell
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+venv\Scripts\activate
+
+# You should see (venv) in your command prompt
+```
+
+**For macOS/Linux:**
+```bash
+# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate
+
+# You should see (venv) in your terminal prompt
+```
+
+#### Step 3: Install Dependencies
+```bash
+# Upgrade pip first (important for compatibility)
+pip install --upgrade pip
+
+# Install required packages
+pip install flask werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
+
+# Alternative: Create requirements.txt file and install
+# pip install -r requirements.txt
+```
+
+#### Step 4: Start the Local Server
+```bash
+# Start the Flask development server
+python main.py
+
+# Alternative startup command
+# python app.py  (if main.py doesn't work)
+# flask run  (alternative Flask command)
+```
+
+#### Step 5: View in Browser
+1. **Open your web browser** (Chrome, Firefox, Safari, Edge)
+2. **Navigate to**: `http://localhost:5000`
+3. **Alternative addresses** (if localhost doesn't work):
+   - `http://127.0.0.1:5000`
+   - `http://0.0.0.0:5000`
+
+#### Step 6: Create Your Account
+1. Click "Register" to create a new account
+2. Fill in username, email, and secure password
+3. Login with your credentials
+4. Start using the phishing detection features
+
+### Quick Start Commands (All Platforms)
+
+```bash
+# One-line setup (after cloning repository)
+pip install flask werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary && python main.py
+```
+
+### Configuration Options (Optional)
+
+#### Environment Variables
+Create a `.env` file in the project root directory:
+```bash
+# Security Configuration
+USER_ENCRYPTION_SECRET=your-32-character-encryption-key
+SESSION_SECRET=your-session-secret-key
+
+# Database Configuration (optional - uses JSON fallback by default)
+DATABASE_URL=mongodb://localhost:27017/phishing_detector
+
+# Application Settings
+FLASK_ENV=development
+FLASK_DEBUG=True
+```
+
+#### Custom Port Configuration
+```bash
+# Run on different port (if 5000 is busy)
+python main.py --port 8080
+
+# Or set environment variable
+export PORT=8080
 python main.py
 ```
-
-#### Method 2: Step-by-Step Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd ai-phishing-detection-platform
-   ```
-
-2. **Install dependencies**
-   ```bash
-   # Option A: Use minimal requirements (recommended)
-   pip install -r requirements-minimal.txt
-   
-   # Option B: Manual installation
-   pip install flask werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator opencv-python-headless cryptography pymongo flask-pymongo psycopg2-binary
-   ```
-
-3. **Start the application**
-   ```bash
-   python main.py
-   ```
-
-4. **Open in browser**
-   - Navigate to `http://localhost:5000`
-   - The platform automatically uses secure JSON storage with AES-256 encryption
-   - Create an account to access all features
-
-### ⚙️ Configuration (Optional)
-```bash
-# Set custom encryption key for production
-export USER_ENCRYPTION_SECRET="your-32-character-encryption-key"
-
-# Set session secret
-export SESSION_SECRET="your-session-secret"
-
-# Configure MongoDB (optional - JSON fallback available)
-export DATABASE_URL="mongodb://localhost:27017/phishing_detector"
-```
-
-#### Alternative: Virtual Environment Setup
-
-1. **Create virtual environment**
-   ```bash
-   # On Windows
-   python -m venv venv
-   venv\Scripts\activate
-   
-   # On Mac/Linux
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pip install flask gunicorn werkzeug pillow numpy scikit-learn nltk beautifulsoup4 requests trafilatura dnspython email-validator anthropic opencv-python tensorflow psycopg2-binary cryptography pymongo flask-pymongo motor bson
-   ```
-
-3. **Run the application**
-   ```bash
-   python main.py
-   ```
 
 ## 📋 Project Structure
 
@@ -177,6 +254,276 @@ ai-phishing-detection-platform/
     ├── users.json             # Encrypted user data (JSON fallback)
     ├── detections.json        # Encrypted detection history
     └── tips.json              # Security tips database
+```
+
+## 🗄️ Database Setup
+
+### Database Architecture
+The platform uses a hybrid database approach for maximum reliability:
+- **Primary**: MongoDB for scalable document storage
+- **Fallback**: JSON files for automatic failover
+- **Security**: AES-256 encryption for all stored data
+
+### MongoDB Setup (Recommended)
+
+#### Step 1: Install MongoDB
+**Windows:**
+```bash
+# Download MongoDB Community Server from mongodb.com
+# Install using the MSI installer
+# MongoDB will start automatically as a service
+```
+
+**macOS:**
+```bash
+# Install using Homebrew
+brew tap mongodb/brew
+brew install mongodb-community
+
+# Start MongoDB service
+brew services start mongodb/brew/mongodb-community
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+# Import MongoDB public key
+curl -fsSL https://pgp.mongodb.com/server-6.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-6.0.gpg --dearmor
+
+# Add MongoDB repository
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+# Update and install
+sudo apt update
+sudo apt install -y mongodb-org
+
+# Start MongoDB service
+sudo systemctl start mongod
+sudo systemctl enable mongod
+```
+
+#### Step 2: Configure Database Connection
+Create a `.env` file in the project root:
+```bash
+# MongoDB Configuration
+DATABASE_URL=mongodb://localhost:27017/phishing_detector
+
+# For MongoDB with authentication
+DATABASE_URL=mongodb://username:password@localhost:27017/phishing_detector
+
+# For MongoDB Atlas (cloud)
+DATABASE_URL=mongodb+srv://username:password@cluster.mongodb.net/phishing_detector
+```
+
+#### Step 3: Database Collections
+The platform automatically creates these collections:
+- **users**: Encrypted user accounts and profiles
+- **detections**: Analysis history and results
+- **tips**: Security education content
+- **threat_intel**: Offline threat intelligence data
+- **audit_logs**: System activity and security logs
+
+### JSON Fallback Setup (Automatic)
+If MongoDB is unavailable, the platform automatically uses JSON files:
+```
+instance/
+├── users.json          # Encrypted user data
+├── detections.json     # Detection history
+├── tips.json          # Security tips
+└── audit_logs.json    # Activity logs
+```
+
+### Sample Data Creation
+
+#### Create Admin User
+```python
+# Run this in Python after starting the application
+import requests
+
+# Register admin user
+admin_data = {
+    "username": "admin",
+    "email": "admin@yourcompany.com",
+    "password": "SecureAdminPass123!",
+    "confirm_password": "SecureAdminPass123!"
+}
+
+response = requests.post("http://localhost:5000/auth/register", data=admin_data)
+```
+
+#### Create Test Users
+```python
+# Create sample test users for development
+test_users = [
+    {
+        "username": "testuser1",
+        "email": "test1@example.com",
+        "password": "TestPass123!",
+        "confirm_password": "TestPass123!"
+    },
+    {
+        "username": "testuser2", 
+        "email": "test2@example.com",
+        "password": "TestPass123!",
+        "confirm_password": "TestPass123!"
+    }
+]
+
+for user in test_users:
+    requests.post("http://localhost:5000/auth/register", data=user)
+```
+
+### Database Maintenance
+
+#### Backup Commands
+```bash
+# MongoDB backup
+mongodump --db phishing_detector --out backup/
+
+# JSON files backup
+cp -r instance/ backup/json_backup/
+```
+
+#### Restore Commands
+```bash
+# MongoDB restore
+mongorestore --db phishing_detector backup/phishing_detector/
+
+# JSON files restore
+cp -r backup/json_backup/* instance/
+```
+
+## 👥 Admin and User Roles
+
+### User Role System
+The platform supports two main user types with different permission levels:
+
+#### Regular Users
+**Capabilities:**
+- Create account and login
+- Analyze URLs, emails, and messages for phishing
+- Upload and analyze files for AI-generated content
+- View personal detection history
+- Access security education content
+- Manage personal profile and settings
+- Export personal detection data
+
+**Restrictions:**
+- Cannot access other users' data
+- Cannot view system-wide analytics
+- Cannot manage other users
+- Cannot modify system settings
+
+#### Admin Users
+**Capabilities:**
+- All regular user capabilities
+- View system-wide usage statistics
+- Monitor platform performance metrics
+- Access aggregated detection analytics
+- Manage system security settings
+- View audit logs and security events
+- Update security tips and educational content
+- Backup and restore system data
+
+**Important Security Note:**
+- Admins cannot view encrypted user personal data
+- Zero-knowledge architecture protects user privacy
+- Admin access is logged and audited
+
+### Accessing Admin Panel
+
+#### Method 1: Direct Admin Registration
+```python
+# Create admin user programmatically
+from mongodb_config import MongoDBManager
+from encryption_utils import encrypt_sensitive_data
+
+db = MongoDBManager()
+admin_data = {
+    "username": "admin",
+    "email": "admin@yourcompany.com", 
+    "role": "admin",  # Special admin role
+    "is_admin": True
+}
+
+# Encrypt and store admin user
+encrypted_data = encrypt_sensitive_data("user", admin_data)
+db.insert_one("users", encrypted_data)
+```
+
+#### Method 2: Promote Existing User
+```python
+# Promote existing user to admin
+from mongodb_config import MongoDBManager
+
+db = MongoDBManager()
+db.update_one(
+    "users", 
+    {"username": "existing_username"}, 
+    {"$set": {"role": "admin", "is_admin": True}}
+)
+```
+
+### Admin Dashboard Features
+
+#### User Management
+- **View Users**: See list of registered users (usernames only, no personal data)
+- **User Statistics**: Track registration trends and active users
+- **Account Status**: Monitor user activity and login patterns
+- **Bulk Operations**: Mass user management and maintenance
+
+#### System Analytics
+- **Detection Metrics**: Success rates and accuracy statistics
+- **Usage Patterns**: Peak usage times and popular features
+- **Threat Intelligence**: Emerging phishing trends and patterns
+- **Performance Monitoring**: System response times and errors
+
+#### Security Oversight
+- **Audit Logs**: Complete activity tracking and security events
+- **Threat Monitoring**: Real-time security alert management
+- **Data Encryption**: Monitor encryption key status and rotation
+- **Backup Status**: Database backup and recovery monitoring
+
+### Permission Management
+
+#### Role-Based Access Control
+```python
+# Check user permissions in routes
+from functools import wraps
+from flask import session, redirect, url_for
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('is_admin'):
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Usage in routes
+@app.route('/admin/dashboard')
+@admin_required
+def admin_dashboard():
+    # Admin-only functionality
+    pass
+```
+
+#### Access Control Examples
+```python
+# Regular user access
+@app.route('/dashboard')
+@login_required
+def user_dashboard():
+    # User can only see their own data
+    user_id = session['user_id']
+    user_detections = get_user_detections(user_id)
+    
+# Admin access
+@app.route('/admin/users')
+@admin_required
+def admin_users():
+    # Admin can see aggregated user statistics
+    # But not individual user personal data
+    user_stats = get_user_statistics()
 ```
 
 ## 🔐 Security Configuration
@@ -544,6 +891,430 @@ pip install tensorflow-cpu
 
 **Error: OpenCV issues**
 - Solution: Use `pip install opencv-python-headless` instead of `opencv-python`
+
+## 🤝 Contribution Guide
+
+### Getting Started with Contributions
+We welcome contributions from developers of all skill levels! This section provides guidelines for contributing to the AI Phishing Detection Platform.
+
+### Development Environment Setup
+
+#### Fork and Clone
+```bash
+# Fork the repository on GitHub first, then clone your fork
+git clone https://github.com/your-username/ai-phishing-detection-platform.git
+cd ai-phishing-detection-platform
+
+# Add upstream remote for syncing
+git remote add upstream https://github.com/original-repo/ai-phishing-detection-platform.git
+```
+
+#### Development Setup
+```bash
+# Create development environment
+python -m venv dev-env
+source dev-env/bin/activate  # On Windows: dev-env\Scripts\activate
+
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Install pre-commit hooks (optional but recommended)
+pip install pre-commit
+pre-commit install
+```
+
+### Code Style and Standards
+
+#### Python Code Guidelines
+- **PEP 8**: Follow Python PEP 8 style guidelines
+- **Docstrings**: Use Google-style docstrings for all functions and classes
+- **Type Hints**: Include type hints for function parameters and return values
+- **Comments**: Write clear, concise comments explaining complex logic
+
+#### Example Code Style
+```python
+def analyze_phishing_url(url: str, user_id: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Analyze a URL for phishing indicators using ML algorithms.
+    
+    Args:
+        url: The URL to analyze for phishing content
+        user_id: Optional user ID for logging purposes
+        
+    Returns:
+        Dictionary containing analysis results with confidence scores
+        
+    Raises:
+        ValueError: If URL format is invalid
+        ConnectionError: If URL cannot be accessed
+    """
+    # Implementation here
+    pass
+```
+
+#### Frontend Guidelines
+- **HTML**: Use semantic HTML5 elements
+- **CSS**: Follow BEM methodology for class naming
+- **JavaScript**: Use ES6+ features, avoid jQuery dependencies
+- **Bootstrap**: Use Bootstrap classes consistently, avoid custom CSS when possible
+
+### Project Structure and Architecture
+
+#### Backend Architecture
+```
+├── app.py                     # Flask application factory
+├── routes.py                  # URL route definitions
+├── models/                    # Database models and schemas
+│   ├── user_model.py         # User authentication model
+│   └── detection_model.py    # Detection history model
+├── services/                  # Business logic layer
+│   ├── phishing_service.py   # Phishing detection logic
+│   ├── ai_service.py         # AI content detection
+│   └── encryption_service.py # Data encryption utilities
+├── utils/                     # Helper functions
+│   ├── validators.py         # Input validation
+│   └── formatters.py         # Data formatting
+└── tests/                     # Test suite
+    ├── test_routes.py        # Route testing
+    ├── test_services.py      # Service testing
+    └── test_utils.py         # Utility testing
+```
+
+#### Frontend Architecture
+```
+static/
+├── css/
+│   ├── style.css            # Main stylesheet
+│   ├── components/          # Component-specific styles
+│   └── animations.css       # Animation definitions
+├── js/
+│   ├── modules/            # Modular JavaScript components
+│   │   ├── auth.js         # Authentication handling
+│   │   ├── detection.js    # Detection interface logic
+│   │   └── ui.js           # UI interaction handlers
+│   └── main.js             # Application entry point
+└── images/
+    ├── icons/              # SVG icons and graphics
+    └── uploads/            # Temporary file storage
+```
+
+### Contribution Workflow
+
+#### 1. Issue Creation
+Before starting work, create or find an existing issue:
+- **Bug Reports**: Use the bug report template
+- **Feature Requests**: Use the feature request template
+- **Documentation**: Use the documentation improvement template
+
+#### 2. Branch Strategy
+```bash
+# Create feature branch from main
+git checkout main
+git pull upstream main
+git checkout -b feature/your-feature-name
+
+# For bug fixes
+git checkout -b bugfix/issue-description
+
+# For documentation
+git checkout -b docs/documentation-improvement
+```
+
+#### 3. Development Process
+```bash
+# Make your changes following the coding standards
+# Write tests for new functionality
+# Update documentation as needed
+
+# Run tests locally
+python -m pytest tests/
+
+# Check code style
+flake8 .
+black --check .
+
+# Run the application to test
+python main.py
+```
+
+#### 4. Commit Guidelines
+Use conventional commit messages:
+```bash
+# Features
+git commit -m "feat: add AI video detection capability"
+
+# Bug fixes
+git commit -m "fix: resolve session timeout issue"
+
+# Documentation
+git commit -m "docs: update installation instructions"
+
+# Tests
+git commit -m "test: add unit tests for phishing detection"
+
+# Refactoring
+git commit -m "refactor: improve encryption utility performance"
+```
+
+#### 5. Pull Request Process
+```bash
+# Push your branch
+git push origin feature/your-feature-name
+
+# Create pull request with:
+# - Clear description of changes
+# - Link to related issues
+# - Screenshots for UI changes
+# - Test results and coverage
+```
+
+### Testing Guidelines
+
+#### Unit Tests
+```python
+import unittest
+from services.phishing_service import PhishingDetector
+
+class TestPhishingDetector(unittest.TestCase):
+    """Test cases for phishing detection service."""
+    
+    def setUp(self):
+        """Set up test fixtures before each test method."""
+        self.detector = PhishingDetector()
+    
+    def test_suspicious_url_detection(self):
+        """Test detection of known suspicious URLs."""
+        suspicious_url = "http://phishing-example.com"
+        result = self.detector.analyze_url(suspicious_url)
+        
+        self.assertGreater(result['threat_score'], 0.7)
+        self.assertEqual(result['classification'], 'suspicious')
+    
+    def test_legitimate_url_detection(self):
+        """Test detection of legitimate URLs."""
+        legitimate_url = "https://github.com"
+        result = self.detector.analyze_url(legitimate_url)
+        
+        self.assertLess(result['threat_score'], 0.3)
+        self.assertEqual(result['classification'], 'safe')
+```
+
+#### Integration Tests
+```python
+import requests
+from app import create_app
+
+class TestAPIEndpoints(unittest.TestCase):
+    """Test API endpoint functionality."""
+    
+    def setUp(self):
+        """Set up test client."""
+        self.app = create_app(testing=True)
+        self.client = self.app.test_client()
+    
+    def test_phishing_analysis_endpoint(self):
+        """Test phishing analysis API endpoint."""
+        response = self.client.post('/api/analyze', json={
+            'url': 'http://test-url.com',
+            'content_type': 'url'
+        })
+        
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        self.assertIn('threat_score', data)
+        self.assertIn('classification', data)
+```
+
+### Security Considerations
+
+#### Security Review Checklist
+- [ ] Input validation implemented for all user inputs
+- [ ] SQL injection protection using parameterized queries
+- [ ] XSS protection with proper output encoding
+- [ ] CSRF protection enabled for forms
+- [ ] Authentication and authorization properly implemented
+- [ ] Sensitive data encrypted using AES-256
+- [ ] No hardcoded secrets or API keys
+- [ ] Proper error handling without information leakage
+
+#### Security Testing
+```python
+def test_sql_injection_protection(self):
+    """Test protection against SQL injection attacks."""
+    malicious_input = "'; DROP TABLE users; --"
+    response = self.client.post('/search', data={'query': malicious_input})
+    
+    # Should not cause database error
+    self.assertNotEqual(response.status_code, 500)
+    
+def test_xss_protection(self):
+    """Test protection against XSS attacks."""
+    xss_payload = "<script>alert('xss')</script>"
+    response = self.client.post('/comment', data={'content': xss_payload})
+    
+    # Should escape malicious content
+    self.assertNotIn('<script>', response.data.decode())
+```
+
+### Documentation Standards
+
+#### Code Documentation
+```python
+class AIContentDetector:
+    """
+    AI Content Detection System for analyzing uploaded files.
+    
+    This class provides comprehensive analysis of images, videos, audio,
+    and documents to determine if they were generated by AI systems.
+    
+    Attributes:
+        confidence_threshold: Minimum confidence score for AI detection
+        supported_formats: List of supported file formats
+        
+    Example:
+        detector = AIContentDetector()
+        result = detector.analyze_file('image.jpg', 'image')
+        if result['is_ai_generated']:
+            print(f"AI detected with {result['confidence']}% confidence")
+    """
+    
+    def analyze_file(self, file_path: str, content_type: str) -> Dict[str, Any]:
+        """
+        Analyze uploaded file for AI-generated content.
+        
+        Args:
+            file_path: Path to the uploaded file
+            content_type: Type of content ('image', 'video', 'audio', 'document')
+            
+        Returns:
+            Analysis results containing:
+            - is_ai_generated: Boolean indicating AI detection
+            - confidence: Confidence score (0-100)
+            - explanation: Human-readable explanation
+            - source_detection: Likely AI tool used
+            
+        Raises:
+            FileNotFoundError: If file path is invalid
+            UnsupportedFormatError: If file format not supported
+        """
+        pass
+```
+
+#### API Documentation
+Use clear API documentation with examples:
+```markdown
+### POST /api/analyze-url
+
+Analyze a URL for phishing indicators.
+
+**Request:**
+```json
+{
+    "url": "https://example.com",
+    "user_agent": "optional-user-agent",
+    "check_redirects": true
+}
+```
+
+**Response:**
+```json
+{
+    "threat_score": 0.85,
+    "classification": "suspicious",
+    "indicators": [
+        "Suspicious domain age",
+        "Missing SSL certificate",
+        "Known phishing pattern"
+    ],
+    "recommendations": [
+        "Do not enter personal information",
+        "Verify URL through official channels"
+    ]
+}
+```
+```
+
+### Issue Reporting
+
+#### Bug Report Template
+```markdown
+## Bug Description
+A clear and concise description of the bug.
+
+## Steps to Reproduce
+1. Go to '...'
+2. Click on '...'
+3. Enter '...'
+4. See error
+
+## Expected Behavior
+What you expected to happen.
+
+## Actual Behavior
+What actually happened.
+
+## Environment
+- OS: [e.g. Windows 10, macOS 12.0, Ubuntu 20.04]
+- Python Version: [e.g. 3.11.0]
+- Browser: [e.g. Chrome 120.0, Firefox 119.0]
+
+## Additional Context
+Add any other context about the problem here.
+```
+
+#### Feature Request Template
+```markdown
+## Feature Description
+A clear and concise description of the feature.
+
+## Problem Statement
+What problem does this feature solve?
+
+## Proposed Solution
+Describe your proposed solution.
+
+## Alternative Solutions
+Describe any alternative solutions you've considered.
+
+## Additional Context
+Add any other context or screenshots about the feature request.
+```
+
+### Review Process
+
+#### Pull Request Review Checklist
+- [ ] Code follows style guidelines
+- [ ] Tests are included and passing
+- [ ] Documentation is updated
+- [ ] Security considerations addressed
+- [ ] Performance impact considered
+- [ ] Backward compatibility maintained
+- [ ] Edge cases handled
+- [ ] Error handling implemented
+
+#### Code Review Guidelines
+- **Be Constructive**: Provide helpful suggestions, not just criticism
+- **Focus on Code**: Review code quality, not coding style preferences
+- **Ask Questions**: If something is unclear, ask for clarification
+- **Suggest Improvements**: Offer specific suggestions for improvement
+- **Approve When Ready**: Approve PRs that meet quality standards
+
+### Getting Help
+
+#### Communication Channels
+- **GitHub Issues**: For bug reports and feature requests
+- **GitHub Discussions**: For general questions and community discussion
+- **Documentation**: Check existing documentation first
+- **Stack Overflow**: Tag questions with relevant project tags
+
+#### Mentorship Program
+New contributors can request mentorship:
+- Pair programming sessions
+- Code review guidance
+- Architecture discussions
+- Career development advice
+
+Thank you for contributing to the AI Phishing Detection Platform!
 
 ## ❓ Frequently Asked Questions
 
