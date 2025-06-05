@@ -166,77 +166,77 @@
     }
 }
 
-/* Universal Text Contrast Protection - Enhanced */
+/* Smart Text Contrast Protection - Context Aware */
 .bg-light, .bg-white {
-    color: #212529 !important;
-    background-color: #f8f9fa !important;
+    color: #212529;
+    background-color: #f8f9fa;
 }
 
 .bg-light small, .bg-white small {
-    color: #6c757d !important;
+    color: #6c757d;
 }
 
-/* Override any white text that might appear on light backgrounds */
+/* Only override white text on specifically light backgrounds */
 .bg-light .text-white, 
-.bg-white .text-white,
-.card-body .text-white,
-.list-group-item .text-white {
+.bg-white .text-white {
     color: #212529 !important;
 }
 
-/* Fallback styles for better accessibility */
+/* Preserve original Bootstrap text colors for proper contexts */
 .text-muted {
-    color: #6c757d !important;
+    color: #6c757d;
 }
 
 .text-dark {
-    color: #212529 !important;
+    color: #212529;
 }
 
-/* Ensure all interactive elements have proper contrast */
-.btn, .badge, .alert {
+.text-white {
+    color: #fff;
+}
+
+/* Ensure buttons maintain their intended colors */
+.btn {
     min-height: 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Force readable text on light backgrounds */
-.bg-light *, 
-.bg-white *,
-.card-body *,
-.list-group-item * {
-    color: #212529 !important;
+/* Only fix text on light card backgrounds */
+.card-body:not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info):not(.bg-dark) {
+    color: #212529;
 }
 
-.bg-light .text-muted, 
-.bg-white .text-muted,
-.card-body .text-muted,
-.list-group-item .text-muted {
-    color: #6c757d !important;
+.card-body.bg-light,
+.card-body.bg-white {
+    color: #212529;
 }
 
-.bg-light .fw-bold, 
-.bg-white .fw-bold,
-.card-body .fw-bold,
-.list-group-item .fw-bold {
-    color: #212529 !important;
+/* Preserve dark theme text colors */
+.bg-dark,
+.bg-primary,
+.bg-secondary,
+.bg-success,
+.bg-danger,
+.bg-warning,
+.bg-info {
+    color: #fff;
 }
 
-/* Specific fixes for common problematic elements */
-.card .card-body {
-    color: #212529 !important;
+.bg-dark *,
+.bg-primary *,
+.bg-secondary *,
+.bg-success *,
+.bg-danger *,
+.bg-warning *,
+.bg-info * {
+    color: inherit;
 }
 
-.list-group-item {
-    color: #212529 !important;
-}
-
-/* Override Bootstrap's text-white class when on light backgrounds */
+/* Only override problematic white on white combinations */
 .bg-light .text-white,
-.bg-white .text-white,
-.card .text-white,
-.list-group .text-white {
+.bg-white .text-white {
     color: #212529 !important;
 }
 
@@ -282,49 +282,53 @@
     outline-offset: 2px;
 }
 
-/* Additional accessibility fixes for white text issues */
-.modal-body .text-white,
-.modal-content .text-white,
-.dropdown-menu .text-white,
-.nav .text-white,
-.navbar .text-white {
+/* Targeted accessibility fixes - only for light backgrounds */
+.modal-body:not(.bg-dark):not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info) .text-white {
     color: #212529 !important;
 }
 
-/* Ensure proper contrast for all Bootstrap components */
-.card-header,
-.card-body,
-.card-footer {
-    color: #212529 !important;
+/* Preserve original colors but ensure readability on appropriate backgrounds */
+.card-header:not(.bg-dark):not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info),
+.card-body:not(.bg-dark):not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info),
+.card-footer:not(.bg-dark):not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info) {
+    color: #212529;
 }
 
-.table td,
-.table th {
-    color: #212529 !important;
+/* Tables should maintain readability */
+.table:not(.table-dark) td,
+.table:not(.table-dark) th {
+    color: #212529;
 }
 
+.table-dark td,
+.table-dark th {
+    color: #fff;
+}
+
+/* Forms maintain default colors */
 .form-control,
 .form-select,
 .form-check-label {
+    color: #212529;
+}
+
+/* Only fix white text on truly light backgrounds */
+.bg-light .text-white,
+.bg-white .text-white,
+.card-body.bg-light .text-white,
+.card-body.bg-white .text-white {
     color: #212529 !important;
 }
 
-/* Fix any remaining white text on light backgrounds */
-.text-white:not(.bg-dark):not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info) {
-    color: #212529 !important;
-}
-
-/* Ensure badges have proper contrast */
+/* Preserve badge colors with proper contrast */
 .badge {
-    color: #fff !important;
+    color: #fff;
 }
 
-.badge.bg-light {
-    color: #212529 !important;
-}
-
+.badge.bg-light,
 .badge.bg-white {
-    color: #212529 !important;
+    color: #212529;
+    border: 1px solid #dee2e6;
 }
 
 /* High contrast mode support */
@@ -344,10 +348,7 @@
     }
 }
 
-/* Emergency accessibility override - force dark text on any potentially problematic elements */
-.container *:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-dark):not(.bg-primary):not(.bg-secondary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info):not(.bg-dark) {
-    color: #212529 !important;
-}
+/* Removed overly aggressive text color override */
 
 /* Enhanced Stat Cards */
 .enhanced-stat-card {
