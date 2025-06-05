@@ -499,12 +499,23 @@ def login_required(f):
     return decorated_function
 
 def admin_required(f):
-    """Decorator to require admin role"""
+    """Decorator to require admin role - supports both admin, sub_admin, and super_admin"""
     from functools import wraps
     
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'user_id' not in session or session.get('role') != 'admin':
+        if 'user_id' not in session or not session.get('logged_in'):
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({'success': False, 'message': 'Login required'}), 401
+            
+            flash('Please log in to access this page.', 'warning')
+            return redirect(url_for('auth.login'))
+        
+        # Check for admin roles - support all admin role types
+        user_role = session.get('user_role', session.get('role', 'user'))
+        admin_roles = ['admin', 'sub_admin', 'super_admin']
+        
+        if user_role not in admin_roles:
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return jsonify({'success': False, 'message': 'Admin access required'}), 403
             
@@ -517,7 +528,7 @@ def admin_required(f):
 
 def get_current_user():
     """Get current user data from session with role information"""
-    if 'user_id' not in session:
+    if 'user_id' not in session or not session.get('logged_in'):
         return None
     
     # Try finding by session user_id (handles both _id and id formats)
