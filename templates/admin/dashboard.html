@@ -468,6 +468,9 @@
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
+                                        <th>
+                                            <input type="checkbox" id="selectAllUsers" onchange="selectAllUsers()">
+                                        </th>
                                         <th>User</th>
                                         <th>Email</th>
                                         <th>Role</th>
@@ -480,6 +483,9 @@
                                 <tbody>
                                     {% for user in users %}
                                     <tr>
+                                        <td>
+                                            <input type="checkbox" class="user-checkbox" value="{{ user.id }}" onchange="updateSelectAllUsers()">
+                                        </td>
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar-sm bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center">
@@ -629,7 +635,7 @@
                                     {% for report in reported_content %}
                                     <tr>
                                         <td>
-                                            <input type="checkbox" class="report-checkbox" value="{{ report.id }}">
+                                            <input type="checkbox" class="report-checkbox" value="{{ report.id }}" onchange="updateSelectAllReports()">
                                         </td>
                                         <td><small>{{ report.created_at }}</small></td>
                                         <td><span class="badge bg-secondary">{{ report.type }}</span></td>
@@ -994,6 +1000,46 @@
             const checkboxes = document.querySelectorAll('.report-checkbox');
             const selectAll = document.getElementById('selectAllReports');
             checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        }
+        
+        function updateSelectAllReports() {
+            const checkboxes = document.querySelectorAll('.report-checkbox');
+            const selectAll = document.getElementById('selectAllReports');
+            const checkedCount = document.querySelectorAll('.report-checkbox:checked').length;
+            
+            if (checkedCount === 0) {
+                selectAll.indeterminate = false;
+                selectAll.checked = false;
+            } else if (checkedCount === checkboxes.length) {
+                selectAll.indeterminate = false;
+                selectAll.checked = true;
+            } else {
+                selectAll.indeterminate = true;
+                selectAll.checked = false;
+            }
+        }
+        
+        function selectAllUsers() {
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            const selectAll = document.getElementById('selectAllUsers');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        }
+        
+        function updateSelectAllUsers() {
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            const selectAll = document.getElementById('selectAllUsers');
+            const checkedCount = document.querySelectorAll('.user-checkbox:checked').length;
+            
+            if (checkedCount === 0) {
+                selectAll.indeterminate = false;
+                selectAll.checked = false;
+            } else if (checkedCount === checkboxes.length) {
+                selectAll.indeterminate = false;
+                selectAll.checked = true;
+            } else {
+                selectAll.indeterminate = true;
+                selectAll.checked = false;
+            }
         }
     </script>
 </body>
