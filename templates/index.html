@@ -30,11 +30,16 @@
             </div>
             <div class="col-lg-6">
                 <div class="hero-visual text-center">
-                    <div class="security-shield">
-                        <i class="fas fa-shield-alt shield-icon"></i>
+                    <div class="hero-avatar-container position-relative">
+                        <img src="{{ url_for('static', filename='images/hero-avatar.png') }}" 
+                             alt="AI Security Expert" 
+                             class="hero-avatar img-fluid rounded-circle shadow-lg">
                         <div class="pulse-ring"></div>
                         <div class="pulse-ring delay-1"></div>
                         <div class="pulse-ring delay-2"></div>
+                        <div class="security-badge position-absolute">
+                            <i class="fas fa-shield-alt text-primary"></i>
+                        </div>
                     </div>
                 </div>
             </div>
