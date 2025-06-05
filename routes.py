@@ -593,19 +593,42 @@ def delete_detection_record(detection_id):
         if not user_id:
             return jsonify({'success': False, 'error': 'User not authenticated'})
         
-        # Delete the detection for this user
-        deleted = db_manager.delete_one('detections', {
+        # Try to find the detection using both possible ID formats
+        detection = None
+        
+        # First try with 'id' field
+        detection = db_manager.find_one('detections', {
             'id': detection_id,
             'user_id': user_id
         })
         
+        # If not found, try with '_id' field
+        if not detection:
+            detection = db_manager.find_one('detections', {
+                '_id': detection_id,
+                'user_id': user_id
+            })
+        
+        if not detection:
+            return jsonify({'success': False, 'error': 'Detection not found or access denied'})
+        
+        # Delete using the found detection's actual identifier
+        delete_query = {'user_id': user_id}
+        if detection.get('id'):
+            delete_query['id'] = detection['id']
+        else:
+            delete_query['_id'] = detection['_id']
+        
+        deleted = db_manager.delete_one('detections', delete_query)
+        
         if deleted:
+            logger.info(f"User {user_id} deleted detection {detection_id}")
             return jsonify({'success': True, 'message': 'Detection deleted successfully'})
         else:
-            return jsonify({'success': False, 'error': 'Detection not found or already deleted'})
+            return jsonify({'success': False, 'error': 'Failed to delete detection'})
         
     except Exception as e:
-        logger.error(f"Error deleting detection: {e}")
+        logger.error(f"Error deleting detection {detection_id}: {e}")
         return jsonify({'success': False, 'error': 'Failed to delete detection'})
 
 @app.route('/delete-all-history', methods=['DELETE'])

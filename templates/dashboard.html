@@ -139,9 +139,9 @@
                                 </thead>
                                 <tbody>
                                     {% for detection in detections %}
-                                    <tr data-detection-id="{{ detection.id }}">
+                                    <tr data-detection-id="{{ detection.get('id') or detection.get('_id') }}">
                                         <td>
-                                            <input type="checkbox" class="form-check-input detection-checkbox" value="{{ detection.id }}" onchange="updateDeleteButton()">
+                                            <input type="checkbox" class="form-check-input detection-checkbox" value="{{ detection.get('id') or detection.get('_id') }}" onchange="updateDeleteButton()">
                                         </td>
                                         <td>
                                             {% if detection.input_type == 'url' %}
@@ -583,7 +583,6 @@ function deleteAllHistory() {
             alert('Failed to delete history. Please try again.');
         });
     }
-}
 }
 
 // Chart for statistics (if Chart.js is available)
