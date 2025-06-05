@@ -9,7 +9,7 @@
     "active": true,
     "is_active": true,
     "created_at": "2025-06-05T10:00:00Z",
-    "last_login": "2025-06-05 10:46:03.088979",
+    "last_login": "2025-06-05 10:49:17.568962",
     "login_attempts": 0,
     "locked_until": null
   },
@@ -22,6 +22,9 @@
     "role": "sub_admin",
     "active": true,
     "is_active": true,
-    "created_at": "2025-06-05T10:00:00Z"
+    "created_at": "2025-06-05T10:00:00Z",
+    "last_login": "2025-06-05 10:50:30.478630",
+    "login_attempts": 0,
+    "locked_until": null
   }
 ]

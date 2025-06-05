@@ -38,13 +38,29 @@ admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 @admin_bp.route('/')
 @admin_required
 def admin_dashboard():
-    """Main admin dashboard"""
+    """
+    Main admin dashboard with role-based permissions
+    
+    Super Admin: Full access to all features
+    Sub Admin: User management only, no promotion/demotion
+    """
     current_user = get_current_user()
+    user_role = current_user.get('role', 'user') if current_user else 'user'
+    
+    # Role-based permission flags
+    permissions = {
+        'can_delete_users': user_role == 'super_admin',
+        'can_promote_demote': user_role == 'super_admin', 
+        'can_manage_users': user_role in ['super_admin', 'sub_admin'],
+        'can_view_system_stats': user_role in ['super_admin', 'sub_admin'],
+        'can_export_data': user_role == 'super_admin',
+        'can_manage_tips': user_role in ['super_admin', 'sub_admin']
+    }
     
     # Get system statistics
     stats = calculate_system_stats()
     
-    # Get users with statistics
+    # Get users with statistics  
     users = get_all_users_with_stats()
     
     # Get recent scan logs
@@ -55,6 +71,8 @@ def admin_dashboard():
     
     return render_template('admin_dashboard.html',
                          current_user=current_user,
+                         user_role=user_role,
+                         permissions=permissions,
                          stats=stats,
                          users=users,
                          scan_logs=scan_logs,

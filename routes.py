@@ -129,147 +129,88 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    """Role-based dashboard - admins see admin features, users see standard dashboard"""
-    user_id = session.get('user_id')
+    """
+    Role-based dashboard routing system
+    
+    Routes users to appropriate dashboards based on their role:
+    - Super Admin & Sub Admin: Admin Dashboard with role-specific permissions
+    - Regular User: User Dashboard with personal features only
+    """
     current_user = get_current_user()
+    user_role = current_user.get('role', 'user') if current_user else 'user'
     
-    # Check if user is admin
-    is_admin = current_user and current_user.get('role') == 'admin'
-    
-    if is_admin:
-        # Admin Dashboard with integrated features
-        
-        # Get all users with basic info
-        all_users = db_manager.find_many('users')
-        users = []
-        for user_data in all_users:
-            try:
-                decrypted = decrypt_sensitive_data('user', user_data)
-                users.append(decrypted)
-            except:
-                users.append(user_data)
-        
-        # Get recent scan logs
-        all_detections = db_manager.find_many('detections')
-        scan_logs = []
-        for detection_data in all_detections[-20:]:  # Last 20 scans
-            try:
-                decrypted = decrypt_sensitive_data('detection', detection_data)
-                # Get username for user_id
-                user_id = decrypted.get('user_id', '')
-                if user_id:
-                    user = db_manager.find_one('users', {'id': user_id}) or db_manager.find_one('users', {'_id': user_id})
-                    if user:
-                        try:
-                            user_data = decrypt_sensitive_data('user', user)
-                            decrypted['username'] = user_data.get('username', 'Unknown')
-                        except:
-                            decrypted['username'] = user.get('username', 'Unknown')
-                    else:
-                        decrypted['username'] = 'Unknown'
-                else:
-                    decrypted['username'] = 'Unknown'
-                scan_logs.append(decrypted)
-            except:
-                scan_logs.append(detection_data)
-        
-        # Get safety tips
-        safety_tips = db_manager.find_many('security_tips')
-        
-        # Sample reported content for demonstration
-        reported_content = [
-            {
-                'id': 'report_001',
-                'type': 'email',
-                'content': 'Suspicious email claiming to be from bank asking for account details',
-                'status': 'pending',
-                'reporter_username': 'demo_user',
-                'reason': 'Phishing attempt',
-                'created_at': '2025-06-05'
-            },
-            {
-                'id': 'report_002',
-                'type': 'url',
-                'content': 'https://fake-bank-login.suspicious-site.com',
-                'status': 'pending',
-                'reporter_username': 'demo_user',
-                'reason': 'Suspicious website',
-                'created_at': '2025-06-04'
-            }
-        ]
-        
-        # Calculate basic admin stats
-        total_detections = len(all_detections)
-        dangerous_count = sum(1 for d in all_detections if d.get('result') == 'dangerous')
-        suspicious_count = sum(1 for d in all_detections if d.get('result') == 'suspicious')
-        safe_count = sum(1 for d in all_detections if d.get('result') == 'safe')
-        
-        stats = {
-            'total_users': len(all_users),
-            'total_scans': total_detections,
-            'threats_detected': dangerous_count + suspicious_count,
-            'active_sessions': len(users),
-            'new_users_today': 2,
-            'scans_today': 8,
-            'safe_count': safe_count,
-            'suspicious_count': suspicious_count,
-            'dangerous_count': dangerous_count
-        }
-        
-        return render_template('admin_dashboard.html',
-                             users=users,
-                             scan_logs=scan_logs,
-                             reported_content=reported_content,
-                             safety_tips=safety_tips,
-                             stats=stats,
-                             current_user=current_user)
+    # Role-based dashboard routing
+    if user_role in ['super_admin', 'sub_admin', 'admin']:
+        # Admin roles get redirected to admin dashboard
+        return redirect(url_for('admin.admin_dashboard'))
     else:
-        # Regular User Dashboard
-        # Get user's recent detections from database
-        recent_detections = db_manager.find_many('detections', {'user_id': user_id}, limit=10)
+        # Regular users get user dashboard
+        return user_dashboard()
+
+@app.route('/user-dashboard')
+@login_required
+def user_dashboard():
+    """
+    User Dashboard - Personal features only for regular users
+    
+    Features available to regular users:
+    - View personal scan history
+    - Personal activity statistics 
+    - Manage own detection records
+    - Basic account features
+    
+    No admin functionality accessible
+    """
+    current_user = get_current_user()
+    user_id = session.get('user_id')
+    
+    if not current_user:
+        return redirect(url_for('auth.login'))
+    
+    # Ensure only regular users can access this dashboard
+    user_role = current_user.get('role', 'user')
+    if user_role in ['super_admin', 'sub_admin', 'admin']:
+        return redirect(url_for('admin.admin_dashboard'))
+    
+    # Get user's personal scan history only
+    user_detections = db_manager.find_many('detections', {'user_id': user_id})
+    
+    # Calculate personal statistics
+    total_scans = len(user_detections)
+    phishing_detected = 0
+    safe_results = 0
+    
+    for detection in user_detections:
+        try:
+            # Try to decrypt detection data if encrypted
+            decrypted_detection = decrypt_sensitive_data('detection', detection)
+            result = decrypted_detection.get('result', 'unknown')
+        except:
+            # Fallback to non-encrypted data
+            result = detection.get('result', 'unknown')
         
-        # Decrypt detections for display
-        decrypted_detections = []
-        for detection in recent_detections:
-            try:
-                decrypted = decrypt_sensitive_data('detection', detection)
-                decrypted_detections.append(decrypted)
-            except:
-                decrypted_detections.append(detection)
-        
-        # Calculate user statistics
-        total_detections = db_manager.count_documents('detections', {'user_id': user_id})
-        dangerous_count = 0
-        suspicious_count = 0
-        safe_count = 0
-        
-        # Count by result type
-        all_user_detections = db_manager.find_many('detections', {'user_id': user_id})
-        for detection in all_user_detections:
-            try:
-                decrypted = decrypt_sensitive_data('detection', detection)
-                result = decrypted.get('result', 'unknown')
-            except:
-                result = detection.get('result', 'unknown')
-            
-            if result == 'dangerous':
-                dangerous_count += 1
-            elif result == 'suspicious':
-                suspicious_count += 1
-            elif result == 'safe':
-                safe_count += 1
-        
-        stats = {
-            'total_checks': total_detections,
-            'phishing_detected': dangerous_count + suspicious_count,
-            'safe_results': safe_count,
-            'accuracy_rate': 94.2  # Based on system performance
-        }
-        
-        return render_template('dashboard.html', 
-                             detections=decrypted_detections, 
-                             stats=stats,
-                             current_user=current_user)
+        if result in ['phishing', 'malicious', 'suspicious', 'dangerous']:
+            phishing_detected += 1
+        elif result in ['safe', 'legitimate']:
+            safe_results += 1
+    
+    # Get recent detections for activity timeline
+    recent_detections = user_detections[-10:] if user_detections else []
+    
+    # Prepare user statistics
+    user_stats = {
+        'total_scans': total_scans,
+        'phishing_detected': phishing_detected,
+        'safe_results': safe_results,
+        'accuracy_rate': round((safe_results / total_scans * 100) if total_scans > 0 else 0, 1)
+    }
+    
+    return render_template('dashboard.html', 
+                         current_user=current_user,
+                         user_stats=user_stats,
+                         recent_detections=recent_detections,
+                         is_admin=False,
+                         user_role=user_role)
 
 @app.route('/check', methods=['GET', 'POST'])
 def check():
