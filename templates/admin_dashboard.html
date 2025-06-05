@@ -1724,7 +1724,14 @@ function importReports() {
 }
 
 function exportReports() {
-    showAlert('Exporting phishing reports...', 'success');
+    showAlert('Preparing detection reports export...', 'info');
+    
+    // Make request to export detection reports
+    window.open('/admin/export/detections', '_blank');
+    
+    setTimeout(() => {
+        showAlert('Detection reports export started. Check your downloads.', 'success');
+    }, 1000);
 }
 
 function refreshReports() {
