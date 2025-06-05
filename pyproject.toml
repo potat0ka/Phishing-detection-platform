@@ -27,4 +27,8 @@ dependencies = [
     "cryptography>=45.0.3",
     "motor>=3.7.1",
     "bson>=0.5.10",
+    "oauthlib>=3.2.2",
+    "pyjwt>=2.10.1",
+    "flask-dance>=7.1.0",
+    "flask-login>=0.6.3",
 ]
