@@ -4,18 +4,145 @@
 
 {% block content %}
 <div class="container py-5">
+    <!-- Header with Character -->
+    <div class="hero-section mb-5">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="hero-content">
+                    <div class="hero-badge mb-3">
+                        <span class="badge bg-primary bg-opacity-25 text-primary px-3 py-2 rounded-pill">
+                            <i class="fas fa-sparkles me-2"></i>Advanced AI Protection
+                        </span>
+                    </div>
+                    <h1 class="display-4 fw-bold mb-4 text-gradient">
+                        <i class="fas fa-shield-halved text-primary me-3"></i>
+                        AI Phishing Detection
+                    </h1>
+                    <p class="lead text-muted mb-4 fs-5">
+                        Analyze URLs, emails, and messages using cutting-edge machine learning algorithms. 
+                        Get instant threat detection with detailed explanations.
+                    </p>
+                    <div class="security-features d-flex flex-wrap gap-3 mb-4">
+                        <span class="badge bg-success bg-opacity-20 text-success px-4 py-3 rounded-pill feature-badge">
+                            <i class="fas fa-shield-alt me-2"></i>Real-time Analysis
+                        </span>
+                        <span class="badge bg-info bg-opacity-20 text-info px-4 py-3 rounded-pill feature-badge">
+                            <i class="fas fa-brain me-2"></i>AI-Powered
+                        </span>
+                        <span class="badge bg-warning bg-opacity-20 text-warning px-4 py-3 rounded-pill feature-badge">
+                            <i class="fas fa-graduation-cap me-2"></i>Educational
+                        </span>
+                    </div>
+                    <div class="stats-row d-flex flex-wrap gap-4">
+                        <div class="stat-item">
+                            <div class="stat-number text-primary fw-bold fs-4">99.8%</div>
+                            <div class="stat-label text-muted small">Accuracy Rate</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number text-success fw-bold fs-4">&lt;2s</div>
+                            <div class="stat-label text-muted small">Analysis Time</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number text-info fw-bold fs-4">24/7</div>
+                            <div class="stat-label text-muted small">Protection</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="character-container text-center position-relative">
+                    <!-- Floating elements -->
+                    <div class="floating-elements">
+                        <div class="floating-icon floating-icon-1">
+                            <i class="fas fa-shield-alt text-success"></i>
+                        </div>
+                        <div class="floating-icon floating-icon-2">
+                            <i class="fas fa-lock text-primary"></i>
+                        </div>
+                        <div class="floating-icon floating-icon-3">
+                            <i class="fas fa-eye text-warning"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced character card -->
+                    <div class="character-card p-4 rounded-4 shadow-lg position-relative overflow-hidden" 
+                         style="background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.15), rgba(var(--bs-success-rgb), 0.1), rgba(var(--bs-info-rgb), 0.05));">
+                        
+                        <!-- Decorative background pattern -->
+                        <div class="pattern-bg"></div>
+                        
+                        <!-- Character image with enhanced styling -->
+                        <div class="character-image-wrapper position-relative">
+                            <img src="{{ url_for('static', filename='images/check-content-avatar.jpg') }}" 
+                                 alt="AI Security Expert" 
+                                 class="character-image img-fluid rounded-4 shadow-lg"
+                                 style="max-height: 320px; width: auto; object-fit: cover; border: 4px solid rgba(255, 255, 255, 0.3);">
+                            
+                            <!-- Status indicator -->
+                            <div class="status-indicator position-absolute top-0 end-0 mt-3 me-3">
+                                <div class="status-dot bg-success rounded-circle shadow-sm" 
+                                     style="width: 16px; height: 16px; animation: pulse-dot 2s infinite;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Enhanced character info -->
+                        <div class="character-info mt-4">
+                            <div class="character-title mb-2">
+                                <h5 class="fw-bold text-dark mb-1">Alex Chen</h5>
+                                <p class="text-muted small mb-3">AI Security Specialist</p>
+                            </div>
+                            
+                            <div class="character-badges d-flex flex-column gap-2">
+                                <div class="badge bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-pill">
+                                    <i class="fas fa-user-shield me-2"></i>
+                                    Your AI Security Expert
+                                </div>
+                                <div class="badge bg-success bg-opacity-20 text-success px-4 py-2 rounded-pill">
+                                    <i class="fas fa-robot me-2"></i>
+                                    Ready to Analyze
+                                </div>
+                            </div>
+                            
+                            <!-- Quick stats -->
+                            <div class="character-stats mt-3 d-flex justify-content-around">
+                                <div class="stat-mini text-center">
+                                    <div class="stat-mini-number text-primary fw-bold">5M+</div>
+                                    <div class="stat-mini-label text-muted" style="font-size: 0.7rem;">Scans</div>
+                                </div>
+                                <div class="stat-mini text-center">
+                                    <div class="stat-mini-number text-success fw-bold">100%</div>
+                                    <div class="stat-mini-label text-muted" style="font-size: 0.7rem;">Uptime</div>
+                                </div>
+                                <div class="stat-mini text-center">
+                                    <div class="stat-mini-number text-info fw-bold">24/7</div>
+                                    <div class="stat-mini-label text-muted" style="font-size: 0.7rem;">Active</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Trust indicators -->
+                    <div class="trust-indicators mt-3 d-flex justify-content-center gap-3">
+                        <div class="trust-item text-center">
+                            <i class="fas fa-certificate text-warning fs-6"></i>
+                            <div class="trust-label text-muted" style="font-size: 0.7rem;">Certified</div>
+                        </div>
+                        <div class="trust-item text-center">
+                            <i class="fas fa-award text-primary fs-6"></i>
+                            <div class="trust-label text-muted" style="font-size: 0.7rem;">Award Winner</div>
+                        </div>
+                        <div class="trust-item text-center">
+                            <i class="fas fa-star text-success fs-6"></i>
+                            <div class="trust-label text-muted" style="font-size: 0.7rem;">5-Star Rated</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <!-- Header -->
-            <div class="text-center mb-5">
-                <h1 class="display-5 fw-bold">
-                    <i class="fas fa-robot text-primary me-3"></i>
-                    AI Phishing Detection
-                </h1>
-                <p class="lead text-muted">
-                    Analyze URLs, emails, and messages using advanced machine learning
-                </p>
-            </div>
             
             <!-- Detection Form -->
             <div class="card border-0 shadow-lg">
@@ -189,4 +316,239 @@ document.getElementById('input_content').addEventListener('input', function() {
     this.style.height = (this.scrollHeight) + 'px';
 });
 </script>
+
+<style>
+/* Enhanced hero section styling */
+.text-gradient {
+    background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-badge .badge {
+    animation: glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 5px rgba(var(--bs-primary-rgb), 0.3);
+    }
+    to {
+        box-shadow: 0 0 20px rgba(var(--bs-primary-rgb), 0.6);
+    }
+}
+
+.feature-badge {
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.feature-badge:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: currentColor;
+}
+
+.stat-item {
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+}
+
+.stat-number {
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover .stat-number {
+    transform: scale(1.1);
+}
+
+/* Enhanced character card styling */
+.character-card {
+    transition: all 0.4s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.character-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+}
+
+.character-image {
+    transition: all 0.4s ease;
+}
+
+.character-image:hover {
+    transform: scale(1.05);
+}
+
+.pattern-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.2);
+    }
+}
+
+.character-badges .badge {
+    transition: all 0.3s ease;
+}
+
+.character-badges .badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-mini {
+    transition: all 0.3s ease;
+}
+
+.stat-mini:hover {
+    transform: translateY(-2px);
+}
+
+.trust-item {
+    transition: all 0.3s ease;
+}
+
+.trust-item:hover {
+    transform: translateY(-3px) scale(1.1);
+}
+
+/* Floating elements */
+.floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.floating-icon {
+    position: absolute;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    animation: float 4s ease-in-out infinite;
+}
+
+.floating-icon-1 {
+    top: 10%;
+    left: 5%;
+    animation-delay: 0s;
+}
+
+.floating-icon-2 {
+    top: 60%;
+    right: 5%;
+    animation-delay: 1.5s;
+}
+
+.floating-icon-3 {
+    top: 30%;
+    left: -5%;
+    animation-delay: 3s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-10px) rotate(90deg);
+    }
+    50% {
+        transform: translateY(-5px) rotate(180deg);
+    }
+    75% {
+        transform: translateY(-15px) rotate(270deg);
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 991.98px) {
+    .hero-section {
+        text-align: center;
+    }
+    
+    .character-container {
+        margin-top: 2rem;
+    }
+    
+    .character-image {
+        max-height: 250px !important;
+    }
+    
+    .security-features {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .character-image {
+        max-height: 200px !important;
+    }
+    
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .character-card {
+        padding: 1rem !important;
+    }
+}
+
+/* Enhanced visual effects */
+.hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(var(--bs-primary-rgb), 0.03) 0%, transparent 70%);
+    animation: float 6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(180deg);
+    }
+}
+
+.character-container {
+    position: relative;
+    z-index: 1;
+}
+</style>
 {% endblock %}
