@@ -713,8 +713,19 @@ def get_recent_scan_logs(limit=50):
 def get_reported_content():
     """Get reported content for moderation"""
     try:
-        reports = db_manager.find_many('reports', {})
-        return reports
+        # Load reports from the reports.json file
+        import json
+        import os
+        
+        reports_file = os.path.join('data', 'reports.json')
+        if os.path.exists(reports_file):
+            with open(reports_file, 'r') as f:
+                reports = json.load(f)
+            return reports
+        else:
+            # Try database as fallback
+            reports = db_manager.find_many('reports', {})
+            return reports if reports else []
     except Exception as e:
         logger.error(f"Error getting reported content: {e}")
         return []
@@ -834,8 +845,26 @@ def get_report(report_id):
     try:
         current_user = get_current_user()
         
-        # Get report from database
-        report = db_manager.find_one('reports', {'id': report_id})
+        # Load reports from JSON file
+        import json
+        import os
+        
+        reports_file = os.path.join('data', 'reports.json')
+        if not os.path.exists(reports_file):
+            return jsonify({
+                'success': False,
+                'message': 'Reports file not found'
+            }), 404
+        
+        with open(reports_file, 'r') as f:
+            reports = json.load(f)
+        
+        # Find the specific report
+        report = None
+        for r in reports:
+            if r.get('id') == report_id:
+                report = r
+                break
         
         if not report:
             return jsonify({
@@ -883,29 +912,46 @@ def edit_report_route(report_id):
                 'message': 'Content, type, and status are required'
             }), 400
         
-        # Update report
-        update_data = {
-            'content': content,
-            'type': report_type,
-            'status': status,
-            'description': description,
-            'updated_at': datetime.utcnow(),
-            'updated_by': current_user.get('id')
-        }
+        # Load and update reports.json file
+        import json
+        import os
         
-        result = db_manager.update_one('reports', {'id': report_id}, update_data)
-        
-        if result:
-            logger.info(f"Admin {current_user.get('username')} edited report {report_id}")
-            return jsonify({
-                'success': True,
-                'message': 'Report updated successfully'
-            })
-        else:
+        reports_file = os.path.join('data', 'reports.json')
+        if not os.path.exists(reports_file):
             return jsonify({
                 'success': False,
-                'message': 'Report not found or update failed'
+                'message': 'Reports file not found'
             }), 404
+        
+        with open(reports_file, 'r') as f:
+            reports = json.load(f)
+        
+        # Find and update the specific report
+        report_found = False
+        for i, report in enumerate(reports):
+            if report.get('id') == report_id:
+                reports[i]['content'] = content
+                reports[i]['type'] = report_type
+                reports[i]['status'] = status
+                reports[i]['description'] = description
+                report_found = True
+                break
+        
+        if not report_found:
+            return jsonify({
+                'success': False,
+                'message': 'Report not found'
+            }), 404
+        
+        # Save updated reports back to file
+        with open(reports_file, 'w') as f:
+            json.dump(reports, f, indent=2)
+        
+        logger.info(f"Admin {current_user.get('username')} edited report {report_id}")
+        return jsonify({
+            'success': True,
+            'message': 'Report updated successfully'
+        })
             
     except Exception as e:
         logger.error(f"Error editing report {report_id}: {e}")
@@ -918,26 +964,43 @@ def resolve_report_route(report_id):
     try:
         current_user = get_current_user()
         
-        # Update report status to resolved
-        update_data = {
-            'status': 'resolved',
-            'resolved_at': datetime.utcnow(),
-            'resolved_by': current_user.get('id')
-        }
+        # Load and update reports.json file
+        import json
+        import os
         
-        result = db_manager.update_one('reports', {'id': report_id}, update_data)
-        
-        if result:
-            logger.info(f"Admin {current_user.get('username')} resolved report {report_id}")
+        reports_file = os.path.join('data', 'reports.json')
+        if not os.path.exists(reports_file):
             return jsonify({
-                'success': True,
-                'message': 'Report marked as resolved'
-            })
-        else:
+                'success': False,
+                'message': 'Reports file not found'
+            }), 404
+        
+        with open(reports_file, 'r') as f:
+            reports = json.load(f)
+        
+        # Find and update the specific report
+        report_found = False
+        for i, report in enumerate(reports):
+            if report.get('id') == report_id:
+                reports[i]['status'] = 'resolved'
+                report_found = True
+                break
+        
+        if not report_found:
             return jsonify({
                 'success': False,
                 'message': 'Report not found'
             }), 404
+        
+        # Save updated reports back to file
+        with open(reports_file, 'w') as f:
+            json.dump(reports, f, indent=2)
+        
+        logger.info(f"Admin {current_user.get('username')} resolved report {report_id}")
+        return jsonify({
+            'success': True,
+            'message': 'Report marked as resolved'
+        })
             
     except Exception as e:
         logger.error(f"Error resolving report {report_id}: {e}")
@@ -950,28 +1013,43 @@ def delete_report_route(report_id):
     try:
         current_user = get_current_user()
         
-        # Check if report exists first
-        report = db_manager.find_one('reports', {'id': report_id})
-        if not report:
+        # Load and update reports.json file
+        import json
+        import os
+        
+        reports_file = os.path.join('data', 'reports.json')
+        if not os.path.exists(reports_file):
+            return jsonify({
+                'success': False,
+                'message': 'Reports file not found'
+            }), 404
+        
+        with open(reports_file, 'r') as f:
+            reports = json.load(f)
+        
+        # Find and remove the specific report
+        report_found = False
+        for i, report in enumerate(reports):
+            if report.get('id') == report_id:
+                reports.pop(i)
+                report_found = True
+                break
+        
+        if not report_found:
             return jsonify({
                 'success': False,
                 'message': 'Report not found'
             }), 404
         
-        # Delete the report
-        result = db_manager.delete_one('reports', {'id': report_id})
+        # Save updated reports back to file
+        with open(reports_file, 'w') as f:
+            json.dump(reports, f, indent=2)
         
-        if result:
-            logger.info(f"Admin {current_user.get('username')} deleted report {report_id}")
-            return jsonify({
-                'success': True,
-                'message': 'Report deleted successfully'
-            })
-        else:
-            return jsonify({
-                'success': False,
-                'message': 'Failed to delete report'
-            }), 500
+        logger.info(f"Admin {current_user.get('username')} deleted report {report_id}")
+        return jsonify({
+            'success': True,
+            'message': 'Report deleted successfully'
+        })
             
     except Exception as e:
         logger.error(f"Error deleting report {report_id}: {e}")

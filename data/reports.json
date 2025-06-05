@@ -1,0 +1,29 @@
+[
+  {
+    "id": "report_001",
+    "content": "https://secure-bank-login.malicious-site.com/verify",
+    "type": "phishing",
+    "status": "active",
+    "created_at": "2025-06-05",
+    "reporter_username": "Security Team",
+    "description": "Suspicious banking phishing site attempting to steal credentials"
+  },
+  {
+    "id": "report_002", 
+    "content": "Urgent: Your account will be suspended. Click here to verify your information immediately.",
+    "type": "spam",
+    "status": "pending",
+    "created_at": "2025-06-04",
+    "reporter_username": "Auto System",
+    "description": "Suspicious email with urgency tactics"
+  },
+  {
+    "id": "report_003",
+    "content": "https://crypto-investment-guaranteed.biz/signup",
+    "type": "scam",
+    "status": "investigating",
+    "created_at": "2025-06-03",
+    "reporter_username": "User Report",
+    "description": "Cryptocurrency investment scam website"
+  }
+]
