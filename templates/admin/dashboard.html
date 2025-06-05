@@ -24,6 +24,18 @@
             box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
         }
         
+        /* Checkbox styling */
+        .user-checkbox, .report-checkbox, #selectAllUsers, #selectAllReports {
+            transform: scale(1.2);
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        .table th:first-child, .table td:first-child {
+            width: 40px;
+            text-align: center;
+        }
+        
         .admin-main {
             margin-left: 280px;
             padding: 0;
@@ -459,7 +471,20 @@
                                 <h5 class="mb-0">All Users</h5>
                             </div>
                             <div class="col-auto">
-                                <input type="text" class="form-control" placeholder="Search users..." id="userSearch">
+                                <div class="d-flex gap-2">
+                                    <div class="btn-group" id="bulkUserActions" style="display: none;">
+                                        <button class="btn btn-sm btn-warning" onclick="bulkActivateUsers()">
+                                            <i class="fas fa-play me-1"></i>Activate
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="bulkDeactivateUsers()">
+                                            <i class="fas fa-pause me-1"></i>Deactivate
+                                        </button>
+                                        <button class="btn btn-sm btn-secondary" onclick="bulkExportUsers()">
+                                            <i class="fas fa-download me-1"></i>Export
+                                        </button>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Search users..." id="userSearch">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1022,13 +1047,22 @@
         function selectAllUsers() {
             const checkboxes = document.querySelectorAll('.user-checkbox');
             const selectAll = document.getElementById('selectAllUsers');
-            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            console.log('Select all users clicked:', selectAll.checked, 'Found checkboxes:', checkboxes.length);
+            
+            checkboxes.forEach(cb => {
+                cb.checked = selectAll.checked;
+            });
+            
+            // Update visual feedback
+            updateUserSelectionDisplay();
         }
         
         function updateSelectAllUsers() {
             const checkboxes = document.querySelectorAll('.user-checkbox');
             const selectAll = document.getElementById('selectAllUsers');
             const checkedCount = document.querySelectorAll('.user-checkbox:checked').length;
+            
+            console.log('Update select all:', checkedCount, 'of', checkboxes.length);
             
             if (checkedCount === 0) {
                 selectAll.indeterminate = false;
@@ -1040,6 +1074,65 @@
                 selectAll.indeterminate = true;
                 selectAll.checked = false;
             }
+            
+            updateUserSelectionDisplay();
+        }
+        
+        function updateUserSelectionDisplay() {
+            const checkedCount = document.querySelectorAll('.user-checkbox:checked').length;
+            console.log('Selected users:', checkedCount);
+            
+            // Show/hide bulk actions
+            const bulkActions = document.getElementById('bulkUserActions');
+            if (checkedCount > 0) {
+                bulkActions.style.display = 'block';
+            } else {
+                bulkActions.style.display = 'none';
+            }
+            
+            // Add visual feedback for selected items
+            document.querySelectorAll('.user-checkbox').forEach(cb => {
+                const row = cb.closest('tr');
+                if (cb.checked) {
+                    row.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
+                } else {
+                    row.style.backgroundColor = '';
+                }
+            });
+        }
+        
+        // Bulk action functions for users
+        function bulkActivateUsers() {
+            const selectedUsers = getSelectedUsers();
+            if (selectedUsers.length === 0) return;
+            
+            if (confirm(`Activate ${selectedUsers.length} selected users?`)) {
+                console.log('Bulk activating users:', selectedUsers);
+                alert(`Activated ${selectedUsers.length} users (functionality to be implemented)`);
+            }
+        }
+        
+        function bulkDeactivateUsers() {
+            const selectedUsers = getSelectedUsers();
+            if (selectedUsers.length === 0) return;
+            
+            if (confirm(`Deactivate ${selectedUsers.length} selected users?`)) {
+                console.log('Bulk deactivating users:', selectedUsers);
+                alert(`Deactivated ${selectedUsers.length} users (functionality to be implemented)`);
+            }
+        }
+        
+        function bulkExportUsers() {
+            const selectedUsers = getSelectedUsers();
+            if (selectedUsers.length === 0) return;
+            
+            console.log('Exporting users:', selectedUsers);
+            alert(`Exporting ${selectedUsers.length} users (functionality to be implemented)`);
+        }
+        
+        function getSelectedUsers() {
+            const selectedCheckboxes = document.querySelectorAll('.user-checkbox:checked');
+            return Array.from(selectedCheckboxes).map(cb => cb.value);
         }
     </script>
 </body>
