@@ -14,7 +14,7 @@
                     <p class="text-muted">Sign in to your account</p>
                 </div>
 
-                <form id="loginForm" class="needs-validation" novalidate>
+                <form id="loginForm" method="POST" action="{{ url_for('auth_routes.login') }}" class="needs-validation" novalidate>
                     <div class="mb-3">
                         <label for="username" class="form-label">Username or Email</label>
                         <div class="input-group">
@@ -517,14 +517,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Focus on username field
     document.getElementById('username').focus();
     
-    // Form validation
+    // Enhanced form validation and submission
     const form = document.getElementById('loginForm');
+    const submitButton = form.querySelector('button[type="submit"]');
+    
     form.addEventListener('submit', function(e) {
+        // Clear any previous error messages
+        clearErrorMessages();
+        
+        // Check form validity
         if (!form.checkValidity()) {
             e.preventDefault();
             e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
         }
-        form.classList.add('was-validated');
+        
+        // Show loading state on submit button
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Signing In...';
+        
+        // Form will submit normally to backend
+        // Backend will handle authentication and redirect
     });
     
     // Animate statistics counters
@@ -533,6 +547,30 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add interactive effects to feature cards
     initializeFeatureCards();
 });
+
+// Helper function to clear error messages
+function clearErrorMessages() {
+    const errorElements = document.querySelectorAll('.error-message, .alert-danger');
+    errorElements.forEach(element => {
+        element.remove();
+    });
+}
+
+// Helper function to display error messages
+function showErrorMessage(message) {
+    clearErrorMessages();
+    
+    const form = document.getElementById('loginForm');
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'alert alert-danger error-message';
+    errorDiv.innerHTML = `
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        ${message}
+    `;
+    
+    // Insert error message before the form
+    form.parentNode.insertBefore(errorDiv, form);
+}
 
 function animateStatNumbers() {
     const statNumbers = document.querySelectorAll('.stat-number');

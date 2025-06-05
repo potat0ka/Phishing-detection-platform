@@ -150,10 +150,8 @@ def login():
         remember_me = request.form.get('remember_me') == 'on'
         
         if not username or not password:
-            return jsonify({
-                'success': False,
-                'message': 'Please enter both username and password'
-            }), 400
+            flash('Please enter both username and password', 'error')
+            return render_template('auth/login.html')
         
         # Find user in database
         user = db_manager.find_one('users', {'username': username})
@@ -163,27 +161,21 @@ def login():
             user = db_manager.find_one('users', {'email': username.lower()})
         
         if not user:
-            return jsonify({
-                'success': False,
-                'message': 'Invalid username or password'
-            }), 401
+            flash('Invalid username or password', 'error')
+            return render_template('auth/login.html')
         
         # Decrypt user data
         decrypted_user = decrypt_sensitive_data('user', user)
         
         # Check if account is locked
         if decrypted_user.get('locked_until') and datetime.utcnow() < decrypted_user['locked_until']:
-            return jsonify({
-                'success': False,
-                'message': 'Account temporarily locked. Please try again later.'
-            }), 423
+            flash('Account temporarily locked. Please try again later.', 'error')
+            return render_template('auth/login.html')
         
         # Check if account is active
         if not decrypted_user.get('is_active', True):
-            return jsonify({
-                'success': False,
-                'message': 'Account has been deactivated'
-            }), 403
+            flash('Account has been deactivated', 'error')
+            return render_template('auth/login.html')
         
         # Verify password
         if not check_password_hash(decrypted_user['password_hash'], password):
@@ -198,10 +190,8 @@ def login():
             
             db_manager.update_one('users', {'_id': user['_id']}, update_data)
             
-            return jsonify({
-                'success': False,
-                'message': 'Invalid username or password'
-            }), 401
+            flash('Invalid username or password', 'error')
+            return render_template('auth/login.html')
         
         # Successful login - update user data
         update_data = {
@@ -224,25 +214,13 @@ def login():
         
         logger.info(f"User logged in: {decrypted_user['username']}")
         
-        # Determine redirect URL
+        # Determine redirect URL - redirect to home page for now
         next_url = request.form.get('next') or session.pop('next_url', None)
         if not next_url or not next_url.startswith('/'):
-            next_url = '/dashboard' if decrypted_user.get('role') == 'admin' else '/dashboard'
+            next_url = '/'  # Redirect to home page after successful login
         
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({
-                'success': True,
-                'message': 'Login successful',
-                'redirect': next_url,
-                'user': {
-                    'username': decrypted_user['username'],
-                    'email': decrypted_user['email'],
-                    'role': decrypted_user.get('role', 'user')
-                }
-            })
-        else:
-            flash('Login successful!', 'success')
-            return redirect(next_url)
+        flash('Welcome back! Login successful.', 'success')
+        return redirect(next_url)
             
     except Exception as e:
         logger.error(f"Login error: {e}")
