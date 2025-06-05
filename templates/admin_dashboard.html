@@ -365,7 +365,7 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th><input type="checkbox" class="form-check-input"></th>
+                                            <th><input type="checkbox" class="form-check-input" id="selectAllReports" onchange="toggleAllReports()"></th>
                                             <th>Date</th>
                                             <th>Type</th>
                                             <th>Content</th>
@@ -377,7 +377,7 @@
                                     <tbody>
                                         {% for report in reported_content %}
                                         <tr>
-                                            <td><input type="checkbox" class="form-check-input"></td>
+                                            <td><input type="checkbox" class="form-check-input report-checkbox" data-report-id="{{ report.id }}"></td>
                                             <td><small>{{ report.created_at }}</small></td>
                                             <td><span class="badge bg-secondary">{{ report.type }}</span></td>
                                             <td>{{ report.content[:60] + '...' if report.content|length > 60 else report.content }}</td>
@@ -3201,6 +3201,72 @@ function rejectReport(reportId) {
         .then(data => {
             if (data.success) {
                 showAlert(data.message, 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error rejecting report:', error);
+            showAlert('Error rejecting report. Please try again.', 'danger');
+        });
+    }
+}
+
+function toggleAllReports() {
+    const selectAllCheckbox = document.getElementById('selectAllReports');
+    const reportCheckboxes = document.querySelectorAll('.report-checkbox');
+    
+    reportCheckboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
+}
+
+function getSelectedReports() {
+    const selectedCheckboxes = document.querySelectorAll('.report-checkbox:checked');
+    return Array.from(selectedCheckboxes).map(checkbox => checkbox.getAttribute('data-report-id'));
+}
+
+function approveReport(reportId) {
+    if (confirm('Approve this report?')) {
+        showAlert('Approving report...', 'info');
+        
+        fetch(`/admin/reports/approve/${reportId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Report approved successfully', 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error approving report:', error);
+            showAlert('Error approving report. Please try again.', 'danger');
+        });
+    }
+}
+
+function rejectReport(reportId) {
+    if (confirm('Reject this report?')) {
+        showAlert('Rejecting report...', 'info');
+        
+        fetch(`/admin/reports/reject/${reportId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Report rejected successfully', 'success');
                 setTimeout(() => location.reload(), 1500);
             } else {
                 showAlert('Error: ' + (data.message || 'Unknown error'), 'danger');
