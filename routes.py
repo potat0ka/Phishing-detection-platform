@@ -607,3 +607,39 @@ def delete_detection_record(detection_id):
     except Exception as e:
         logger.error(f"Error deleting detection: {e}")
         return jsonify({'success': False, 'error': 'Failed to delete detection'})
+
+@app.route('/delete-all-history', methods=['DELETE'])
+@login_required
+def delete_all_user_history():
+    """Delete all detection history for the current user"""
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({'success': False, 'error': 'User not authenticated'})
+        
+        # Get all detections for this user first to count them
+        user_detections = db_manager.find_many('detections', {'user_id': user_id})
+        deletion_count = 0
+        
+        # Delete each detection individually (since we don't have delete_many)
+        for detection in user_detections:
+            deleted = db_manager.delete_one('detections', {
+                '_id': detection.get('_id') or detection.get('id'),
+                'user_id': user_id
+            })
+            if deleted:
+                deletion_count += 1
+        
+        if deletion_count > 0:
+            logger.info(f"User {user_id} deleted {deletion_count} detection records")
+            return jsonify({
+                'success': True, 
+                'message': f'Successfully deleted {deletion_count} detection records',
+                'deleted_count': deletion_count
+            })
+        else:
+            return jsonify({'success': True, 'message': 'No history found to delete'})
+        
+    except Exception as e:
+        logger.error(f"Error deleting all user history: {e}")
+        return jsonify({'success': False, 'error': 'Failed to delete history'})

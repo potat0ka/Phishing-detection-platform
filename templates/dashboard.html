@@ -114,6 +114,9 @@
                             <button id="deleteSelectedBtn" class="btn btn-outline-danger btn-sm" onclick="deleteSelected()" style="display: none;">
                                 <i class="fas fa-trash me-1"></i>Delete Selected
                             </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="deleteAllHistory()">
+                                <i class="fas fa-trash-alt me-1"></i>Delete All History
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -497,11 +500,11 @@ function deleteSelected() {
         ))
         .then(responses => Promise.all(responses.map(r => r.json())))
         .then(results => {
-            const successCount = results.filter(r => r.success).length;
-            const failCount = results.length - successCount;
+            const successful = results.filter(r => r.success).length;
+            const failed = results.length - successful;
             
-            if (successCount > 0) {
-                // Remove successful deletions from table
+            if (successful > 0) {
+                // Remove successful deletions from DOM
                 selectedIds.forEach(id => {
                     const row = document.querySelector(`tr[data-detection-id="${id}"]`);
                     if (row) row.remove();
@@ -512,43 +515,75 @@ function deleteSelected() {
                 alert.className = 'alert alert-success alert-dismissible fade show';
                 alert.innerHTML = `
                     <i class="fas fa-check-circle me-2"></i>
-                    Successfully deleted ${successCount} detection${successCount > 1 ? 's' : ''}
-                    ${failCount > 0 ? ` (${failCount} failed)` : ''}
+                    ${successful} detection${successful > 1 ? 's' : ''} deleted successfully
+                    ${failed > 0 ? ` (${failed} failed)` : ''}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 `;
                 document.querySelector('.container').insertBefore(alert, document.querySelector('.container').firstChild);
                 
-                // Auto-dismiss after 4 seconds
                 setTimeout(() => {
-                    if (alert.parentNode) {
-                        alert.remove();
-                    }
-                }, 4000);
+                    if (alert.parentNode) alert.remove();
+                }, 3000);
                 
-                // Reset selection state
-                updateDeleteButton();
-                
-                // Reload page if no detections left
+                // Reload if no detections left
                 const tableBody = document.querySelector('tbody');
                 if (tableBody && tableBody.children.length === 0) {
                     location.reload();
                 }
+            } else {
+                alert('Failed to delete selected detections. Please try again.');
             }
             
-            if (failCount > 0) {
-                alert(`${failCount} deletion${failCount > 1 ? 's' : ''} failed. Please try again.`);
-            }
+            // Reset button state
+            deleteBtn.innerHTML = originalText;
+            deleteBtn.disabled = false;
+            updateDeleteButton();
         })
         .catch(error => {
             console.error('Error:', error);
             alert('Failed to delete selected detections. Please try again.');
-        })
-        .finally(() => {
-            // Restore button state
             deleteBtn.innerHTML = originalText;
             deleteBtn.disabled = false;
         });
     }
+}
+
+function deleteAllHistory() {
+    const confirmMsg = 'Are you sure you want to delete ALL your detection history? This action cannot be undone.';
+    
+    if (confirm(confirmMsg)) {
+        fetch('/delete-all-history', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message and reload page
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-success alert-dismissible fade show';
+                alert.innerHTML = `
+                    <i class="fas fa-check-circle me-2"></i>
+                    All detection history deleted successfully
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.querySelector('.container').insertBefore(alert, document.querySelector('.container').firstChild);
+                
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                alert('Error deleting history: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to delete history. Please try again.');
+        });
+    }
+}
 }
 
 // Chart for statistics (if Chart.js is available)
