@@ -398,6 +398,206 @@
     animation: statPulse 0.3s ease-in-out;
 }
 
+/* Enhanced Safety Recommendation Cards */
+.enhanced-safety-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.08),
+        0 2px 12px rgba(0, 0, 0, 0.04);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    transform: translateY(0);
+}
+
+.enhanced-safety-card:hover {
+    transform: translateY(-6px) scale(1.015);
+    box-shadow: 
+        0 25px 70px rgba(0, 0, 0, 0.12),
+        0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.safety-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.08;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.enhanced-safety-card:hover .safety-gradient {
+    opacity: 0.12;
+}
+
+.safety-gradient-success {
+    background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+}
+
+.safety-gradient-info {
+    background: linear-gradient(135deg, #0dcaf0 0%, #6f42c1 100%);
+}
+
+.safety-gradient-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+}
+
+.safety-gradient-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+}
+
+.safety-content {
+    z-index: 2;
+}
+
+.safety-header {
+    transition: transform 0.3s ease;
+}
+
+.enhanced-safety-card:hover .safety-header {
+    transform: translateX(4px);
+}
+
+.safety-icon-wrapper {
+    transition: transform 0.3s ease;
+}
+
+.enhanced-safety-card:hover .safety-icon-wrapper {
+    transform: scale(1.15) rotate(8deg);
+}
+
+.safety-title {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: 0.3px;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.safety-list {
+    margin-top: 0.5rem;
+}
+
+.safety-item {
+    transition: all 0.3s ease;
+    padding: 0.25rem 0;
+    border-radius: 6px;
+}
+
+.safety-item:hover {
+    background: rgba(0, 0, 0, 0.02);
+    transform: translateX(8px);
+    padding-left: 0.5rem;
+}
+
+.safety-check-icon, .safety-tip-icon {
+    transition: transform 0.3s ease;
+}
+
+.safety-item:hover .safety-check-icon,
+.safety-item:hover .safety-tip-icon {
+    transform: scale(1.2);
+}
+
+/* Emergency Contacts Card Specific Styles */
+.emergency-contacts-card {
+    border-left: 4px solid #0d6efd;
+}
+
+.contact-section {
+    transition: transform 0.3s ease;
+}
+
+.enhanced-safety-card:hover .contact-section {
+    transform: translateY(-2px);
+}
+
+.contact-category h6 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.contact-item {
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin: 0.25rem 0;
+}
+
+.contact-item:hover {
+    background: rgba(0, 0, 0, 0.03);
+    transform: translateX(6px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.contact-item i {
+    transition: transform 0.3s ease;
+}
+
+.contact-item:hover i {
+    transform: scale(1.15);
+}
+
+/* Responsive enhancements for safety cards */
+@media (max-width: 768px) {
+    .enhanced-safety-card {
+        margin-bottom: 1.5rem;
+        padding: 1.5rem !important;
+    }
+    
+    .safety-icon-wrapper i {
+        font-size: 1.8rem !important;
+    }
+    
+    .safety-title {
+        font-size: 0.9rem;
+    }
+    
+    .contact-item {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    .contact-item i {
+        margin-bottom: 0.25rem;
+        margin-right: 0 !important;
+    }
+}
+
+/* Animation for safety cards on page load */
+@keyframes safetyCardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.enhanced-safety-card {
+    animation: safetyCardSlideIn 0.7s ease-out forwards;
+}
+
+.safe-proceed-card { animation-delay: 0.1s; }
+.general-tips-card { animation-delay: 0.3s; }
+.emergency-contacts-card { animation-delay: 0.5s; }
+
+/* Subtle pulse animation for safety cards */
+@keyframes safetyPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.01); }
+}
+
+.enhanced-safety-card:active {
+    animation: safetyPulse 0.4s ease-in-out;
+}
+
 .shield-icon {
     font-size: 8rem;
     color: rgb(var(--primary-color));

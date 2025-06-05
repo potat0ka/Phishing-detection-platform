@@ -360,27 +360,57 @@
                     
                     <div class="row g-4">
                         <div class="col-md-6">
-                            <div class="safe-action-card p-3 border rounded bg-white shadow-sm">
-                                <h6 class="text-success fw-bold mb-2">
-                                    <i class="fas fa-thumbs-up me-2"></i>You Can Proceed, But:
-                                </h6>
-                                <ul class="list-unstyled mb-0">
-                                    <li class="mb-2 text-dark"><i class="fas fa-check text-success me-2"></i>Still verify the sender if you don't know them</li>
-                                    <li class="mb-2 text-dark"><i class="fas fa-check text-success me-2"></i>Don't share passwords or banking details</li>
-                                    <li class="text-dark"><i class="fas fa-check text-success me-2"></i>Trust your instincts if something feels off</li>
-                                </ul>
+                            <div class="enhanced-safety-card safe-proceed-card p-4 rounded-3 h-100 position-relative overflow-hidden">
+                                <div class="safety-gradient safety-gradient-success"></div>
+                                <div class="safety-content position-relative">
+                                    <div class="safety-header d-flex align-items-center mb-3">
+                                        <div class="safety-icon-wrapper me-3">
+                                            <i class="fas fa-thumbs-up text-success fs-3"></i>
+                                        </div>
+                                        <h6 class="safety-title fw-bold text-dark mb-0">You Can Proceed, But:</h6>
+                                    </div>
+                                    <ul class="list-unstyled safety-list mb-0">
+                                        <li class="safety-item mb-3 d-flex align-items-start">
+                                            <i class="fas fa-check text-success me-3 mt-1 safety-check-icon"></i>
+                                            <span class="text-dark fw-medium">Still verify the sender if you don't know them</span>
+                                        </li>
+                                        <li class="safety-item mb-3 d-flex align-items-start">
+                                            <i class="fas fa-check text-success me-3 mt-1 safety-check-icon"></i>
+                                            <span class="text-dark fw-medium">Don't share passwords or banking details</span>
+                                        </li>
+                                        <li class="safety-item d-flex align-items-start">
+                                            <i class="fas fa-check text-success me-3 mt-1 safety-check-icon"></i>
+                                            <span class="text-dark fw-medium">Trust your instincts if something feels off</span>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="general-tips-card p-3 border rounded bg-white shadow-sm">
-                                <h6 class="text-info fw-bold mb-2">
-                                    <i class="fas fa-lightbulb me-2"></i>General Safety Tips:
-                                </h6>
-                                <ul class="list-unstyled mb-0">
-                                    <li class="mb-2 text-dark"><i class="fas fa-shield text-info me-2"></i>Keep your browser updated</li>
-                                    <li class="mb-2 text-dark"><i class="fas fa-shield text-info me-2"></i>Use strong, unique passwords</li>
-                                    <li class="text-dark"><i class="fas fa-shield text-info me-2"></i>Enable two-factor authentication</li>
-                                </ul>
+                            <div class="enhanced-safety-card general-tips-card p-4 rounded-3 h-100 position-relative overflow-hidden">
+                                <div class="safety-gradient safety-gradient-info"></div>
+                                <div class="safety-content position-relative">
+                                    <div class="safety-header d-flex align-items-center mb-3">
+                                        <div class="safety-icon-wrapper me-3">
+                                            <i class="fas fa-lightbulb text-info fs-3"></i>
+                                        </div>
+                                        <h6 class="safety-title fw-bold text-dark mb-0">General Safety Tips:</h6>
+                                    </div>
+                                    <ul class="list-unstyled safety-list mb-0">
+                                        <li class="safety-item mb-3 d-flex align-items-start">
+                                            <i class="fas fa-shield text-info me-3 mt-1 safety-tip-icon"></i>
+                                            <span class="text-dark fw-medium">Keep your browser updated</span>
+                                        </li>
+                                        <li class="safety-item mb-3 d-flex align-items-start">
+                                            <i class="fas fa-shield text-info me-3 mt-1 safety-tip-icon"></i>
+                                            <span class="text-dark fw-medium">Use strong, unique passwords</span>
+                                        </li>
+                                        <li class="safety-item d-flex align-items-start">
+                                            <i class="fas fa-shield text-info me-3 mt-1 safety-tip-icon"></i>
+                                            <span class="text-dark fw-medium">Enable two-factor authentication</span>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -478,22 +508,76 @@
                     {% endif %}
                     
                     <!-- Emergency Contacts -->
-                    <div class="mt-4 p-3 bg-white border rounded shadow-sm">
-                        <h6 class="fw-bold mb-2 text-dark">
-                            <i class="fas fa-phone-alt text-primary me-2"></i>Need Help? Emergency Contacts:
-                        </h6>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <small class="text-dark d-block fw-bold">Report Cyber Crime:</small>
-                                <p class="mb-1 text-dark"><strong>Nepal Police Cyber Bureau:</strong> 100</p>
-                                <p class="mb-1 text-dark"><strong>Cyber Crime Unit:</strong> 01-4412444</p>
-                                <p class="mb-1 text-dark"><strong>Email:</strong> cybercrime@nepalpolice.gov.np</p>
+                    <div class="enhanced-safety-card emergency-contacts-card mt-4 p-4 rounded-3 position-relative overflow-hidden">
+                        <div class="safety-gradient safety-gradient-primary"></div>
+                        <div class="safety-content position-relative">
+                            <div class="safety-header d-flex align-items-center mb-4">
+                                <div class="safety-icon-wrapper me-3">
+                                    <i class="fas fa-phone-alt text-primary fs-3"></i>
+                                </div>
+                                <h6 class="safety-title fw-bold text-dark mb-0">Need Help? Emergency Contacts:</h6>
                             </div>
-                            <div class="col-md-6">
-                                <small class="text-dark d-block fw-bold">Financial Fraud:</small>
-                                <p class="mb-1 text-dark"><strong>Nepal Rastra Bank:</strong> 01-4410158</p>
-                                <p class="mb-1 text-dark"><strong>Banking Fraud Hotline:</strong> 01-4414130</p>
-                                <p class="mb-1 text-dark"><strong>Consumer Protection:</strong> 1180</p>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="contact-section">
+                                        <div class="contact-category mb-3">
+                                            <h6 class="fw-bold text-danger mb-2">Report Cyber Crime:</h6>
+                                        </div>
+                                        <div class="contact-list">
+                                            <div class="contact-item d-flex align-items-center mb-2">
+                                                <i class="fas fa-shield-alt text-danger me-3"></i>
+                                                <div>
+                                                    <span class="fw-bold text-dark">Nepal Police Cyber Bureau:</span>
+                                                    <span class="text-danger fw-bold ms-2">100</span>
+                                                </div>
+                                            </div>
+                                            <div class="contact-item d-flex align-items-center mb-2">
+                                                <i class="fas fa-phone text-danger me-3"></i>
+                                                <div>
+                                                    <span class="fw-bold text-dark">Cyber Crime Unit:</span>
+                                                    <span class="text-danger fw-bold ms-2">01-4412444</span>
+                                                </div>
+                                            </div>
+                                            <div class="contact-item d-flex align-items-center">
+                                                <i class="fas fa-envelope text-danger me-3"></i>
+                                                <div>
+                                                    <span class="fw-bold text-dark">Email:</span>
+                                                    <span class="text-danger fw-bold ms-2">cybercrime@nepalpolice.gov.np</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="contact-section">
+                                        <div class="contact-category mb-3">
+                                            <h6 class="fw-bold text-warning mb-2">Financial Fraud:</h6>
+                                        </div>
+                                        <div class="contact-list">
+                                            <div class="contact-item d-flex align-items-center mb-2">
+                                                <i class="fas fa-university text-warning me-3"></i>
+                                                <div>
+                                                    <span class="fw-bold text-dark">Nepal Rastra Bank:</span>
+                                                    <span class="text-warning fw-bold ms-2">01-4410158</span>
+                                                </div>
+                                            </div>
+                                            <div class="contact-item d-flex align-items-center mb-2">
+                                                <i class="fas fa-exclamation-triangle text-warning me-3"></i>
+                                                <div>
+                                                    <span class="fw-bold text-dark">Banking Fraud Hotline:</span>
+                                                    <span class="text-warning fw-bold ms-2">01-4414130</span>
+                                                </div>
+                                            </div>
+                                            <div class="contact-item d-flex align-items-center">
+                                                <i class="fas fa-headset text-warning me-3"></i>
+                                                <div>
+                                                    <span class="fw-bold text-dark">Consumer Protection:</span>
+                                                    <span class="text-warning fw-bold ms-2">1180</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
