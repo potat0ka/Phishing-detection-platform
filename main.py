@@ -2,25 +2,40 @@
 AI Phishing Detection Platform - Main Entry Point
 ================================================
 
-This is the main entry point for the AI Phishing Detection Platform.
-It imports the Flask application and starts the development server.
+🚀 START HERE! This is the main file to run the application.
 
-How it works:
-1. Imports the configured Flask app from app.py
-2. Starts the server on port 5000 (accessible at http://localhost:5000)
-3. Enables debug mode for development (automatic reloading on code changes)
+WHAT THIS FILE DOES:
+This file starts the web server for the AI Phishing Detection Platform.
+Think of it as the "power button" for your web application.
 
-To run the application:
-- Open terminal/command prompt
-- Navigate to the project directory
-- Run: python main.py
-- Open browser and go to http://localhost:5000
+HOW TO RUN THE APPLICATION:
+1. Open terminal/command prompt
+2. Navigate to this project folder: cd ai-phishing-detection-platform
+3. Activate virtual environment: source venv/bin/activate (Linux/Mac) or venv\Scripts\activate (Windows)
+4. Type: python main.py
+5. Press Enter
+6. Open browser and go to: http://localhost:5000
 
-For beginners:
-- This file is kept simple on purpose
-- All the main configuration happens in app.py
-- Routes (web pages) are defined in routes.py and auth_routes.py
-- Database setup is in mongodb_config.py
+WHAT YOU'LL SEE:
+- "Running on http://127.0.0.1:5000" = Server started successfully!
+- "Debug mode: on" = Detailed error messages enabled
+- Press Ctrl+C to stop the server
+
+FOR BEGINNERS - PROJECT FILE STRUCTURE:
+- main.py (THIS FILE) = Starts the web server
+- app.py = Main application configuration and setup
+- routes.py = Web pages for regular users (home, detection tools)
+- auth_routes.py = Login and registration pages
+- admin_routes.py = Admin dashboard and management features
+- ml_detector.py = AI algorithms that detect phishing
+- models/ = Database connection and data structures
+- templates/ = HTML files for web pages
+- static/ = CSS, JavaScript, and images
+
+TROUBLESHOOTING:
+- If you see "Port already in use": Another program is using port 5000
+- If you see "Module not found": Run 'pip install -r requirements-local.txt'
+- If pages don't load: Check if server is running and go to http://localhost:5000
 """
 
 # Import the configured Flask application
@@ -32,12 +47,28 @@ from app import app
 if __name__ == "__main__":
     import os
     
+    # Display startup information for beginners
+    print("=" * 60)
+    print("🚀 AI Phishing Detection Platform")
+    print("=" * 60)
+    print("📝 Author: Bigendra Shrestha")
+    print("🎓 Project: Final Semester - Cybersecurity & AI")
+    print("=" * 60)
+    print("🌐 Starting web server...")
+    print("📖 For beginners: This creates a website on your computer")
+    print("🔗 Once started, open: http://localhost:5000")
+    print("🛑 Press Ctrl+C to stop the server")
+    print("=" * 60)
+    
     # Get port from environment variable or default to 5000
-    # This allows deployment platforms to set their own port
+    # This allows deployment platforms (like Heroku) to set their own port
     port = int(os.environ.get('PORT', 5000))
     
     # Start the Flask development server
-    # host="0.0.0.0" makes it accessible from other devices on the network
-    # port=port uses the port we defined above
-    # debug=True enables automatic reloading when code changes
+    # host="0.0.0.0" - makes server accessible from any IP address (not just localhost)
+    # port=port - uses the port number we defined above (usually 5000)
+    # debug=True - enables helpful features for development:
+    #   1. Shows detailed error messages when something breaks
+    #   2. Automatically restarts server when you change code
+    #   3. Provides debugging tools in browser
     app.run(host="0.0.0.0", port=port, debug=True)
