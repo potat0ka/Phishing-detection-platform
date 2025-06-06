@@ -51,8 +51,8 @@ class MongoDBManager:
             return
             
         try:
-            # Try to connect to MongoDB
-            mongodb_uri = os.environ.get('MONGODB_URI') or os.environ.get('DATABASE_URL')
+            # Try to connect to MongoDB Atlas using MONGO_URI secret
+            mongodb_uri = os.environ.get('MONGO_URI') or os.environ.get('MONGODB_URI') or os.environ.get('DATABASE_URL')
             
             if mongodb_uri and 'mongodb' in mongodb_uri:
                 self.client = MongoClient(
@@ -122,7 +122,11 @@ class MongoDBManager:
             'users': 'data/users.json',
             'detections': 'data/detections.json',
             'security_tips': 'data/security_tips.json',
-            'analytics': 'data/analytics.json'
+            'analytics': 'data/analytics.json',
+            'login_logs': 'data/login_logs.json',
+            'phishing_reports': 'data/phishing_reports.json',
+            'reported_content': 'data/reported_content.json',
+            'ai_content_detections': 'data/ai_content_detections.json'
         }
         
         # Create data directory
