@@ -41,7 +41,21 @@ app = Flask(__name__)
 
 # Security configuration for user sessions and data protection
 # SESSION_SECRET is used to encrypt user session data
-app.secret_key = os.environ.get("SESSION_SECRET", os.urandom(32))
+# For local development, create a consistent secret key
+if os.environ.get("SESSION_SECRET"):
+    app.secret_key = os.environ.get("SESSION_SECRET")
+else:
+    # Create a consistent secret for local development
+    secret_file = Path("instance/secret_key")
+    secret_file.parent.mkdir(exist_ok=True)
+    if secret_file.exists():
+        app.secret_key = secret_file.read_text()
+    else:
+        new_secret = os.urandom(32).hex()
+        secret_file.write_text(new_secret)
+        app.secret_key = new_secret
+        logger.info("Generated new secret key for local development")
+
 app.config['SESSION_PERMANENT'] = True  # Keep users logged in
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)  # Auto-logout after 2 hours
 app.config['SESSION_COOKIE_SECURE'] = True if os.environ.get('FLASK_ENV') == 'production' else False

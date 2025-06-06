@@ -637,7 +637,41 @@ sudo apt install python3-dev python3-pip build-essential
 sudo apt install libgl1-mesa-glx libglib2.0-0
 ```
 
-### Application Issues
+### Local Development Issues
+
+#### Login Errors on Local Device
+If login works on Replit but fails locally, run the environment setup script:
+
+```bash
+# Fix local environment issues
+python fix_local_environment.py
+
+# This script will:
+# - Create missing .env file with SESSION_SECRET
+# - Setup proper directory structure
+# - Create default user accounts
+# - Verify all dependencies
+```
+
+#### Manual Local Setup (Alternative)
+If the script doesn't work, manually create `.env` file:
+
+```bash
+# Create .env file in project root
+echo "SESSION_SECRET=$(python -c 'import secrets; print(secrets.token_hex(32))')" > .env
+echo "FLASK_ENV=development" >> .env
+echo "USER_ENCRYPTION_SECRET=$(python -c 'import secrets; print(secrets.token_hex(32))')" >> .env
+```
+
+#### Session/Cookie Issues
+```bash
+# Clear browser data completely
+# Delete browser cookies for localhost:8080
+# Try incognito/private browsing mode
+# Restart browser after clearing data
+```
+
+#### Application Issues
 
 #### Blank Page or Errors
 ```bash
@@ -649,7 +683,8 @@ sudo apt install libgl1-mesa-glx libglib2.0-0
 
 #### Login Issues
 - Use default credentials: super_admin/SuperAdmin123! or potato/potato123
-- Clear browser cookies
+- Clear browser cookies completely
+- Ensure .env file exists with SESSION_SECRET
 - Check if user exists in database
 
 ## 🚀 Advanced Configuration

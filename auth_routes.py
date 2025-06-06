@@ -280,6 +280,12 @@ def login():
             
     except Exception as e:
         logger.error(f"Login error: {e}")
+        try:
+            logger.error(f"Login error details - Username: {username if 'username' in locals() else 'undefined'}, User found: {user is not None if 'user' in locals() else 'undefined'}")
+            if 'user' in locals() and user:
+                logger.error(f"User data keys: {list(user.keys())}")
+        except:
+            logger.error("Error logging additional details")
         flash('An error occurred during login. Please try again.', 'error')
         return render_template('auth/login.html')
 
