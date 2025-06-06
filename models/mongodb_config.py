@@ -57,9 +57,9 @@ class MongoDBManager:
             if mongodb_uri and 'mongodb' in mongodb_uri:
                 self.client = MongoClient(
                     mongodb_uri,
-                    serverSelectionTimeoutMS=5000,  # 5 second timeout
-                    connectTimeoutMS=5000,
-                    socketTimeoutMS=5000,
+                    serverSelectionTimeoutMS=30000,  # 30 second timeout
+                    connectTimeoutMS=30000,
+                    socketTimeoutMS=30000,
                     retryWrites=True,
                     w='majority'
                 )
