@@ -111,9 +111,10 @@ def update_mongodb_config_with_working_method(working_method):
             else:
                 param_strings.append(f"{key}={value}")
         
+        param_join = ',\n                    '.join(param_strings)
         new_client_init = f"""self.client = MongoClient(
                     mongodb_uri,
-                    {',\n                    '.join(param_strings)}
+                    {param_join}
                 )"""
         
         # Replace in content
