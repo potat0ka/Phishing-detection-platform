@@ -78,7 +78,7 @@ pip install --user -r requirements-local.txt
 python main.py
 
 # You should see output like:
-# * Running on http://127.0.0.1:5000
+# * Running on http://127.0.0.1:8080
 # * Debug mode: on
 ```
 
@@ -133,8 +133,8 @@ pip install -r requirements-local.txt
 # Start the backend server
 python main.py
 
-# Open browser to http://localhost:5000
-open http://localhost:5000
+# Open browser to http://localhost:8080
+open http://localhost:8080
 ```
 
 ### Ubuntu/Debian Linux Installation
@@ -193,7 +193,7 @@ pip install -r requirements-local.txt
 # Start the backend server
 python main.py
 
-# Open browser manually to http://localhost:5000
+# Open browser manually to http://localhost:8080
 ```
 
 ### Arch Linux Installation
@@ -250,7 +250,7 @@ pip install -r requirements-local.txt
 # Start the backend server
 python main.py
 
-# Application will be available at http://localhost:5000
+# Application will be available at http://localhost:8080
 ```
 
 ## 🗄️ MongoDB Database Setup
@@ -443,7 +443,7 @@ python main.py
 ```
 
 ### Step 3: Access the Application
-1. **Open Browser**: Navigate to `http://localhost:5000`
+1. **Open Browser**: Navigate to `http://localhost:8080`
 2. **Home Page**: You'll see the AI Phishing Detection Platform homepage
 3. **Login**: Click "Login" and use the default credentials above
 4. **Start Detecting**: Use the detection tools to analyze URLs, emails, or files
