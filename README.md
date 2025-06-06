@@ -410,14 +410,14 @@ ai-phishing-detection-platform/
 
 The application creates default accounts on first startup:
 
-### Admin Account (Full Access)
-- **Username**: `admin`
-- **Password**: `admin123`
-- **Access**: User management, system configuration, analytics
+### Super Admin Account (Full Access)
+- **Username**: `super_admin`
+- **Password**: `SuperAdmin123!`
+- **Access**: User management, system configuration, analytics, role management
 
 ### Regular User Account
-- **Username**: `user`  
-- **Password**: `user123`
+- **Username**: `potato`  
+- **Password**: `potato123`
 - **Access**: Detection tools, personal dashboard
 
 **⚠️ IMPORTANT**: Change these passwords immediately after first login!
@@ -571,6 +571,71 @@ python main.py --port 8080
 - Data is stored in `data/` directory
 - No setup required, works out of the box
 
+### Dependency Installation Issues
+
+#### Module Not Found Errors (cryptography, numpy, etc.)
+If you encounter "ModuleNotFoundError" when running the application:
+
+```bash
+# Make sure virtual environment is activated
+source venv/bin/activate  # Linux/macOS
+# OR
+venv\Scripts\activate     # Windows
+
+# Update pip first
+pip install --upgrade pip
+
+# Install dependencies with compatible versions
+pip install -r requirements-local.txt
+```
+
+#### Version Compatibility Issues
+If you see errors like "Could not find a version that satisfies the requirement numpy==2.2.6":
+
+```bash
+# The requirements-local.txt now uses flexible version ranges
+# This should resolve most compatibility issues
+
+# If still having issues, install core packages first:
+pip install Flask>=2.3.0 pymongo>=4.0.0 cryptography>=3.4.0 numpy>=1.21.0,<2.0.0
+
+# Then install remaining packages:
+pip install -r requirements-local.txt
+```
+
+#### Platform-Specific Installation Issues
+
+**macOS Users:**
+```bash
+# If you encounter compilation errors:
+brew install python@3.11
+xcode-select --install
+
+# For M1/M2 Macs with TensorFlow issues:
+pip install tensorflow-macos
+```
+
+**Windows Users:**
+```bash
+# If Visual C++ build tools are missing:
+# Download and install Microsoft C++ Build Tools
+# https://visualstudio.microsoft.com/visual-cpp-build-tools/
+
+# Alternative: Use conda for problematic packages
+conda install numpy scipy scikit-learn
+pip install -r requirements-local.txt
+```
+
+**Linux Users:**
+```bash
+# Install system dependencies first:
+sudo apt update
+sudo apt install python3-dev python3-pip build-essential
+
+# For OpenCV and image processing:
+sudo apt install libgl1-mesa-glx libglib2.0-0
+```
+
 ### Application Issues
 
 #### Blank Page or Errors
@@ -582,7 +647,7 @@ python main.py --port 8080
 ```
 
 #### Login Issues
-- Use default credentials: admin/admin123 or user/user123
+- Use default credentials: super_admin/SuperAdmin123! or potato/potato123
 - Clear browser cookies
 - Check if user exists in database
 
@@ -688,7 +753,7 @@ This project is created for educational purposes as a final semester project. Fe
 1. **Check Troubleshooting Section**: Most common issues are covered above
 2. **Review Console Output**: Error messages provide valuable debugging info
 3. **Verify Setup Steps**: Ensure all installation steps were followed correctly
-4. **Test with Default Credentials**: Use admin/admin123 to verify functionality
+4. **Test with Default Credentials**: Use super_admin/SuperAdmin123! to verify functionality
 
 ### Contact Information
 - **Author**: Bigendra Shrestha
