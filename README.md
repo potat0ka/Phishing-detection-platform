@@ -449,12 +449,12 @@ python main.py
 4. **Start Detecting**: Use the detection tools to analyze URLs, emails, or files
 
 ### Application URLs
-- **Homepage**: `http://localhost:5000`
-- **Login**: `http://localhost:5000/login`
-- **Register**: `http://localhost:5000/register`
-- **Detection Tool**: `http://localhost:5000/check`
-- **Admin Dashboard**: `http://localhost:5000/admin/` (admin only)
-- **User Dashboard**: `http://localhost:5000/dashboard`
+- **Homepage**: `http://localhost:8080`
+- **Login**: `http://localhost:8080/login`
+- **Register**: `http://localhost:8080/register`
+- **Detection Tool**: `http://localhost:8080/check`
+- **Admin Dashboard**: `http://localhost:8080/admin/` (admin only)
+- **User Dashboard**: `http://localhost:8080/dashboard`
 
 ## 🛠️ Usage Instructions
 
@@ -546,17 +546,18 @@ pip install --upgrade pip
 pip install -r requirements-local.txt
 ```
 
-#### Port 5000 Already in Use
+#### Port 8080 Already in Use
 ```bash
 # Windows: Find and kill process
-netstat -ano | findstr :5000
+netstat -ano | findstr :8080
 taskkill /PID <PID_NUMBER> /F
 
 # macOS/Linux: Kill process using port
-lsof -ti:5000 | xargs kill -9
+lsof -ti:8080 | xargs kill -9
 
-# Or run on different port
-python main.py --port 8080
+# Or set custom port in environment
+export PORT=3000
+python main.py
 ```
 
 ### Database Issues
@@ -677,10 +678,10 @@ ANTHROPIC_API_KEY=your-anthropic-api-key-for-ai
 pip install gunicorn
 
 # Run with Gunicorn (production-ready)
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
+gunicorn -w 4 -b 0.0.0.0:8080 app:app
 
 # Or with specific configuration
-gunicorn --workers 4 --bind 0.0.0.0:5000 --timeout 120 app:app
+gunicorn --workers 4 --bind 0.0.0.0:8080 --timeout 120 app:app
 ```
 
 ### Development Mode
