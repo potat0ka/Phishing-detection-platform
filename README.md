@@ -111,7 +111,7 @@ python -m venv venv
 venv\Scripts\activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -e .
 
 # Run the application
 python main.py
@@ -146,7 +146,7 @@ python3 -m venv venv
 source venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -e .
 
 # Run the application
 python main.py
@@ -175,7 +175,7 @@ python -m venv venv
 source venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -e .
 
 # Run the application
 python main.py
@@ -208,7 +208,7 @@ python3 -m venv venv
 source venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -e .
 
 # Run the application
 python main.py
@@ -227,7 +227,7 @@ cd ai-phishing-detection-platform
 # macOS/Linux: source venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -e .
 
 # Run the application
 python main.py
@@ -416,25 +416,42 @@ ai-phishing-detection-platform/
 │   ├── file_utils.py       # File handling utilities
 │   └── validation_utils.py # Input validation functions
 ├── static/                 # Frontend assets
-│   ├── css/               # Stylesheets
-│   ├── js/                # JavaScript modules
-│   └── images/            # Static images
+│   ├── css/               # Stylesheets and animations
+│   ├── js/                # Modular JavaScript components
+│   └── images/            # Static images and assets
 ├── templates/             # HTML templates
 │   ├── admin/             # Admin dashboard templates
 │   ├── auth/              # Authentication templates
-│   └── base.html          # Base template
+│   └── base.html          # Base template with Bootstrap
 ├── data/                  # JSON fallback storage
 ├── uploads/               # User uploaded files
 ├── app.py                 # Flask application configuration
 ├── main.py                # Application entry point
 ├── routes.py              # Main application routes
-├── auth_routes.py         # Authentication routes
-├── admin_routes.py        # Admin dashboard routes
+├── auth_routes.py         # Authentication system
+├── admin_routes.py        # Admin dashboard functionality
 ├── ml_detector.py         # AI/ML detection algorithms
 ├── offline_threat_intel.py # Threat intelligence system
-├── requirements.txt       # Python dependencies
-└── README.md             # This file
+├── security_tips_updater.py # Educational content system
+├── pyproject.toml         # Python dependencies and project config
+├── DEPENDENCIES.md        # Comprehensive dependency documentation
+├── CODEBASE_CLEANUP_SUMMARY.md # Project organization summary
+└── README.md             # This documentation
 ```
+
+## 📦 Dependencies
+
+This project uses modern Python dependency management through `pyproject.toml`. All dependencies are automatically installed with a single command.
+
+### Key Dependencies
+- **Flask 3.1.1+**: Web framework
+- **PyMongo 4.13.0+**: MongoDB driver with JSON fallback
+- **scikit-learn 1.6.1+**: Machine learning algorithms
+- **OpenCV-Python 4.11.0+**: Computer vision and image processing
+- **TensorFlow 2.14.0+**: Deep learning framework
+- **cryptography 45.0.3+**: AES-256 encryption for security
+
+For complete dependency information, see [DEPENDENCIES.md](DEPENDENCIES.md).
 
 ## 🧪 Testing
 
