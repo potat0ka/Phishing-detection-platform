@@ -145,6 +145,10 @@ python main.py
 3. **Default User Login**:
    - Username: `potato`
    - Password: `potato123`
+4. **Create New Account**: Click "Register" to create new regular user accounts
+   - New users are created as regular users by default
+   - Super admin can promote users to sub-admin roles
+   - All user data is encrypted and securely stored
 
 ---
 
@@ -244,13 +248,22 @@ export MONGO_URI="mongodb+srv://potato:yourpassword@build-a-database.xxxxx.mongo
 ```
 🏠 Dashboard → 👥 User Management
 ├── 📋 View All Users (with search and filtering)
-├── ➕ Create New User (role selection and permissions)
-├── ✏️ Edit User Profiles (update information and roles)
+├── ➕ Create New User (admin function for creating accounts)
+├── 👤 User Registration (public signup page for new accounts)
+├── ✏️ Edit User Profiles (update information and settings)
 ├── 🔄 Promote to Sub Admin (Super Admin only)
 ├── 🔻 Demote from Admin (Super Admin only)
-├── 🗑️ Delete User Account (with data cleanup confirmation)
-└── 📊 Export User Data (CSV format with activity stats)
+├── 🗑️ Delete User Account (with complete data cleanup)
+├── 📊 Export User Data (CSV format with activity statistics)
+└── 🔐 Password Management (reset and security settings)
 ```
+
+### User Registration System
+- **Public Registration**: `/auth/register` - Anyone can create regular user accounts
+- **Account Creation**: New users start with 'user' role (non-admin)
+- **Data Validation**: Username (3+ chars), email format, password strength
+- **Security Features**: Encrypted data storage, duplicate prevention
+- **Admin Promotion**: Super admin can elevate users to sub-admin roles
 
 ### Content Moderation Center
 ```
@@ -579,8 +592,9 @@ This project is specifically designed for:
 
 ### ✅ Completed Features
 - **Core Functionality**: Multi-modal phishing detection with 95%+ accuracy
-- **User Management**: Complete role-based access control system
+- **User Management**: Complete role-based access control system with working signup
 - **Admin Dashboard**: Comprehensive management interface with all CRUD operations
+- **User Registration**: Fully functional signup system creating regular user accounts
 - **Database Integration**: MongoDB Atlas with intelligent JSON fallback
 - **Security Implementation**: Enterprise-grade encryption and authentication
 - **Cross-Platform Support**: Tested on Windows, macOS, and Linux
@@ -590,9 +604,17 @@ This project is specifically designed for:
 ### 🎯 Performance Metrics
 - **Detection Accuracy**: 95%+ across all content types
 - **Response Time**: Sub-second analysis for most content
+- **User Creation**: Instant account creation with encrypted data storage
 - **Uptime**: 99.9% availability with proper deployment
 - **Scalability**: Handles 1000+ concurrent users
 - **Security**: Zero known vulnerabilities in production
+
+### 🔐 User Account System
+- **Registration Process**: Public signup at `/auth/register` creates regular users
+- **Role Management**: Super admin can promote users to sub-admin roles
+- **Data Security**: All user information encrypted before database storage
+- **Validation**: Comprehensive input validation and duplicate prevention
+- **Account Recovery**: Password reset and account management features
 
 ---
 
