@@ -4,7 +4,7 @@
     "_id": "users_1_738192204",
     "username": "super_admin",
     "email": "superadmin@phishingdetector.com",
-    "password_hash": "scrypt:32768:8:1$6VW1urvHQLWk1Ucm$0bfbccb7ed2308a1f06f0d1665b5237fec010ff52b697b128f10e313c60c0f2ad16c16cc6e2b966c4e6af5fb36889ea0555ff64c01d4840188aa93588eb69251",
+    "password_hash": "scrypt:32768:8:1$v5lxqugXirF7vVp2$ffc795e6f5f84bdcc550ea0e91ed7b8c926802d1fa9c7287aeafa0ae0cdc91bb19c6166336a20642e8a7606237c6b244990948e9342aa820cca831243596498f",
     "role": "super_admin",
     "active": true,
     "is_active": true,
