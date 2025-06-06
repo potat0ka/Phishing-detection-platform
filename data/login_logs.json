@@ -1,0 +1,58 @@
+[
+  {
+    "_id": "login_1_demo",
+    "timestamp": "2025-06-06T10:42:55.085295",
+    "username": "potato",
+    "user_id": "users_2_1457165389",
+    "ip_address": "127.0.0.1",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "success": true,
+    "login_method": "password",
+    "session_id": "session_001"
+  },
+  {
+    "_id": "login_2_demo",
+    "timestamp": "2025-06-06T08:48:56.499186",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "127.0.0.1",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+    "success": true,
+    "login_method": "password",
+    "session_id": "session_002"
+  },
+  {
+    "_id": "login_3_demo",
+    "timestamp": "2025-06-06T11:30:10.427000",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "10.83.10.19",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+    "success": true,
+    "login_method": "password",
+    "session_id": "session_003"
+  },
+  {
+    "_id": "login_4_demo",
+    "timestamp": "2025-06-06T11:15:35.313000",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "10.83.3.4",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+    "success": true,
+    "login_method": "password",
+    "session_id": "session_004"
+  },
+  {
+    "_id": "login_5_demo",
+    "timestamp": "2025-06-05T15:22:10.000000",
+    "username": "testuser",
+    "user_id": "unknown",
+    "ip_address": "192.168.1.100",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Edge/91.0",
+    "success": false,
+    "failure_reason": "Invalid password",
+    "login_method": "password",
+    "session_id": "failed_001"
+  }
+]

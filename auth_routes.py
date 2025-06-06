@@ -235,6 +235,19 @@ def login():
         
         # Verify password
         if not check_password_hash(decrypted_user['password_hash'], password):
+            # Log failed login attempt
+            failed_login_log = {
+                'timestamp': datetime.utcnow().isoformat(),
+                'username': username,
+                'user_id': user.get('_id', user.get('id')),
+                'ip_address': request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr),
+                'user_agent': request.headers.get('User-Agent', 'Unknown'),
+                'success': False,
+                'failure_reason': 'Invalid password',
+                'login_method': 'password'
+            }
+            db_manager.insert_one('login_logs', failed_login_log)
+            
             # Increment login attempts
             login_attempts = decrypted_user.get('login_attempts', 0) + 1
             update_data = {'login_attempts': login_attempts}
@@ -256,6 +269,19 @@ def login():
             'locked_until': None
         }
         db_manager.update_one('users', {'_id': user['_id']}, update_data)
+        
+        # Log login activity for admin tracking
+        login_log = {
+            'timestamp': datetime.utcnow().isoformat(),
+            'username': decrypted_user['username'],
+            'user_id': user.get('_id', user.get('id')),
+            'ip_address': request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr),
+            'user_agent': request.headers.get('User-Agent', 'Unknown'),
+            'success': True,
+            'login_method': 'password',
+            'session_id': session.get('_permanent_id', 'unknown')
+        }
+        db_manager.insert_one('login_logs', login_log)
         
         # Create session with proper role handling
         session['user_id'] = user.get('_id', user.get('id'))
