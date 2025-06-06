@@ -26,5 +26,19 @@
     "login_attempts": 0,
     "last_login": "2025-06-06 10:42:55.085295",
     "locked_until": null
+  },
+  {
+    "id": "user_1749245478",
+    "_id": "users_test_1749245478",
+    "username": "testuser123",
+    "email": "testuser123@example.com",
+    "password_hash": "scrypt:32768:8:1$test$hash",
+    "role": "user",
+    "active": true,
+    "is_active": true,
+    "created_at": "2025-06-06T21:31:18.697324",
+    "last_login": null,
+    "login_attempts": 0,
+    "locked_until": null
   }
 ]

@@ -76,101 +76,115 @@ def validate_password(password):
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    """User registration with encrypted data storage"""
+    """
+    User registration system - Creates regular user accounts with encrypted data storage
+    
+    This function handles both GET and POST requests:
+    - GET: Shows the registration form
+    - POST: Processes user registration and creates new account
+    
+    Security Features:
+    - Password strength validation (8+ chars, upper/lower/numbers)
+    - Email format validation with regex
+    - Username uniqueness checking
+    - Data encryption before database storage
+    - Default role assignment as 'user' (regular user, not admin)
+    
+    For beginners:
+    - New users are created as regular users by default
+    - Super admin can later promote users to sub-admin or admin roles
+    - All user data is encrypted for security
+    - Duplicate usernames and emails are prevented
+    """
     if request.method == 'GET':
         return render_template('auth/register.html')
     
     try:
-        # Get form data
+        # Extract form data from the registration form
+        # .strip() removes extra spaces, .lower() standardizes email format
         username = request.form.get('username', '').strip()
         email = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '')
         confirm_password = request.form.get('confirm_password', '')
         
-        # Validation
+        # Input validation - checking all required fields and formats
         if not username or len(username) < 3:
-            return jsonify({
-                'success': False,
-                'message': 'Username must be at least 3 characters long'
-            }), 400
+            flash('Username must be at least 3 characters long', 'error')
+            return render_template('auth/register.html')
         
         if not validate_email(email):
-            return jsonify({
-                'success': False,
-                'message': 'Please enter a valid email address'
-            }), 400
+            flash('Please enter a valid email address', 'error')
+            return render_template('auth/register.html')
         
+        # Check password strength using our custom validation function
         is_valid_password, password_message = validate_password(password)
         if not is_valid_password:
-            return jsonify({
-                'success': False,
-                'message': password_message
-            }), 400
+            flash(password_message, 'error')
+            return render_template('auth/register.html')
         
         if password != confirm_password:
-            return jsonify({
-                'success': False,
-                'message': 'Passwords do not match'
-            }), 400
+            flash('Passwords do not match', 'error')
+            return render_template('auth/register.html')
         
-        # Check if user already exists
+        # Prevent duplicate accounts - check both username and email
+        # This searches the database for existing users with same username
         existing_user = db_manager.find_one('users', {'username': username})
         if existing_user:
-            return jsonify({
-                'success': False,
-                'message': 'Username already exists'
-            }), 400
+            flash('Username already exists. Please choose a different username.', 'error')
+            return render_template('auth/register.html')
         
+        # Check if email is already registered
         existing_email = db_manager.find_one('users', {'email': email})
         if existing_email:
-            return jsonify({
-                'success': False,
-                'message': 'Email address already registered'
-            }), 400
+            flash('Email address already registered. Please use a different email.', 'error')
+            return render_template('auth/register.html')
         
-        # Create user with encrypted data
+        # Create new user data structure with all required fields
         user_data = {
             'username': username,
             'email': email,
-            'password_hash': generate_password_hash(password),
-            'role': 'user',  # Default role
-            'created_at': datetime.utcnow(),
-            'last_login': None,
-            'is_active': True,
-            'login_attempts': 0,
-            'locked_until': None
+            'password_hash': generate_password_hash(password),  # Securely hash the password
+            'role': 'user',  # Default role - creates regular user (not admin)
+            'created_at': datetime.utcnow().isoformat(),  # When account was created
+            'last_login': None,  # No login yet since account is new
+            'is_active': True,  # Account is active and can log in
+            'login_attempts': 0,  # Track failed login attempts for security
+            'locked_until': None,  # Account locking for security (if needed)
+            'profile': {
+                'full_name': '',
+                'phone': '',
+                'preferences': {
+                    'email_notifications': True,
+                    'security_alerts': True
+                }
+            }
         }
         
-        # Encrypt sensitive data
+        # Encrypt sensitive user data before storing in database
+        # This protects user information even if database is compromised
         encrypted_user_data = encrypt_sensitive_data('user', user_data)
         
-        # Insert user into database
+        # Insert the new user into the database
+        # This returns the user ID if successful, None if failed
         user_id = db_manager.insert_one('users', encrypted_user_data)
         
         if user_id:
-            logger.info(f"New user registered: {username}")
+            # Log successful registration for monitoring
+            logger.info(f"New user registered successfully: {username} (ID: {user_id})")
             
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return jsonify({
-                    'success': True,
-                    'message': 'Account created successfully! You can now log in.',
-                    'redirect': url_for('auth.login')
-                })
-            else:
-                flash('Account created successfully! You can now log in.', 'success')
-                return redirect(url_for('auth.login'))
+            # Show success message and redirect to login page
+            flash('Account created successfully! You can now log in with your credentials.', 'success')
+            return redirect(url_for('auth.login'))
         else:
-            return jsonify({
-                'success': False,
-                'message': 'Failed to create account. Please try again.'
-            }), 500
+            # Database insertion failed
+            flash('Failed to create account. Please try again.', 'error')
+            return render_template('auth/register.html')
             
     except Exception as e:
+        # Handle any unexpected errors during registration
         logger.error(f"Registration error: {e}")
-        return jsonify({
-            'success': False,
-            'message': 'An error occurred during registration'
-        }), 500
+        flash('An error occurred during registration. Please try again.', 'error')
+        return render_template('auth/register.html')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
