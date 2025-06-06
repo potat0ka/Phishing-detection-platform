@@ -194,13 +194,7 @@ python main.py
 6. Replace `<password>` with your actual database user password
 
 ### Step 6: Configure Your Application
-**Method 1: Using Replit Secrets (Recommended)**
-1. In Replit, go to **Secrets** tab (🔒 lock icon)
-2. Add new secret:
-   - **Key**: `MONGO_URI`
-   - **Value**: Your complete connection string with password filled in
-
-**Method 2: Using Environment Variables (Local Development)**
+**Environment Variables Setup**
 ```bash
 # Create .env file in project root
 echo 'MONGO_URI="your-connection-string-here"' > .env
