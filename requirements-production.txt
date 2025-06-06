@@ -1,0 +1,45 @@
+# AI Phishing Detection Platform - Production Dependencies
+# Core Framework
+Flask==3.1.1
+Werkzeug==3.1.3
+
+# Database & Storage
+pymongo==4.8.0
+Flask-SQLAlchemy==3.1.1
+SQLAlchemy==2.0.41
+psycopg2-binary==2.9.10
+
+# Authentication & Security
+Flask-Login==0.6.3
+Flask-Dance==7.1.0
+oauthlib==3.2.2
+PyJWT==2.10.1
+cryptography==45.0.3
+
+# Machine Learning & AI
+scikit-learn==1.6.1
+numpy==2.2.6
+tensorflow==2.14.0
+nltk==3.9.1
+
+# Web Scraping & Content Analysis
+beautifulsoup4>=4.13.4
+trafilatura==2.0.0
+requests==2.32.3
+
+# Image & Video Processing
+Pillow==11.2.1
+opencv-python==4.11.0.86
+
+# Email & Communication
+sendgrid==6.12.3
+email-validator==2.2.0
+
+# Network & DNS
+dnspython==2.7.0
+
+# Web Server (Production)
+gunicorn==23.0.0
+
+# AI Integration
+anthropic==0.52.2

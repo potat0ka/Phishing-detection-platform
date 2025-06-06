@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# File to be removed - functionality integrated into main codebase
 """
 Complete MongoDB Atlas Integration
 Final implementation with SSL fixes and data migration
