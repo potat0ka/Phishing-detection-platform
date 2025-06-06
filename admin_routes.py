@@ -1294,10 +1294,10 @@ def retrain_model():
         
         import os
         import json
-        from ml_detector import MLPhishingDetector
+        from ml_detector import PhishingDetector
         
         # Initialize the ML detector for retraining
-        ml_detector = MLPhishingDetector()
+        ml_detector = PhishingDetector()
         
         # Collect training data from various sources
         training_urls = []
@@ -1411,10 +1411,10 @@ def test_model():
         # Get custom test input if provided
         custom_test = request.form.get('test_input', '').strip()
         
-        from ml_detector import MLPhishingDetector
+        from ml_detector import PhishingDetector
         
         # Initialize ML detector
-        ml_detector = MLPhishingDetector()
+        ml_detector = PhishingDetector()
         
         # Define comprehensive test cases with known classifications
         test_cases = [

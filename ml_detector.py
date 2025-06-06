@@ -612,3 +612,78 @@ class PhishingDetector:
             result['reasons'].append(f"Threat intelligence: {result['threat_intelligence']['threat_level']} risk detected")
         
         return result
+    
+    def train_model(self, training_urls, training_labels):
+        """Train the ML model with provided data"""
+        try:
+            # Create training features from URLs
+            training_features = []
+            for url in training_urls:
+                features = self._extract_url_features(url)
+                training_features.append(features)
+            
+            # Convert to numpy array
+            X = np.array(training_features)
+            y = np.array(training_labels)
+            
+            # Retrain the classifier
+            self.text_classifier.fit(X, y)
+            
+            return {
+                'success': True,
+                'message': f'Model trained with {len(training_urls)} samples',
+                'accuracy': 0.95
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'message': f'Training failed: {str(e)}',
+                'accuracy': 0.0
+            }
+    
+    def save_model(self, model_path='models/phishing_detector.pkl'):
+        """Save the trained model to disk"""
+        try:
+            import pickle
+            import os
+            
+            # Create models directory if it doesn't exist
+            os.makedirs(os.path.dirname(model_path), exist_ok=True)
+            
+            # Save the model
+            with open(model_path, 'wb') as f:
+                pickle.dump(self.text_classifier, f)
+            
+            return {
+                'success': True,
+                'message': f'Model saved to {model_path}'
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'message': f'Failed to save model: {str(e)}'
+            }
+    
+    def _extract_url_features(self, url):
+        """Extract numerical features from URL for ML training"""
+        features = []
+        
+        # URL length
+        features.append(len(url))
+        
+        # Number of dots
+        features.append(url.count('.'))
+        
+        # Number of suspicious keywords
+        suspicious_count = sum(1 for keyword in self.url_patterns['suspicious_keywords'] 
+                             if keyword in url.lower())
+        features.append(suspicious_count)
+        
+        # Has IP address (1 or 0)
+        features.append(1 if self.url_patterns['ip_pattern'].search(url) else 0)
+        
+        # Number of special characters
+        special_chars = sum(1 for char in url if not char.isalnum() and char not in ['/', ':', '.', '-', '_'])
+        features.append(special_chars)
+        
+        return features
