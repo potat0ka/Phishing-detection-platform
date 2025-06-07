@@ -30,11 +30,16 @@
     "updated_at": "2025-06-07T08:48:08.643510"
   },
   {
+    "id": "user_alice_001",
     "username": "alice",
     "email": "alice@example.com",
     "role": "user",
     "password_hash": "hashed_password_123",
     "created_at": "2025-06-07T06:34:00.561830",
-    "_id": "22c3fa42-d647-4139-b289-a0d6bd97dea1"
+    "_id": "22c3fa42-d647-4139-b289-a0d6bd97dea1",
+    "active": true,
+    "is_active": true,
+    "login_attempts": 0,
+    "locked_until": null
   }
 ]

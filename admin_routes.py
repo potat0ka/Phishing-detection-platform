@@ -2986,8 +2986,8 @@ def create_user_admin():
         
         # Encrypt sensitive data
         from utils.encryption_utils import encrypt_sensitive_data
-        new_user['email'] = encrypt_sensitive_data(new_user['email'])
-        new_user['username'] = encrypt_sensitive_data(new_user['username'])
+        new_user['email'] = encrypt_sensitive_data('user', new_user['email'])
+        new_user['username'] = encrypt_sensitive_data('user', new_user['username'])
         
         result = db_manager.insert_one('users', new_user)
         
