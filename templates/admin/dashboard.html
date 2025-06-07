@@ -537,7 +537,7 @@
                                             </thead>
                                             <tbody>
                                                 {% for user in users %}
-                                                <tr class="border-0">
+                                                <tr class="border-0" data-user-role="{{ user.role or 'user' }}">
                                                     <td class="py-3">
                                                         <input type="checkbox" class="form-check-input user-checkbox" value="{{ user.id }}" onchange="updateBulkActionButtons()">
                                                     </td>
@@ -584,9 +584,11 @@
                                                             <button class="btn btn-outline-warning" onclick="alert('Edit user: {{ user.id }}')" title="Edit User">
                                                                 <i class="fas fa-edit"></i>
                                                             </button>
-                                                            <button class="btn btn-outline-danger" onclick="alert('Delete user: {{ user.id }}')" title="Delete User">
+                                                            {% if current_user.role == 'super_admin' or (current_user.role == 'sub_admin' and user.role not in ['super_admin', 'sub_admin']) %}
+                                                            <button class="btn btn-outline-danger" onclick="deleteUser('{{ user.id }}')" title="Delete User">
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
+                                                            {% endif %}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -2431,10 +2433,32 @@
         function updateBulkActionButtons() {
             const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
             const bulkActions = document.getElementById('bulkActions');
+            const deleteButton = document.querySelector('#bulkActions .btn-outline-danger');
             
             if (checkedBoxes.length > 0) {
                 bulkActions.style.display = 'block';
                 document.getElementById('selectedCount').textContent = checkedBoxes.length;
+                
+                // Check if sub admin has selected super admin users
+                const currentUserRole = '{{ current_user.role }}';
+                if (currentUserRole === 'sub_admin') {
+                    let canDelete = true;
+                    checkedBoxes.forEach(checkbox => {
+                        const userRow = checkbox.closest('tr');
+                        const userRole = userRow.dataset.userRole;
+                        if (userRole === 'super_admin' || userRole === 'sub_admin') {
+                            canDelete = false;
+                        }
+                    });
+                    
+                    if (deleteButton) {
+                        deleteButton.style.display = canDelete ? 'inline-block' : 'none';
+                    }
+                } else {
+                    if (deleteButton) {
+                        deleteButton.style.display = 'inline-block';
+                    }
+                }
             } else {
                 bulkActions.style.display = 'none';
             }

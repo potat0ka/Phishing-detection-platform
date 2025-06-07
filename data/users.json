@@ -25,8 +25,9 @@
     "is_active": true,
     "created_at": "2025-06-05T12:08:53.460160",
     "login_attempts": 0,
-    "last_login": "2025-06-06 10:42:55.085295",
-    "locked_until": null
+    "last_login": "2025-06-07 08:36:36.458510",
+    "locked_until": null,
+    "updated_at": "2025-06-07T08:36:36.458688"
   },
   {
     "username": "alice",
