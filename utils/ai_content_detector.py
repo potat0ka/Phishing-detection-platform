@@ -134,9 +134,117 @@ class AIContentDetector:
     def _safe_array(self, data):
         """Convert to array-like structure with fallback"""
         if NUMPY_AVAILABLE:
-            return np.array(data)
+            return self._safe_array(data)
         else:
             return data  # Return as-is for native Python processing
+    
+    def _safe_histogram(self, data, bins=256, range_vals=(0, 256)):
+        """Calculate histogram with fallback"""
+        if NUMPY_AVAILABLE:
+            return self._safe_histogram(data, bins=bins, range=range_vals)
+        else:
+            # Python-native histogram calculation
+            min_val, max_val = range_vals
+            bin_width = (max_val - min_val) / bins
+            hist = [0] * bins
+            
+            for value in data:
+                if min_val <= value < max_val:
+                    bin_idx = min(int((value - min_val) / bin_width), bins - 1)
+                    hist[bin_idx] += 1
+            
+            # Create bin edges
+            edges = [min_val + i * bin_width for i in range(bins + 1)]
+            return hist, edges
+    
+    def _safe_gradient(self, data, axis=0):
+        """Calculate gradient with fallback"""
+        if NUMPY_AVAILABLE:
+            return self._safe_gradient(data, axis=axis)
+        else:
+            # Simple difference-based gradient
+            if axis == 0:  # vertical gradient
+                grad = []
+                for i in range(len(data)):
+                    if i == 0:
+                        grad.append([data[1][j] - data[0][j] for j in range(len(data[0]))])
+                    elif i == len(data) - 1:
+                        grad.append([data[i][j] - data[i-1][j] for j in range(len(data[0]))])
+                    else:
+                        grad.append([(data[i+1][j] - data[i-1][j]) / 2 for j in range(len(data[0]))])
+                return grad
+            else:  # horizontal gradient
+                grad = []
+                for i in range(len(data)):
+                    row_grad = []
+                    for j in range(len(data[0])):
+                        if j == 0:
+                            row_grad.append(data[i][1] - data[i][0])
+                        elif j == len(data[0]) - 1:
+                            row_grad.append(data[i][j] - data[i][j-1])
+                        else:
+                            row_grad.append((data[i][j+1] - data[i][j-1]) / 2)
+                    grad.append(row_grad)
+                return grad
+    
+    def _safe_sqrt(self, data):
+        """Calculate square root with fallback"""
+        if NUMPY_AVAILABLE:
+            return self._safe_sqrt(data)
+        else:
+            if isinstance(data, (list, tuple)):
+                return [math.sqrt(max(0, x)) for x in data]
+            else:
+                return math.sqrt(max(0, data))
+    
+    def _safe_sum(self, data, condition=None):
+        """Calculate sum with optional condition fallback"""
+        if NUMPY_AVAILABLE and condition is None:
+            return self._safe_sum(data)
+        else:
+            if condition is not None:
+                # Handle conditional sum
+                return sum(1 for x in data if condition(x))
+            else:
+                return sum(data) if hasattr(data, '__iter__') else data
+    
+    def _safe_abs(self, data):
+        """Calculate absolute value with fallback"""
+        if NUMPY_AVAILABLE:
+            return np.abs(data)
+        else:
+            if isinstance(data, (list, tuple)):
+                return [abs(x) for x in data]
+            else:
+                return abs(data)
+    
+    def _safe_diff(self, data, axis=0):
+        """Calculate difference with fallback"""
+        if NUMPY_AVAILABLE:
+            return np.diff(data, axis=axis)
+        else:
+            if axis == 1:  # horizontal difference
+                result = []
+                for row in data:
+                    diff_row = [row[i+1] - row[i] for i in range(len(row)-1)]
+                    result.append(diff_row)
+                return result
+            else:  # vertical difference
+                result = []
+                for i in range(len(data)-1):
+                    diff_row = [data[i+1][j] - data[i][j] for j in range(len(data[0]))]
+                    result.append(diff_row)
+                return result
+    
+    def _safe_log2(self, data):
+        """Calculate log2 with fallback"""
+        if NUMPY_AVAILABLE:
+            return np.log2(data)
+        else:
+            if isinstance(data, (list, tuple)):
+                return [math.log2(max(1e-10, x)) for x in data]
+            else:
+                return math.log2(max(1e-10, data))
     
     def _load_detection_parameters(self):
         """
@@ -313,7 +421,7 @@ class AIContentDetector:
                 stats_score *= 0.4
             
             scores = [metadata_score, pixel_score, color_score, stats_score]
-            average_score = np.mean(scores)
+            average_score = self._safe_mean(scores)
             
             # Apply more conservative thresholds for better accuracy
             confidence = float(min(max(float(average_score), 0.0), 1.0))
@@ -405,23 +513,23 @@ class AIContentDetector:
         try:
             # Convert to grayscale and get pixel data
             gray_image = pil_image.convert('L')
-            pixels = np.array(gray_image)
+            pixels = self._safe_array(gray_image)
             
             # Calculate pixel variance (AI images often have lower variance)
-            pixel_variance = float(np.var(pixels)) / 255.0
+            pixel_variance = float(self._safe_var(pixels)) / 255.0
             
             # Calculate histogram for smoothness analysis
-            histogram = np.histogram(pixels, bins=256, range=(0, 256))[0]
+            histogram = self._safe_histogram(pixels, bins=256, range=(0, 256))[0]
             hist_normalized = histogram / histogram.sum()
             
             # Check for artificial smoothness (common in AI images)
-            smoothness = float(np.std(hist_normalized))
+            smoothness = float(self._safe_std(hist_normalized))
             
             # Simple edge detection using gradient
-            grad_x = np.gradient(pixels.astype(float), axis=1)
-            grad_y = np.gradient(pixels.astype(float), axis=0)
-            edge_magnitude = np.sqrt(grad_x**2 + grad_y**2)
-            noise_level = float(np.std(edge_magnitude))
+            grad_x = self._safe_gradient(pixels.astype(float), axis=1)
+            grad_y = self._safe_gradient(pixels.astype(float), axis=0)
+            edge_magnitude = self._safe_sqrt(grad_x**2 + grad_y**2)
+            noise_level = float(self._safe_std(edge_magnitude))
             normalized_noise = noise_level / 100.0  # Normalize
             
             # Combine factors for AI detection
@@ -446,7 +554,7 @@ class AIContentDetector:
         try:
             # Convert to RGB and analyze each channel
             rgb_image = pil_image.convert('RGB')
-            pixels = np.array(rgb_image)
+            pixels = self._safe_array(rgb_image)
             
             # Analyze each color channel
             channel_variances = []
@@ -454,15 +562,15 @@ class AIContentDetector:
             
             for channel in range(3):  # R, G, B
                 channel_data = pixels[:, :, channel]
-                channel_variances.append(np.var(channel_data))
-                channel_means.append(np.mean(channel_data))
+                channel_variances.append(self._safe_var(channel_data))
+                channel_means.append(self._safe_mean(channel_data))
             
             # AI images often have more uniform color distribution
-            variance_uniformity = np.std(channel_variances) / np.mean(channel_variances)
-            mean_balance = np.std(channel_means) / 255.0
+            variance_uniformity = self._safe_std(channel_variances) / self._safe_mean(channel_variances)
+            mean_balance = self._safe_std(channel_means) / 255.0
             
             # Check for oversaturation (common in AI images)
-            saturation_pixels = np.sum((pixels == 255) | (pixels == 0))
+            saturation_pixels = self._safe_sum((pixels == 255) | (pixels == 0))
             total_pixels = pixels.size
             saturation_ratio = saturation_pixels / total_pixels
             
@@ -505,13 +613,13 @@ class AIContentDetector:
                         break
             
             # Convert to numpy for analysis
-            img_array = np.array(pil_image.convert('RGB'))
+            img_array = self._safe_array(pil_image.convert('RGB'))
             
             # Check for natural noise patterns (real cameras have sensor noise)
             if len(img_array.shape) == 3:
                 # Calculate noise level in image
-                gray = np.mean(img_array, axis=2)
-                noise_level = np.std(gray - np.mean(gray))
+                gray = self._safe_mean(img_array, axis=2)
+                noise_level = self._safe_std(gray - self._safe_mean(gray))
                 
                 # Real photos typically have more natural noise
                 if noise_level > 5.0:  # Threshold for natural noise
@@ -520,7 +628,7 @@ class AIContentDetector:
             # Check for realistic lighting gradients
             # Real photos have more complex lighting than AI images
             if len(img_array.shape) == 3:
-                brightness_variance = np.var(np.mean(img_array, axis=2))
+                brightness_variance = self._safe_var(self._safe_mean(img_array, axis=2))
                 if brightness_variance > 1000:  # Natural lighting variation
                     indicators['has_realistic_lighting'] = True
             
@@ -554,12 +662,12 @@ class AIContentDetector:
                 pil_image.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
             
             # Convert to array for analysis
-            pixels = np.array(pil_image.convert('L'), dtype=np.float32)
+            pixels = self._safe_array(pil_image.convert('L'), dtype=np.float32)
             
             # Calculate entropy (measure of randomness)
-            histogram = np.histogram(pixels, bins=256, range=(0, 256))[0]
+            histogram = self._safe_histogram(pixels, bins=256, range=(0, 256))[0]
             histogram = histogram[histogram > 0]  # Remove zeros
-            entropy = -np.sum((histogram / histogram.sum()) * np.log2(histogram / histogram.sum()))
+            entropy = -self._safe_sum((histogram / histogram.sum()) * np.log2(histogram / histogram.sum()))
             
             # AI images often have lower entropy (less randomness)
             entropy_score = 1.0 - min(entropy / 8.0, 1.0)  # Normalize entropy
@@ -578,13 +686,13 @@ class AIContentDetector:
                     if patch_count >= max_patches:
                         break
                     patch = pixels[i:i+patch_size, j:j+patch_size]
-                    local_stds.append(float(np.std(patch)))
+                    local_stds.append(float(self._safe_std(patch)))
                     patch_count += 1
                 if patch_count >= max_patches:
                     break
             
             if local_stds:
-                contrast_variance = np.var(local_stds)
+                contrast_variance = self._safe_var(local_stds)
                 contrast_score = 1.0 - min(float(contrast_variance) / 1000.0, 1.0)
             else:
                 contrast_score = 0.5
@@ -593,8 +701,8 @@ class AIContentDetector:
             diff_horizontal = np.abs(np.diff(pixels, axis=1))
             diff_vertical = np.abs(np.diff(pixels, axis=0))
             
-            smooth_transitions = np.sum((diff_horizontal < 10) & (diff_horizontal > 0))
-            smooth_transitions += np.sum((diff_vertical < 10) & (diff_vertical > 0))
+            smooth_transitions = self._safe_sum((diff_horizontal < 10) & (diff_horizontal > 0))
+            smooth_transitions += self._safe_sum((diff_vertical < 10) & (diff_vertical > 0))
             total_transitions = diff_horizontal.size + diff_vertical.size
             
             if total_transitions > 0:
@@ -654,7 +762,7 @@ class AIContentDetector:
             
             # Calculate overall confidence
             scores = [metadata_score, structure_score, frame_score]
-            average_score = np.mean(scores)
+            average_score = self._safe_mean(scores)
             confidence = float(min(max(float(average_score), 0.0), 1.0))
             
             # Determine classification and source
@@ -731,7 +839,7 @@ class AIContentDetector:
             
             # Calculate overall confidence
             scores = [metadata_score, structure_score, pattern_score]
-            average_score = np.mean(scores)
+            average_score = self._safe_mean(scores)
             confidence = float(min(max(float(average_score), 0.0), 1.0))
             
             # Determine classification and source
@@ -813,7 +921,7 @@ class AIContentDetector:
             
             # Calculate overall confidence
             scores = [pattern_score, vocab_score, structure_score]
-            average_score = np.mean(scores)
+            average_score = self._safe_mean(scores)
             confidence = float(min(max(float(average_score), 0.0), 1.0))
             
             # Determine classification
@@ -922,7 +1030,7 @@ class AIContentDetector:
         # Calculate sentence length variance
         sentence_lengths = [len(s.split()) for s in sentences]
         if len(sentence_lengths) > 1:
-            length_variance = np.var(sentence_lengths) / float(max(float(np.mean(sentence_lengths)), 1))
+            length_variance = self._safe_var(sentence_lengths) / float(max(float(self._safe_mean(sentence_lengths)), 1))
             
             # AI text often has very consistent sentence lengths
             if length_variance < self.text_params['sentence_length_variance_threshold']:
