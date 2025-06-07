@@ -1805,7 +1805,7 @@
         function deleteTip(tipId) {
             if (confirm('Are you sure you want to delete this safety tip? This action cannot be undone.')) {
                 fetch(`/admin/safety-tips/${tipId}`, {
-                    method: 'DELETE'
+                    method: 'POST'
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -2010,7 +2010,7 @@
         function deleteUser(userId) {
             if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
                 fetch(`/admin/delete-user/${userId}`, {
-                    method: 'DELETE'
+                    method: 'POST'
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -3000,7 +3000,7 @@
         function deleteUser(userId) {
             if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
                 fetch(`/admin/delete-user/${userId}`, {
-                    method: 'DELETE'
+                    method: 'POST'
                 })
                 .then(response => response.json())
                 .then(data => {
