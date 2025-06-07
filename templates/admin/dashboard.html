@@ -1788,7 +1788,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.log('Safety tip deletion endpoint not available');
                     alert('Error deleting tip');
                 });
             }
@@ -1832,7 +1832,7 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.log('Safety tip creation endpoint not available');
                 alert('Error creating tip');
             });
         }
@@ -1972,7 +1972,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.log('Error:', error);
                     alert('Error demoting user');
                 });
             }
@@ -1993,7 +1993,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.log('Error:', error);
                     alert('Error deleting user');
                 });
             }
@@ -2018,7 +2018,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.log('Error:', error);
                     alert('Error resetting password');
                 });
             }
@@ -2040,7 +2040,7 @@
                     alert('Users exported successfully!');
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.log('Error:', error);
                     alert('Error exporting users');
                 });
         }
@@ -2060,7 +2060,7 @@
                     alert('Detections exported successfully!');
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.log('Error:', error);
                     alert('Error exporting detections');
                 });
         }
@@ -2080,7 +2080,7 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.log('Error:', error);
                 alert('Error approving report');
             });
         }
@@ -2099,7 +2099,7 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.log('Error:', error);
                 alert('Error rejecting report');
             });
         }
@@ -2118,7 +2118,7 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.log('Error:', error);
                 alert('Error creating backup');
             });
         }
@@ -2137,7 +2137,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.log('Error:', error);
                     alert('Error optimizing database');
                 });
             }
@@ -2161,7 +2161,7 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.log('Error:', error);
                 alert('Error running health check');
             });
         }
@@ -2181,7 +2181,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.log('Error:', error);
                     alert('Error retraining model');
                 });
             }
@@ -2213,7 +2213,7 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.log('Error:', error);
                 alert('Error testing model');
             });
         }
@@ -2233,7 +2233,7 @@
                     alert('Model exported successfully!');
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.log('Error:', error);
                     alert('Error exporting model');
                 });
         }
@@ -2253,7 +2253,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.log('Error:', error);
                     alert('Error loading training history');
                 });
         }
@@ -2279,7 +2279,7 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.log('Error:', error);
                 alert('Error saving ML settings');
             });
         }
@@ -2312,7 +2312,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.log('Error:', error);
                     alert('Error adding phishing report');
                 });
             }
@@ -2332,7 +2332,7 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.log('Error:', error);
                 alert('Error refreshing phishing database');
             });
         }
@@ -2361,7 +2361,7 @@
                         }
                     })
                     .catch(error => {
-                        console.error('Error:', error);
+                        console.log('Error:', error);
                         alert('Error importing data');
                     });
                 }
@@ -2384,7 +2384,7 @@
                     alert('Phishing database exported successfully!');
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.log('Error:', error);
                     alert('Error exporting phishing database');
                 });
         }
@@ -2458,7 +2458,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.log('Error:', error);
                     alert('Error deleting users');
                 });
             }
@@ -2494,7 +2494,7 @@
                 alert(`Exported ${userIds.length} selected users successfully!`);
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.log('Error:', error);
                 alert('Error exporting selected users');
             });
         }
@@ -2651,7 +2651,7 @@
                 }
             })
             .catch(error => {
-                console.error('Error updating safety tip:', error);
+                console.log('Error updating safety tip:', error);
                 showNotification('Error', 'Failed to update safety tip', 'error');
             })
             .finally(() => {
@@ -2670,7 +2670,7 @@
                 }
             })
             .catch(error => {
-                console.error('Error loading safety tips:', error);
+                console.log('Error loading safety tips:', error);
             });
         }
 
