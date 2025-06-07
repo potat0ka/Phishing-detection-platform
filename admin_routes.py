@@ -845,15 +845,20 @@ def get_all_users_with_stats():
         user_stats = []
         
         for user in users:
+            # Get user ID from either 'id' or '_id' field
+            user_id = user.get('id') or user.get('_id')
+            
             # Get scan count for each user
-            scan_count = len(db_manager.find_many('detections', {'user_id': user.get('id')}))
+            scan_count = len(db_manager.find_many('detections', {'user_id': user_id}))
             
             user_stats.append({
-                'id': user.get('id'),
+                'id': user_id,
+                '_id': user.get('_id'),
                 'username': user.get('username'),
                 'email': user.get('email'),
                 'role': user.get('role', 'user'),
                 'active': user.get('active', True),
+                'is_active': user.get('is_active', True),
                 'created_at': user.get('created_at', 'Unknown'),
                 'last_login': user.get('last_login', 'Never'),
                 'scan_count': scan_count
