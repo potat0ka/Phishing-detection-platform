@@ -252,7 +252,12 @@ function createUser() {
 }
 
 function viewUser(userId) {
-    fetch(`/admin/user/${userId}`)
+    if (!userId || userId === 'None') {
+        showAlert('Invalid user ID provided', 'danger');
+        return;
+    }
+    
+    fetch(`/admin/get-user/${userId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -286,7 +291,12 @@ function viewUser(userId) {
 }
 
 function editUser(userId) {
-    fetch(`/admin/user/${userId}`)
+    if (!userId || userId === 'None') {
+        showAlert('Invalid user ID provided', 'danger');
+        return;
+    }
+    
+    fetch(`/admin/get-user/${userId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -306,7 +316,8 @@ function editUser(userId) {
                             <label class="form-label">Role</label>
                             <select class="form-select" name="role" required>
                                 <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
-                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                <option value="sub_admin" ${user.role === 'sub_admin' ? 'selected' : ''}>Sub Admin</option>
+                                <option value="super_admin" ${user.role === 'super_admin' ? 'selected' : ''}>Super Admin</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -317,7 +328,13 @@ function editUser(userId) {
                         </div>
                     </form>
                 `, 'handleEditUser()');
+            } else {
+                showAlert('Error loading user details: ' + (data.error || 'Unknown error'), 'danger');
             }
+        })
+        .catch(error => {
+            console.error('Error fetching user details:', error);
+            showAlert('Error loading user details', 'danger');
         });
 }
 
@@ -339,6 +356,35 @@ function toggleUserStatus(userId) {
         .catch(error => {
             console.error('Error toggling user status:', error);
             showAlert('Error updating user status', 'danger');
+        });
+    }
+}
+
+function deleteUser(userId) {
+    if (!userId || userId === 'None') {
+        showAlert('Invalid user ID provided', 'danger');
+        return;
+    }
+    
+    if (confirm('Are you sure you want to delete this user? This action cannot be undone and will permanently remove all user data.')) {
+        fetch(`/admin/delete-user/${userId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('User deleted successfully', 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showAlert('Error deleting user: ' + (data.error || 'Unknown error'), 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting user:', error);
+            showAlert('Error deleting user', 'danger');
         });
     }
 }
@@ -633,9 +679,19 @@ function handleEditUser() {
     const formData = new FormData(form);
     const userId = formData.get('user_id');
     
-    fetch(`/admin/user/${userId}`, {
-        method: 'PUT',
-        body: formData
+    const userData = {
+        username: formData.get('username'),
+        email: formData.get('email'),
+        role: formData.get('role'),
+        is_active: formData.get('is_active') === 'on'
+    };
+    
+    fetch(`/admin/edit-user/${userId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData)
     })
     .then(response => response.json())
     .then(data => {
@@ -645,6 +701,10 @@ function handleEditUser() {
         } else {
             showAlert('Error: ' + (data.error || 'Unknown error'), 'danger');
         }
+    })
+    .catch(error => {
+        console.error('Error updating user:', error);
+        showAlert('Error updating user', 'danger');
     });
 }
 

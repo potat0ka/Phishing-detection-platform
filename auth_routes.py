@@ -390,6 +390,7 @@ def profile():
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
     
+    db_manager = get_mongodb_manager()
     user = db_manager.find_one('users', {'_id': session['user_id']})
     if not user:
         session.clear()
