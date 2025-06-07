@@ -178,6 +178,27 @@ class MongoDBManager:
         # Local storage fallback
         return self._local_find_many(collection_name, query, limit)
     
+    def find_all(self, collection_name: str, query: Dict[str, Any] = None, sort: List = None, limit: int = None) -> List[Dict[str, Any]]:
+        """Find all documents with optional sorting"""
+        if self.connected and collection_name in self.collections:
+            try:
+                cursor = self.collections[collection_name].find(query or {})
+                if sort:
+                    cursor = cursor.sort(sort)
+                if limit:
+                    cursor = cursor.limit(limit)
+                
+                results = []
+                for doc in cursor:
+                    doc['_id'] = str(doc['_id'])
+                    results.append(doc)
+                return results
+            except Exception as e:
+                logger.error(f"MongoDB find_all failed: {e}")
+        
+        # Local storage fallback
+        return self._local_find_all(collection_name, query, sort, limit)
+    
     def update_one(self, collection_name: str, query: Dict[str, Any], update: Dict[str, Any]) -> bool:
         """Update document in MongoDB or local storage"""
         if self.connected and collection_name in self.collections:
@@ -298,6 +319,45 @@ class MongoDBManager:
             return results
         except Exception as e:
             logger.error(f"Local find_many failed: {e}")
+            return []
+    
+    def _local_find_all(self, collection_name: str, query: Dict[str, Any] = None, sort: List = None, limit: int = None) -> List[Dict[str, Any]]:
+        """Find all documents in local JSON storage with optional sorting"""
+        if collection_name not in self.json_files:
+            return []
+        
+        filepath = self.json_files[collection_name]
+        
+        try:
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+            
+            if not query:
+                results = data
+            else:
+                results = []
+                for doc in data:
+                    match = True
+                    for key, value in query.items():
+                        if key not in doc or doc[key] != value:
+                            match = False
+                            break
+                    if match:
+                        results.append(doc)
+            
+            # Apply sorting if specified
+            if sort:
+                for sort_field, sort_direction in reversed(sort):
+                    reverse_order = sort_direction == -1
+                    results.sort(key=lambda x: x.get(sort_field, ''), reverse=reverse_order)
+            
+            # Apply limit if specified
+            if limit:
+                results = results[:limit]
+            
+            return results
+        except Exception as e:
+            logger.error(f"Local find_all failed: {e}")
             return []
     
     def _local_update_one(self, collection_name: str, query: Dict[str, Any], update: Dict[str, Any]) -> bool:
