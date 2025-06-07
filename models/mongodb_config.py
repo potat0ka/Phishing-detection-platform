@@ -147,6 +147,9 @@ class MongoDBManager:
     
     def find_one(self, collection_name: str, query: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Find document in MongoDB or local storage"""
+        if query is None:
+            query = {}
+            
         if self.connected and collection_name in self.collections:
             try:
                 result = self.collections[collection_name].find_one(query)
@@ -161,10 +164,13 @@ class MongoDBManager:
     
     def find_many(self, collection_name: str, query: Dict[str, Any] = None, limit: int = None) -> List[Dict[str, Any]]:
         """Find multiple documents"""
+        if query is None:
+            query = {}
+            
         if self.connected and collection_name in self.collections:
             try:
-                cursor = self.collections[collection_name].find(query or {})
-                if limit:
+                cursor = self.collections[collection_name].find(query)
+                if limit and limit > 0:
                     cursor = cursor.limit(limit)
                 
                 results = []
