@@ -44,6 +44,138 @@ function setupTipCategories() {
     });
 }
 
+// User management bulk operations
+function selectAllUsers() {
+    const selectAllCheckbox = document.getElementById('selectAllUsers');
+    const userCheckboxes = document.querySelectorAll('.user-checkbox');
+    
+    userCheckboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
+    
+    updateBulkActionButtons();
+}
+
+function updateBulkActionButtons() {
+    const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+    const bulkActions = document.getElementById('bulkActions');
+    const selectedCount = document.getElementById('selectedCount');
+    const selectAllCheckbox = document.getElementById('selectAllUsers');
+    
+    if (checkedBoxes.length > 0) {
+        bulkActions.style.display = 'block';
+        selectedCount.textContent = checkedBoxes.length;
+    } else {
+        bulkActions.style.display = 'none';
+    }
+    
+    // Update select all checkbox state
+    const allCheckboxes = document.querySelectorAll('.user-checkbox');
+    if (checkedBoxes.length === allCheckboxes.length) {
+        selectAllCheckbox.checked = true;
+        selectAllCheckbox.indeterminate = false;
+    } else if (checkedBoxes.length > 0) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = true;
+    } else {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+    }
+}
+
+function bulkDeleteUsers() {
+    const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+    const userIds = Array.from(checkedBoxes).map(cb => cb.value);
+    
+    if (userIds.length === 0) {
+        showNotification('No users selected for deletion', 'warning');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to delete ${userIds.length} selected users? This action cannot be undone.`)) {
+        fetch('/admin/bulk-delete-users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_ids: userIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                if (data.errors && data.errors.length > 0) {
+                    showNotification('Some users could not be deleted: ' + data.errors.join(', '), 'warning');
+                }
+                // Refresh the page to update the user list
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                showNotification('Error: ' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Failed to delete users', 'error');
+        });
+    }
+}
+
+function bulkExportUsers() {
+    const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+    const userIds = Array.from(checkedBoxes).map(cb => cb.value);
+    
+    if (userIds.length === 0) {
+        showNotification('No users selected for export', 'warning');
+        return;
+    }
+    
+    showNotification(`Exporting ${userIds.length} selected users...`, 'info');
+    
+    fetch('/admin/bulk-export-users', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_ids: userIds })
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.blob();
+        } else {
+            return response.json().then(data => {
+                throw new Error(data.error || 'Export failed');
+            });
+        }
+    })
+    .then(blob => {
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `selected_users_export_${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        showNotification('Users exported successfully', 'success');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Export failed: ' + error.message, 'error');
+    });
+}
+
+function clearSelection() {
+    document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    document.getElementById('selectAllUsers').checked = false;
+    document.getElementById('selectAllUsers').indeterminate = false;
+    updateBulkActionButtons();
+}
+
 function setupSearchFilters() {
     // User search
     const userSearch = document.getElementById('userSearch');

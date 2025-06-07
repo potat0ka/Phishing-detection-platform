@@ -19,7 +19,7 @@ Security Note:
 - All admin actions are logged for security auditing
 """
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify, make_response
 from auth_routes import admin_required, get_current_user
 from models.mongodb_config import get_mongodb_manager
 from utils.encryption_utils import decrypt_sensitive_data, encrypt_sensitive_data
@@ -3069,3 +3069,120 @@ def system_health_check_admin():
             'error': 'Error occurred during health check',
             'status': 'error'
         }), 500
+
+@admin_bp.route('/bulk-delete-users', methods=['POST'])
+@admin_required
+def bulk_delete_users():
+    """Bulk delete selected users with MongoDB integration"""
+    try:
+        from models.mongodb_config import get_mongodb_manager
+        db_manager = get_mongodb_manager()
+        
+        data = request.get_json()
+        user_ids = data.get('user_ids', [])
+        
+        if not user_ids:
+            return jsonify({'success': False, 'error': 'No users selected'})
+        
+        current_user = get_current_user()
+        if not current_user:
+            return jsonify({'success': False, 'error': 'Not authenticated'})
+        
+        # Prevent self-deletion
+        if current_user['id'] in user_ids:
+            return jsonify({'success': False, 'error': 'Cannot delete your own account'})
+        
+        # Check permissions for role-based deletion
+        deleted_count = 0
+        errors = []
+        
+        for user_id in user_ids:
+            try:
+                # Get user to check role
+                user = db_manager.find_one('users', {'id': user_id})
+                if not user:
+                    continue
+                
+                # Role-based deletion permissions
+                if current_user['role'] == 'sub_admin':
+                    if user.get('role') in ['super_admin', 'sub_admin']:
+                        errors.append(f"Cannot delete {user.get('username', 'unknown')} - insufficient permissions")
+                        continue
+                
+                # Delete user and associated data
+                db_manager.delete_one('users', {'id': user_id})
+                db_manager.delete_many('scan_logs', {'user_id': user_id})
+                db_manager.delete_many('reports', {'user_id': user_id})
+                deleted_count += 1
+                
+            except Exception as e:
+                errors.append(f"Error deleting user {user_id}: {str(e)}")
+        
+        return jsonify({
+            'success': True,
+            'deleted_count': deleted_count,
+            'errors': errors if errors else None,
+            'message': f'Successfully deleted {deleted_count} users'
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': f'Bulk delete failed: {str(e)}'})
+
+@admin_bp.route('/bulk-export-users', methods=['POST'])
+@admin_required
+def bulk_export_users():
+    """Export selected users as CSV with MongoDB integration"""
+    try:
+        from models.mongodb_config import get_mongodb_manager
+        import csv
+        import io
+        
+        db_manager = get_mongodb_manager()
+        
+        data = request.get_json()
+        user_ids = data.get('user_ids', [])
+        
+        if not user_ids:
+            return jsonify({'success': False, 'error': 'No users selected'})
+        
+        # Get selected users
+        users = []
+        for user_id in user_ids:
+            user = db_manager.find_one('users', {'id': user_id})
+            if user:
+                users.append(user)
+        
+        if not users:
+            return jsonify({'success': False, 'error': 'No valid users found'})
+        
+        # Create CSV
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Write header
+        writer.writerow(['ID', 'Username', 'Email', 'Role', 'Status', 'Created Date', 'Last Login'])
+        
+        # Write user data
+        for user in users:
+            writer.writerow([
+                user.get('id', ''),
+                user.get('username', ''),
+                user.get('email', ''),
+                user.get('role', 'user'),
+                user.get('status', 'active'),
+                user.get('created_date', ''),
+                user.get('last_login', 'Never')
+            ])
+        
+        # Create response
+        csv_content = output.getvalue()
+        output.close()
+        
+        response = make_response(csv_content)
+        response.headers['Content-Type'] = 'text/csv'
+        response.headers['Content-Disposition'] = f'attachment; filename=selected_users_export_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
+        
+        return response
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': f'Export failed: {str(e)}'})
