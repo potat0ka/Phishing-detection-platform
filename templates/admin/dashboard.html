@@ -416,7 +416,7 @@
                                                 <td><span class="badge bg-secondary">{{ scan.input_type or 'Unknown' }}</span></td>
                                                 <td>
                                                     <span class="badge bg-{{ 'success' if scan.result == 'safe' else ('warning' if scan.result == 'suspicious' else 'danger') }}">
-                                                        {{ (scan.result or 'Unknown').title() }}
+                                                        {{ (scan.result|string or 'Unknown').title() }}
                                                     </span>
                                                 </td>
                                             </tr>
@@ -604,7 +604,7 @@
                                         </td>
                                         <td>
                                             <span class="badge bg-{{ 'success' if scan.result == 'safe' else ('warning' if scan.result == 'suspicious' else 'danger') }}">
-                                                {{ (scan.result or 'Unknown').title() }}
+                                                {{ (scan.result|string or 'Unknown').title() }}
                                             </span>
                                         </td>
                                         <td>
@@ -677,7 +677,7 @@
                                         <td>{{ report.reason }}</td>
                                         <td>
                                             <span class="badge bg-{{ 'warning' if report.status == 'pending' else ('success' if report.status == 'approved' else 'danger') }}">
-                                                {{ report.status.title() }}
+                                                {{ (report.status|string or "Unknown").title() }}
                                             </span>
                                         </td>
                                         <td>
@@ -777,7 +777,7 @@
                                         <td><strong>{{ tip.title }}</strong></td>
                                         <td>
                                             <span class="badge bg-{{ 'primary' if tip.category == 'email' else ('success' if tip.category == 'url' else 'info') }}">
-                                                {{ tip.category.title() }}
+                                                {{ (tip.category|string or "Unknown").title() }}
                                             </span>
                                         </td>
                                         <td>
@@ -1283,7 +1283,7 @@
                                             <td>{{ user.email }}</td>
                                             <td>
                                                 <span class="badge bg-{{ 'danger' if user.role == 'admin' else 'primary' }}">
-                                                    {{ user.role.title() }}
+                                                    {{ (user.role|string or "user").title() }}
                                                 </span>
                                             </td>
                                             <td>
@@ -1372,7 +1372,7 @@
                                             </td>
                                             <td>
                                                 <span class="badge bg-{{ 'success' if scan.result == 'safe' else ('warning' if scan.result == 'suspicious' else 'danger') }}">
-                                                    {{ (scan.result or 'Unknown').title() }}
+                                                    {{ (scan.result|string or 'Unknown').title() }}
                                                 </span>
                                             </td>
                                             <td>
@@ -1422,11 +1422,11 @@
                                         <div class="card-header d-flex justify-content-between align-items-center">
                                             <small class="text-muted">Report #{{ report.id }}</small>
                                             <span class="badge bg-{{ 'warning' if report.status == 'pending' else 'success' }}">
-                                                {{ report.status.title() }}
+                                                {{ (report.status|string or "Unknown").title() }}
                                             </span>
                                         </div>
                                         <div class="card-body">
-                                            <h6 class="card-title">{{ report.type.title() }} Content</h6>
+                                            <h6 class="card-title">{{ (report.type|string or "Unknown").title() }} Content</h6>
                                             <p class="card-text small">
                                                 {{ (report.content or 'No content available')[:100] }}...
                                             </p>
