@@ -53,12 +53,13 @@
         .admin-header {
             background: var(--bs-dark);
             border-bottom: 1px solid var(--bs-border-color);
-            padding: 1rem 2rem;
+            padding: 0.875rem 2rem;
             height: var(--header-height);
             display: flex;
             align-items: center;
             position: relative;
             z-index: 999;
+            box-sizing: border-box;
         }
         
         .admin-content {
@@ -69,9 +70,15 @@
         }
         
         .sidebar-brand {
-            padding: 1.5rem 1rem;
+            padding: 0.875rem 1rem;
             border-bottom: 1px solid var(--bs-border-color);
             text-align: center;
+            height: var(--header-height);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
         }
         
         .sidebar-brand h4 {
