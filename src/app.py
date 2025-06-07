@@ -37,7 +37,11 @@ logger = logging.getLogger(__name__)
 
 # Create the main Flask application instance
 # This is the core of our web application
-app = Flask(__name__)
+# Set template and static folder paths to point to the root directory
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+app = Flask(__name__, 
+           template_folder=os.path.join(project_root, 'templates'),
+           static_folder=os.path.join(project_root, 'static'))
 
 # Security configuration for user sessions and data protection
 # SESSION_SECRET is used to encrypt user session data
