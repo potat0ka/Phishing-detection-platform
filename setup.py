@@ -184,43 +184,87 @@ def print_activation_instructions():
     print("📋 Don't forget to configure your .env file with MongoDB credentials!")
     print("="*60)
 
+def offer_windows_options():
+    """Offer Windows users different installation options"""
+    print("\n🪟 Windows Installation Options:")
+    print("1. Basic Installation (Recommended for most Windows users)")
+    print("   - No compilation required")
+    print("   - Uses rule-based phishing detection")
+    print("   - Fastest setup, works on all Windows systems")
+    print("\n2. Full Installation (Advanced users with build tools)")
+    print("   - Includes machine learning libraries")
+    print("   - Requires Microsoft Visual C++ Build Tools")
+    print("   - Better detection accuracy")
+    
+    while True:
+        choice = input("\nChoose installation type (1 or 2): ").strip()
+        if choice == "1":
+            return "requirements-windows-basic.txt", "Windows (Basic - Recommended)"
+        elif choice == "2":
+            return "requirements-windows.txt", "Windows (Full ML)"
+        else:
+            print("Please enter 1 or 2")
+
 def main():
     """Main setup function"""
-    print("🔧 AI Phishing Detection Platform - Cross-Platform Setup")
-    print("=" * 60)
+    print("="*60)
+    print("🚀 AI Phishing Detection Platform - Cross-Platform Setup")
+    print("="*60)
+    print("📝 Author: Bigendra Shrestha")
+    print("🎓 Project: Final Semester - Cybersecurity & AI")
+    print("="*60)
     
     # Check Python version
     if not check_python_version():
         return False
     
-    # Detect platform and requirements file
-    requirements_file, platform_name = detect_platform()
-    print(f"🖥️  Platform detected: {platform_name}")
-    print(f"📄 Using requirements file: {requirements_file}")
+    # Detect platform and get appropriate requirements file
+    system = platform.system().lower()
+    
+    if system == "windows":
+        requirements_file, platform_name = offer_windows_options()
+    else:
+        requirements_file, platform_name = detect_platform()
+    
+    print(f"\n🔍 Platform: {platform_name}")
+    print(f"📦 Requirements file: {requirements_file}")
     
     # Check if requirements file exists
     if not Path(requirements_file).exists():
-        print(f"❌ Requirements file {requirements_file} not found")
-        print("Available files:", [f for f in os.listdir('.') if f.startswith('requirements')])
+        print(f"❌ Requirements file {requirements_file} not found!")
+        print("Please ensure all requirements files are present.")
         return False
     
     # Create virtual environment
     if not create_virtual_environment():
         return False
     
-    # Install requirements
-    if not install_requirements(requirements_file):
+    # Install requirements with fallback for Windows
+    success = install_requirements(requirements_file)
+    
+    # If Windows full installation fails, offer basic installation
+    if not success and system == "windows" and requirements_file == "requirements-windows.txt":
+        print("\n⚠️  Full installation failed (likely due to missing build tools)")
+        print("🔄 Falling back to basic installation...")
+        requirements_file = "requirements-windows-basic.txt"
+        success = install_requirements(requirements_file)
+    
+    if not success:
         return False
     
     # Create .env file
     create_env_file()
     
     # Test installation
-    if not test_installation():
-        print("⚠️  Warning: Installation test failed, but setup may still work")
-    
-    # Print activation instructions
-    print_activation_instructions()
+    if test_installation():
+        print("\n🎉 Setup completed successfully!")
+        print_activation_instructions()
+        return True
+    else:
+        print("\n❌ Setup completed with errors.")
+        print("Please check the installation and try running the application manually.")
+        return False
+
     
     return True
 
