@@ -57,7 +57,11 @@ source venv/bin/activate
 
 **Install Dependencies:**
 ```bash
-pip install -r requirements.txt
+# Option 1: Automatic installer (Recommended)
+python install_dependencies.py
+
+# Option 2: Manual installation
+pip install flask==2.3.3 pymongo==4.5.0 requests==2.31.0 scikit-learn==1.3.2 nltk==3.8.1 beautifulsoup4==4.12.2 bcrypt==4.0.1 pillow==9.5.0 email-validator==2.1.0 trafilatura==1.6.4 dnspython==2.4.2 passlib==1.7.4 cryptography==41.0.7
 ```
 
 **Deactivate Virtual Environment (when done):**
@@ -128,7 +132,7 @@ Open your web browser and go to: `http://localhost:8080`
 
 5. **Install dependencies**:
    ```cmd
-   pip install -r requirements.txt
+   pip install flask==2.3.3 pymongo==4.5.0 requests==2.31.0 scikit-learn==1.3.2 nltk==3.8.1 beautifulsoup4==4.12.2 bcrypt==4.0.1 pillow==9.5.0 email-validator==2.1.0 trafilatura==1.6.4 dnspython==2.4.2 passlib==1.7.4 cryptography==41.0.7
    ```
 
 6. **Run the application**:
