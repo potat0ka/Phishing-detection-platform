@@ -53,6 +53,30 @@ This platform provides real-time detection and analysis of phishing attempts acr
 
 ## 🛠️ Installation Guide
 
+### Automated Setup (Recommended)
+
+The easiest way to set up the platform on any operating system:
+
+```bash
+# Download project files and extract to desired location
+cd ai-phishing-detection-platform
+
+# Run the automated setup script
+python setup.py
+```
+
+The setup script will:
+- Detect your operating system automatically
+- Install the correct dependencies for your platform
+- Create virtual environment
+- Configure the .env file
+- Test the installation
+- Provide activation instructions
+
+### Manual Setup
+
+If you prefer manual installation, choose your operating system below:
+
 ### Windows Setup
 
 1. **Install Python**
@@ -84,12 +108,17 @@ This platform provides real-time detection and analysis of phishing attempts acr
 
 ### macOS Setup
 
-1. **Install Python**
+1. **Install Python and Prerequisites**
    ```bash
-   # Install using Homebrew (recommended)
+   # Install Homebrew (if not already installed)
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   
+   # Install Python and development tools
    brew install python3
    
-   # Or download from python.org
+   # Install Xcode Command Line Tools (for compilation)
+   xcode-select --install
+   
    # Verify installation
    python3 --version
    ```
@@ -105,23 +134,29 @@ This platform provides real-time detection and analysis of phishing attempts acr
    # Activate virtual environment
    source venv/bin/activate
    
-   # Install dependencies
-   pip install -r requirements-local.txt
+   # Upgrade pip first
+   python -m pip install --upgrade pip
+   
+   # Install macOS-optimized dependencies
+   pip install -r requirements-macos.txt
    ```
 
 ### Linux (Including Arch Linux) Setup
 
-1. **Install Python**
+1. **Install Python and Development Tools**
    ```bash
    # Ubuntu/Debian
    sudo apt update
-   sudo apt install python3 python3-pip python3-venv
+   sudo apt install python3 python3-pip python3-venv python3-dev build-essential
    
    # Arch Linux
-   sudo pacman -S python python-pip
+   sudo pacman -S python python-pip base-devel
    
-   # CentOS/RHEL
-   sudo yum install python3 python3-pip
+   # CentOS/RHEL/Fedora
+   sudo dnf install python3 python3-pip python3-devel gcc gcc-c++ make
+   
+   # openSUSE
+   sudo zypper install python3 python3-pip python3-devel gcc gcc-c++
    
    # Verify installation
    python3 --version
@@ -138,8 +173,11 @@ This platform provides real-time detection and analysis of phishing attempts acr
    # Activate virtual environment
    source venv/bin/activate
    
-   # Install dependencies
-   pip install -r requirements-local.txt
+   # Upgrade pip first
+   python -m pip install --upgrade pip
+   
+   # Install Linux-optimized dependencies
+   pip install -r requirements-linux.txt
    ```
 
 ## 🛢️ MongoDB Atlas Setup (Optional)
@@ -461,20 +499,32 @@ ai-phishing-detection-platform/
     - Add Python and project folder to antivirus whitelist
     - Some antivirus software blocks pip installations
 
+### Requirements Files Compatibility
+
+| Platform | Requirements File | Notes |
+|----------|------------------|-------|
+| **Windows** | `requirements-windows.txt` | Pre-compiled packages, avoids C++ compilation |
+| **macOS** | `requirements-macos.txt` | Optimized for macOS with headless OpenCV |
+| **Linux** | `requirements-linux.txt` | Works on Ubuntu, Debian, Arch, CentOS, Fedora |
+| **Universal** | `requirements-local.txt` | Generic version, may require build tools |
+
 ### Platform-Specific Notes
 
 **Windows Users:**
-- Use `requirements-windows.txt` for hassle-free installation
+- Use `requirements-windows.txt` to avoid compilation errors
 - Install Python from python.org, not Microsoft Store version
 - Ensure "Add Python to PATH" is checked during installation
+- If you encounter NumPy compilation errors, the Windows requirements file resolves this
 
 **macOS Users:**
-- Use Homebrew for Python installation: `brew install python3`
-- Install Xcode Command Line Tools if compilation errors occur
+- Use `requirements-macos.txt` for optimal compatibility
+- Install Xcode Command Line Tools: `xcode-select --install`
+- Uses `opencv-python-headless` to avoid GUI dependencies
 
 **Linux Users:**
-- Install development packages: `sudo apt install python3-dev build-essential`
-- For CentOS/RHEL: `sudo yum groupinstall "Development Tools"`
+- Use `requirements-linux.txt` for best results
+- Install development packages as shown in setup instructions
+- Works across major distributions (Ubuntu, Arch, CentOS, Fedora, openSUSE)
 
 ## 📚 Educational Use
 
