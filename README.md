@@ -55,8 +55,22 @@ venv\Scripts\activate
 # macOS/Linux:
 source venv/bin/activate
 
+# Install core packages
+pip install scikit-learn
+pip install numpy
+
 # Install all required packages
 pip install flask==2.3.3 pymongo==4.5.0 requests==2.31.0 scikit-learn==1.3.2 nltk==3.8.1 beautifulsoup4==4.12.2 bcrypt==4.0.1 pillow==9.5.0 email-validator==2.1.0 trafilatura==1.6.4 dnspython==2.4.2 passlib==1.7.4 cryptography==41.0.7
+```
+
+**Alternative Installation (Arch Linux/Package Managers):**
+```bash
+# For Arch Linux users
+sudo pacman -S python-scikit-learn
+sudo pacman -S python-numpy
+
+# Then install remaining packages with pip
+pip install flask==2.3.3 pymongo==4.5.0 requests==2.31.0 nltk==3.8.1 beautifulsoup4==4.12.2 bcrypt==4.0.1 pillow==9.5.0 email-validator==2.1.0 trafilatura==1.6.4 dnspython==2.4.2 passlib==1.7.4 cryptography==41.0.7
 ```
 
 ### 3. Configure Environment (Optional)
