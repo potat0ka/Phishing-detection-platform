@@ -198,6 +198,24 @@ function setupSearchFilters() {
     if (scanDateFilter) scanDateFilter.addEventListener('change', filterScanLogs);
 }
 
+// Toggle password field visibility in edit user modal
+function togglePasswordField() {
+    const checkbox = document.getElementById('changePasswordCheck');
+    const passwordField = document.getElementById('passwordField');
+    
+    if (checkbox && passwordField) {
+        passwordField.style.display = checkbox.checked ? 'block' : 'none';
+        
+        // Clear password field when hiding it
+        if (!checkbox.checked) {
+            const passwordInput = passwordField.querySelector('input[name="new_password"]');
+            if (passwordInput) {
+                passwordInput.value = '';
+            }
+        }
+    }
+}
+
 function updateLiveStats() {
     fetch('/admin/live-stats')
         .then(response => response.json())
