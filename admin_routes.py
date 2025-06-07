@@ -125,7 +125,8 @@ def create_user():
                 'message': 'Password must be at least 8 characters long'
             }), 400
         
-        # Check if user already exists
+        # Get MongoDB manager and check if user already exists
+        db_manager = get_mongodb_manager()
         existing_user = db_manager.find_one('users', {'username': username})
         if existing_user:
             return jsonify({
@@ -182,6 +183,7 @@ def create_user():
 def get_user(user_id):
     """Get detailed user information for view details functionality"""
     try:
+        db_manager = get_mongodb_manager()
         # Find user using multiple ID formats
         user = db_manager.find_one('users', {'id': user_id})
         if not user:
@@ -678,6 +680,7 @@ def export_detections():
 def get_all_users_with_stats():
     """Get all users with their scan statistics"""
     try:
+        db_manager = get_mongodb_manager()
         users = db_manager.find_many('users', {})
         user_stats = []
         
@@ -704,6 +707,7 @@ def get_all_users_with_stats():
 def get_recent_scan_logs(limit=50):
     """Get recent scan logs with user information"""
     try:
+        db_manager = get_mongodb_manager()
         logs = db_manager.find_many('detections', {}, limit=limit)
         return logs[:limit]
     except Exception as e:
@@ -1647,6 +1651,7 @@ def save_ml_settings():
 def calculate_system_stats():
     """Calculate real-time system statistics"""
     try:
+        db_manager = get_mongodb_manager()
         total_users = len(db_manager.find_many('users', {}))
         total_scans = len(db_manager.find_many('detections', {}))
         active_users = len(db_manager.find_many('users', {'active': True}))
