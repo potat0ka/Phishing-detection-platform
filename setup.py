@@ -25,7 +25,7 @@ def detect_platform():
     system = platform.system().lower()
     
     if system == "windows":
-        return "requirements-windows.txt", "Windows"
+        return "requirements-windows-basic.txt", "Windows (Basic)"
     elif system == "darwin":  # macOS
         return "requirements-macos.txt", "macOS"
     elif system == "linux":
@@ -130,9 +130,15 @@ def test_installation():
     test_script = """
 import flask
 import pymongo
-import numpy
-import sklearn
-print("✅ All core packages imported successfully")
+print("✅ Core packages imported successfully")
+
+# Test optional ML packages
+try:
+    import numpy
+    import sklearn
+    print("✅ ML packages available")
+except ImportError:
+    print("ℹ️  ML packages not available - using rule-based detection")
 """
     
     try:
