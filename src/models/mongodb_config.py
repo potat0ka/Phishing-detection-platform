@@ -38,40 +38,71 @@ class MongoDBManager:
         self.init_connection()
     
     def init_connection(self):
-        """Initialize MongoDB Atlas connection with fallback"""
+        """
+        Initialize MongoDB connection with intelligent fallback to local storage
+        
+        Connection Priority:
+        1. Try MongoDB Atlas (cloud database) if MONGO_URI is provided
+        2. Try local MongoDB at localhost:27017 if available
+        3. Fallback to local JSON storage if no MongoDB available
+        
+        This ensures the application works regardless of database setup.
+        """
         if not MONGODB_AVAILABLE:
-            logger.info("MongoDB libraries not available - using local storage")
+            logger.info("PyMongo not installed - using local JSON storage")
             self._setup_local_storage()
             return
         
-        # MongoDB Atlas connection string
-        mongodb_uri = os.environ.get('MONGO_URI', 
-            'mongodb+srv://potato:F38ZS9uqXV8Bijd@build-a-database.5k4i357.mongodb.net/myAppDB?retryWrites=true&w=majority')
+        # Get MongoDB connection string from environment
+        # Can be either MongoDB Atlas (cloud) or local MongoDB
+        mongodb_uri = os.environ.get('MONGODB_URI', 
+                                   os.environ.get('MONGO_URI'))
+        
+        # If no URI specified, try local MongoDB first, then fallback
+        if not mongodb_uri:
+            mongodb_uri = 'mongodb://localhost:27017/phishing_detector'
+            logger.info("No MONGODB_URI specified - trying local MongoDB")
         
         if mongodb_uri and 'mongodb' in mongodb_uri:
             try:
-                # Try connecting with optimized settings
+                # Attempt MongoDB connection with optimized timeouts
+                logger.info(f"Attempting MongoDB connection...")
                 self.client = MongoClient(
                     mongodb_uri,
-                    serverSelectionTimeoutMS=5000,
+                    serverSelectionTimeoutMS=5000,  # 5 second timeout
                     connectTimeoutMS=5000,
                     socketTimeoutMS=5000,
                     retryWrites=True
                 )
                 
-                # Test connection
+                # Test the connection with a ping
                 self.client.admin.command('ping')
-                self.db = self.client['myAppDB']
+                
+                # Extract database name from URI or use default
+                if 'mongodb+srv' in mongodb_uri:
+                    # MongoDB Atlas
+                    db_name = mongodb_uri.split('/')[-1].split('?')[0] or 'phishing_detector'
+                    logger.info("Connected to MongoDB Atlas")
+                else:
+                    # Local MongoDB
+                    db_name = mongodb_uri.split('/')[-1] or 'phishing_detector'
+                    logger.info("Connected to local MongoDB")
+                
+                self.db = self.client[db_name]
                 self.connected = True
                 self._setup_collections()
-                logger.info("Connected to MongoDB Atlas - myAppDB database")
+                logger.info(f"MongoDB database '{db_name}' ready for use")
                 return
                 
             except Exception as e:
-                logger.warning(f"MongoDB Atlas connection failed: {e}")
+                logger.warning(f"MongoDB connection failed: {e}")
+                logger.info("MongoDB connection details:")
+                logger.info("- Check if MongoDB service is running")
+                logger.info("- Verify connection string in MONGODB_URI")
+                logger.info("- Ensure port 27017 is accessible")
         
-        # Fallback to local storage
-        logger.info("Using local storage with MongoDB structure")
+        # Fallback to local JSON storage - always works
+        logger.info("Using local JSON storage with MongoDB-compatible structure")
         self._setup_local_storage()
     
     def _setup_collections(self):

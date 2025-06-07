@@ -34,12 +34,38 @@ A comprehensive cybersecurity platform that uses artificial intelligence and mac
 # Clone or download this project
 git clone <your-repository-url>
 cd ai-phishing-detection-platform
+```
 
-# Install required packages
+### 2. Setting up Virtual Environment (All Platforms)
+
+**Create Virtual Environment:**
+```bash
+python -m venv venv
+```
+
+**Activate Virtual Environment:**
+
+For Windows:
+```cmd
+venv\Scripts\activate
+```
+
+For macOS/Linux/Arch:
+```bash
+source venv/bin/activate
+```
+
+**Install Dependencies:**
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. Configure Environment
+**Deactivate Virtual Environment (when done):**
+```bash
+deactivate
+```
+
+### 3. Configure Environment
 
 ```bash
 # Copy environment template
@@ -48,16 +74,32 @@ cp .env.example .env
 # Edit .env file with your settings (optional for basic usage)
 ```
 
-### 3. Run the Application
+### 4. Run the Application
 
 ```bash
 # Start the web server
 python main.py
 ```
 
-### 4. Access the Platform
+### 5. Access the Platform
 
 Open your web browser and go to: `http://localhost:8080`
+
+### 6. Default Login Credentials
+
+**Super Admin:**
+- Username: `admin`
+- Password: `admin123`
+
+**Sub Admin:**
+- Username: `subadmin`
+- Password: `subadmin123`
+
+**Regular User:**
+- Username: `user`
+- Password: `user123`
+
+*Note: Change these default passwords immediately after first login for security.*
 
 ## 🔧 Detailed Installation Guide
 
@@ -67,20 +109,36 @@ Open your web browser and go to: `http://localhost:8080`
    - Download Python 3.8+ from [python.org](https://python.org)
    - During installation, check "Add Python to PATH"
 
-2. **Open Command Prompt** and run:
+2. **Open Command Prompt** and verify installation:
    ```cmd
    python --version
    pip --version
    ```
 
-3. **Install dependencies**:
+3. **Navigate to project directory**:
    ```cmd
-   pip install flask pymongo requests scikit-learn nltk beautifulsoup4 bcrypt
+   cd ai-phishing-detection-platform
    ```
 
-4. **Run the application**:
+4. **Create and activate virtual environment**:
+   ```cmd
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+
+5. **Install dependencies**:
+   ```cmd
+   pip install -r requirements.txt
+   ```
+
+6. **Run the application**:
    ```cmd
    python main.py
+   ```
+
+7. **Deactivate virtual environment when done**:
+   ```cmd
+   deactivate
    ```
 
 ### macOS Installation
@@ -93,14 +151,30 @@ Open your web browser and go to: `http://localhost:8080`
    # Or download from python.org
    ```
 
-2. **Install dependencies**:
+2. **Navigate to project directory**:
    ```bash
-   pip3 install flask pymongo requests scikit-learn nltk beautifulsoup4 bcrypt
+   cd ai-phishing-detection-platform
    ```
 
-3. **Run the application**:
+3. **Create and activate virtual environment**:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+4. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. **Run the application**:
    ```bash
    python3 main.py
+   ```
+
+6. **Deactivate virtual environment when done**:
+   ```bash
+   deactivate
    ```
 
 ### Linux (Ubuntu/Debian) Installation
@@ -108,17 +182,33 @@ Open your web browser and go to: `http://localhost:8080`
 1. **Update system and install Python**:
    ```bash
    sudo apt update
-   sudo apt install python3 python3-pip
+   sudo apt install python3 python3-pip python3-venv
    ```
 
-2. **Install dependencies**:
+2. **Navigate to project directory**:
    ```bash
-   pip3 install flask pymongo requests scikit-learn nltk beautifulsoup4 bcrypt
+   cd ai-phishing-detection-platform
    ```
 
-3. **Run the application**:
+3. **Create and activate virtual environment**:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+4. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. **Run the application**:
    ```bash
    python3 main.py
+   ```
+
+6. **Deactivate virtual environment when done**:
+   ```bash
+   deactivate
    ```
 
 ### Arch Linux Installation
@@ -128,14 +218,30 @@ Open your web browser and go to: `http://localhost:8080`
    sudo pacman -S python python-pip
    ```
 
-2. **Install dependencies**:
+2. **Navigate to project directory**:
    ```bash
-   pip install flask pymongo requests scikit-learn nltk beautifulsoup4 bcrypt
+   cd ai-phishing-detection-platform
    ```
 
-3. **Run the application**:
+3. **Create and activate virtual environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   ```
+
+4. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. **Run the application**:
    ```bash
    python main.py
+   ```
+
+6. **Deactivate virtual environment when done**:
+   ```bash
+   deactivate
    ```
 
 ## 🗄️ Database Configuration
@@ -143,7 +249,57 @@ Open your web browser and go to: `http://localhost:8080`
 ### Option 1: Local Storage (Default)
 The application works out-of-the-box with local JSON file storage. No additional setup required.
 
-### Option 2: MongoDB Atlas (Cloud Database)
+### Option 2: Local MongoDB Setup (Recommended)
+
+**Step 1: Install MongoDB Community Edition**
+
+**For Windows:**
+1. Download MongoDB from [https://www.mongodb.com/try/download/community](https://www.mongodb.com/try/download/community)
+2. During installation, select "Install MongoDB as a Service"
+3. Start MongoDB server from Services app or using `mongod` command
+
+**For macOS (using Homebrew):**
+```bash
+brew tap mongodb/brew
+brew install mongodb-community@7.0
+brew services start mongodb-community@7.0
+```
+
+**For Ubuntu/Debian:**
+```bash
+sudo apt update
+sudo apt install -y mongodb
+sudo systemctl start mongodb
+sudo systemctl enable mongodb
+```
+
+**For Arch Linux:**
+```bash
+sudo pacman -S mongodb
+sudo systemctl start mongodb
+sudo systemctl enable mongodb
+```
+
+**Step 2: Verify MongoDB Is Running**
+```bash
+mongo
+```
+If the MongoDB shell opens without errors, you're ready to proceed!
+
+**Step 3: Configure Project to Use Local MongoDB**
+In your `.env` file, set:
+```env
+MONGODB_URI=mongodb://localhost:27017/phishing_detector
+```
+
+**Step 4: Troubleshooting Local MongoDB**
+If connection fails, check:
+- MongoDB service is running: `sudo systemctl status mongodb`
+- Port 27017 is open: `netstat -tlnp | grep 27017`
+- MONGODB_URI points to localhost correctly
+- No firewall blocking port 27017
+
+### Option 3: MongoDB Atlas (Cloud Database)
 
 1. **Create MongoDB Atlas Account**:
    - Go to [mongodb.com/atlas](https://mongodb.com/atlas)
@@ -158,19 +314,6 @@ The application works out-of-the-box with local JSON file storage. No additional
    ```bash
    # Edit .env file
    MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/phishing_detector
-   ```
-
-### Option 3: Local MongoDB
-
-1. **Install MongoDB locally**:
-   - Windows: Download from [mongodb.com](https://mongodb.com)
-   - macOS: `brew install mongodb/brew/mongodb-community`
-   - Linux: Follow [official guide](https://docs.mongodb.com/manual/administration/install-on-linux/)
-
-2. **Configure Environment**:
-   ```bash
-   # Edit .env file
-   MONGODB_URI=mongodb://localhost:27017/phishing_detector
    ```
 
 ## 🔐 Environment Configuration
