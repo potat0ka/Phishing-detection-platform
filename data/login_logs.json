@@ -327,5 +327,17 @@
     "session_id": "unknown",
     "created_at": "2025-06-07T09:51:48.306283",
     "_id": "9be65ae9-d266-42c6-81e6-0f1db2bb2953"
+  },
+  {
+    "timestamp": "2025-06-07T10:57:12.927561",
+    "username": "testuser",
+    "user_id": "1bf0a599-dfb5-460e-bc4c-1ea1beb5c94a",
+    "ip_address": "127.0.0.1",
+    "user_agent": "curl/8.11.1",
+    "success": true,
+    "login_method": "password",
+    "session_id": "unknown",
+    "created_at": "2025-06-07T10:57:12.927618",
+    "_id": "462b63ab-248d-41af-a0e6-cfab8c4b52e2"
   }
 ]

@@ -42,5 +42,30 @@
     "login_attempts": 0,
     "locked_until": null,
     "updated_at": "2025-06-07T09:51:48.305606"
+  },
+  {
+    "username": "Z0FBQUFBQm9SQnNDUndEckUxS2lGdUpONEkyVkRwNmZtTC1mcWFuYjhGN2hnVDdkUF9tUmJzMHhjS1Z0YjRGbThsRE1tekhGemh3LTdZdW1SV01PN1JnVmVGVTkyOXNMMXc9PQ==",
+    "email": "Z0FBQUFBQm9SQnNDa2tUU2R2VF9XUkd3bjBQVmFUMWlmbFZ6ZFF0SHd0M2VrRlV2N2lMQ3ExYnA5UG9uUmZxRUZXelQyT2xGclB0aDFCanl2LWtiT2xvLWlHemI2VWVFWk9GcXMxXzJfODRYNjZoUWNzMlFLSmM9",
+    "password_hash": "scrypt:32768:8:1$hiDP79MMhG37CSLx$4de43aab5337c8b355b3bc7041579cb736f7bfd1c148f18552df95e742374804af46d862bbfc3b580ed2454a5e48f843e28987f3057bdb6596a71a146ce642ef",
+    "role": "user",
+    "created_at": "2025-06-07T10:57:06.791818",
+    "last_login": "2025-06-07 10:57:12.926958",
+    "is_active": true,
+    "login_attempts": 0,
+    "locked_until": null,
+    "profile": {
+      "full_name": "",
+      "phone": "",
+      "preferences": {
+        "email_notifications": true,
+        "security_alerts": true
+      }
+    },
+    "username_encrypted": true,
+    "email_encrypted": true,
+    "encryption_version": "2.0",
+    "encrypted_at": "2025-06-07 10:57:06.792954",
+    "_id": "1bf0a599-dfb5-460e-bc4c-1ea1beb5c94a",
+    "updated_at": "2025-06-07T10:57:12.927094"
   }
 ]

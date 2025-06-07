@@ -1,0 +1,10 @@
+HTTP/1.1 302 FOUND
+Server: Werkzeug/3.1.3 Python/3.11.10
+Date: Sat, 07 Jun 2025 10:57:12 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 189
+Location: /
+Vary: Cookie
+Set-Cookie: session=.eJwtjcEKwyAYg1_F_edaVmgH7WkPsPsOoxS1sZNpHVVhUPruc8NTQpKP7DRpK8ITgYbHTixmoZCUQghU0R1WeQcmhXqd2M0vZmWl1cnWNB5jRXDCWBooIsQrPsK9LeqMZd76ZcE8mZWGuCVUlAK2ycx53Uh9Fl3f81nLjreXM7hUreINRCMhO9W3ggqweYuM_HyJVuFQLv_p8QWZH0ME.aEQbCA.NtQ9DUlqJURVQxeqgsij1YFk0jE; HttpOnly; Path=/; SameSite=Lax
+Connection: close
+
