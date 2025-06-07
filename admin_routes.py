@@ -173,6 +173,28 @@ def live_stats():
             'message': str(e)
         }), 500
 
+@admin_bp.route('/users', methods=['GET'])
+@admin_required
+def get_users():
+    """Get all users for admin management"""
+    try:
+        db_manager = get_mongodb_manager()
+        users = db_manager.get_all_users()
+        
+        # Add statistics for each user
+        for user in users:
+            user['scan_count'] = len(db_manager.get_user_scans(user.get('id', user.get('_id'))))
+        
+        return jsonify({
+            'success': True,
+            'users': users
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 @admin_bp.route('/user/create', methods=['POST'])
 @admin_required
 def create_user():
