@@ -211,7 +211,7 @@ class AIContentDetector:
     def _safe_abs(self, data):
         """Calculate absolute value with fallback"""
         if NUMPY_AVAILABLE:
-            return np.abs(data)
+            return self._safe_abs(data)
         else:
             if isinstance(data, (list, tuple)):
                 return [abs(x) for x in data]
@@ -221,7 +221,7 @@ class AIContentDetector:
     def _safe_diff(self, data, axis=0):
         """Calculate difference with fallback"""
         if NUMPY_AVAILABLE:
-            return np.diff(data, axis=axis)
+            return self._safe_diff(data, axis=axis)
         else:
             if axis == 1:  # horizontal difference
                 result = []
@@ -239,7 +239,7 @@ class AIContentDetector:
     def _safe_log2(self, data):
         """Calculate log2 with fallback"""
         if NUMPY_AVAILABLE:
-            return np.log2(data)
+            return self._safe_log2(data)
         else:
             if isinstance(data, (list, tuple)):
                 return [math.log2(max(1e-10, x)) for x in data]
@@ -667,7 +667,7 @@ class AIContentDetector:
             # Calculate entropy (measure of randomness)
             histogram = self._safe_histogram(pixels, bins=256, range=(0, 256))[0]
             histogram = histogram[histogram > 0]  # Remove zeros
-            entropy = -self._safe_sum((histogram / histogram.sum()) * np.log2(histogram / histogram.sum()))
+            entropy = -self._safe_sum((histogram / histogram.sum()) * self._safe_log2(histogram / histogram.sum()))
             
             # AI images often have lower entropy (less randomness)
             entropy_score = 1.0 - min(entropy / 8.0, 1.0)  # Normalize entropy
@@ -698,8 +698,8 @@ class AIContentDetector:
                 contrast_score = 0.5
             
             # Calculate pixel value transitions (how smoothly values change)
-            diff_horizontal = np.abs(np.diff(pixels, axis=1))
-            diff_vertical = np.abs(np.diff(pixels, axis=0))
+            diff_horizontal = self._safe_abs(self._safe_diff(pixels, axis=1))
+            diff_vertical = self._safe_abs(self._safe_diff(pixels, axis=0))
             
             smooth_transitions = self._safe_sum((diff_horizontal < 10) & (diff_horizontal > 0))
             smooth_transitions += self._safe_sum((diff_vertical < 10) & (diff_vertical > 0))
