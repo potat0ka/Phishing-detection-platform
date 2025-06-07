@@ -31,7 +31,7 @@ from utils.explainable_ai import ExplainableAI
 
 # Initialize explainable AI system
 explainer = ExplainableAI()
-from security_tips_updater import security_updater
+# Security tips are now managed directly in the database
 from utils.encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data
 # Remove unused import - is_logged_in functionality is handled by login_required decorator
 from werkzeug.utils import secure_filename

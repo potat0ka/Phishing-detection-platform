@@ -1,0 +1,17 @@
+{
+  "analysis_id": "sample_phishing_analysis",
+  "timestamp": "2025-06-07T09:00:00Z",
+  "url": "https://example-phishing-site.com",
+  "threat_level": "HIGH",
+  "confidence_score": 0.92,
+  "detected_indicators": [
+    "Suspicious domain age",
+    "Missing SSL certificate",
+    "Unusual URL structure",
+    "Malicious content patterns"
+  ],
+  "ai_analysis": {
+    "risk_assessment": "This appears to be a phishing attempt targeting financial credentials",
+    "recommended_action": "Block immediately and report to security team"
+  }
+}
