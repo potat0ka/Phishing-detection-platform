@@ -572,56 +572,7 @@ def delete_user(user_id):
             'message': 'Error occurred while deleting user'
         }), 500
 
-@admin_bp.route('/safety-tips/create', methods=['POST'])
-@admin_required
-def create_safety_tip():
-    """Create a new safety tip"""
-    try:
-        current_user = get_current_user()
-        
-        # Get form data
-        title = request.form.get('title', '').strip()
-        content = request.form.get('content', '').strip()
-        category = request.form.get('category', 'general').strip()
-        
-        # Validate required fields
-        if not all([title, content]):
-            return jsonify({
-                'success': False,
-                'message': 'Title and content are required'
-            }), 400
-        
-        # Create new safety tip
-        tip_id = f"tip_{int(time.time())}_{random.randint(1000, 9999)}"
-        
-        new_tip = {
-            'id': tip_id,
-            '_id': f"tips_{random.randint(1, 999999)}_{random.randint(100000, 999999)}",
-            'title': title,
-            'content': content,
-            'category': category,
-            'created_at': datetime.utcnow().isoformat(),
-            'created_by': current_user.get('username'),
-            'active': True
-        }
-        
-        # Insert tip into database
-        db_manager.insert_one('safety_tips', new_tip)
-        
-        # Log admin action
-        logger.info(f"Admin {current_user.get('username')} created new safety tip: {title}")
-        
-        return jsonify({
-            'success': True,
-            'message': f'Safety tip "{title}" created successfully'
-        })
-        
-    except Exception as e:
-        logger.error(f"Error creating safety tip: {e}")
-        return jsonify({
-            'success': False,
-            'message': 'Error occurred while creating safety tip'
-        }), 500
+
 
 @admin_bp.route('/export/users', methods=['GET'])
 @admin_required
@@ -2545,4 +2496,257 @@ def submit_feedback():
         return jsonify({
             'success': False,
             'message': 'Error occurred while submitting feedback'
+        }), 500
+
+# ============================================================================
+# SAFETY TIPS MANAGEMENT ROUTES
+# ============================================================================
+
+@admin_bp.route('/create-safety-tip', methods=['POST'])
+@admin_required
+def create_safety_tip():
+    """Create a new safety tip"""
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['title', 'content', 'category']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({
+                    'success': False,
+                    'message': f'{field.title()} is required'
+                }), 400
+        
+        current_user = get_current_user()
+        
+        # Create safety tip document
+        safety_tip = {
+            'title': data['title'],
+            'description': data.get('description', ''),
+            'content': data['content'],
+            'category': data['category'],
+            'priority': data.get('priority', 'Medium'),
+            'status': data.get('status', 'Active'),
+            'tags': data.get('tags', '').split(',') if data.get('tags') else [],
+            'icon': data.get('icon', 'fas fa-shield-alt'),
+            'created_by': current_user.get('username') if current_user else 'admin',
+            'created_at': datetime.now().isoformat(),
+            'updated_at': datetime.now().isoformat(),
+            'views': 0,
+            'likes': 0
+        }
+        
+        # Save to database
+        from models.mongodb_config import get_mongodb_manager
+        db_manager = get_mongodb_manager()
+        result = db_manager.insert_one('safety_tips', safety_tip)
+        
+        if result:
+            return jsonify({
+                'success': True,
+                'message': 'Safety tip created successfully',
+                'tip_id': str(result.get('_id', ''))
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to create safety tip'
+            }), 500
+            
+    except Exception as e:
+        logger.error(f"Error creating safety tip: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while creating safety tip'
+        }), 500
+
+@admin_bp.route('/safety-tips', methods=['GET'])
+@admin_required
+def get_safety_tips():
+    """Get all safety tips for admin management"""
+    try:
+        from models.mongodb_config import get_mongodb_manager
+        db_manager = get_mongodb_manager()
+        
+        # Get all safety tips
+        tips = db_manager.find_many('safety_tips', {})
+        
+        # Format tips for frontend display
+        formatted_tips = []
+        for tip in tips:
+            formatted_tips.append({
+                'id': str(tip.get('_id', '')),
+                'title': tip.get('title', ''),
+                'description': tip.get('description', ''),
+                'category': tip.get('category', ''),
+                'priority': tip.get('priority', 'Medium'),
+                'status': tip.get('status', 'Active'),
+                'created_at': tip.get('created_at', ''),
+                'created_by': tip.get('created_by', ''),
+                'views': tip.get('views', 0),
+                'likes': tip.get('likes', 0)
+            })
+        
+        return jsonify({
+            'success': True,
+            'tips': formatted_tips,
+            'total': len(formatted_tips)
+        })
+        
+    except Exception as e:
+        logger.error(f"Error fetching safety tips: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while fetching safety tips'
+        }), 500
+
+@admin_bp.route('/safety-tip/<tip_id>', methods=['GET'])
+@admin_required
+def get_safety_tip(tip_id):
+    """Get a specific safety tip by ID"""
+    try:
+        from models.mongodb_config import get_mongodb_manager
+        db_manager = get_mongodb_manager()
+        
+        # Get tip by ID
+        tip = db_manager.find_one('safety_tips', {'_id': tip_id})
+        
+        if not tip:
+            return jsonify({
+                'success': False,
+                'message': 'Safety tip not found'
+            }), 404
+        
+        # Format tip data
+        formatted_tip = {
+            'id': str(tip.get('_id', '')),
+            'title': tip.get('title', ''),
+            'description': tip.get('description', ''),
+            'content': tip.get('content', ''),
+            'category': tip.get('category', ''),
+            'priority': tip.get('priority', 'Medium'),
+            'status': tip.get('status', 'Active'),
+            'tags': ','.join(tip.get('tags', [])),
+            'icon': tip.get('icon', 'fas fa-shield-alt'),
+            'created_at': tip.get('created_at', ''),
+            'created_by': tip.get('created_by', ''),
+            'views': tip.get('views', 0),
+            'likes': tip.get('likes', 0)
+        }
+        
+        return jsonify({
+            'success': True,
+            'tip': formatted_tip
+        })
+        
+    except Exception as e:
+        logger.error(f"Error fetching safety tip {tip_id}: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while fetching safety tip'
+        }), 500
+
+@admin_bp.route('/safety-tip/<tip_id>', methods=['PUT'])
+@admin_required
+def update_safety_tip(tip_id):
+    """Update a safety tip"""
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['title', 'content', 'category']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({
+                    'success': False,
+                    'message': f'{field.title()} is required'
+                }), 400
+        
+        from models.mongodb_config import get_mongodb_manager
+        db_manager = get_mongodb_manager()
+        
+        # Check if tip exists
+        existing_tip = db_manager.find_one('safety_tips', {'_id': tip_id})
+        if not existing_tip:
+            return jsonify({
+                'success': False,
+                'message': 'Safety tip not found'
+            }), 404
+        
+        current_user = get_current_user()
+        
+        # Update tip data
+        update_data = {
+            'title': data['title'],
+            'description': data.get('description', ''),
+            'content': data['content'],
+            'category': data['category'],
+            'priority': data.get('priority', 'Medium'),
+            'status': data.get('status', 'Active'),
+            'tags': data.get('tags', '').split(',') if data.get('tags') else [],
+            'icon': data.get('icon', 'fas fa-shield-alt'),
+            'updated_at': datetime.now().isoformat(),
+            'updated_by': current_user.get('username') if current_user else 'admin'
+        }
+        
+        # Update in database
+        result = db_manager.update_one('safety_tips', {'_id': tip_id}, {'$set': update_data})
+        
+        if result:
+            return jsonify({
+                'success': True,
+                'message': 'Safety tip updated successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to update safety tip'
+            }), 500
+            
+    except Exception as e:
+        logger.error(f"Error updating safety tip {tip_id}: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while updating safety tip'
+        }), 500
+
+@admin_bp.route('/safety-tip/<tip_id>', methods=['DELETE'])
+@admin_required
+def delete_safety_tip(tip_id):
+    """Delete a safety tip"""
+    try:
+        from models.mongodb_config import get_mongodb_manager
+        db_manager = get_mongodb_manager()
+        
+        # Check if tip exists
+        existing_tip = db_manager.find_one('safety_tips', {'_id': tip_id})
+        if not existing_tip:
+            return jsonify({
+                'success': False,
+                'message': 'Safety tip not found'
+            }), 404
+        
+        current_user = get_current_user()
+        
+        # Delete from database
+        result = db_manager.delete_one('safety_tips', {'_id': tip_id})
+        
+        if result:
+            logger.info(f"Admin {current_user.get('username')} deleted safety tip: {existing_tip.get('title')}")
+            return jsonify({
+                'success': True,
+                'message': 'Safety tip deleted successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to delete safety tip'
+            }), 500
+            
+    except Exception as e:
+        logger.error(f"Error deleting safety tip {tip_id}: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while deleting safety tip'
         }), 500

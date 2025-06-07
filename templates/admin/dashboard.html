@@ -611,12 +611,172 @@
                     <!-- Safety Tips Tab -->
                     <div class="tab-pane fade" id="tips-pane" role="tabpanel">
                         <div class="p-4">
-                            <h5 class="mb-4">Safety Tips Management</h5>
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="text-center p-4">
-                                        <i class="fas fa-lightbulb fa-3x text-info mb-3"></i>
-                                        <p class="text-muted">Safety tips management</p>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <h5 class="mb-1 text-white">
+                                        <i class="fas fa-lightbulb text-info me-2"></i>
+                                        Safety Tips Management
+                                    </h5>
+                                    <p class="text-white-50 mb-0">Create and manage security awareness tips for users</p>
+                                </div>
+                                <button class="btn btn-info pulse-btn" onclick="showAddTipModal()">
+                                    <i class="fas fa-plus me-2"></i>Add New Tip
+                                </button>
+                            </div>
+                            
+                            <div class="card threat-card">
+                                <div class="card-header">
+                                    <div class="row align-items-center">
+                                        <div class="col">
+                                            <h6 class="mb-0 text-white">
+                                                <i class="fas fa-list me-2"></i>
+                                                Published Safety Tips
+                                            </h6>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="input-group input-group-sm">
+                                                <input type="text" class="form-control" placeholder="Search tips..." id="tipSearchInput">
+                                                <button class="btn btn-outline-secondary" type="button">
+                                                    <i class="fas fa-search"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead class="bg-secondary">
+                                                <tr>
+                                                    <th class="border-0 fw-semibold text-white">Title</th>
+                                                    <th class="border-0 fw-semibold text-white">Category</th>
+                                                    <th class="border-0 fw-semibold text-white">Priority</th>
+                                                    <th class="border-0 fw-semibold text-white">Status</th>
+                                                    <th class="border-0 fw-semibold text-white">Created</th>
+                                                    <th class="border-0 fw-semibold text-white">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="safetyTipsTableBody">
+                                                <!-- Sample tip rows -->
+                                                <tr class="border-0">
+                                                    <td class="py-3">
+                                                        <div>
+                                                            <div class="fw-semibold text-white">Verify URL Before Clicking</div>
+                                                            <small class="text-white-50">Always check the URL spelling and domain before clicking links...</small>
+                                                        </div>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <span class="badge bg-primary">Email Security</span>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <span class="badge bg-warning">High</span>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <span class="badge bg-success">Active</span>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <span class="text-white-50">2024-01-15</span>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <div class="btn-group btn-group-sm">
+                                                            <button class="btn btn-outline-info" onclick="viewTip(1)" title="View Details">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-warning" onclick="editTip(1)" title="Edit Tip">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-danger" onclick="deleteTip(1)" title="Delete Tip">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr class="border-0">
+                                                    <td class="py-3">
+                                                        <div>
+                                                            <div class="fw-semibold text-white">Strong Password Creation</div>
+                                                            <small class="text-white-50">Use a combination of uppercase, lowercase, numbers, and symbols...</small>
+                                                        </div>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <span class="badge bg-success">Password Security</span>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <span class="badge bg-danger">Critical</span>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <span class="badge bg-success">Active</span>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <span class="text-white-50">2024-01-10</span>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <div class="btn-group btn-group-sm">
+                                                            <button class="btn btn-outline-info" onclick="viewTip(2)" title="View Details">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-warning" onclick="editTip(2)" title="Edit Tip">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-danger" onclick="deleteTip(2)" title="Delete Tip">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr class="border-0">
+                                                    <td class="py-3">
+                                                        <div>
+                                                            <div class="fw-semibold text-white">Two-Factor Authentication</div>
+                                                            <small class="text-white-50">Enable 2FA on all important accounts for extra security...</small>
+                                                        </div>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <span class="badge bg-info">Account Security</span>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <span class="badge bg-warning">High</span>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <span class="badge bg-success">Active</span>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <span class="text-white-50">2024-01-05</span>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <div class="btn-group btn-group-sm">
+                                                            <button class="btn btn-outline-info" onclick="viewTip(3)" title="View Details">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-warning" onclick="editTip(3)" title="Edit Tip">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-danger" onclick="deleteTip(3)" title="Delete Tip">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-white-50">Showing 3 of 3 safety tips</small>
+                                        <nav>
+                                            <ul class="pagination pagination-sm mb-0">
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">Previous</span>
+                                                </li>
+                                                <li class="page-item active">
+                                                    <span class="page-link">1</span>
+                                                </li>
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">Next</span>
+                                                </li>
+                                            </ul>
+                                        </nav>
                                     </div>
                                 </div>
                             </div>
@@ -662,6 +822,164 @@
         </div>
     </div>
 
+    <!-- Add Safety Tip Modal -->
+    <div class="modal fade" id="addTipModal" tabindex="-1" aria-labelledby="addTipModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-white" id="addTipModalLabel">
+                        <i class="fas fa-plus-circle text-info me-2"></i>
+                        Add New Safety Tip
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addTipForm">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label for="tipTitle" class="form-label text-white">Tip Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="tipTitle" name="title" required placeholder="Enter a clear, descriptive title">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="tipCategory" class="form-label text-white">Category <span class="text-danger">*</span></label>
+                                <select class="form-select" id="tipCategory" name="category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Email Security">Email Security</option>
+                                    <option value="Password Security">Password Security</option>
+                                    <option value="Account Security">Account Security</option>
+                                    <option value="Web Browsing">Web Browsing</option>
+                                    <option value="Social Engineering">Social Engineering</option>
+                                    <option value="Mobile Security">Mobile Security</option>
+                                    <option value="General Security">General Security</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="tipPriority" class="form-label text-white">Priority Level <span class="text-danger">*</span></label>
+                                <select class="form-select" id="tipPriority" name="priority" required>
+                                    <option value="">Select Priority</option>
+                                    <option value="Low">Low - General awareness</option>
+                                    <option value="Medium">Medium - Important practice</option>
+                                    <option value="High">High - Critical knowledge</option>
+                                    <option value="Critical">Critical - Immediate action needed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tipStatus" class="form-label text-white">Status</label>
+                                <select class="form-select" id="tipStatus" name="status">
+                                    <option value="Active">Active - Visible to users</option>
+                                    <option value="Draft">Draft - Save for later</option>
+                                    <option value="Scheduled">Scheduled - Publish later</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="tipDescription" class="form-label text-white">Short Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="tipDescription" name="description" rows="2" required placeholder="Brief summary for preview (max 150 characters)" maxlength="150"></textarea>
+                            <div class="form-text text-white-50">This appears in the tip preview. <span id="descCharCount">0</span>/150 characters</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="tipContent" class="form-label text-white">Full Content <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="tipContent" name="content" rows="6" required placeholder="Detailed explanation of the security tip..."></textarea>
+                            <div class="form-text text-white-50">Provide comprehensive information about this security practice</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="tipTags" class="form-label text-white">Tags</label>
+                                <input type="text" class="form-control" id="tipTags" name="tags" placeholder="phishing, email, links (comma-separated)">
+                                <div class="form-text text-white-50">Add relevant keywords for search and filtering</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tipIcon" class="form-label text-white">Icon</label>
+                                <select class="form-select" id="tipIcon" name="icon">
+                                    <option value="fas fa-shield-alt">🛡️ Shield (Default)</option>
+                                    <option value="fas fa-envelope">✉️ Email</option>
+                                    <option value="fas fa-lock">🔒 Lock</option>
+                                    <option value="fas fa-eye">👁️ Eye</option>
+                                    <option value="fas fa-exclamation-triangle">⚠️ Warning</option>
+                                    <option value="fas fa-lightbulb">💡 Lightbulb</option>
+                                    <option value="fas fa-key">🔑 Key</option>
+                                    <option value="fas fa-mobile-alt">📱 Mobile</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-info" onclick="saveSafetyTip()">
+                        <i class="fas fa-save me-1"></i>Save Safety Tip
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Safety Tip Modal -->
+    <div class="modal fade" id="editTipModal" tabindex="-1" aria-labelledby="editTipModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-white" id="editTipModalLabel">
+                        <i class="fas fa-edit text-warning me-2"></i>
+                        Edit Safety Tip
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editTipForm">
+                        <!-- Same form structure as add modal -->
+                        <input type="hidden" id="editTipId" name="id">
+                        <!-- Form fields identical to add modal -->
+                    </form>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-warning" onclick="updateSafetyTip()">
+                        <i class="fas fa-save me-1"></i>Update Tip
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Safety Tip Modal -->
+    <div class="modal fade" id="viewTipModal" tabindex="-1" aria-labelledby="viewTipModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-white" id="viewTipModalLabel">
+                        <i class="fas fa-eye text-info me-2"></i>
+                        View Safety Tip
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="viewTipContent">
+                        <!-- Tip content will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Close
+                    </button>
+                    <button type="button" class="btn btn-warning" onclick="editTipFromView()">
+                        <i class="fas fa-edit me-1"></i>Edit This Tip
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/admin-dashboard.js') }}"></script>
@@ -670,6 +988,283 @@
         function toggleSidebar() {
             document.querySelector('.admin-sidebar').classList.toggle('show');
         }
+
+        // Safety Tips Management Functions
+        function showAddTipModal() {
+            const modal = new bootstrap.Modal(document.getElementById('addTipModal'));
+            modal.show();
+        }
+
+        function viewTip(tipId) {
+            // Load tip details and show view modal
+            console.log('Viewing tip:', tipId);
+            const modal = new bootstrap.Modal(document.getElementById('viewTipModal'));
+            modal.show();
+        }
+
+        function editTip(tipId) {
+            // Load tip details into edit form and show edit modal
+            console.log('Editing tip:', tipId);
+            const modal = new bootstrap.Modal(document.getElementById('editTipModal'));
+            modal.show();
+        }
+
+        function deleteTip(tipId) {
+            if (confirm('Are you sure you want to delete this safety tip? This action cannot be undone.')) {
+                console.log('Deleting tip:', tipId);
+                // Implement delete functionality
+            }
+        }
+
+        function saveSafetyTip() {
+            const form = document.getElementById('addTipForm');
+            
+            // Validate required fields
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Collect form data
+            const formData = {
+                title: form.title.value,
+                description: form.description.value,
+                content: form.content.value,
+                category: form.category.value,
+                priority: form.priority.value,
+                status: form.status.value,
+                tags: form.tags.value,
+                icon: form.icon.value
+            };
+            
+            // Show loading state
+            const saveBtn = document.querySelector('#addTipModal .btn-info');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
+            saveBtn.disabled = true;
+            
+            // Send to backend
+            fetch('/admin/create-safety-tip', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('addTipModal')).hide();
+                    
+                    // Reset form
+                    form.reset();
+                    
+                    // Refresh tips table
+                    loadSafetyTips();
+                    
+                    // Show success message
+                    showNotification('Success', data.message, 'success');
+                } else {
+                    showNotification('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving safety tip:', error);
+                showNotification('Error', 'Failed to save safety tip', 'error');
+            })
+            .finally(() => {
+                // Reset button state
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            });
+        }
+
+        function updateSafetyTip() {
+            const form = document.getElementById('editTipForm');
+            const tipId = form.id.value;
+            
+            // Validate required fields
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Collect form data
+            const formData = {
+                title: form.title.value,
+                description: form.description.value,
+                content: form.content.value,
+                category: form.category.value,
+                priority: form.priority.value,
+                status: form.status.value,
+                tags: form.tags.value,
+                icon: form.icon.value
+            };
+            
+            // Show loading state
+            const updateBtn = document.querySelector('#editTipModal .btn-warning');
+            const originalText = updateBtn.innerHTML;
+            updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Updating...';
+            updateBtn.disabled = true;
+            
+            // Send to backend
+            fetch(`/admin/safety-tip/${tipId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('editTipModal')).hide();
+                    
+                    // Refresh tips table
+                    loadSafetyTips();
+                    
+                    // Show success message
+                    showNotification('Success', data.message, 'success');
+                } else {
+                    showNotification('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating safety tip:', error);
+                showNotification('Error', 'Failed to update safety tip', 'error');
+            })
+            .finally(() => {
+                // Reset button state
+                updateBtn.innerHTML = originalText;
+                updateBtn.disabled = false;
+            });
+        }
+
+        function loadSafetyTips() {
+            fetch('/admin/safety-tips')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateSafetyTipsTable(data.tips);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading safety tips:', error);
+            });
+        }
+
+        function updateSafetyTipsTable(tips) {
+            const tbody = document.getElementById('safetyTipsTableBody');
+            tbody.innerHTML = '';
+            
+            tips.forEach(tip => {
+                const row = `
+                    <tr class="border-0">
+                        <td class="py-3">
+                            <div>
+                                <div class="fw-semibold text-white">${tip.title}</div>
+                                <small class="text-white-50">${tip.description}</small>
+                            </div>
+                        </td>
+                        <td class="py-3">
+                            <span class="badge bg-primary">${tip.category}</span>
+                        </td>
+                        <td class="py-3">
+                            <span class="badge ${getPriorityClass(tip.priority)}">${tip.priority}</span>
+                        </td>
+                        <td class="py-3">
+                            <span class="badge ${getStatusClass(tip.status)}">${tip.status}</span>
+                        </td>
+                        <td class="py-3">
+                            <span class="text-white-50">${formatDate(tip.created_at)}</span>
+                        </td>
+                        <td class="py-3">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-info" onclick="viewTip('${tip.id}')" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-warning" onclick="editTip('${tip.id}')" title="Edit Tip">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="deleteTip('${tip.id}')" title="Delete Tip">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function getPriorityClass(priority) {
+            switch(priority) {
+                case 'Low': return 'bg-info';
+                case 'Medium': return 'bg-warning';
+                case 'High': return 'bg-danger';
+                case 'Critical': return 'bg-dark';
+                default: return 'bg-secondary';
+            }
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Active': return 'bg-success';
+                case 'Draft': return 'bg-secondary';
+                case 'Scheduled': return 'bg-warning';
+                default: return 'bg-secondary';
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        }
+
+        function showNotification(title, message, type) {
+            // Simple notification system
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            const notification = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    <strong>${title}:</strong> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            // Find or create notification container
+            let container = document.getElementById('notification-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'notification-container';
+                container.style.position = 'fixed';
+                container.style.top = '20px';
+                container.style.right = '20px';
+                container.style.zIndex = '9999';
+                document.body.appendChild(container);
+            }
+            
+            container.innerHTML = notification;
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Character counter for description
+        document.addEventListener('DOMContentLoaded', function() {
+            const descField = document.getElementById('tipDescription');
+            const charCount = document.getElementById('descCharCount');
+            
+            if (descField && charCount) {
+                descField.addEventListener('input', function() {
+                    charCount.textContent = this.value.length;
+                });
+            }
+        });
     </script>
 </body>
 </html>
