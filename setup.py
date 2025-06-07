@@ -65,16 +65,16 @@ def create_virtual_environment():
     venv_path = Path("venv")
     
     if venv_path.exists():
-        print("✅ Virtual environment already exists")
+        safe_print("✅ Virtual environment already exists")
         return True
     
-    print("📦 Creating virtual environment...")
+    safe_print("📦 Creating virtual environment...")
     try:
         venv.create("venv", with_pip=True)
-        print("✅ Virtual environment created successfully")
+        safe_print("✅ Virtual environment created successfully")
         return True
     except Exception as e:
-        print(f"❌ Failed to create virtual environment: {e}")
+        safe_print(f"❌ Failed to create virtual environment: {e}")
         return False
 
 def get_pip_command():
@@ -89,22 +89,22 @@ def install_requirements(requirements_file):
     """Install requirements using pip"""
     pip_cmd = get_pip_command()
     
-    print("📥 Upgrading pip...")
+    safe_print("📥 Upgrading pip...")
     try:
         subprocess.run(pip_cmd + ["install", "--upgrade", "pip"], 
                       check=True, capture_output=True, text=True)
-        print("✅ Pip upgraded successfully")
+        safe_print("✅ Pip upgraded successfully")
     except subprocess.CalledProcessError as e:
-        print(f"⚠️  Warning: Could not upgrade pip: {e}")
+        safe_print(f"⚠️  Warning: Could not upgrade pip: {e}")
     
-    print(f"📦 Installing packages from {requirements_file}...")
+    safe_print(f"📦 Installing packages from {requirements_file}...")
     try:
         result = subprocess.run(pip_cmd + ["install", "-r", requirements_file], 
                                check=True, capture_output=True, text=True)
-        print("✅ All packages installed successfully")
+        safe_print("✅ All packages installed successfully")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ Failed to install packages: {e}")
+        safe_print(f"❌ Failed to install packages: {e}")
         print("Error output:", e.stderr)
         return False
 
@@ -114,11 +114,11 @@ def create_env_file():
     env_example = Path(".env.example")
     
     if env_file.exists():
-        print("✅ .env file already exists")
+        safe_print("✅ .env file already exists")
         return True
     
     if env_example.exists():
-        print("📝 Creating .env file from template...")
+        safe_print("📝 Creating .env file from template...")
         try:
             with open(env_example, 'r') as f:
                 content = f.read()
@@ -126,34 +126,34 @@ def create_env_file():
             with open(env_file, 'w') as f:
                 f.write(content)
             
-            print("✅ .env file created successfully")
-            print("📋 Please edit .env file with your MongoDB Atlas credentials")
+            safe_print("✅ .env file created successfully")
+            safe_print("📋 Please edit .env file with your MongoDB Atlas credentials")
             return True
         except Exception as e:
-            print(f"❌ Failed to create .env file: {e}")
+            safe_print(f"❌ Failed to create .env file: {e}")
             return False
     else:
-        print("⚠️  .env.example not found, skipping .env creation")
+        safe_print("⚠️  .env.example not found, skipping .env creation")
         return True
 
 def test_installation():
     """Test if the installation was successful"""
     python_cmd = get_pip_command()[0]
     
-    print("🧪 Testing installation...")
-    test_script = """
+    safe_print("🧪 Testing installation...")
+    test_script = '''
 import flask
 import pymongo
-print("✅ Core packages imported successfully")
+print("[OK] Core packages imported successfully")
 
 # Test optional ML packages
 try:
     import numpy
     import sklearn
-    print("✅ ML packages available")
+    print("[OK] ML packages available")
 except ImportError:
-    print("ℹ️  ML packages not available - using rule-based detection")
-"""
+    print("[INFO] ML packages not available - using rule-based detection")
+'''
     
     try:
         result = subprocess.run([python_cmd, "-c", test_script], 
@@ -161,7 +161,7 @@ except ImportError:
         print(result.stdout.strip())
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ Installation test failed: {e}")
+        safe_print(f"❌ Installation test failed: {e}")
         print("Error output:", e.stderr)
         return False
 
@@ -170,7 +170,7 @@ def print_activation_instructions():
     system = platform.system().lower()
     
     print("\n" + "="*60)
-    print("🚀 SETUP COMPLETE!")
+    safe_print("🚀 SETUP COMPLETE!")
     print("="*60)
     print("\nTo activate the virtual environment and run the application:")
     print()
@@ -195,13 +195,13 @@ def print_activation_instructions():
     print("4. To deactivate virtual environment:")
     print("   deactivate")
     print()
-    print("📋 Don't forget to configure your .env file with MongoDB credentials!")
+    safe_print("📋 Don't forget to configure your .env file with MongoDB credentials!")
     print("="*60)
 
 def offer_installation_options(platform_name, system):
     """Offer users different installation options based on their platform"""
     if system == "windows":
-        print("\n🪟 Windows Installation Options:")
+        safe_print("\n🪟 Windows Installation Options:")
         print("1. Basic Installation (Recommended for most Windows users)")
         print("   - No compilation required")
         print("   - Uses rule-based phishing detection (85% accuracy)")
@@ -221,7 +221,7 @@ def offer_installation_options(platform_name, system):
                 print("Please enter 1 or 2")
     
     elif system == "darwin":  # macOS
-        print("\n🍎 macOS Installation Options:")
+        safe_print("\n🍎 macOS Installation Options:")
         print("1. Basic Installation (Faster setup)")
         print("   - Core functionality only")
         print("   - Rule-based detection (85% accuracy)")
@@ -241,7 +241,7 @@ def offer_installation_options(platform_name, system):
                 print("Please enter 1 or 2")
     
     elif system == "linux":
-        print("\n🐧 Linux Installation Options:")
+        safe_print("\n🐧 Linux Installation Options:")
         print("1. Basic Installation (Minimal dependencies)")
         print("   - Core functionality only")
         print("   - Rule-based detection (85% accuracy)")
@@ -267,10 +267,10 @@ def offer_installation_options(platform_name, system):
 def main():
     """Main setup function"""
     print("="*60)
-    print("🚀 AI Phishing Detection Platform - Cross-Platform Setup")
+    safe_print("🚀 AI Phishing Detection Platform - Cross-Platform Setup")
     print("="*60)
-    print("📝 Author: Bigendra Shrestha")
-    print("🎓 Project: Final Semester - Cybersecurity & AI")
+    safe_print("📝 Author: Bigendra Shrestha")
+    safe_print("🎓 Project: Final Semester - Cybersecurity & AI")
     print("="*60)
     
     # Check Python version
@@ -283,12 +283,12 @@ def main():
     # Offer installation options for all platforms
     requirements_file, platform_name = offer_installation_options("", system)
     
-    print(f"\n🔍 Platform: {platform_name}")
-    print(f"📦 Requirements file: {requirements_file}")
+    safe_print(f"\n🔍 Platform: {platform_name}")
+    safe_print(f"📦 Requirements file: {requirements_file}")
     
     # Check if requirements file exists
     if not Path(requirements_file).exists():
-        print(f"❌ Requirements file {requirements_file} not found!")
+        safe_print(f"❌ Requirements file {requirements_file} not found!")
         print("Please ensure all requirements files are present.")
         return False
     
@@ -301,8 +301,8 @@ def main():
     
     # If full installation fails, automatically fallback to basic installation
     if not success:
-        print(f"\n⚠️  Full installation failed (likely due to missing build tools)")
-        print("🔄 Falling back to basic installation...")
+        safe_print(f"\n⚠️  Full installation failed (likely due to missing build tools)")
+        safe_print("🔄 Falling back to basic installation...")
         
         # Determine basic requirements file for current platform
         if system == "windows":
@@ -314,14 +314,14 @@ def main():
         else:
             fallback_file = "requirements-linux-basic.txt"
         
-        print(f"📦 Using fallback: {fallback_file}")
+        safe_print(f"📦 Using fallback: {fallback_file}")
         success = install_requirements(fallback_file)
         
         if success:
-            print("✅ Basic installation completed successfully!")
-            print("ℹ️  Platform will use rule-based detection (85% accuracy)")
+            safe_print("✅ Basic installation completed successfully!")
+            safe_print("ℹ️  Platform will use rule-based detection (85% accuracy)")
         else:
-            print("❌ Both full and basic installations failed")
+            safe_print("❌ Both full and basic installations failed")
             print("Please check your Python installation and try again")
     
     if not success:
@@ -332,11 +332,11 @@ def main():
     
     # Test installation
     if test_installation():
-        print("\n🎉 Setup completed successfully!")
+        safe_print("\n🎉 Setup completed successfully!")
         print_activation_instructions()
         return True
     else:
-        print("\n❌ Setup completed with errors.")
+        safe_print("\n❌ Setup completed with errors.")
         print("Please check the installation and try running the application manually.")
         return False
 
@@ -347,11 +347,11 @@ if __name__ == "__main__":
     try:
         success = main()
         if not success:
-            print("\n❌ Setup failed. Please check the error messages above.")
+            safe_print("\n❌ Setup failed. Please check the error messages above.")
             sys.exit(1)
     except KeyboardInterrupt:
-        print("\n\n⏹️  Setup interrupted by user")
+        safe_print("\n\n⏹️  Setup interrupted by user")
         sys.exit(1)
     except Exception as e:
-        print(f"\n❌ Unexpected error during setup: {e}")
+        safe_print(f"\n❌ Unexpected error during setup: {e}")
         sys.exit(1)
