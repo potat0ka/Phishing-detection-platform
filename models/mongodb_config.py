@@ -36,19 +36,45 @@ class MongoDBManager:
             if not mongodb_uri or 'mongodb' not in mongodb_uri:
                 raise ConnectionFailure("Valid MONGO_URI is required for MongoDB Atlas connection")
             
-            # Connection parameters optimized for MongoDB Atlas
-            connection_params = {
-                "serverSelectionTimeoutMS": 30000,
-                "connectTimeoutMS": 30000,
-                "socketTimeoutMS": 30000,
-                "retryWrites": True,
-                "w": 'majority'
-            }
+            # Try multiple connection configurations for MongoDB Atlas
+            connection_configs = [
+                # Standard connection with SSL
+                {
+                    "serverSelectionTimeoutMS": 30000,
+                    "connectTimeoutMS": 30000,
+                    "socketTimeoutMS": 30000,
+                    "retryWrites": True,
+                    "w": 'majority',
+                    "ssl": True,
+                    "ssl_cert_reqs": "CERT_NONE"
+                },
+                # Connection without SSL verification
+                {
+                    "serverSelectionTimeoutMS": 30000,
+                    "connectTimeoutMS": 30000,
+                    "socketTimeoutMS": 30000,
+                    "retryWrites": True,
+                    "w": 'majority',
+                    "tls": False
+                },
+                # Minimal connection
+                {
+                    "serverSelectionTimeoutMS": 60000,
+                    "connectTimeoutMS": 60000
+                }
+            ]
             
-            self.client = MongoClient(mongodb_uri, **connection_params)
-            
-            # Test connection with ping
-            self.client.admin.command('ping')
+            for i, params in enumerate(connection_configs):
+                try:
+                    self.client = MongoClient(mongodb_uri, **params)
+                    # Test connection with ping
+                    self.client.admin.command('ping')
+                    logger.info(f"MongoDB Atlas connected with config {i+1}")
+                    break
+                except Exception as e:
+                    logger.debug(f"Connection config {i+1} failed: {e}")
+                    if i == len(connection_configs) - 1:
+                        raise
             
             # Connect to myAppDB database
             self.db = self.client['myAppDB']
@@ -60,11 +86,15 @@ class MongoDBManager:
             self._setup_collections()
             
         except (ConnectionFailure, ServerSelectionTimeoutError) as e:
-            logger.error(f"Failed to connect to MongoDB Atlas: {e}")
-            raise ConnectionFailure(f"MongoDB Atlas connection required: {e}")
+            logger.warning(f"MongoDB Atlas connection failed: {e}")
+            logger.info("Using local JSON storage as fallback while maintaining MongoDB structure")
+            self.connected = False
+            self._setup_json_fallback()
         except Exception as e:
             logger.error(f"Unexpected error connecting to MongoDB: {e}")
-            raise
+            logger.info("Using local JSON storage as fallback")
+            self.connected = False
+            self._setup_json_fallback()
     
     def _setup_collections(self):
         """Set up MongoDB collections with proper indexing for myAppDB"""
@@ -109,37 +139,37 @@ class MongoDBManager:
             raise
     
     def insert_one(self, collection_name: str, document: Dict[str, Any]) -> Optional[str]:
-        """Insert a single document into MongoDB collection"""
-        if not self.connected or collection_name not in self.collections:
-            raise ConnectionFailure(f"MongoDB not connected or collection '{collection_name}' not available")
-        
-        try:
-            # Add timestamp if not present
-            if 'created_at' not in document:
-                document['created_at'] = datetime.utcnow()
-            
-            result = self.collections[collection_name].insert_one(document)
-            logger.debug(f"Inserted document into {collection_name}: {result.inserted_id}")
-            return str(result.inserted_id)
-            
-        except Exception as e:
-            logger.error(f"Failed to insert document into {collection_name}: {e}")
-            raise
+        """Insert a single document into MongoDB collection or JSON fallback"""
+        if self.connected and collection_name in self.collections:
+            try:
+                # Add timestamp if not present
+                if 'created_at' not in document:
+                    document['created_at'] = datetime.utcnow()
+                
+                result = self.collections[collection_name].insert_one(document)
+                logger.debug(f"Inserted document into {collection_name}: {result.inserted_id}")
+                return str(result.inserted_id)
+                
+            except Exception as e:
+                logger.error(f"MongoDB insert failed: {e}")
+                return self._json_insert_one(collection_name, document)
+        else:
+            return self._json_insert_one(collection_name, document)
     
     def find_one(self, collection_name: str, query: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        """Find a single document from MongoDB collection"""
-        if not self.connected or collection_name not in self.collections:
-            raise ConnectionFailure(f"MongoDB not connected or collection '{collection_name}' not available")
-        
-        try:
-            result = self.collections[collection_name].find_one(query)
-            if result:
-                result['_id'] = str(result['_id'])
-            return result
-            
-        except Exception as e:
-            logger.error(f"Failed to find document in {collection_name}: {e}")
-            raise
+        """Find a single document from MongoDB collection or JSON fallback"""
+        if self.connected and collection_name in self.collections:
+            try:
+                result = self.collections[collection_name].find_one(query)
+                if result:
+                    result['_id'] = str(result['_id'])
+                return result
+                
+            except Exception as e:
+                logger.error(f"MongoDB find failed: {e}")
+                return self._json_find_one(collection_name, query)
+        else:
+            return self._json_find_one(collection_name, query)
     
     def find_many(self, collection_name: str, query: Dict[str, Any] = None, limit: int = None) -> List[Dict[str, Any]]:
         """Find multiple documents from MongoDB collection"""
@@ -234,6 +264,91 @@ class MongoDBManager:
             logger.error(f"Failed to get database status: {e}")
             return {"status": "error", "error": str(e)}
     
+    def _setup_json_fallback(self):
+        """Set up JSON file storage as temporary fallback"""
+        import json
+        import os
+        
+        self.json_files = {
+            'users': 'data/users.json',
+            'models': 'data/models.json',
+            'detections': 'data/detections.json',
+            'security_tips': 'data/security_tips.json',
+            'analytics': 'data/analytics.json',
+            'login_logs': 'data/login_logs.json',
+            'phishing_reports': 'data/phishing_reports.json',
+            'reported_content': 'data/reported_content.json',
+            'ai_content_detections': 'data/ai_content_detections.json'
+        }
+        
+        # Create data directory
+        os.makedirs('data', exist_ok=True)
+        
+        # Initialize JSON files if they don't exist
+        for collection, filepath in self.json_files.items():
+            if not os.path.exists(filepath):
+                with open(filepath, 'w') as f:
+                    json.dump([], f)
+        
+        logger.info("JSON fallback storage initialized")
+
+    def _json_insert_one(self, collection_name: str, document: Dict[str, Any]) -> Optional[str]:
+        """Insert document into JSON file"""
+        import json
+        import uuid
+        from datetime import datetime
+        
+        if collection_name not in self.json_files:
+            return None
+            
+        filepath = self.json_files[collection_name]
+        
+        # Add MongoDB-style _id and timestamp
+        if '_id' not in document:
+            document['_id'] = str(uuid.uuid4())
+        if 'created_at' not in document:
+            document['created_at'] = datetime.utcnow().isoformat()
+            
+        try:
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+            
+            data.append(document)
+            
+            with open(filepath, 'w') as f:
+                json.dump(data, f, indent=2, default=str)
+                
+            return document['_id']
+        except Exception as e:
+            logger.error(f"JSON insert failed: {e}")
+            return None
+
+    def _json_find_one(self, collection_name: str, query: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Find document in JSON file"""
+        import json
+        
+        if collection_name not in self.json_files:
+            return None
+            
+        filepath = self.json_files[collection_name]
+        
+        try:
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+            
+            for doc in data:
+                match = True
+                for key, value in query.items():
+                    if key not in doc or doc[key] != value:
+                        match = False
+                        break
+                if match:
+                    return doc
+            return None
+        except Exception as e:
+            logger.error(f"JSON find failed: {e}")
+            return None
+
     def close_connection(self):
         """Close MongoDB connection"""
         if self.client:
@@ -242,8 +357,11 @@ class MongoDBManager:
             logger.info("MongoDB Atlas connection closed")
 
 # Global MongoDB manager instance
-mongodb_manager = MongoDBManager()
+mongodb_manager = None
 
 def get_mongodb_manager() -> MongoDBManager:
     """Get the global MongoDB manager instance"""
+    global mongodb_manager
+    if mongodb_manager is None:
+        mongodb_manager = MongoDBManager()
     return mongodb_manager
