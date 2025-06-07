@@ -494,8 +494,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th width="40">
-                                            <input type="checkbox" id="selectAllUsers" onclick="selectAllUsers()" onchange="selectAllUsers()" style="display: none;">
-                                            <i class="fas fa-check-square text-primary" id="selectAllIcon" onclick="toggleSelectAll()" style="cursor: pointer; font-size: 16px;"></i>
+                                            <input type="checkbox" id="selectAllUsers" onchange="toggleSelectAll()">
                                         </th>
                                         <th>User</th>
                                         <th>Email</th>
@@ -522,8 +521,8 @@
                                         </td>
                                         <td>{{ user.email or 'No email' }}</td>
                                         <td>
-                                            <span class="badge bg-{{ 'danger' if user.role == 'admin' else 'secondary' }}">
-                                                {{ (user.role or 'user').title() }}
+                                            <span class="badge bg-{{ 'danger' if user.role == 'super_admin' else ('warning' if user.role == 'sub_admin' else 'secondary') }}">
+                                                {{ (user.role or 'user').title().replace('_', ' ') }}
                                             </span>
                                         </td>
                                         <td>
@@ -1620,6 +1619,155 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/admin-dashboard.js') }}"></script>
+
+<script>
+// User selection functionality
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAllUsers');
+    const checkboxes = document.querySelectorAll('.user-checkbox');
+    
+    // Set all individual checkboxes to match the select all state
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+    
+    // Update visual feedback and bulk actions
+    updateUserSelectionDisplay();
+}
+
+function updateSelectAllUsers() {
+    const checkboxes = document.querySelectorAll('.user-checkbox');
+    const selectAll = document.getElementById('selectAllUsers');
+    const checkedCount = document.querySelectorAll('.user-checkbox:checked').length;
+    
+    if (checkedCount === 0) {
+        selectAll.indeterminate = false;
+        selectAll.checked = false;
+    } else if (checkedCount === checkboxes.length) {
+        selectAll.indeterminate = false;
+        selectAll.checked = true;
+    } else {
+        selectAll.indeterminate = true;
+        selectAll.checked = false;
+    }
+    
+    updateUserSelectionDisplay();
+}
+
+function updateUserSelectionDisplay() {
+    const checkedCount = document.querySelectorAll('.user-checkbox:checked').length;
+    
+    // Show/hide bulk actions
+    const bulkActions = document.getElementById('bulkUserActions');
+    if (bulkActions) {
+        if (checkedCount > 0) {
+            bulkActions.style.display = 'block';
+        } else {
+            bulkActions.style.display = 'none';
+        }
+    }
+    
+    // Add visual feedback for selected rows
+    document.querySelectorAll('.user-checkbox').forEach(cb => {
+        const row = cb.closest('tr');
+        if (cb.checked) {
+            row.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
+        } else {
+            row.style.backgroundColor = '';
+        }
+    });
+}
+
+// Bulk action functions for users
+function bulkActivateUsers() {
+    const selectedUsers = getSelectedUsers();
+    if (selectedUsers.length === 0) {
+        alert('Please select users first');
+        return;
+    }
+    
+    if (confirm(`Activate ${selectedUsers.length} selected users?`)) {
+        // Send request to backend
+        fetch('/admin/users/bulk-activate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_ids: selectedUsers })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Successfully activated ${selectedUsers.length} users`);
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while activating users');
+        });
+    }
+}
+
+function bulkDeactivateUsers() {
+    const selectedUsers = getSelectedUsers();
+    if (selectedUsers.length === 0) {
+        alert('Please select users first');
+        return;
+    }
+    
+    if (confirm(`Deactivate ${selectedUsers.length} selected users?`)) {
+        fetch('/admin/users/bulk-deactivate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_ids: selectedUsers })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Successfully deactivated ${selectedUsers.length} users`);
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deactivating users');
+        });
+    }
+}
+
+function bulkExportUsers() {
+    const selectedUsers = getSelectedUsers();
+    if (selectedUsers.length === 0) {
+        alert('Please select users first');
+        return;
+    }
+    
+    // Create export URL with selected user IDs
+    const params = new URLSearchParams();
+    selectedUsers.forEach(id => params.append('user_ids', id));
+    
+    // Trigger download
+    window.open(`/admin/export/users?${params.toString()}`, '_blank');
+}
+
+function getSelectedUsers() {
+    const selectedCheckboxes = document.querySelectorAll('.user-checkbox:checked');
+    return Array.from(selectedCheckboxes).map(cb => cb.value);
+}
+
+// Initialize selection functionality when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Make sure bulk actions are hidden initially
+    updateUserSelectionDisplay();
+});
+</script>
 
 <style>
 .avatar-sm {
