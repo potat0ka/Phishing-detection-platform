@@ -274,7 +274,8 @@ def check():
                         'timestamp': datetime.utcnow()
                     }
                     
-                    # Encrypt sensitive detection data
+                    # Encrypt sensitive detection data and save to database
+                    db_manager = get_mongodb_manager()
                     encrypted_detection = encrypt_sensitive_data('detection', detection_data)
                     db_manager.insert_one('detections', encrypted_detection)
                     logger.info(f"Encrypted detection saved for user: {user_id}")
@@ -305,7 +306,8 @@ def tips():
     except Exception as e:
         app.logger.error(f"Error updating security tips: {e}")
     
-    # Get tips organized by category from database
+    # Get MongoDB manager and tips organized by category from database
+    db_manager = get_mongodb_manager()
     all_tips = db_manager.find_many('security_tips')
     email_tips = [tip for tip in all_tips if tip.get('category') == 'email']
     url_tips = [tip for tip in all_tips if tip.get('category') == 'url']

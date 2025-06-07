@@ -208,7 +208,8 @@ def login():
         # Find user in database - handle both encrypted and non-encrypted data
         user = None
         
-        # Get all users and check both encrypted and non-encrypted data
+        # Get MongoDB manager and all users, check both encrypted and non-encrypted data
+        db_manager = get_mongodb_manager()
         all_users = db_manager.find_many('users', {})
         
         for user_data in all_users:
