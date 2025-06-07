@@ -224,6 +224,21 @@ function refreshDashboard() {
     location.reload();
 }
 
+function togglePasswordField() {
+    const checkbox = document.getElementById('changePasswordCheck');
+    const passwordField = document.getElementById('passwordField');
+    const passwordInput = passwordField.querySelector('input[name="new_password"]');
+    
+    if (checkbox.checked) {
+        passwordField.style.display = 'block';
+        passwordInput.required = true;
+    } else {
+        passwordField.style.display = 'none';
+        passwordInput.required = false;
+        passwordInput.value = '';
+    }
+}
+
 // User Management Functions
 function createUser() {
     showModal('Create New User', `
@@ -325,6 +340,17 @@ function editUser(userId) {
                                 <input class="form-check-input" type="checkbox" name="is_active" ${user.is_active ? 'checked' : ''}>
                                 <label class="form-check-label">Active</label>
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="changePasswordCheck" onchange="togglePasswordField()">
+                                <label class="form-check-label">Change Password</label>
+                            </div>
+                        </div>
+                        <div class="mb-3" id="passwordField" style="display: none;">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" name="new_password" placeholder="Enter new password">
+                            <div class="form-text">Leave empty to keep current password</div>
                         </div>
                     </form>
                 `, 'handleEditUser()');
@@ -683,7 +709,8 @@ function handleEditUser() {
         username: formData.get('username'),
         email: formData.get('email'),
         role: formData.get('role'),
-        is_active: formData.get('is_active') === 'on'
+        is_active: formData.get('is_active') === 'on',
+        new_password: formData.get('new_password') || ''
     };
     
     fetch(`/admin/edit-user/${userId}`, {

@@ -351,6 +351,8 @@ def edit_user(user_id):
         username = data.get('username', '').strip()
         email = data.get('email', '').strip()
         role = data.get('role', 'user').strip()
+        new_password = data.get('new_password', '').strip()
+        is_active = data.get('is_active', True)
         
         # Validate input
         if not username or not email:
@@ -405,16 +407,35 @@ def edit_user(user_id):
                     'message': 'Email already exists'
                 }), 400
         
-        # Update user
-        update_data = {
-            '$set': {
-                'username': username,
-                'email': email,
-                'role': role,
-                'updated_at': datetime.utcnow().isoformat(),
-                'updated_by': current_user.get('username')
-            }
+        # Prepare update data
+        update_fields = {
+            'username': username,
+            'email': email,
+            'role': role,
+            'is_active': is_active,
+            'active': is_active,  # Keep both for compatibility
+            'updated_at': datetime.utcnow().isoformat(),
+            'updated_by': current_user.get('username')
         }
+        
+        # Handle password change if provided
+        if new_password:
+            from werkzeug.security import generate_password_hash
+            from utils.encryption_utils import encrypt_data
+            
+            # Validate password strength
+            if len(new_password) < 8:
+                return jsonify({
+                    'success': False,
+                    'message': 'Password must be at least 8 characters long'
+                }), 400
+            
+            # Hash and encrypt password
+            hashed_password = generate_password_hash(new_password)
+            encrypted_password = encrypt_data(hashed_password, data_type='user')
+            update_fields['password'] = encrypted_password
+        
+        update_data = {'$set': update_fields}
         
         db_manager.update_one('users', {'id': user_id}, update_data)
         
