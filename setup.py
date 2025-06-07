@@ -31,19 +31,33 @@ def detect_platform():
     elif system == "linux":
         return "requirements-linux.txt", "Linux (Full Features)"
     else:
-        print(f"⚠️  Unknown platform: {system}")
+        print(f"WARNING: Unknown platform: {system}")
         print("Falling back to basic requirements...")
         return "requirements-linux-basic.txt", "Generic (Basic)"
+
+def safe_print(message, use_unicode=True):
+    """Print message with fallback for systems that don't support Unicode"""
+    try:
+        if use_unicode and sys.stdout.encoding and 'utf' in sys.stdout.encoding.lower():
+            print(message)
+        else:
+            # Replace Unicode symbols with ASCII equivalents
+            ascii_message = message.replace('✅', '[OK]').replace('❌', '[ERROR]').replace('⚠️', '[WARNING]').replace('ℹ️', '[INFO]')
+            print(ascii_message)
+    except UnicodeEncodeError:
+        # Fallback to ASCII symbols
+        ascii_message = message.replace('✅', '[OK]').replace('❌', '[ERROR]').replace('⚠️', '[WARNING]').replace('ℹ️', '[INFO]')
+        print(ascii_message)
 
 def check_python_version():
     """Check if Python version is compatible"""
     version = sys.version_info
     if version.major < 3 or (version.major == 3 and version.minor < 8):
-        print(f"❌ Python {version.major}.{version.minor} is not supported")
+        safe_print(f"❌ Python {version.major}.{version.minor} is not supported")
         print("Please install Python 3.8 or higher")
         sys.exit(1)
     
-    print(f"✅ Python {version.major}.{version.minor}.{version.micro} detected")
+    safe_print(f"✅ Python {version.major}.{version.minor}.{version.micro} detected")
     return True
 
 def create_virtual_environment():
