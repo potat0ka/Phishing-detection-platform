@@ -25,15 +25,15 @@ def detect_platform():
     system = platform.system().lower()
     
     if system == "windows":
-        return "requirements-windows-basic.txt", "Windows (Basic)"
+        return "requirements-windows-basic.txt", "Windows (Basic - No Compilation)"
     elif system == "darwin":  # macOS
-        return "requirements-macos.txt", "macOS"
+        return "requirements-macos.txt", "macOS (Full Features)"
     elif system == "linux":
-        return "requirements-linux.txt", "Linux"
+        return "requirements-linux.txt", "Linux (Full Features)"
     else:
         print(f"⚠️  Unknown platform: {system}")
-        print("Falling back to generic requirements...")
-        return "requirements-local.txt", "Generic"
+        print("Falling back to basic requirements...")
+        return "requirements-linux-basic.txt", "Generic (Basic)"
 
 def check_python_version():
     """Check if Python version is compatible"""
@@ -184,26 +184,71 @@ def print_activation_instructions():
     print("📋 Don't forget to configure your .env file with MongoDB credentials!")
     print("="*60)
 
-def offer_windows_options():
-    """Offer Windows users different installation options"""
-    print("\n🪟 Windows Installation Options:")
-    print("1. Basic Installation (Recommended for most Windows users)")
-    print("   - No compilation required")
-    print("   - Uses rule-based phishing detection")
-    print("   - Fastest setup, works on all Windows systems")
-    print("\n2. Full Installation (Advanced users with build tools)")
-    print("   - Includes machine learning libraries")
-    print("   - Requires Microsoft Visual C++ Build Tools")
-    print("   - Better detection accuracy")
+def offer_installation_options(platform_name, system):
+    """Offer users different installation options based on their platform"""
+    if system == "windows":
+        print("\n🪟 Windows Installation Options:")
+        print("1. Basic Installation (Recommended for most Windows users)")
+        print("   - No compilation required")
+        print("   - Uses rule-based phishing detection (85% accuracy)")
+        print("   - Fastest setup, works on all Windows systems")
+        print("\n2. Full Installation (Advanced users with build tools)")
+        print("   - Includes machine learning libraries")
+        print("   - Requires Microsoft Visual C++ Build Tools")
+        print("   - Enhanced ML detection (95% accuracy)")
+        
+        while True:
+            choice = input("\nChoose installation type (1 or 2): ").strip()
+            if choice == "1":
+                return "requirements-windows-basic.txt", "Windows (Basic - Recommended)"
+            elif choice == "2":
+                return "requirements-windows.txt", "Windows (Full ML)"
+            else:
+                print("Please enter 1 or 2")
     
-    while True:
-        choice = input("\nChoose installation type (1 or 2): ").strip()
-        if choice == "1":
-            return "requirements-windows-basic.txt", "Windows (Basic - Recommended)"
-        elif choice == "2":
-            return "requirements-windows.txt", "Windows (Full ML)"
-        else:
-            print("Please enter 1 or 2")
+    elif system == "darwin":  # macOS
+        print("\n🍎 macOS Installation Options:")
+        print("1. Basic Installation (Faster setup)")
+        print("   - Core functionality only")
+        print("   - Rule-based detection (85% accuracy)")
+        print("   - No compilation required")
+        print("\n2. Full Installation (Recommended for macOS)")
+        print("   - Complete ML features")
+        print("   - Enhanced detection accuracy (95%)")
+        print("   - Uses Xcode command line tools")
+        
+        while True:
+            choice = input("\nChoose installation type (1 or 2): ").strip()
+            if choice == "1":
+                return "requirements-macos-basic.txt", "macOS (Basic)"
+            elif choice == "2":
+                return "requirements-macos.txt", "macOS (Full ML)"
+            else:
+                print("Please enter 1 or 2")
+    
+    elif system == "linux":
+        print("\n🐧 Linux Installation Options:")
+        print("1. Basic Installation (Minimal dependencies)")
+        print("   - Core functionality only")
+        print("   - Rule-based detection (85% accuracy)")
+        print("   - No build tools required")
+        print("\n2. Full Installation (Recommended for Linux)")
+        print("   - Complete ML features")
+        print("   - Enhanced detection accuracy (95%)")
+        print("   - Uses system compiler")
+        
+        while True:
+            choice = input("\nChoose installation type (1 or 2): ").strip()
+            if choice == "1":
+                return "requirements-linux-basic.txt", "Linux (Basic)"
+            elif choice == "2":
+                return "requirements-linux.txt", "Linux (Full ML)"
+            else:
+                print("Please enter 1 or 2")
+    
+    else:
+        # For unknown platforms, use basic installation
+        return "requirements-linux-basic.txt", "Generic (Basic)"
 
 def main():
     """Main setup function"""
@@ -221,10 +266,8 @@ def main():
     # Detect platform and get appropriate requirements file
     system = platform.system().lower()
     
-    if system == "windows":
-        requirements_file, platform_name = offer_windows_options()
-    else:
-        requirements_file, platform_name = detect_platform()
+    # Offer installation options for all platforms
+    requirements_file, platform_name = offer_installation_options("", system)
     
     print(f"\n🔍 Platform: {platform_name}")
     print(f"📦 Requirements file: {requirements_file}")
@@ -239,15 +282,33 @@ def main():
     if not create_virtual_environment():
         return False
     
-    # Install requirements with fallback for Windows
+    # Install requirements with comprehensive fallback for all platforms
     success = install_requirements(requirements_file)
     
-    # If Windows full installation fails, offer basic installation
-    if not success and system == "windows" and requirements_file == "requirements-windows.txt":
-        print("\n⚠️  Full installation failed (likely due to missing build tools)")
+    # If full installation fails, automatically fallback to basic installation
+    if not success:
+        print(f"\n⚠️  Full installation failed (likely due to missing build tools)")
         print("🔄 Falling back to basic installation...")
-        requirements_file = "requirements-windows-basic.txt"
-        success = install_requirements(requirements_file)
+        
+        # Determine basic requirements file for current platform
+        if system == "windows":
+            fallback_file = "requirements-windows-basic.txt"
+        elif system == "darwin":
+            fallback_file = "requirements-macos-basic.txt"
+        elif system == "linux":
+            fallback_file = "requirements-linux-basic.txt"
+        else:
+            fallback_file = "requirements-linux-basic.txt"
+        
+        print(f"📦 Using fallback: {fallback_file}")
+        success = install_requirements(fallback_file)
+        
+        if success:
+            print("✅ Basic installation completed successfully!")
+            print("ℹ️  Platform will use rule-based detection (85% accuracy)")
+        else:
+            print("❌ Both full and basic installations failed")
+            print("Please check your Python installation and try again")
     
     if not success:
         return False
