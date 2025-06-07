@@ -521,9 +521,13 @@
                                         </td>
                                         <td>{{ user.email or 'No email' }}</td>
                                         <td>
-                                            <span class="badge bg-{{ 'danger' if user.role == 'super_admin' else ('warning' if user.role == 'sub_admin' else 'secondary') }}">
-                                                {{ (user.role or 'user').title().replace('_', ' ') }}
-                                            </span>
+                                            {% if user.role == 'super_admin' %}
+                                                <span class="badge bg-danger">Super Admin</span>
+                                            {% elif user.role == 'sub_admin' %}
+                                                <span class="badge bg-warning">Sub Admin</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">User</span>
+                                            {% endif %}
                                         </td>
                                         <td>
                                             <span class="badge bg-{{ 'success' if user.get('active', True) else 'danger' }}">
