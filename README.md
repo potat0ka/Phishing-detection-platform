@@ -88,12 +88,12 @@ Open your web browser and go to: `http://localhost:8080`
 ### 6. Default Login Credentials
 
 **Super Admin:**
-- Username: `admin`
-- Password: `admin123`
+- Username: `super_admin`
+- Password: `SuperAdmin123!`
 
 **Sub Admin:**
-- Username: `subadmin`
-- Password: `subadmin123`
+- Username: `potato`
+- Password: `potato123`
 
 **Regular User:**
 - Username: `user`

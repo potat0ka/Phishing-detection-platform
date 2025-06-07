@@ -24,10 +24,10 @@
     "active": true,
     "is_active": true,
     "created_at": "2025-06-05T12:08:53.460160",
-    "login_attempts": 1,
-    "last_login": "2025-06-07 08:36:36.458510",
+    "login_attempts": 0,
+    "last_login": "2025-06-07 14:39:48.689009",
     "locked_until": null,
-    "updated_at": "2025-06-07T08:48:08.643510"
+    "updated_at": "2025-06-07T14:39:48.689155"
   },
   {
     "_id": "53962d53-0636-418b-bf27-b7f6cd4aae84",
