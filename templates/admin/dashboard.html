@@ -189,6 +189,39 @@
             background: var(--bs-tertiary-bg);
         }
         
+        /* User Management Table Responsiveness */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .table th,
+        .table td {
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        
+        .text-truncate {
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .min-width-0 {
+            min-width: 0;
+        }
+        
+        /* Ensure action buttons remain fixed width and visible */
+        .btn-group {
+            min-width: 140px;
+            display: flex;
+        }
+        
+        .btn-group .btn {
+            flex-shrink: 0;
+            min-width: 40px;
+        }
+
         @media (max-width: 768px) {
             .admin-sidebar {
                 transform: translateX(-100%);
@@ -201,6 +234,19 @@
             
             .admin-main {
                 margin-left: 0;
+            }
+            
+            /* Mobile table adjustments */
+            .table th,
+            .table td {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.875rem;
+            }
+            
+            .avatar-sm {
+                width: 30px;
+                height: 30px;
+                font-size: 0.75rem;
             }
         }
     </style>
@@ -544,13 +590,13 @@
                                                     <th class="border-0 fw-semibold text-white" style="width: 40px;">
                                                         <input type="checkbox" id="selectAllUsers" onchange="selectAllUsers()" class="form-check-input">
                                                     </th>
-                                                    <th class="border-0 fw-semibold text-white">User</th>
-                                                    <th class="border-0 fw-semibold text-white">Email</th>
-                                                    <th class="border-0 fw-semibold text-white">Role</th>
-                                                    <th class="border-0 fw-semibold text-white">Status</th>
-                                                    <th class="border-0 fw-semibold text-white">Last Login</th>
-                                                    <th class="border-0 fw-semibold text-white">Scans</th>
-                                                    <th class="border-0 fw-semibold text-white">Actions</th>
+                                                    <th class="border-0 fw-semibold text-white" style="width: 200px; min-width: 150px;">User</th>
+                                                    <th class="border-0 fw-semibold text-white" style="width: 250px; min-width: 200px;">Email</th>
+                                                    <th class="border-0 fw-semibold text-white" style="width: 120px;">Role</th>
+                                                    <th class="border-0 fw-semibold text-white" style="width: 100px;">Status</th>
+                                                    <th class="border-0 fw-semibold text-white" style="width: 130px;">Last Login</th>
+                                                    <th class="border-0 fw-semibold text-white" style="width: 80px;">Scans</th>
+                                                    <th class="border-0 fw-semibold text-white" style="width: 160px; min-width: 160px;">Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -559,19 +605,19 @@
                                                     <td class="py-3">
                                                         <input type="checkbox" class="form-check-input user-checkbox" value="{{ user.id }}" onchange="updateBulkActionButtons()">
                                                     </td>
-                                                    <td class="py-3">
+                                                    <td class="py-3" style="max-width: 200px;">
                                                         <div class="d-flex align-items-center">
-                                                            <div class="avatar-sm bg-gradient bg-primary rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                                            <div class="avatar-sm bg-gradient bg-primary rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
                                                                 <span class="text-white fw-bold">{{ user.username[0].upper() if user.username else 'U' }}</span>
                                                             </div>
-                                                            <div>
-                                                                <div class="fw-semibold text-white">{{ user.username or 'Unknown' }}</div>
-                                                                <small class="text-white-50">ID: {{ user.id or 'None' }}</small>
+                                                            <div class="min-width-0 flex-grow-1">
+                                                                <div class="fw-semibold text-white text-truncate" title="{{ user.username or 'Unknown' }}">{{ user.username or 'Unknown' }}</div>
+                                                                <small class="text-white-50 text-truncate d-block" title="ID: {{ user.id or 'None' }}">ID: {{ user.id or 'None' }}</small>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td class="py-3">
-                                                        <span class="text-white">{{ user.email or 'No email' }}</span>
+                                                    <td class="py-3" style="max-width: 250px;">
+                                                        <span class="text-white text-truncate d-block" title="{{ user.email or 'No email' }}">{{ user.email or 'No email' }}</span>
                                                     </td>
                                                     <td class="py-3">
                                                         {% if user.role == 'super_admin' %}
