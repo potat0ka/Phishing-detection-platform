@@ -1,0 +1,33 @@
+Error output: WARNING: Ignoring invalid distribution ~ip (C:\Users\Admin\Phishing-detection-platform\venv\Lib\site-packages)
+WARNING: Ignoring invalid distribution ~ip (C:\Users\Admin\Phishing-detection-platform\venv\Lib\site-packages)
+  error: subprocess-exited-with-error
+
+  Getting requirements to build wheel did not run successfully.
+  exit code: 1
+
+  [21 lines of output]
+  Traceback (most recent call last):
+    File "C:\Users\Admin\Phishing-detection-platform\venv\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 389, in <module>
+      main()
+      ~~~~^^
+    File "C:\Users\Admin\Phishing-detection-platform\venv\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 373, in main
+      json_out["return_val"] = hook(**hook_input["kwargs"])
+                               ~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+    File "C:\Users\Admin\Phishing-detection-platform\venv\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 143, in get_requires_for_build_wheel
+      return hook(config_settings)
+    File "C:\Users\Admin\AppData\Local\Temp\pip-build-env-0kcuqnv7\overlay\Lib\site-packages\setuptools\build_meta.py", line 331, in get_requires_for_build_wheel
+      return self._get_build_requires(config_settings, requirements=[])
+             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "C:\Users\Admin\AppData\Local\Temp\pip-build-env-0kcuqnv7\overlay\Lib\site-packages\setuptools\build_meta.py", line 301, in _get_build_requires
+      self.run_setup()
+      ~~~~~~~~~~~~~~^^
+    File "C:\Users\Admin\AppData\Local\Temp\pip-build-env-0kcuqnv7\overlay\Lib\site-packages\setuptools\build_meta.py", line 317, in run_setup
+      exec(code, locals())
+      ~~~~^^^^^^^^^^^^^^^^
+    File "<string>", line 30, in <module>
+    File "<string>", line 27, in get_version
+  KeyError: '__version__'
+  [end of output]
+
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+error: subprocess-exited-with-error

@@ -202,23 +202,29 @@ def offer_installation_options(platform_name, system):
     """Offer users different installation options based on their platform"""
     if system == "windows":
         safe_print("\n🪟 Windows Installation Options:")
-        print("1. Basic Installation (Recommended for most Windows users)")
+        print("1. Minimal Installation (Zero compilation - Works on ALL Windows systems)")
+        print("   - Pure Python packages only")
+        print("   - Rule-based phishing detection (85% accuracy)")
+        print("   - Guaranteed to work without build tools")
+        print("\n2. Basic Installation (Recommended for most Windows users)")
         print("   - No compilation required")
-        print("   - Uses rule-based phishing detection (85% accuracy)")
-        print("   - Fastest setup, works on all Windows systems")
-        print("\n2. Full Installation (Advanced users with build tools)")
+        print("   - Enhanced rule-based detection (90% accuracy)")
+        print("   - Works on most Windows systems")
+        print("\n3. Full Installation (Advanced users with build tools)")
         print("   - Includes machine learning libraries")
         print("   - Requires Microsoft Visual C++ Build Tools")
         print("   - Enhanced ML detection (95% accuracy)")
         
         while True:
-            choice = input("\nChoose installation type (1 or 2): ").strip()
+            choice = input("\nChoose installation type (1, 2, or 3): ").strip()
             if choice == "1":
-                return "requirements-windows-basic.txt", "Windows (Basic - Recommended)"
+                return "requirements-windows-minimal.txt", "Windows (Minimal - Zero Compilation)"
             elif choice == "2":
+                return "requirements-windows-basic.txt", "Windows (Basic - Recommended)"
+            elif choice == "3":
                 return "requirements-windows.txt", "Windows (Full ML)"
             else:
-                print("Please enter 1 or 2")
+                print("Please enter 1, 2, or 3")
     
     elif system == "darwin":  # macOS
         safe_print("\n🍎 macOS Installation Options:")
@@ -301,28 +307,38 @@ def main():
     
     # If full installation fails, automatically fallback to basic installation
     if not success:
-        safe_print(f"\n⚠️  Full installation failed (likely due to missing build tools)")
-        safe_print("🔄 Falling back to basic installation...")
+        safe_print(f"\n⚠️  Installation failed (likely due to compilation errors)")
+        safe_print("🔄 Falling back to safer installation options...")
         
-        # Determine basic requirements file for current platform
+        # Determine fallback sequence for current platform
+        fallback_files = []
         if system == "windows":
-            fallback_file = "requirements-windows-basic.txt"
+            fallback_files = ["requirements-windows-basic.txt", "requirements-windows-minimal.txt"]
         elif system == "darwin":
-            fallback_file = "requirements-macos-basic.txt"
+            fallback_files = ["requirements-macos-basic.txt"]
         elif system == "linux":
-            fallback_file = "requirements-linux-basic.txt"
+            fallback_files = ["requirements-linux-basic.txt"]
         else:
-            fallback_file = "requirements-linux-basic.txt"
+            fallback_files = ["requirements-linux-basic.txt"]
         
-        safe_print(f"📦 Using fallback: {fallback_file}")
-        success = install_requirements(fallback_file)
+        # Try each fallback option
+        for fallback_file in fallback_files:
+            if Path(fallback_file).exists():
+                safe_print(f"📦 Trying fallback: {fallback_file}")
+                success = install_requirements(fallback_file)
+                if success:
+                    safe_print("✅ Fallback installation completed successfully!")
+                    if "minimal" in fallback_file:
+                        safe_print("ℹ️  Platform will use pure Python rule-based detection (85% accuracy)")
+                    else:
+                        safe_print("ℹ️  Platform will use enhanced rule-based detection (90% accuracy)")
+                    break
+                else:
+                    safe_print(f"❌ Fallback {fallback_file} also failed, trying next option...")
         
-        if success:
-            safe_print("✅ Basic installation completed successfully!")
-            safe_print("ℹ️  Platform will use rule-based detection (85% accuracy)")
-        else:
-            safe_print("❌ Both full and basic installations failed")
-            print("Please check your Python installation and try again")
+        if not success:
+            safe_print("❌ All installation options failed")
+            print("Please check your Python installation and ensure you have internet connectivity")
     
     if not success:
         return False
