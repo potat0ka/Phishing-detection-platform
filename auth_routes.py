@@ -615,7 +615,8 @@ def get_current_user():
     if 'user_id' not in session or not session.get('logged_in'):
         return None
     
-    # Try finding by session user_id (handles both _id and id formats)
+    # Get MongoDB manager and try finding by session user_id (handles both _id and id formats)
+    db_manager = get_mongodb_manager()
     user_id = session['user_id']
     user = db_manager.find_one('users', {'_id': user_id}) or db_manager.find_one('users', {'id': user_id})
     
