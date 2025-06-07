@@ -126,6 +126,9 @@ def register():
             flash('Passwords do not match', 'error')
             return render_template('auth/register.html')
         
+        # Get MongoDB manager instance
+        db_manager = get_mongodb_manager()
+        
         # Prevent duplicate accounts - check both username and email
         # This searches the database for existing users with same username
         existing_user = db_manager.find_one('users', {'username': username})

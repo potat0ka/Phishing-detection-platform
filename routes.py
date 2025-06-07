@@ -20,7 +20,7 @@ Perfect for learning web development concepts!
 
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
 from app import app, allowed_file, ALLOWED_EXTENSIONS, get_current_user
-from models.mongodb_config import db_manager
+from models.mongodb_config import get_mongodb_manager
 from auth_routes import login_required, admin_required
 from ml_detector import PhishingDetector
 from utils.ai_content_detector import AIContentDetector
@@ -183,7 +183,8 @@ def user_dashboard():
     if user_role in ['super_admin', 'sub_admin', 'admin']:
         return redirect(url_for('admin.admin_dashboard'))
     
-    # Get user's personal scan history only
+    # Get MongoDB manager and user's personal scan history
+    db_manager = get_mongodb_manager()
     user_detections = db_manager.find_many('detections', {'user_id': user_id})
     
     # Calculate personal statistics
