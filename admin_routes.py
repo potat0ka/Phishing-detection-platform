@@ -150,6 +150,28 @@ def refresh_dashboard():
             'message': 'Error refreshing dashboard data'
         }), 500
 
+@admin_bp.route('/live-stats')
+@admin_required 
+def live_stats():
+    """Get live statistics for dashboard updates"""
+    try:
+        analytics_data = calculate_analytics_data()
+        system_stats = calculate_system_stats()
+        
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'analytics': analytics_data,
+                'system': system_stats,
+                'timestamp': datetime.now().isoformat()
+            }
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
 @admin_bp.route('/user/create', methods=['POST'])
 @admin_required
 def create_user():

@@ -956,61 +956,7 @@
             location.reload();
         }
 
-        // Chart initialization
-        document.addEventListener('DOMContentLoaded', function() {
-            // Detection Results Chart
-            const detectionCtx = document.getElementById('detectionChart');
-            if (detectionCtx) {
-                new Chart(detectionCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Safe', 'Suspicious', 'Dangerous'],
-                        datasets: [{
-                            data: [{{ stats.safe_count or 3 }}, {{ stats.suspicious_count or 1 }}, {{ stats.dangerous_count or 2 }}],
-                            backgroundColor: ['#198754', '#ffc107', '#dc3545'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom'
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Activity Chart
-            const activityCtx = document.getElementById('activityChart');
-            if (activityCtx) {
-                new Chart(activityCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                        datasets: [{
-                            label: 'Scans',
-                            data: [12, 19, 8, 15, 25, 18, 14],
-                            borderColor: '#0d6efd',
-                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-            }
-        });
+        // Dashboard initialization - charts removed to prevent script errors
 
         // Admin Functions
         function createUser() { alert('Create user functionality would be implemented here'); }
@@ -1633,7 +1579,6 @@
 <!-- Modals for various admin actions will be added via JavaScript -->
 <div id="adminModals"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/admin-dashboard.js') }}"></script>
 
 <script>

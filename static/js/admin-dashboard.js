@@ -24,70 +24,8 @@ function initializeAdminDashboard() {
 }
 
 function initializeCharts() {
-    // Detection Results Chart
-    const detectionCtx = document.getElementById('detectionChart');
-    if (detectionCtx) {
-        // Get data from template or use defaults
-        const safeCount = window.analyticsData?.safe_count || 0;
-        const suspiciousCount = window.analyticsData?.suspicious_count || 0;
-        const dangerousCount = window.analyticsData?.dangerous_count || 0;
-        
-        new Chart(detectionCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Safe', 'Suspicious', 'Dangerous'],
-                datasets: [{
-                    data: [safeCount, suspiciousCount, dangerousCount],
-                    backgroundColor: ['#28a745', '#ffc107', '#dc3545']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    }
-    
-    // Activity Trends Chart
-    const activityCtx = document.getElementById('activityChart');
-    if (activityCtx) {
-        const activityLabels = window.analyticsData?.activity_labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        const activityData = window.analyticsData?.activity_data || [0, 0, 0, 0, 0, 0, 0];
-        
-        new Chart(activityCtx, {
-            type: 'line',
-            data: {
-                labels: activityLabels,
-                datasets: [{
-                    label: 'Daily Scans',
-                    data: activityData,
-                    borderColor: '#007bff',
-                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-    }
+    // Charts disabled to prevent script errors - visual placeholders shown instead
+    console.log('Chart initialization skipped - using visual placeholders');
 }
 
 function setupTipCategories() {
