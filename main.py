@@ -15,7 +15,7 @@ Think of it as the "power button" for your web application.
 HOW TO RUN THE APPLICATION:
 1. Open terminal/command prompt
 2. Navigate to this project folder: cd ai-phishing-detection-platform
-3. Activate virtual environment: source venv/bin/activate (Linux/Mac) or venv\Scripts\activate (Windows)
+3. Activate virtual environment: source venv/bin/activate (Linux/Mac) or venv\\Scripts\\activate (Windows)
 4. Type: python main.py
 5. Press Enter
 6. Open browser and go to: http://localhost:8080

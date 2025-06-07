@@ -31,28 +31,44 @@ This guide provides detailed instructions for installing the AI Phishing Detecti
 
 ## Step-by-Step Installation
 
-### 1. Download the Project
+### Method 1: Dedicated Windows Installer (Recommended)
+
+The platform includes a specialized Windows installer that handles all compilation issues:
+
 ```bash
+# 1. Download the project
 git clone https://github.com/bigendran/phishing-detection-platform.git
 cd phishing-detection-platform
+
+# 2. Run the Windows-specific installer
+python install_windows.py
 ```
 
-### 2. Run the Setup Script
+This installer will:
+- Handle Pillow compilation issues automatically
+- Install numpy with pre-built wheels
+- Resolve Visual C++ Build Tools dependencies
+- Use Windows-optimized package versions
+- Create virtual environment automatically
+
+### Method 2: Cross-Platform Setup Script
+
 ```bash
+# Alternative: Use the general setup script
 python setup.py
 ```
 
 The setup script will:
 - Detect your Windows version automatically
 - Present installation options based on your system
-- Create a virtual environment
-- Install appropriate dependencies
+- Create a virtual environment with enhanced error handling
+- Install appropriate dependencies with Windows optimizations
 - Configure the environment
 
-### 3. Choose Installation Type
+### 3. Choose Installation Type (if using setup.py)
 When prompted, select:
-- **1** for Minimal Installation (works everywhere)
-- **2** for Basic Installation (recommended)
+- **1** for Minimal Installation (works everywhere, zero compilation)
+- **2** for Basic Installation (recommended, includes numpy)
 - **3** for Full Installation (requires build tools)
 
 ### 4. Activate Virtual Environment

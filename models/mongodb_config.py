@@ -76,7 +76,7 @@ class MongoDBManager:
     
     def _setup_collections(self):
         """Setup MongoDB collections with indexes"""
-        if not self.connected or not self.db:
+        if not self.connected or self.db is None:
             return
         
         try:

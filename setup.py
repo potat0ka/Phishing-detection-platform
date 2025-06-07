@@ -98,14 +98,37 @@ def install_requirements(requirements_file):
         safe_print(f"⚠️  Warning: Could not upgrade pip: {e}")
     
     safe_print(f"📦 Installing packages from {requirements_file}...")
+    
+    # Windows-specific pip arguments for better compatibility
+    pip_args = pip_cmd + ["install", "-r", requirements_file]
+    
+    # Add Windows-specific optimizations
+    platform_name = detect_platform()
+    if platform_name[1] == "windows":
+        # Use pre-built wheels when possible, avoid source compilation
+        pip_args.extend(["--only-binary=:all:", "--prefer-binary"])
+        # Increase timeout for problematic packages
+        pip_args.extend(["--timeout", "900"])
+        safe_print("🪟 Using Windows-optimized installation (pre-built wheels)")
+    
     try:
-        result = subprocess.run(pip_cmd + ["install", "-r", requirements_file], 
-                               check=True, capture_output=True, text=True)
+        result = subprocess.run(pip_args, check=True, capture_output=True, text=True, timeout=900)
         safe_print("✅ All packages installed successfully")
         return True
     except subprocess.CalledProcessError as e:
         safe_print(f"❌ Failed to install packages: {e}")
+        error_msg = e.stderr.lower() if e.stderr else ""
+        
+        # Check for specific Windows compilation errors
+        if "keyerror" in error_msg and "__version__" in error_msg:
+            safe_print("🔧 Detected Pillow version conflict - common Windows issue")
+        elif "microsoft visual c++" in error_msg:
+            safe_print("🔧 Missing Microsoft Visual C++ Build Tools")
+        
         print("Error output:", e.stderr)
+        return False
+    except subprocess.TimeoutExpired:
+        safe_print("❌ Installation timed out - will try fallback options")
         return False
 
 def create_env_file():
