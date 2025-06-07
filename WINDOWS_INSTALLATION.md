@@ -83,31 +83,72 @@ python main.py
 ### 5. Access the Application
 Open your browser and navigate to: `http://localhost:8080`
 
-## Troubleshooting Common Windows Issues
+## Troubleshooting Critical Windows Issues
 
-### Issue: "pip install failed with compilation error"
-**Solution:** Choose Minimal Installation (Option 1) which avoids all compilation.
+### Issue 1: Pillow KeyError '__version__' During Installation
+**Problem:** `KeyError: '__version__'` when installing Pillow from requirements-windows.txt
+**Root Cause:** Pillow 10.1.0 requires compilation tools that aren't available on many Windows systems
+
+**Solutions:**
+1. **Use the dedicated Windows installer:** `python install_windows.py`
+2. **Manual fix:** Replace Pillow version in requirements files:
+   ```bash
+   # Edit requirements-windows.txt and requirements-windows-basic.txt
+   # Change: pillow==10.1.0
+   # To:     pillow==9.5.0
+   ```
+3. **Alternative:** Install with pre-built wheels only:
+   ```bash
+   pip install pillow==9.5.0 --only-binary=:all: --prefer-binary
+   ```
+
+### Issue 2: SyntaxWarning Invalid Escape Sequence in main.py
+**Problem:** `SyntaxWarning: invalid escape sequence '\S'` on line 18
+**Fix Applied:** Escape sequences corrected from `venv\Scripts\activate` to `venv\\Scripts\\activate`
+
+### Issue 3: ModuleNotFoundError: No module named 'numpy'
+**Problem:** numpy missing from requirements files despite being needed by AI components
+**Solutions:**
+1. **Recommended:** Use `python install_windows.py` (includes numpy automatically)
+2. **Manual installation:**
+   ```bash
+   # Activate virtual environment first
+   venv\Scripts\activate
+   # Install numpy with pre-built wheels
+   pip install numpy==1.24.3 --only-binary=:all:
+   ```
+3. **Update requirements:** numpy==1.24.3 now included in all Windows requirements files
+
+### Issue 4: MongoDB Database Truth Value Warning
+**Problem:** `Database objects do not implement truth value testing`
+**Fix Applied:** Updated mongodb_config.py to use `if database is not None:` instead of `if database:`
+
+### Additional Windows Issues
 
 ### Issue: "Microsoft Visual C++ 14.0 is required"
 **Options:**
 1. Install [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
-2. Use Minimal Installation (Option 1) to avoid this requirement
+2. Use Windows installer with `--only-binary` flags (recommended)
+3. Use Minimal Installation which avoids compilation entirely
 
 ### Issue: "Permission denied" errors
-**Solution:** Run Command Prompt as Administrator
-
-### Issue: Unicode encoding errors
-**Solution:** Our setup script automatically handles this with ASCII fallbacks
+**Solutions:**
+1. Run Command Prompt as Administrator
+2. Add `--user` flag to pip commands
+3. Exclude Python directories from antivirus scanning
 
 ### Issue: Virtual environment creation fails
 **Solutions:**
-1. Check Python installation: `python --version`
-2. Ensure Python was installed with "Add to PATH" option
-3. Try: `python -m venv venv` manually
+1. Verify Python installation: `python --version`
+2. Ensure Python added to PATH during installation
+3. Try manual creation: `python -m venv venv`
+4. Use full Python path: `C:\Python39\python.exe -m venv venv`
 
-### Issue: Packages install slowly
-**Cause:** Windows Defender scanning each package
-**Solution:** Add Python and project folder to Windows Defender exclusions
+### Issue: Slow package installation
+**Causes & Solutions:**
+- **Windows Defender scanning:** Add Python and project folder to exclusions
+- **Network timeouts:** Use `--timeout 900` flag
+- **Repository mirrors:** Use `--index-url` to specify faster mirror
 
 ## Manual Installation (Alternative Method)
 

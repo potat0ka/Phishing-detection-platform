@@ -103,22 +103,30 @@ The setup script includes comprehensive fallback handling:
 
 ## 🛠️ Quick Start
 
-### 1. Clone and Setup
+### Windows Users (Recommended)
 ```bash
+# 1. Clone the repository
+git clone https://github.com/bigendran/phishing-detection-platform.git
+cd phishing-detection-platform
+
+# 2. Use the dedicated Windows installer (handles all compatibility issues)
+python install_windows.py
+
+# 3. Activate and run
+venv\Scripts\activate
+python main.py
+```
+
+### Cross-Platform Installation
+```bash
+# 1. Clone and setup
 git clone https://github.com/bigendran/phishing-detection-platform.git
 cd phishing-detection-platform
 python setup.py
-```
 
-### 2. Activate Environment and Run
-```bash
-# Windows
-venv\Scripts\activate
-
-# macOS/Linux  
-source venv/bin/activate
-
-# Start the application
+# 2. Activate environment and run
+# Windows: venv\Scripts\activate
+# macOS/Linux: source venv/bin/activate
 python main.py
 ```
 
