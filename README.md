@@ -36,52 +36,41 @@ git clone <your-repository-url>
 cd ai-phishing-detection-platform
 ```
 
-### 2. Setting up Virtual Environment (All Platforms)
+### 2. Install Dependencies (Choose One Method)
 
-**Create Virtual Environment:**
+**Method A: Automatic Installation (Recommended)**
 ```bash
-python -m venv venv
-```
-
-**Activate Virtual Environment:**
-
-For Windows:
-```cmd
-venv\Scripts\activate
-```
-
-For macOS/Linux/Arch:
-```bash
-source venv/bin/activate
-```
-
-**Install Dependencies:**
-```bash
-# Option 1: Automatic installer (Recommended)
 python install_dependencies.py
+```
+This script automatically creates virtual environment and installs all dependencies.
 
-# Option 2: Manual installation
+**Method B: Manual Installation**
+```bash
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
+
+# Install all required packages
 pip install flask==2.3.3 pymongo==4.5.0 requests==2.31.0 scikit-learn==1.3.2 nltk==3.8.1 beautifulsoup4==4.12.2 bcrypt==4.0.1 pillow==9.5.0 email-validator==2.1.0 trafilatura==1.6.4 dnspython==2.4.2 passlib==1.7.4 cryptography==41.0.7
 ```
 
-**Deactivate Virtual Environment (when done):**
-```bash
-deactivate
-```
-
-### 3. Configure Environment
+### 3. Configure Environment (Optional)
 
 ```bash
 # Copy environment template
 cp .env.example .env
 
-# Edit .env file with your settings (optional for basic usage)
+# Edit .env file with your database settings if needed
 ```
 
 ### 4. Run the Application
 
 ```bash
-# Start the web server
 python main.py
 ```
 
@@ -124,14 +113,14 @@ Open your web browser and go to: `http://localhost:8080`
    cd ai-phishing-detection-platform
    ```
 
-4. **Create and activate virtual environment**:
+4. **Install dependencies**:
    ```cmd
+   # Option 1: Automatic installation
+   python install_dependencies.py
+   
+   # Option 2: Manual installation
    python -m venv venv
    venv\Scripts\activate
-   ```
-
-5. **Install dependencies**:
-   ```cmd
    pip install flask==2.3.3 pymongo==4.5.0 requests==2.31.0 scikit-learn==1.3.2 nltk==3.8.1 beautifulsoup4==4.12.2 bcrypt==4.0.1 pillow==9.5.0 email-validator==2.1.0 trafilatura==1.6.4 dnspython==2.4.2 passlib==1.7.4 cryptography==41.0.7
    ```
 
@@ -396,21 +385,33 @@ pip install --force-reinstall -r requirements.txt
 
 ```
 ai-phishing-detection-platform/
-├── main.py                 # Main application entry point
-├── src/                    # Source code directory
-│   ├── app.py             # Flask application setup
-│   ├── routes.py          # Main application routes
-│   ├── auth_routes.py     # Authentication routes
-│   ├── admin_routes.py    # Admin panel routes
-│   ├── ml_detector.py     # AI detection algorithms
-│   ├── models/            # Database models
-│   └── utils/             # Utility functions
-├── templates/             # HTML templates
-├── static/               # CSS, JavaScript, images
-├── data/                 # Local data storage
-├── .env.example          # Environment template
-└── README.md            # This file
+├── main.py                    # Main application entry point
+├── install_dependencies.py   # Automated dependency installer
+├── requirements-manual.txt   # Manual dependency reference
+├── INSTALL.md                # Quick installation guide
+├── MONGODB_SETUP.md          # MongoDB configuration guide
+├── DEPLOYMENT.md             # Production deployment guide
+├── src/                      # Source code directory
+│   ├── app.py               # Flask application setup
+│   ├── routes.py            # Main application routes
+│   ├── auth_routes.py       # Authentication routes
+│   ├── admin_routes.py      # Admin panel routes
+│   ├── ml_detector.py       # AI detection algorithms
+│   ├── models/              # Database models
+│   └── utils/               # Utility functions
+├── templates/               # HTML templates
+├── static/                 # CSS, JavaScript, images
+├── data/                   # Local data storage
+├── .env.example            # Environment template
+└── README.md              # This file
 ```
+
+## 📋 Installation Files
+
+- **install_dependencies.py** - Automated installer that creates virtual environment and installs all packages
+- **requirements-manual.txt** - Complete list of required packages with versions
+- **INSTALL.md** - Quick installation guide with troubleshooting
+- **MONGODB_SETUP.md** - Comprehensive MongoDB setup for all platforms
 
 ## 🤝 Contributing
 
