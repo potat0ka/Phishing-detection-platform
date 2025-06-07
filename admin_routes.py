@@ -421,7 +421,10 @@ def edit_user(user_id):
         # Handle password change if provided
         if new_password:
             from werkzeug.security import generate_password_hash
-            from utils.encryption_utils import encrypt_data
+            import sys
+            import os
+            sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+            from utils.encryption_utils import encrypt_user_data
             
             # Validate password strength
             if len(new_password) < 8:
@@ -430,10 +433,9 @@ def edit_user(user_id):
                     'message': 'Password must be at least 8 characters long'
                 }), 400
             
-            # Hash and encrypt password
+            # Hash password (no encryption needed for password hashes)
             hashed_password = generate_password_hash(new_password)
-            encrypted_password = encrypt_data(hashed_password, data_type='user')
-            update_fields['password'] = encrypted_password
+            update_fields['password'] = hashed_password
         
         update_data = {'$set': update_fields}
         

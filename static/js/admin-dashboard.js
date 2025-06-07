@@ -337,7 +337,7 @@ function editUser(userId) {
                         </div>
                         <div class="mb-3">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="is_active" ${user.is_active ? 'checked' : ''}>
+                                <input class="form-check-input" type="checkbox" name="is_active" ${(user.is_active || user.active || user.status === 'active') ? 'checked' : ''}>
                                 <label class="form-check-label">Active</label>
                             </div>
                         </div>
