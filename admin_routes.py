@@ -71,7 +71,7 @@ def admin_dashboard():
         # Get reported content
         reported_content = get_reported_content()
         
-        return render_template('admin_dashboard.html',
+        return render_template('admin/dashboard.html',
                          current_user=current_user,
                          permissions=permissions,
                          stats=stats,
@@ -83,6 +83,64 @@ def admin_dashboard():
         logger.error(f"Error loading admin dashboard: {e}")
         flash('Error loading admin dashboard', 'error')
         return redirect(url_for('index'))
+
+@admin_bp.route('/refresh', methods=['GET'])
+@admin_required
+def refresh_dashboard():
+    """
+    Refresh dashboard data without full page reload
+    Returns updated statistics and user data
+    """
+    try:
+        # Get MongoDB manager
+        db_manager = get_mongodb_manager()
+        
+        # Get current user and permissions
+        current_user = get_current_user()
+        current_role = current_user.get('role', 'user') if current_user else 'user'
+        
+        # Get fresh system statistics
+        stats = calculate_system_stats()
+        
+        # Get users with statistics
+        users = get_all_users_with_stats()
+        
+        # Get recent scan logs
+        scan_logs = get_recent_scan_logs()
+        
+        # Return JSON response with updated data
+        return jsonify({
+            'success': True,
+            'stats': stats,
+            'users': [
+                {
+                    'id': user.get('id'),
+                    'username': user.get('username'),
+                    'email': user.get('email'),
+                    'role': user.get('role', 'user'),
+                    'active': user.get('active', True),
+                    'scan_count': user.get('scan_count', 0),
+                    'created_at': user.get('created_at', '')
+                } for user in users
+            ],
+            'scan_logs': [
+                {
+                    'created_at': log.get('created_at', ''),
+                    'username': log.get('username', 'Unknown'),
+                    'input_type': log.get('input_type', 'Unknown'),
+                    'result': log.get('result', 'Unknown'),
+                    'input_content': log.get('input_content', '')
+                } for log in scan_logs[:10]
+            ],
+            'message': 'Dashboard refreshed successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error refreshing dashboard: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error refreshing dashboard data'
+        }), 500
 
 @admin_bp.route('/user/create', methods=['POST'])
 @admin_required

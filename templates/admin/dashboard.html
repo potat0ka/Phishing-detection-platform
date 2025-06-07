@@ -239,8 +239,8 @@
                     </div>
                 </div>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-outline-primary" onclick="refreshDashboard()">
-                        <i class="fas fa-sync-alt me-1"></i>
+                    <button class="btn btn-outline-primary" id="refreshBtn" onclick="refreshDashboardData()">
+                        <i class="fas fa-sync-alt me-1" id="refreshIcon"></i>
                         Refresh
                     </button>
                     <div class="dropdown">
@@ -1771,6 +1771,184 @@ document.addEventListener('DOMContentLoaded', function() {
     // Make sure bulk actions are hidden initially
     updateUserSelectionDisplay();
 });
+
+// Refresh dashboard functionality
+function refreshDashboardData() {
+    const refreshBtn = document.getElementById('refreshBtn');
+    const refreshIcon = document.getElementById('refreshIcon');
+    
+    // Show loading state
+    refreshBtn.disabled = true;
+    refreshIcon.classList.add('fa-spin');
+    
+    fetch('/admin/refresh')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update statistics
+                updateElementIfExists('totalUsers', data.stats.total_users);
+                updateElementIfExists('totalScans', data.stats.total_scans);
+                updateElementIfExists('threatsDetected', data.stats.threats_detected);
+                updateElementIfExists('activeSessions', data.stats.active_sessions);
+                
+                // Update user table
+                updateUserTable(data.users);
+                
+                // Update scan logs
+                updateScanLogs(data.scan_logs);
+                
+                // Show success message
+                showToast('Dashboard refreshed successfully', 'success');
+            } else {
+                showToast('Error refreshing dashboard: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error refreshing dashboard:', error);
+            showToast('Error refreshing dashboard', 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            refreshBtn.disabled = false;
+            refreshIcon.classList.remove('fa-spin');
+        });
+}
+
+function updateElementIfExists(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.textContent = value || 0;
+    }
+}
+
+function updateUserTable(users) {
+    const tbody = document.querySelector('#users-section tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    users.forEach(user => {
+        const row = document.createElement('tr');
+        
+        // Get role badge class
+        let roleBadgeClass = 'bg-secondary';
+        let roleText = 'User';
+        
+        if (user.role === 'super_admin') {
+            roleBadgeClass = 'bg-danger';
+            roleText = 'Super Admin';
+        } else if (user.role === 'sub_admin') {
+            roleBadgeClass = 'bg-warning';
+            roleText = 'Sub Admin';
+        }
+        
+        row.innerHTML = `
+            <td>
+                <input type="checkbox" class="user-checkbox" value="${user.id}" onchange="updateSelectAllUsers()">
+            </td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="avatar-sm bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <strong>${user.username || 'Unknown'}</strong>
+                </div>
+            </td>
+            <td>${user.email || 'No email'}</td>
+            <td>
+                <span class="badge ${roleBadgeClass}">${roleText}</span>
+            </td>
+            <td>
+                <span class="badge ${user.active ? 'bg-success' : 'bg-danger'}">
+                    ${user.active ? 'Active' : 'Inactive'}
+                </span>
+            </td>
+            <td>${user.scan_count || 0}</td>
+            <td>${user.created_at ? user.created_at.substring(0, 10) : 'Unknown'}</td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" onclick="viewUser('${user.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="editUser('${user.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-${user.active ? 'danger' : 'success'}" onclick="toggleUserStatus('${user.id}')">
+                        <i class="fas fa-${user.active ? 'pause' : 'play'}"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+    
+    // Reset selection state
+    updateUserSelectionDisplay();
+}
+
+function updateScanLogs(scanLogs) {
+    const tbody = document.querySelector('#scans-section tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    scanLogs.forEach(log => {
+        const row = document.createElement('tr');
+        
+        let resultBadgeClass = 'bg-secondary';
+        if (log.result === 'safe') resultBadgeClass = 'bg-success';
+        else if (log.result === 'suspicious') resultBadgeClass = 'bg-warning';
+        else if (log.result === 'dangerous') resultBadgeClass = 'bg-danger';
+        
+        const content = log.input_content || 'No content';
+        const truncatedContent = content.length > 50 ? content.substring(0, 50) + '...' : content;
+        
+        row.innerHTML = `
+            <td><small>${log.created_at ? log.created_at.substring(0, 16).replace('T', ' ') : 'Unknown'}</small></td>
+            <td>${log.username || 'Unknown'}</td>
+            <td><span class="badge bg-info">${log.input_type || 'Unknown'}</span></td>
+            <td>
+                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    ${truncatedContent}
+                </div>
+            </td>
+            <td>
+                <span class="badge ${resultBadgeClass}">
+                    ${(log.result || 'Unknown').charAt(0).toUpperCase() + (log.result || 'Unknown').slice(1)}
+                </span>
+            </td>
+            <td>-</td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewScanDetails('${log.id || ''}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+}
+
+function showToast(message, type = 'info') {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'error' ? 'danger' : type} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 3000);
+}
 </script>
 
 <style>
