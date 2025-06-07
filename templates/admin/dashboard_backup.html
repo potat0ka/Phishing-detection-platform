@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AI Phishing Detector</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loading-animations.css') }}">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .admin-sidebar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Checkbox styling */
+        .user-checkbox, .report-checkbox, #selectAllUsers, #selectAllReports {
+            transform: scale(1.2);
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        .table th:first-child, .table td:first-child {
+            width: 40px;
+            text-align: center;
+        }
+        
+        .admin-main {
+            margin-left: 280px;
+            padding: 0;
+            min-height: 100vh;
+            background: var(--bs-body-bg);
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+        
+        .nav-item {
+            margin: 0.25rem 1rem;
+        }
+        
+        .nav-link {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.2s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transform: translateX(4px);
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+        
+        .nav-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+        }
+        
+        .admin-header {
+            background: #fff;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        
+        .admin-content {
+            padding: 2rem;
+        }
+        
+        .stats-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .table-container {
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .admin-sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .admin-main {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Sidebar -->
+    <div class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-header">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary rounded-circle p-2 me-3">
+                    <i class="fas fa-shield-alt text-white"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 text-white">Admin Panel</h5>
+                    <small class="text-white-50">AI Phishing Detector</small>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <button class="nav-link active" data-section="overview">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard Overview
+                </button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-link" data-section="users">
+                    <i class="fas fa-users"></i>
+                    User Management
+                </button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-link" data-section="scans">
+                    <i class="fas fa-search"></i>
+                    Scan Logs
+                </button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-link" data-section="reports">
+                    <i class="fas fa-flag"></i>
+                    Reported Content
+                </button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-link" data-section="tips">
+                    <i class="fas fa-lightbulb"></i>
+                    Safety Tips
+                </button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-link" data-section="analytics">
+                    <i class="fas fa-chart-line"></i>
+                    Analytics
+                </button>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="d-flex align-items-center text-white-50">
+                <i class="fas fa-user-circle me-2"></i>
+                <div>
+                    <small>{{ current_user.username if current_user else 'Admin' }}</small>
+                    <br>
+                    <small>Administrator</small>
+                </div>
+            </div>
+            <div class="mt-2">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-sm me-2">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Back to App
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-secondary d-md-none me-3" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div>
+                        <h4 class="mb-0 text-dark">Admin Dashboard</h4>
+                        <small class="text-muted">Platform management and monitoring center</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" id="refreshBtn" onclick="refreshDashboardData()">
+                        <i class="fas fa-sync-alt me-1" id="refreshIcon"></i>
+                        Refresh
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-cog me-1"></i>
+                            Actions
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="exportSystemReport()">
+                                <i class="fas fa-download me-2"></i>Export System Report
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="clearSystemLogs()">
+                                <i class="fas fa-trash me-2"></i>Clear Old Logs
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="systemMaintenance()">
+                                <i class="fas fa-tools me-2"></i>System Maintenance
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="admin-content">
+            <!-- Tabbed Navigation -->
+            <div class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+                
+                <div class="card table-container">
+                    <div class="card-header">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h5 class="mb-0">All Users</h5>
+                            </div>
+                            <div class="col-auto">
+                                <div class="d-flex gap-2">
+                                    <div class="btn-group" id="bulkUserActions" style="display: none;">
+                                        <button class="btn btn-sm btn-warning" onclick="bulkActivateUsers()">
+                                            <i class="fas fa-play me-1"></i>Activate
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="bulkDeactivateUsers()">
+                                            <i class="fas fa-pause me-1"></i>Deactivate
+                                        </button>
+                                        <button class="btn btn-sm btn-secondary" onclick="bulkExportUsers()">
+                                            <i class="fas fa-download me-1"></i>Export
+                                        </button>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Search users..." id="userSearch">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th width="40">
+                                            <input type="checkbox" id="selectAllUsers" onchange="toggleSelectAll()">
+                                        </th>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Scans</th>
+                                        <th>Joined</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="user-checkbox" value="{{ user.id }}" onchange="updateSelectAllUsers()">
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                                <strong>{{ user.username or 'Unknown' }}</strong>
+                                            </div>
+                                        </td>
+                                        <td>{{ user.email or 'No email' }}</td>
+                                        <td>
+                                            {% if user.role == 'super_admin' %}
+                                                <span class="badge bg-danger">Super Admin</span>
+                                            {% elif user.role == 'sub_admin' %}
+                                                <span class="badge bg-warning">Sub Admin</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">User</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if user.get('active', True) else 'danger' }}">
+                                                {{ 'Active' if user.get('active', True) else 'Inactive' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ user.scan_count or 0 }}</td>
+                                        <td>{{ user.created_at[:10] if user.created_at else 'Unknown' }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" onclick="viewUser('{{ user.id }}')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-warning" onclick="editUser('{{ user.id }}')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-{{ 'success' if not user.get('active', True) else 'danger' }}" 
+                                                        onclick="toggleUserStatus('{{ user.id }}')">
+                                                    <i class="fas fa-{{ 'play' if not user.get('active', True) else 'pause' }}"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scan Logs Section -->
+            <div class="content-section" id="scans-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Phishing Scan Logs</h4>
+                    <div class="d-flex gap-2">
+                        <select class="form-select" id="scanFilter">
+                            <option value="">All Results</option>
+                            <option value="safe">Safe</option>
+                            <option value="suspicious">Suspicious</option>
+                            <option value="dangerous">Dangerous</option>
+                        </select>
+                        <button class="btn btn-outline-primary" onclick="exportScanLogs()">
+                            <i class="fas fa-download me-2"></i>Export
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card table-container">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>User</th>
+                                        <th>Type</th>
+                                        <th>Content</th>
+                                        <th>Result</th>
+                                        <th>Confidence</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for scan in scan_logs %}
+                                    <tr>
+                                        <td><small>{{ scan.created_at[:16].replace('T', ' ') if scan.created_at else 'Unknown' }}</small></td>
+                                        <td>{{ scan.username or 'Unknown' }}</td>
+                                        <td><span class="badge bg-info">{{ scan.input_type or 'Unknown' }}</span></td>
+                                        <td>
+                                            <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                {{ scan.input_content[:50] + '...' if scan.input_content and scan.input_content|length > 50 else (scan.input_content or 'No content') }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if scan.result == 'safe' else ('warning' if scan.result == 'suspicious' else 'danger') }}">
+                                                {{ (scan.result|string or 'Unknown').title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="width: 60px; height: 10px;">
+                                                <div class="progress-bar bg-{{ 'success' if (scan.confidence_score or 0) > 0.7 else ('warning' if (scan.confidence_score or 0) > 0.4 else 'danger') }}" 
+                                                     style="width: {{ ((scan.confidence_score or 0) * 100)|round }}%"></div>
+                                            </div>
+                                            <small>{{ "%.0f"|format((scan.confidence_score or 0) * 100) }}%</small>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewScanDetails('{{ scan.id }}')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reported Content Section -->
+            <div class="content-section" id="reports-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Reported Content Moderation</h4>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-success" onclick="bulkApproveReports()">
+                            <i class="fas fa-check me-2"></i>Bulk Approve
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="bulkRejectReports()">
+                            <i class="fas fa-times me-2"></i>Bulk Reject
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card table-container">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="selectAllReports" onchange="selectAllReports()">
+                                        </th>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Content</th>
+                                        <th>Reporter</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for report in reported_content %}
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="report-checkbox" value="{{ report.id }}" onchange="updateSelectAllReports()">
+                                        </td>
+                                        <td><small>{{ report.created_at }}</small></td>
+                                        <td><span class="badge bg-secondary">{{ report.type }}</span></td>
+                                        <td>
+                                            <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                {{ report.content[:50] + '...' if report.content|length > 50 else report.content }}
+                                            </div>
+                                        </td>
+                                        <td>{{ report.reporter_username }}</td>
+                                        <td>{{ report.reason }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'warning' if report.status == 'pending' else ('success' if report.status == 'approved' else 'danger') }}">
+                                                {{ (report.status|string or "Unknown").title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if report.status == 'pending' %}
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-success" onclick="approveReport('{{ report.id }}')">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" onclick="rejectReport('{{ report.id }}')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                            {% else %}
+                                            <span class="text-muted">Processed</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Safety Tips Section -->
+            <div class="content-section" id="tips-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Safety Tips Management</h4>
+                    <button class="btn btn-primary" onclick="createTip()">
+                        <i class="fas fa-plus me-2"></i>Add New Tip
+                    </button>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-envelope fa-3x text-primary mb-3"></i>
+                                <h5>Email Tips</h5>
+                                <p class="text-muted mb-0">{{ safety_tips | selectattr('category', 'equalto', 'email') | list | length }} tips</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-link fa-3x text-success mb-3"></i>
+                                <h5>URL Tips</h5>
+                                <p class="text-muted mb-0">{{ safety_tips | selectattr('category', 'equalto', 'url') | list | length }} tips</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-shield-alt fa-3x text-info mb-3"></i>
+                                <h5>General Tips</h5>
+                                <p class="text-muted mb-0">{{ safety_tips | selectattr('category', 'equalto', 'general') | list | length }} tips</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card table-container">
+                    <div class="card-header">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h5 class="mb-0">All Safety Tips</h5>
+                            </div>
+                            <div class="col-auto">
+                                <select class="form-select" id="tipCategoryFilter">
+                                    <option value="">All Categories</option>
+                                    <option value="email">Email</option>
+                                    <option value="url">URL</option>
+                                    <option value="general">General</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Priority</th>
+                                        <th>Content Preview</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tip in safety_tips %}
+                                    <tr>
+                                        <td><strong>{{ tip.title }}</strong></td>
+                                        <td>
+                                            <span class="badge bg-{{ 'primary' if tip.category == 'email' else ('success' if tip.category == 'url' else 'info') }}">
+                                                {{ (tip.category|string or "Unknown").title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'danger' if tip.priority == 1 else 'warning' }}">
+                                                {{ 'High' if tip.priority == 1 else 'Medium' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                {{ tip.content[:60] + '...' if tip.content|length > 60 else tip.content }}
+                                            </div>
+                                        </td>
+                                        <td><small>{{ tip.created_at[:10] if tip.created_at else 'Unknown' }}</small></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" onclick="viewTip('{{ tip.id }}')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-warning" onclick="editTip('{{ tip.id }}')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" onclick="deleteTip('{{ tip.id }}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div class="content-section" id="analytics-section">
+                <h4 class="mb-4">Analytics & Insights</h4>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Detection Results Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center p-4">
+                                    <i class="fas fa-chart-pie fa-3x text-primary mb-3"></i>
+                                    <p class="text-muted">Detection analytics will be displayed here once data is available.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Daily Scan Activity</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center p-4">
+                                    <i class="fas fa-chart-line fa-3x text-info mb-3"></i>
+                                    <p class="text-muted">Activity trends will be displayed here once data is available.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Top Threat Indicators</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        Suspicious domains
+                                        <span class="badge bg-danger rounded-pill">23</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        Urgency tactics
+                                        <span class="badge bg-warning rounded-pill">18</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        Generic greetings
+                                        <span class="badge bg-info rounded-pill">15</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        SSL certificate issues
+                                        <span class="badge bg-secondary rounded-pill">12</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Performance Metrics</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Detection Accuracy</span>
+                                        <strong>94.2%</strong>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 94.2%"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Response Time</span>
+                                        <strong>1.2s</strong>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-info" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>System Uptime</span>
+                                        <strong>99.9%</strong>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 99.9%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sidebar Navigation
+        function navigateToSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+            
+            // Remove active from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(section + '-section').classList.add('active');
+            
+            // Make nav link active
+            document.querySelector(`[data-section="${section}"]`).classList.add('active');
+        }
+
+        // Sidebar toggle for mobile
+        function toggleSidebar() {
+            document.getElementById('adminSidebar').classList.toggle('show');
+        }
+
+        // Initialize sidebar navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                navigateToSection(section);
+            });
+        });
+
+        // Refresh dashboard
+        function refreshDashboard() {
+            location.reload();
+        }
+
+        // Dashboard initialization - charts removed to prevent script errors
+
+        // Admin Functions
+        function createUser() { alert('Create user functionality would be implemented here'); }
+        function viewUser(id) { alert('View user: ' + id); }
+        function editUser(id) { alert('Edit user: ' + id); }
+        function toggleUserStatus(id) { alert('Toggle user status: ' + id); }
+        function exportScanLogs() { alert('Export scan logs functionality'); }
+        function viewScanDetails(id) { alert('View scan details: ' + id); }
+        function approveReport(id) { alert('Approve report: ' + id); }
+        function rejectReport(id) { alert('Reject report: ' + id); }
+        function bulkApproveReports() { alert('Bulk approve reports'); }
+        function bulkRejectReports() { alert('Bulk reject reports'); }
+        function createTip() { alert('Create safety tip functionality'); }
+        function viewTip(id) { alert('View tip: ' + id); }
+        function editTip(id) { alert('Edit tip: ' + id); }
+        function deleteTip(id) { alert('Delete tip: ' + id); }
+        function exportSystemReport() { alert('Export system report functionality'); }
+        function clearSystemLogs() { alert('Clear system logs functionality'); }
+        function systemMaintenance() { alert('System maintenance functionality'); }
+        
+        function selectAllReports() {
+            const checkboxes = document.querySelectorAll('.report-checkbox');
+            const selectAll = document.getElementById('selectAllReports');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        }
+        
+        function updateSelectAllReports() {
+            const checkboxes = document.querySelectorAll('.report-checkbox');
+            const selectAll = document.getElementById('selectAllReports');
+            const checkedCount = document.querySelectorAll('.report-checkbox:checked').length;
+            
+            if (checkedCount === 0) {
+                selectAll.indeterminate = false;
+                selectAll.checked = false;
+            } else if (checkedCount === checkboxes.length) {
+                selectAll.indeterminate = false;
+                selectAll.checked = true;
+            } else {
+                selectAll.indeterminate = true;
+                selectAll.checked = false;
+            }
+        }
+        
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAllUsers');
+            const selectAllIcon = document.getElementById('selectAllIcon');
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            
+            // Toggle the hidden checkbox state
+            selectAll.checked = !selectAll.checked;
+            
+            // Update icon appearance
+            if (selectAll.checked) {
+                selectAllIcon.className = 'fas fa-check-square text-success';
+            } else {
+                selectAllIcon.className = 'fas fa-square text-secondary';
+            }
+            
+            // Set all individual checkboxes to match
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            // Update visual feedback and bulk actions
+            updateUserSelectionDisplay();
+        }
+        
+        function selectAllUsers() {
+            // This function is kept for compatibility but main logic moved to toggleSelectAll
+            toggleSelectAll();
+        }
+        
+        function updateSelectAllUsers() {
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            const selectAll = document.getElementById('selectAllUsers');
+            const selectAllIcon = document.getElementById('selectAllIcon');
+            const checkedCount = document.querySelectorAll('.user-checkbox:checked').length;
+            
+            console.log('Update select all:', checkedCount, 'of', checkboxes.length);
+            
+            if (checkedCount === 0) {
+                selectAll.indeterminate = false;
+                selectAll.checked = false;
+                selectAllIcon.className = 'fas fa-square text-secondary';
+            } else if (checkedCount === checkboxes.length) {
+                selectAll.indeterminate = false;
+                selectAll.checked = true;
+                selectAllIcon.className = 'fas fa-check-square text-success';
+            } else {
+                selectAll.indeterminate = true;
+                selectAll.checked = false;
+                selectAllIcon.className = 'fas fa-minus-square text-warning';
+            }
+            
+            updateUserSelectionDisplay();
+        }
+        
+        function updateUserSelectionDisplay() {
+            const checkedCount = document.querySelectorAll('.user-checkbox:checked').length;
+            console.log('Selected users:', checkedCount);
+            
+            // Show/hide bulk actions
+            const bulkActions = document.getElementById('bulkUserActions');
+            if (checkedCount > 0) {
+                bulkActions.style.display = 'block';
+            } else {
+                bulkActions.style.display = 'none';
+            }
+            
+            // Add visual feedback for selected items
+            document.querySelectorAll('.user-checkbox').forEach(cb => {
+                const row = cb.closest('tr');
+                if (cb.checked) {
+                    row.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
+                } else {
+                    row.style.backgroundColor = '';
+                }
+            });
+        }
+        
+        // Bulk action functions for users
+        function bulkActivateUsers() {
+            const selectedUsers = getSelectedUsers();
+            if (selectedUsers.length === 0) return;
+            
+            if (confirm(`Activate ${selectedUsers.length} selected users?`)) {
+                console.log('Bulk activating users:', selectedUsers);
+                alert(`Activated ${selectedUsers.length} users (functionality to be implemented)`);
+            }
+        }
+        
+        function bulkDeactivateUsers() {
+            const selectedUsers = getSelectedUsers();
+            if (selectedUsers.length === 0) return;
+            
+            if (confirm(`Deactivate ${selectedUsers.length} selected users?`)) {
+                console.log('Bulk deactivating users:', selectedUsers);
+                alert(`Deactivated ${selectedUsers.length} users (functionality to be implemented)`);
+            }
+        }
+        
+        function bulkExportUsers() {
+            const selectedUsers = getSelectedUsers();
+            if (selectedUsers.length === 0) return;
+            
+            console.log('Exporting users:', selectedUsers);
+            alert(`Exporting ${selectedUsers.length} users (functionality to be implemented)`);
+        }
+        
+        function getSelectedUsers() {
+            const selectedCheckboxes = document.querySelectorAll('.user-checkbox:checked');
+            return Array.from(selectedCheckboxes).map(cb => cb.value);
+        }
+    </script>
+</body>
+</html>
+        
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Threats Detected</h6>
+                            <h3 class="mb-0" id="threatsDetected">{{ stats.threats_detected or 0 }}</h3>
+                            <small class="opacity-75">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                {{ "%.1f"|format((stats.threat_rate or 0) * 100) }}% rate
+                            </small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Active Sessions</h6>
+                            <h3 class="mb-0" id="activeSessions">{{ stats.active_sessions or 0 }}</h3>
+                            <small class="opacity-75">
+                                <i class="fas fa-clock me-1"></i>
+                                Live monitoring
+                            </small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="adminTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-pane" type="button">
+                                <i class="fas fa-users me-1"></i>User Management
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="scans-tab" data-bs-toggle="tab" data-bs-target="#scans-pane" type="button">
+                                <i class="fas fa-search me-1"></i>Scan Logs
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports-pane" type="button">
+                                <i class="fas fa-flag me-1"></i>Reported Content
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tips-tab" data-bs-toggle="tab" data-bs-target="#tips-pane" type="button">
+                                <i class="fas fa-lightbulb me-1"></i>Safety Tips
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics-pane" type="button">
+                                <i class="fas fa-chart-line me-1"></i>Analytics
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="card-body">
+                    <div class="tab-content" id="adminTabContent">
+                        <!-- User Management Tab -->
+                        <div class="tab-pane fade show active" id="users-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">User Management</h5>
+                                <div class="d-flex gap-2">
+                                    <input type="search" class="form-control" placeholder="Search users..." id="userSearch" style="width: 250px;">
+                                    <button class="btn btn-primary" onclick="createUser()">
+                                        <i class="fas fa-plus me-1"></i>Add User
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                            <th>Last Login</th>
+                                            <th>Scans</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody">
+                                        {% for user in users %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-sm me-2">
+                                                        <div class="avatar-title bg-soft-primary text-primary rounded-circle">
+                                                            {{ user.username[0].upper() }}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0">{{ user.username }}</h6>
+                                                        <small class="text-muted">ID: {{ user.id }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{ user.email }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ 'danger' if user.role == 'admin' else 'primary' }}">
+                                                    {{ (user.role|string or "user").title() }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ 'success' if user.is_active else 'secondary' }}">
+                                                    {{ 'Active' if user.is_active else 'Inactive' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if user.last_login %}
+                                                    <small>{{ user.last_login[:16].replace('T', ' ') }}</small>
+                                                {% else %}
+                                                    <small class="text-muted">Never</small>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ user.scan_count or 0 }}</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary" onclick="viewUser('{{ user.id }}')" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-warning" onclick="editUser('{{ user.id }}')" title="Edit User">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    {% if user.username != current_user.username %}
+                                                    <button class="btn btn-outline-{{ 'secondary' if user.is_active else 'success' }}" 
+                                                            onclick="toggleUserStatus('{{ user.id }}')" 
+                                                            title="{{ 'Deactivate' if user.is_active else 'Activate' }} User">
+                                                        <i class="fas fa-{{ 'ban' if user.is_active else 'check' }}"></i>
+                                                    </button>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Scan Logs Tab -->
+                        <div class="tab-pane fade" id="scans-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Phishing Scan Logs</h5>
+                                <div class="d-flex gap-2">
+                                    <select class="form-select" id="scanFilter" style="width: 150px;">
+                                        <option value="all">All Scans</option>
+                                        <option value="safe">Safe</option>
+                                        <option value="suspicious">Suspicious</option>
+                                        <option value="dangerous">Dangerous</option>
+                                    </select>
+                                    <input type="date" class="form-control" id="scanDateFilter" style="width: 150px;">
+                                    <button class="btn btn-outline-primary" onclick="exportScanLogs()">
+                                        <i class="fas fa-download me-1"></i>Export
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date/Time</th>
+                                            <th>User</th>
+                                            <th>Type</th>
+                                            <th>Content</th>
+                                            <th>Result</th>
+                                            <th>Confidence</th>
+                                            <th>IP Address</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="scanLogsTableBody">
+                                        {% for scan in scan_logs %}
+                                        <tr>
+                                            <td>
+                                                <small>{{ scan.created_at[:16].replace('T', ' ') if scan.created_at else 'Unknown' }}</small>
+                                            </td>
+                                            <td>{{ scan.username or 'Unknown' }}</td>
+                                            <td>
+                                                <span class="badge bg-secondary">{{ scan.input_type or 'Unknown' }}</span>
+                                            </td>
+                                            <td>
+                                                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                                                    {{ (scan.input_content or 'No content')[:50] }}...
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ 'success' if scan.result == 'safe' else ('warning' if scan.result == 'suspicious' else 'danger') }}">
+                                                    {{ (scan.result|string or 'Unknown').title() }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% set confidence = scan.confidence_score or scan.confidence or 0.0 %}
+                                                <div class="progress" style="height: 15px; width: 60px;">
+                                                    <div class="progress-bar bg-{{ 'success' if scan.result == 'safe' else ('warning' if scan.result == 'suspicious' else 'danger') }}" 
+                                                         style="width: {{ confidence * 100 }}%">
+                                                    </div>
+                                                </div>
+                                                <small>{{ "%.0f"|format(confidence * 100) }}%</small>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">{{ scan.user_ip or 'Unknown' }}</small>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary" onclick="viewScanDetails('{{ scan.id }}')" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Reported Content Tab -->
+                        <div class="tab-pane fade" id="reports-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Reported Content Moderation</h5>
+                                <div class="d-flex gap-2">
+                                    <select class="form-select" id="reportFilter" style="width: 150px;">
+                                        <option value="pending">Pending</option>
+                                        <option value="reviewed">Reviewed</option>
+                                        <option value="all">All Reports</option>
+                                    </select>
+                                    <button class="btn btn-primary" onclick="bulkModeration()">
+                                        <i class="fas fa-tasks me-1"></i>Bulk Actions
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="row" id="reportedContentGrid">
+                                {% for report in reported_content %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card border-{{ 'warning' if report.status == 'pending' else 'success' }}">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">Report #{{ report.id }}</small>
+                                            <span class="badge bg-{{ 'warning' if report.status == 'pending' else 'success' }}">
+                                                {{ (report.status|string or "Unknown").title() }}
+                                            </span>
+                                        </div>
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ (report.type|string or "Unknown").title() }} Content</h6>
+                                            <p class="card-text small">
+                                                {{ (report.content or 'No content available')[:100] }}...
+                                            </p>
+                                            <div class="mb-2">
+                                                <strong>Reported by:</strong> {{ report.reporter_username or 'Anonymous' }}<br>
+                                                <strong>Reason:</strong> {{ report.reason or 'Not specified' }}<br>
+                                                <strong>Date:</strong> {{ report.created_at[:10] if report.created_at else 'Unknown' }}
+                                            </div>
+                                            <div class="d-flex gap-1">
+                                                <button class="btn btn-sm btn-success" onclick="approveReport('{{ report.id }}')" 
+                                                        {% if report.status != 'pending' %}disabled{% endif %}>
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="rejectReport('{{ report.id }}')"
+                                                        {% if report.status != 'pending' %}disabled{% endif %}>
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-primary" onclick="viewReportDetails('{{ report.id }}')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Safety Tips Tab -->
+                        <div class="tab-pane fade" id="tips-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Safety Tips Management</h5>
+                                <button class="btn btn-primary" onclick="createTip()">
+                                    <i class="fas fa-plus me-1"></i>Add New Tip
+                                </button>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="list-group" id="tipCategories">
+                                        <button class="list-group-item list-group-item-action active" data-category="email">
+                                            <i class="fas fa-envelope me-2"></i>Email Tips ({{ email_tips|length }})
+                                        </button>
+                                        <button class="list-group-item list-group-item-action" data-category="url">
+                                            <i class="fas fa-link me-2"></i>URL Tips ({{ url_tips|length }})
+                                        </button>
+                                        <button class="list-group-item list-group-item-action" data-category="general">
+                                            <i class="fas fa-shield-alt me-2"></i>General Tips ({{ general_tips|length }})
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div id="tipsContent">
+                                        <div class="tip-category" data-category="email" style="display: block;">
+                                            {% for tip in email_tips %}
+                                            <div class="card mb-2">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <h6 class="card-title">{{ tip.title }}</h6>
+                                                            <p class="card-text small">{{ tip.content }}</p>
+                                                            <small class="text-muted">Priority: {{ tip.priority or 1 }}</small>
+                                                        </div>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <button class="btn btn-outline-primary" onclick="editTip('{{ tip.id }}')">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-danger" onclick="deleteTip('{{ tip.id }}')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        
+                                        <div class="tip-category" data-category="url" style="display: none;">
+                                            {% for tip in url_tips %}
+                                            <div class="card mb-2">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <h6 class="card-title">{{ tip.title }}</h6>
+                                                            <p class="card-text small">{{ tip.content }}</p>
+                                                            <small class="text-muted">Priority: {{ tip.priority or 1 }}</small>
+                                                        </div>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <button class="btn btn-outline-primary" onclick="editTip('{{ tip.id }}')">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-danger" onclick="deleteTip('{{ tip.id }}')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        
+                                        <div class="tip-category" data-category="general" style="display: none;">
+                                            {% for tip in general_tips %}
+                                            <div class="card mb-2">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <h6 class="card-title">{{ tip.title }}</h6>
+                                                            <p class="card-text small">{{ tip.content }}</p>
+                                                            <small class="text-muted">Priority: {{ tip.priority or 1 }}</small>
+                                                        </div>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <button class="btn btn-outline-primary" onclick="editTip('{{ tip.id }}')">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-danger" onclick="deleteTip('{{ tip.id }}')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analytics Tab -->
+                        <div class="tab-pane fade" id="analytics-pane" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Detection Results Overview</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="text-center p-4">
+                                                <i class="fas fa-chart-pie fa-3x text-primary mb-3"></i>
+                                                <p class="text-muted">Detection analytics visualization</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">User Activity Trends</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="text-center p-4">
+                                                <i class="fas fa-chart-line fa-3x text-info mb-3"></i>
+                                                <p class="text-muted">Activity trends visualization</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">System Performance Metrics</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-3 text-center">
+                                                    <h4 class="text-primary">{{ "%.1f"|format(analytics.avg_response_time or 0) }}ms</h4>
+                                                    <small class="text-muted">Avg Response Time</small>
+                                                </div>
+                                                <div class="col-md-3 text-center">
+                                                    <h4 class="text-success">{{ "%.1f"|format((analytics.accuracy_rate or 0) * 100) }}%</h4>
+                                                    <small class="text-muted">Detection Accuracy</small>
+                                                </div>
+                                                <div class="col-md-3 text-center">
+                                                    <h4 class="text-info">{{ analytics.total_storage or 0 }}MB</h4>
+                                                    <small class="text-muted">Storage Used</small>
+                                                </div>
+                                                <div class="col-md-3 text-center">
+                                                    <h4 class="text-warning">99.9%</h4>
+                                                    <small class="text-muted">System Uptime</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals for various admin actions will be added via JavaScript -->
+<div id="adminModals"></div>
+
+<script src="{{ url_for('static', filename='js/admin-dashboard.js') }}"></script>
+
+<script>
+// User selection functionality
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAllUsers');
+    const checkboxes = document.querySelectorAll('.user-checkbox');
+    
+    // Set all individual checkboxes to match the select all state
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+    
+    // Update visual feedback and bulk actions
+    updateUserSelectionDisplay();
+}
+
+function updateSelectAllUsers() {
+    const checkboxes = document.querySelectorAll('.user-checkbox');
+    const selectAll = document.getElementById('selectAllUsers');
+    const checkedCount = document.querySelectorAll('.user-checkbox:checked').length;
+    
+    if (checkedCount === 0) {
+        selectAll.indeterminate = false;
+        selectAll.checked = false;
+    } else if (checkedCount === checkboxes.length) {
+        selectAll.indeterminate = false;
+        selectAll.checked = true;
+    } else {
+        selectAll.indeterminate = true;
+        selectAll.checked = false;
+    }
+    
+    updateUserSelectionDisplay();
+}
+
+function updateUserSelectionDisplay() {
+    const checkedCount = document.querySelectorAll('.user-checkbox:checked').length;
+    
+    // Show/hide bulk actions
+    const bulkActions = document.getElementById('bulkUserActions');
+    if (bulkActions) {
+        if (checkedCount > 0) {
+            bulkActions.style.display = 'block';
+        } else {
+            bulkActions.style.display = 'none';
+        }
+    }
+    
+    // Add visual feedback for selected rows
+    document.querySelectorAll('.user-checkbox').forEach(cb => {
+        const row = cb.closest('tr');
+        if (cb.checked) {
+            row.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
+        } else {
+            row.style.backgroundColor = '';
+        }
+    });
+}
+
+// Bulk action functions for users
+function bulkActivateUsers() {
+    const selectedUsers = getSelectedUsers();
+    if (selectedUsers.length === 0) {
+        alert('Please select users first');
+        return;
+    }
+    
+    if (confirm(`Activate ${selectedUsers.length} selected users?`)) {
+        // Send request to backend
+        fetch('/admin/users/bulk-activate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_ids: selectedUsers })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Successfully activated ${selectedUsers.length} users`);
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while activating users');
+        });
+    }
+}
+
+function bulkDeactivateUsers() {
+    const selectedUsers = getSelectedUsers();
+    if (selectedUsers.length === 0) {
+        alert('Please select users first');
+        return;
+    }
+    
+    if (confirm(`Deactivate ${selectedUsers.length} selected users?`)) {
+        fetch('/admin/users/bulk-deactivate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_ids: selectedUsers })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Successfully deactivated ${selectedUsers.length} users`);
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deactivating users');
+        });
+    }
+}
+
+function bulkExportUsers() {
+    const selectedUsers = getSelectedUsers();
+    if (selectedUsers.length === 0) {
+        alert('Please select users first');
+        return;
+    }
+    
+    // Create export URL with selected user IDs
+    const params = new URLSearchParams();
+    selectedUsers.forEach(id => params.append('user_ids', id));
+    
+    // Trigger download
+    window.open(`/admin/export/users?${params.toString()}`, '_blank');
+}
+
+function getSelectedUsers() {
+    const selectedCheckboxes = document.querySelectorAll('.user-checkbox:checked');
+    return Array.from(selectedCheckboxes).map(cb => cb.value);
+}
+
+// Initialize selection functionality when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Make sure bulk actions are hidden initially
+    updateUserSelectionDisplay();
+});
+
+// Refresh dashboard functionality
+function refreshDashboardData() {
+    const refreshBtn = document.getElementById('refreshBtn');
+    const refreshIcon = document.getElementById('refreshIcon');
+    
+    // Show loading state
+    refreshBtn.disabled = true;
+    refreshIcon.classList.add('fa-spin');
+    
+    fetch('/admin/refresh')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update statistics
+                updateElementIfExists('totalUsers', data.stats.total_users);
+                updateElementIfExists('totalScans', data.stats.total_scans);
+                updateElementIfExists('threatsDetected', data.stats.threats_detected);
+                updateElementIfExists('activeSessions', data.stats.active_sessions);
+                
+                // Update user table
+                updateUserTable(data.users);
+                
+                // Update scan logs
+                updateScanLogs(data.scan_logs);
+                
+                // Show success message
+                showToast('Dashboard refreshed successfully', 'success');
+            } else {
+                showToast('Error refreshing dashboard: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error refreshing dashboard:', error);
+            showToast('Error refreshing dashboard', 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            refreshBtn.disabled = false;
+            refreshIcon.classList.remove('fa-spin');
+        });
+}
+
+function updateElementIfExists(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.textContent = value || 0;
+    }
+}
+
+function updateUserTable(users) {
+    const tbody = document.querySelector('#users-section tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    users.forEach(user => {
+        const row = document.createElement('tr');
+        
+        // Get role badge class
+        let roleBadgeClass = 'bg-secondary';
+        let roleText = 'User';
+        
+        if (user.role === 'super_admin') {
+            roleBadgeClass = 'bg-danger';
+            roleText = 'Super Admin';
+        } else if (user.role === 'sub_admin') {
+            roleBadgeClass = 'bg-warning';
+            roleText = 'Sub Admin';
+        }
+        
+        row.innerHTML = `
+            <td>
+                <input type="checkbox" class="user-checkbox" value="${user.id}" onchange="updateSelectAllUsers()">
+            </td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="avatar-sm bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <strong>${user.username || 'Unknown'}</strong>
+                </div>
+            </td>
+            <td>${user.email || 'No email'}</td>
+            <td>
+                <span class="badge ${roleBadgeClass}">${roleText}</span>
+            </td>
+            <td>
+                <span class="badge ${user.active ? 'bg-success' : 'bg-danger'}">
+                    ${user.active ? 'Active' : 'Inactive'}
+                </span>
+            </td>
+            <td>${user.scan_count || 0}</td>
+            <td>${user.created_at ? user.created_at.substring(0, 10) : 'Unknown'}</td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" onclick="viewUser('${user.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="editUser('${user.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-${user.active ? 'danger' : 'success'}" onclick="toggleUserStatus('${user.id}')">
+                        <i class="fas fa-${user.active ? 'pause' : 'play'}"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+    
+    // Reset selection state
+    updateUserSelectionDisplay();
+}
+
+function updateScanLogs(scanLogs) {
+    const tbody = document.querySelector('#scans-section tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    scanLogs.forEach(log => {
+        const row = document.createElement('tr');
+        
+        let resultBadgeClass = 'bg-secondary';
+        if (log.result === 'safe') resultBadgeClass = 'bg-success';
+        else if (log.result === 'suspicious') resultBadgeClass = 'bg-warning';
+        else if (log.result === 'dangerous') resultBadgeClass = 'bg-danger';
+        
+        const content = log.input_content || 'No content';
+        const truncatedContent = content.length > 50 ? content.substring(0, 50) + '...' : content;
+        
+        row.innerHTML = `
+            <td><small>${log.created_at ? log.created_at.substring(0, 16).replace('T', ' ') : 'Unknown'}</small></td>
+            <td>${log.username || 'Unknown'}</td>
+            <td><span class="badge bg-info">${log.input_type || 'Unknown'}</span></td>
+            <td>
+                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    ${truncatedContent}
+                </div>
+            </td>
+            <td>
+                <span class="badge ${resultBadgeClass}">
+                    ${(log.result || 'Unknown').charAt(0).toUpperCase() + (log.result || 'Unknown').slice(1)}
+                </span>
+            </td>
+            <td>-</td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewScanDetails('${log.id || ''}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+}
+
+function showToast(message, type = 'info') {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'error' ? 'danger' : type} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 3000);
+}
+</script>
+
+<style>
+.avatar-sm {
+    width: 2rem;
+    height: 2rem;
+}
+
+.avatar-title {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.bg-soft-primary {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.tip-category {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.table-responsive {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+#reportedContentGrid {
+    max-height: 600px;
+    overflow-y: auto;
+}
+</style>
+
+</body>
+</html>
