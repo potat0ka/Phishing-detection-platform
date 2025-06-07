@@ -198,13 +198,18 @@ function setupSearchFilters() {
     if (scanDateFilter) scanDateFilter.addEventListener('change', filterScanLogs);
 }
 
-// Toggle password field visibility in edit user modal
+// Toggle password field visibility in edit user modal - Updated
 function togglePasswordField() {
+    console.log('togglePasswordField called');
     const checkbox = document.getElementById('changePasswordCheck');
     const passwordField = document.getElementById('passwordField');
     
+    console.log('Checkbox found:', checkbox);
+    console.log('Password field found:', passwordField);
+    
     if (checkbox && passwordField) {
         passwordField.style.display = checkbox.checked ? 'block' : 'none';
+        console.log('Password field display:', passwordField.style.display);
         
         // Clear password field when hiding it
         if (!checkbox.checked) {

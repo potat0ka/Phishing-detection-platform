@@ -2935,6 +2935,23 @@
                                                         <option value="super_admin" ${user.role === 'super_admin' ? 'selected' : ''}>Super Admin</option>
                                                     </select>
                                                 </div>
+                                                <div class="mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="editActiveStatus" ${(user.is_active || user.active || user.status === 'active') ? 'checked' : ''}>
+                                                        <label class="form-check-label" for="editActiveStatus">Active</label>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="changePasswordCheck" onchange="togglePasswordField()">
+                                                        <label class="form-check-label" for="changePasswordCheck">Change Password</label>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3" id="passwordField" style="display: none;">
+                                                    <label for="newPassword" class="form-label">New Password</label>
+                                                    <input type="password" class="form-control" id="newPassword" placeholder="Enter new password (minimum 8 characters)">
+                                                    <div class="form-text">Leave empty to keep current password</div>
+                                                </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -2955,6 +2972,23 @@
                         const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
                         modal.show();
                         
+                        // Add toggle function for password field
+                        window.togglePasswordField = function() {
+                            const checkbox = document.getElementById('changePasswordCheck');
+                            const passwordField = document.getElementById('passwordField');
+                            
+                            if (checkbox && passwordField) {
+                                passwordField.style.display = checkbox.checked ? 'block' : 'none';
+                                
+                                if (!checkbox.checked) {
+                                    const passwordInput = document.getElementById('newPassword');
+                                    if (passwordInput) {
+                                        passwordInput.value = '';
+                                    }
+                                }
+                            }
+                        };
+                        
                         // Handle form submission
                         document.getElementById('editUserForm').addEventListener('submit', function(e) {
                             e.preventDefault();
@@ -2962,8 +2996,16 @@
                             const formData = {
                                 username: document.getElementById('editUsername').value,
                                 email: document.getElementById('editEmail').value,
-                                role: document.getElementById('editRole').value
+                                role: document.getElementById('editRole').value,
+                                is_active: document.getElementById('editActiveStatus').checked
                             };
+                            
+                            // Add password if changed
+                            const changePasswordCheck = document.getElementById('changePasswordCheck');
+                            const newPassword = document.getElementById('newPassword');
+                            if (changePasswordCheck && changePasswordCheck.checked && newPassword && newPassword.value) {
+                                formData.new_password = newPassword.value;
+                            }
                             
                             fetch(`/admin/edit-user/${userId}`, {
                                 method: 'POST',
