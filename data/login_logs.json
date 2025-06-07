@@ -315,5 +315,17 @@
     "login_method": "password",
     "created_at": "2025-06-07T08:48:08.642159",
     "_id": "2b749306-0758-423c-b061-117b28415095"
+  },
+  {
+    "timestamp": "2025-06-07T09:51:48.306086",
+    "username": "potato1",
+    "user_id": "53962d53-0636-418b-bf27-b7f6cd4aae84",
+    "ip_address": "27.34.76.45, 10.83.2.52",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 OPR/119.0.0.0",
+    "success": true,
+    "login_method": "password",
+    "session_id": "unknown",
+    "created_at": "2025-06-07T09:51:48.306283",
+    "_id": "9be65ae9-d266-42c6-81e6-0f1db2bb2953"
   }
 ]
