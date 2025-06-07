@@ -74,8 +74,12 @@ This platform provides real-time detection and analysis of phishing attempts acr
    # Activate virtual environment
    venv\Scripts\activate
    
-   # Install dependencies
-   pip install -r requirements-local.txt
+   # For Windows, use the Windows-compatible requirements file
+   pip install -r requirements-windows.txt
+   
+   # If you encounter compilation errors, try upgrading pip first:
+   python -m pip install --upgrade pip
+   pip install -r requirements-windows.txt
    ```
 
 ### macOS Setup
@@ -335,22 +339,81 @@ ai-phishing-detection-platform/
 
 ### Common Issues and Solutions
 
-1. **Module Not Found Error**
+1. **Windows Compilation Errors (NumPy, TensorFlow, etc.)**
+   
+   **Problem**: Error messages like "Unknown compiler(s)" or "metadata-generation-failed"
+   
+   **Solution A - Use Windows Requirements File (Recommended)**:
+   ```bash
+   # Use the pre-compiled Windows-compatible packages
+   pip install -r requirements-windows.txt
+   ```
+   
+   **Solution B - Install Build Tools**:
+   ```bash
+   # Download and install Microsoft C++ Build Tools from:
+   # https://visualstudio.microsoft.com/visual-cpp-build-tools/
+   
+   # Then retry installation
+   pip install -r requirements-local.txt
+   ```
+   
+   **Solution C - Use Conda (Alternative)**:
+   ```bash
+   # Install Anaconda or Miniconda
+   conda create -n phishing-detector python=3.9
+   conda activate phishing-detector
+   conda install numpy scipy scikit-learn tensorflow flask pymongo
+   pip install -r requirements-windows.txt
+   ```
+
+2. **Module Not Found Error**
    ```bash
    # Ensure virtual environment is activated
    source venv/bin/activate  # macOS/Linux
    venv\Scripts\activate     # Windows
    
+   # Upgrade pip first
+   python -m pip install --upgrade pip
+   
    # Reinstall dependencies
-   pip install -r requirements-local.txt
+   pip install -r requirements-windows.txt  # Windows
+   pip install -r requirements-local.txt    # macOS/Linux
    ```
 
-2. **MongoDB Connection Issues**
-   - Verify your connection string in `.env`
-   - Check IP address whitelist in MongoDB Atlas
-   - The application will automatically fall back to local JSON storage
+3. **Python Version Compatibility**
+   ```bash
+   # Check Python version (must be 3.8+)
+   python --version
+   
+   # If using older Python, install newer version:
+   # Windows: Download from python.org
+   # macOS: brew install python@3.11
+   # Linux: sudo apt install python3.11
+   ```
 
-3. **Port Already in Use**
+4. **Virtual Environment Issues**
+   ```bash
+   # Delete and recreate virtual environment
+   rm -rf venv          # Linux/macOS
+   rmdir /s venv        # Windows
+   
+   # Create new environment
+   python -m venv venv
+   
+   # Activate and install
+   venv\Scripts\activate                    # Windows
+   source venv/bin/activate                # macOS/Linux
+   pip install -r requirements-windows.txt # Windows
+   ```
+
+5. **MongoDB Connection Issues**
+   - Verify your connection string in `.env` file
+   - Check IP address whitelist in MongoDB Atlas dashboard
+   - Ensure database password doesn't contain special characters
+   - The application automatically falls back to local JSON storage if MongoDB fails
+
+6. **Port Already in Use (8080)**
    ```bash
    # Find and kill process using port 8080
    # Linux/macOS
@@ -358,16 +421,60 @@ ai-phishing-detection-platform/
    
    # Windows
    netstat -ano | findstr :8080
-   taskkill /PID <PID> /F
+   taskkill /PID <PID_NUMBER> /F
+   
+   # Alternative: Change port in main.py
+   # Edit: app.run(host="0.0.0.0", port=8081, debug=True)
    ```
 
-4. **Permission Errors**
+7. **Permission Errors**
    ```bash
-   # Ensure proper file permissions
-   chmod +x main.py  # Linux/macOS
+   # Linux/macOS - Set executable permissions
+   chmod +x main.py
    
-   # Run as administrator if needed on Windows
+   # Windows - Run Command Prompt as Administrator
+   # Right-click Command Prompt -> "Run as administrator"
    ```
+
+8. **SSL Certificate Errors**
+   ```bash
+   # Update certificates
+   pip install --upgrade certifi
+   
+   # For macOS additional step:
+   /Applications/Python\ 3.x/Install\ Certificates.command
+   ```
+
+9. **Memory Errors During Installation**
+   ```bash
+   # Install packages one by one
+   pip install flask
+   pip install numpy
+   pip install scikit-learn
+   # Continue with other packages
+   
+   # Or increase virtual memory on Windows
+   ```
+
+10. **Antivirus Blocking Installation**
+    - Temporarily disable antivirus during installation
+    - Add Python and project folder to antivirus whitelist
+    - Some antivirus software blocks pip installations
+
+### Platform-Specific Notes
+
+**Windows Users:**
+- Use `requirements-windows.txt` for hassle-free installation
+- Install Python from python.org, not Microsoft Store version
+- Ensure "Add Python to PATH" is checked during installation
+
+**macOS Users:**
+- Use Homebrew for Python installation: `brew install python3`
+- Install Xcode Command Line Tools if compilation errors occur
+
+**Linux Users:**
+- Install development packages: `sudo apt install python3-dev build-essential`
+- For CentOS/RHEL: `sudo yum groupinstall "Development Tools"`
 
 ## 📚 Educational Use
 
