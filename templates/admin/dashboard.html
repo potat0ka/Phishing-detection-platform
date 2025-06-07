@@ -1688,21 +1688,45 @@
                 });
             }
         });
-            const modal = new bootstrap.Modal(document.getElementById('viewTipModal'));
-            modal.show();
-        }
 
         function editTip(tipId) {
-            // Load tip details into edit form and show edit modal
-            console.log('Editing tip:', tipId);
-            const modal = new bootstrap.Modal(document.getElementById('editTipModal'));
-            modal.show();
+            fetch(`/admin/safety-tips/${tipId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const tip = data.tip;
+                        document.getElementById('editTipId').value = tip.id;
+                        document.getElementById('editTipTitle').value = tip.title;
+                        document.getElementById('editTipCategory').value = tip.category;
+                        document.getElementById('editTipPriority').value = tip.priority;
+                        document.getElementById('editTipContent').value = tip.content;
+                        document.getElementById('editTipStatus').value = tip.status;
+                        
+                        const modal = new bootstrap.Modal(document.getElementById('editTipModal'));
+                        modal.show();
+                    }
+                })
+                .catch(error => console.error('Error loading tip:', error));
         }
 
         function deleteTip(tipId) {
             if (confirm('Are you sure you want to delete this safety tip? This action cannot be undone.')) {
-                console.log('Deleting tip:', tipId);
-                // Implement delete functionality
+                fetch(`/admin/safety-tips/${tipId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Safety tip deleted successfully!');
+                        loadSafetyTips();
+                    } else {
+                        alert('Error deleting tip: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting tip');
+                });
             }
         }
 
@@ -1718,6 +1742,561 @@
             // Collect form data
             const formData = {
                 title: form.title.value,
+                category: form.category.value,
+                priority: form.priority.value,
+                content: form.content.value,
+                status: form.status.value || 'Active'
+            };
+            
+            fetch('/admin/safety-tips/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Safety tip created successfully!');
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addTipModal'));
+                    modal.hide();
+                    form.reset();
+                    loadSafetyTips();
+                } else {
+                    alert('Error creating tip: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error creating tip');
+            });
+        }
+
+        function loadSafetyTips() {
+            fetch('/admin/safety-tips')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateSafetyTipsTable(data.tips);
+                    }
+                })
+                .catch(error => console.error('Error loading tips:', error));
+        }
+
+        function updateSafetyTipsTable(tips) {
+            const tbody = document.querySelector('#safety-tips-table tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            tips.forEach(tip => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${tip.title}</td>
+                    <td><span class="badge bg-info">${tip.category}</span></td>
+                    <td><span class="badge bg-${tip.priority === 'High' ? 'danger' : tip.priority === 'Medium' ? 'warning' : 'secondary'}">${tip.priority}</span></td>
+                    <td><span class="badge bg-${tip.status === 'Active' ? 'success' : 'secondary'}">${tip.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-info me-1" onclick="viewTip('${tip.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editTip('${tip.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTip('${tip.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // User Management Functions
+        function createUser() {
+            fetch('/admin/create-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: prompt('Username:'),
+                    email: prompt('Email:'),
+                    password: prompt('Password:'),
+                    role: prompt('Role (user/sub_admin/admin):') || 'user'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('User created successfully!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error creating user');
+            });
+        }
+
+        function promoteUser(userId) {
+            if (confirm('Promote this user to sub-admin?')) {
+                fetch(`/admin/promote-user/${userId}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('User promoted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error promoting user');
+                });
+            }
+        }
+
+        function demoteUser(userId) {
+            if (confirm('Demote this user to regular user?')) {
+                fetch(`/admin/demote-user/${userId}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('User demoted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error demoting user');
+                });
+            }
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                fetch(`/admin/delete-user/${userId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('User deleted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting user');
+                });
+            }
+        }
+
+        function resetPassword(userId) {
+            const newPassword = prompt('Enter new password for user:');
+            if (newPassword) {
+                fetch(`/admin/reset-password/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ password: newPassword })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Password reset successfully!');
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error resetting password');
+                });
+            }
+        }
+
+        // Export Functions
+        function exportUsers() {
+            fetch('/admin/export-users')
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'users_export.csv';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    alert('Users exported successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error exporting users');
+                });
+        }
+
+        function exportDetections() {
+            fetch('/admin/export-detections')
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'detections_export.csv';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    alert('Detections exported successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error exporting detections');
+                });
+        }
+
+        // Report Management Functions
+        function approveReport(reportId) {
+            fetch(`/admin/approve-report/${reportId}`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.querySelector(`tr[data-report-id="${reportId}"]`).remove();
+                    alert('Report approved successfully!');
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error approving report');
+            });
+        }
+
+        function rejectReport(reportId) {
+            fetch(`/admin/reject-report/${reportId}`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.querySelector(`tr[data-report-id="${reportId}"]`).remove();
+                    alert('Report rejected successfully!');
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error rejecting report');
+            });
+        }
+
+        // System Management Functions
+        function backupDatabase() {
+            fetch('/admin/backup-database', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Database backup created successfully!');
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error creating backup');
+            });
+        }
+
+        function optimizeDatabase() {
+            if (confirm('This will optimize the database. Continue?')) {
+                fetch('/admin/optimize-database', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Database optimized successfully!');
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error optimizing database');
+                });
+            }
+        }
+
+        function runHealthCheck() {
+            fetch('/admin/health-check', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    let message = 'System Health Check Results:\n\n';
+                    message += `Overall Status: ${data.status}\n`;
+                    message += `Database: ${data.database_status}\n`;
+                    message += `Memory Usage: ${data.memory_usage}\n`;
+                    message += `Disk Space: ${data.disk_space}\n`;
+                    alert(message);
+                } else {
+                    alert('Health check failed: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error running health check');
+            });
+        }
+
+        // AI/ML Model Functions
+        function retrainModel() {
+            if (confirm('This will retrain the AI model with current data. This may take several minutes. Continue?')) {
+                fetch('/admin/retrain-model', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Model retrained successfully!\n\nTraining Results:\n' + data.results.join('\n'));
+                    } else {
+                        alert('Error retraining model: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error retraining model');
+                });
+            }
+        }
+
+        function validateModel() {
+            fetch('/admin/test-model', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    custom_test: prompt('Enter a URL to test (optional):') || ''
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    let message = `Model Test Results:\n\nAccuracy: ${data.accuracy}%\n\nTest Cases:\n`;
+                    data.test_results.forEach(result => {
+                        message += `\n${result.url}: ${result.predicted} (${result.confidence}% confidence)`;
+                        if (result.expected !== 'unknown') {
+                            message += ` - ${result.correct ? 'CORRECT' : 'INCORRECT'}`;
+                        }
+                    });
+                    alert(message);
+                } else {
+                    alert('Error testing model: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error testing model');
+            });
+        }
+
+        function exportModel() {
+            fetch('/admin/export-model')
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'ml_model_export.pkl';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    alert('Model exported successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error exporting model');
+                });
+        }
+
+        function viewFullTrainingHistory() {
+            fetch('/admin/training-history')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        let message = 'Training History:\n\n';
+                        data.history.forEach(entry => {
+                            message += `${entry.date}: ${entry.accuracy}% accuracy - ${entry.samples} samples\n`;
+                        });
+                        alert(message);
+                    } else {
+                        alert('Error loading training history: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error loading training history');
+                });
+        }
+
+        function saveMLSettings() {
+            const form = document.getElementById('mlSettingsForm');
+            const formData = new FormData(form);
+            const settings = Object.fromEntries(formData);
+            
+            fetch('/admin/save-ml-settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(settings)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('ML settings saved successfully!');
+                } else {
+                    alert('Error saving settings: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving ML settings');
+            });
+        }
+
+        // Phishing Database Functions
+        function addPhishingReport() {
+            const url = prompt('Enter phishing URL:');
+            const description = prompt('Enter description:');
+            
+            if (url && description) {
+                fetch('/admin/add-phishing-report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        url: url,
+                        description: description,
+                        severity: 'High',
+                        status: 'Active'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Phishing report added successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error adding phishing report');
+                });
+            }
+        }
+
+        function refreshPhishingDatabase() {
+            fetch('/admin/refresh-phishing-database', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Phishing database refreshed successfully!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error refreshing phishing database');
+            });
+        }
+
+        function importPhishingData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv,.json';
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    
+                    fetch('/admin/import-phishing-data', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(`Import successful! ${data.imported_count} records imported.`);
+                            location.reload();
+                        } else {
+                            alert('Error: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error importing data');
+                    });
+                }
+            };
+            input.click();
+        }
+
+        function exportPhishingData() {
+            fetch('/admin/export-phishing-data')
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'phishing_database_export.csv';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    alert('Phishing database exported successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error exporting phishing database');
+                });
+        }
+
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSafetyTips();
                 description: form.description.value,
                 content: form.content.value,
                 category: form.category.value,

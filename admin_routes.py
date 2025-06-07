@@ -2751,3 +2751,320 @@ def delete_safety_tip(tip_id):
             'success': False,
             'message': 'Error occurred while deleting safety tip'
         }), 500
+
+@admin_bp.route('/safety-tips/create', methods=['POST'])
+@admin_required
+def create_safety_tip_route():
+    """Create a new safety tip"""
+    try:
+        db_manager = get_mongodb_manager()
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['title', 'category', 'priority', 'content']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({
+                    'success': False,
+                    'error': f'{field} is required'
+                }), 400
+        
+        # Create new tip
+        new_tip = {
+            '_id': str(uuid.uuid4()),
+            'title': data['title'],
+            'category': data['category'],
+            'priority': data['priority'],
+            'content': data['content'],
+            'status': data.get('status', 'Active'),
+            'created_at': datetime.now().isoformat(),
+            'created_by': get_current_user().get('username')
+        }
+        
+        # Save to database
+        result = db_manager.insert_one('safety_tips', new_tip)
+        
+        if result:
+            logger.info(f"Admin {new_tip['created_by']} created safety tip: {new_tip['title']}")
+            return jsonify({
+                'success': True,
+                'message': 'Safety tip created successfully',
+                'tip': new_tip
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Failed to create safety tip'
+            }), 500
+            
+    except Exception as e:
+        logger.error(f"Error creating safety tip: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Error occurred while creating safety tip'
+        }), 500
+
+@admin_bp.route('/safety-tips', methods=['GET'])
+@admin_required
+def get_all_safety_tips():
+    """Get all safety tips for admin management"""
+    try:
+        db_manager = get_mongodb_manager()
+        tips = list(db_manager.find('safety_tips', {}))
+        
+        return jsonify({
+            'success': True,
+            'tips': tips
+        })
+        
+    except Exception as e:
+        logger.error(f"Error fetching safety tips: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Error occurred while fetching safety tips'
+        }), 500
+
+@admin_bp.route('/create-user', methods=['POST'])
+@admin_required
+def create_user_admin():
+    """Create a new user account (Admin functionality)"""
+    try:
+        db_manager = get_mongodb_manager()
+        data = request.get_json()
+        
+        # Validate input
+        if not all([data.get('username'), data.get('email'), data.get('password')]):
+            return jsonify({
+                'success': False,
+                'error': 'Username, email, and password are required'
+            }), 400
+        
+        # Check if user already exists
+        existing_user = db_manager.find_one('users', {
+            '$or': [
+                {'username': data['username']},
+                {'email': data['email']}
+            ]
+        })
+        
+        if existing_user:
+            return jsonify({
+                'success': False,
+                'error': 'User with this username or email already exists'
+            }), 400
+        
+        # Create new user
+        from werkzeug.security import generate_password_hash
+        new_user = {
+            '_id': str(uuid.uuid4()),
+            'username': data['username'],
+            'email': data['email'],
+            'password_hash': generate_password_hash(data['password']),
+            'role': data.get('role', 'user'),
+            'status': 'active',
+            'created_at': datetime.now().isoformat(),
+            'created_by': get_current_user().get('username')
+        }
+        
+        # Encrypt sensitive data
+        new_user['email'] = encrypt_sensitive_data(new_user['email'])
+        new_user['username'] = encrypt_sensitive_data(new_user['username'])
+        
+        result = db_manager.insert_one('users', new_user)
+        
+        if result:
+            logger.info(f"Admin created new user: {data['username']}")
+            return jsonify({
+                'success': True,
+                'message': 'User created successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Failed to create user'
+            }), 500
+            
+    except Exception as e:
+        logger.error(f"Error creating user: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Error occurred while creating user'
+        }), 500
+
+@admin_bp.route('/reset-password/<user_id>', methods=['POST'])
+@admin_required
+def reset_user_password_admin(user_id):
+    """Reset a user's password"""
+    try:
+        db_manager = get_mongodb_manager()
+        data = request.get_json()
+        
+        if not data.get('password'):
+            return jsonify({
+                'success': False,
+                'error': 'New password is required'
+            }), 400
+        
+        # Find user
+        user = db_manager.find_one('users', {'_id': user_id})
+        if not user:
+            return jsonify({
+                'success': False,
+                'error': 'User not found'
+            }), 404
+        
+        # Update password
+        from werkzeug.security import generate_password_hash
+        result = db_manager.update_one('users', 
+            {'_id': user_id},
+            {'$set': {
+                'password_hash': generate_password_hash(data['password']),
+                'updated_at': datetime.now().isoformat()
+            }}
+        )
+        
+        if result:
+            logger.info(f"Admin reset password for user: {user_id}")
+            return jsonify({
+                'success': True,
+                'message': 'Password reset successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Failed to reset password'
+            }), 500
+            
+    except Exception as e:
+        logger.error(f"Error resetting password: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Error occurred while resetting password'
+        }), 500
+
+@admin_bp.route('/backup-database', methods=['POST'])
+@admin_required
+def backup_database_admin():
+    """Create database backup"""
+    try:
+        import shutil
+        import os
+        from datetime import datetime
+        
+        # Create backup directory if it doesn't exist
+        backup_dir = 'backups'
+        os.makedirs(backup_dir, exist_ok=True)
+        
+        # Create timestamped backup
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        backup_name = f'database_backup_{timestamp}'
+        
+        # Copy data directory
+        data_dir = 'data'
+        if os.path.exists(data_dir):
+            shutil.copytree(data_dir, os.path.join(backup_dir, backup_name))
+            
+            logger.info(f"Database backup created: {backup_name}")
+            return jsonify({
+                'success': True,
+                'message': f'Database backup created successfully: {backup_name}'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Data directory not found'
+            }), 404
+            
+    except Exception as e:
+        logger.error(f"Error creating backup: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Error occurred while creating backup'
+        }), 500
+
+@admin_bp.route('/optimize-database', methods=['POST'])
+@admin_required
+def optimize_database_admin():
+    """Optimize database performance"""
+    try:
+        db_manager = get_mongodb_manager()
+        
+        # Perform optimization tasks
+        optimization_results = []
+        
+        # Clean up old logs
+        thirty_days_ago = (datetime.now() - timedelta(days=30)).isoformat()
+        deleted_logs = db_manager.delete_many('detection_logs', {
+            'timestamp': {'$lt': thirty_days_ago}
+        })
+        optimization_results.append(f"Deleted {deleted_logs} old detection logs")
+        
+        # Clean up expired sessions
+        deleted_sessions = db_manager.delete_many('sessions', {
+            'expires_at': {'$lt': datetime.now().isoformat()}
+        })
+        optimization_results.append(f"Deleted {deleted_sessions} expired sessions")
+        
+        logger.info("Database optimization completed")
+        return jsonify({
+            'success': True,
+            'message': 'Database optimized successfully',
+            'results': optimization_results
+        })
+        
+    except Exception as e:
+        logger.error(f"Error optimizing database: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Error occurred while optimizing database'
+        }), 500
+
+@admin_bp.route('/health-check-admin', methods=['POST'])
+@admin_required
+def system_health_check_admin():
+    """Run comprehensive system health check"""
+    try:
+        import psutil
+        import os
+        
+        health_status = {
+            'status': 'healthy',
+            'database_status': 'connected',
+            'memory_usage': f"{psutil.virtual_memory().percent}%",
+            'disk_space': f"{psutil.disk_usage('/').percent}%",
+            'cpu_usage': f"{psutil.cpu_percent()}%",
+            'uptime': str(datetime.now() - datetime.fromtimestamp(psutil.boot_time())),
+            'active_users': 0,
+            'total_scans': 0
+        }
+        
+        # Check database connection
+        db_manager = get_mongodb_manager()
+        try:
+            users_count = len(list(db_manager.find_all('users')))
+            scans_count = len(list(db_manager.find_all('detection_logs')))
+            health_status['active_users'] = users_count
+            health_status['total_scans'] = scans_count
+        except:
+            health_status['database_status'] = 'disconnected'
+            health_status['status'] = 'warning'
+        
+        # Check critical thresholds
+        if psutil.virtual_memory().percent > 90:
+            health_status['status'] = 'critical'
+        elif psutil.disk_usage('/').percent > 85:
+            health_status['status'] = 'warning'
+        
+        logger.info("System health check completed")
+        return jsonify({
+            'success': True,
+            **health_status
+        })
+        
+    except Exception as e:
+        logger.error(f"Error during health check: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Error occurred during health check',
+            'status': 'error'
+        }), 500

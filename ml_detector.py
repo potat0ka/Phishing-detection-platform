@@ -121,6 +121,12 @@ class PhishingDetector:
         
         return result
     
+    def detect_phishing(self, content, input_type='url'):
+        """
+        Main detection method - alias for analyze() for backward compatibility
+        """
+        return self.analyze(content, input_type)
+    
     def _analyze_url(self, url):
         """Analyze URL for phishing indicators"""
         result = {
