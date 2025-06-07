@@ -12,8 +12,22 @@ Features:
 - Beginner-friendly with detailed explanations
 """
 
-import numpy as np
-from PIL import Image, ExifTags
+# Import with fallback for cross-platform compatibility
+try:
+    import numpy as np
+    NUMPY_AVAILABLE = True
+except ImportError:
+    NUMPY_AVAILABLE = False
+    np = None
+
+try:
+    from PIL import Image, ExifTags
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
+    Image = None
+    ExifTags = None
+
 import logging
 from datetime import datetime
 import os
@@ -66,7 +80,63 @@ class AIContentDetector:
         # Initialize detection models and parameters
         self._load_detection_parameters()
         
-        logging.info("AI Content Detector initialized successfully")
+        # Log availability of optional dependencies
+        if not NUMPY_AVAILABLE:
+            logging.info("AI Content Detector initialized in basic mode (numpy not available)")
+        elif not PIL_AVAILABLE:
+            logging.info("AI Content Detector initialized with limited image support (PIL not available)")
+        else:
+            logging.info("AI Content Detector initialized successfully with full features")
+            
+    def _safe_mean(self, data):
+        """Calculate mean with fallback for systems without numpy"""
+        if NUMPY_AVAILABLE and hasattr(data, 'mean'):
+            return float(data.mean())
+        elif isinstance(data, (list, tuple)):
+            return sum(data) / len(data) if data else 0.0
+        else:
+            return float(sum(data) / len(data)) if len(data) > 0 else 0.0
+    
+    def _safe_std(self, data):
+        """Calculate standard deviation with fallback"""
+        if NUMPY_AVAILABLE and hasattr(data, 'std'):
+            return float(data.std())
+        elif isinstance(data, (list, tuple)):
+            if len(data) <= 1:
+                return 0.0
+            mean_val = sum(data) / len(data)
+            variance = sum((x - mean_val) ** 2 for x in data) / len(data)
+            return math.sqrt(variance)
+        else:
+            data_list = list(data)
+            if len(data_list) <= 1:
+                return 0.0
+            mean_val = sum(data_list) / len(data_list)
+            variance = sum((x - mean_val) ** 2 for x in data_list) / len(data_list)
+            return math.sqrt(variance)
+    
+    def _safe_var(self, data):
+        """Calculate variance with fallback"""
+        if NUMPY_AVAILABLE and hasattr(data, 'var'):
+            return float(data.var())
+        elif isinstance(data, (list, tuple)):
+            if len(data) <= 1:
+                return 0.0
+            mean_val = sum(data) / len(data)
+            return sum((x - mean_val) ** 2 for x in data) / len(data)
+        else:
+            data_list = list(data)
+            if len(data_list) <= 1:
+                return 0.0
+            mean_val = sum(data_list) / len(data_list)
+            return sum((x - mean_val) ** 2 for x in data_list) / len(data_list)
+    
+    def _safe_array(self, data):
+        """Convert to array-like structure with fallback"""
+        if NUMPY_AVAILABLE:
+            return np.array(data)
+        else:
+            return data  # Return as-is for native Python processing
     
     def _load_detection_parameters(self):
         """
