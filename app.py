@@ -110,19 +110,20 @@ def allowed_file(filename, file_type):
     # Check if extension is in the allowed list for this file type
     return extension in ALLOWED_EXTENSIONS.get(file_type, set())
 
-# Import database manager and authentication system
-from models.mongodb_config import db_manager
+# Import MongoDB database manager and authentication system
+from models.mongodb_config import get_mongodb_manager
 from auth_routes import auth_bp, login_required, admin_required, get_current_user
 from utils.encryption_utils import EncryptionManager
 
-# Initialize encryption manager
+# Initialize encryption manager and MongoDB
 encryption_manager = EncryptionManager()
+db_manager = get_mongodb_manager()
 
 # Register authentication blueprint
 app.register_blueprint(auth_bp)
 
-# Log database connection status
-logger.info(f"Database: {'MongoDB' if db_manager.connected else 'JSON Fallback'}")
+# Log MongoDB Atlas connection status
+logger.info(f"Database: MongoDB Atlas - myAppDB {'Connected' if db_manager.connected else 'Connection Failed'}")
 
 # Global template variables
 @app.context_processor
@@ -131,7 +132,8 @@ def inject_global_vars():
     return {
         'db_connected': db_manager.connected,
         'app_version': '2.0.0',
-        'current_user': get_current_user()
+        'current_user': get_current_user(),
+        'database_type': 'MongoDB Atlas'
     }
 
 # Error handlers
