@@ -2973,13 +2973,17 @@ def create_user_admin():
         
         # Create new user
         from werkzeug.security import generate_password_hash
+        import time, random
+        user_id = f"user_{int(time.time())}_{random.randint(1000, 9999)}"
         new_user = {
+            'id': user_id,
             '_id': str(uuid.uuid4()),
             'username': data['username'],
             'email': data['email'],
             'password_hash': generate_password_hash(data['password']),
             'role': data.get('role', 'user'),
             'status': 'active',
+            'is_active': True,
             'created_at': datetime.now().isoformat(),
             'created_by': get_current_user().get('username')
         }
