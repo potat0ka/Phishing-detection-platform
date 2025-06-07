@@ -2,6 +2,10 @@
 AI Phishing Detection Platform - Main Entry Point
 ================================================
 
+# Author: Bigendra Shrestha
+# Built from scratch using Flask and MongoDB for my learning project
+# For College "i.e. Saraswati Multiple Campus" Project propose of the 8th semester
+
 🚀 START HERE! This is the main file to run the application.
 
 WHAT THIS FILE DOES:
