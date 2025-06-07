@@ -250,7 +250,8 @@ def reset_user_password(user_id):
                 'message': 'Password must be at least 8 characters long'
             }), 400
         
-        # Find the user
+        # Get MongoDB manager and find the user
+        db_manager = get_mongodb_manager()
         user = db_manager.find_one('users', {'id': user_id})
         if not user:
             return jsonify({
@@ -299,7 +300,8 @@ def promote_user(user_id):
                 'message': 'Only Super Admin can promote users'
             }), 403
         
-        # Find the user
+        # Get MongoDB manager and find the user
+        db_manager = get_mongodb_manager()
         user = db_manager.find_one('users', {'id': user_id})
         if not user:
             return jsonify({
@@ -352,7 +354,8 @@ def demote_user(user_id):
                 'message': 'Only Super Admin can demote users'
             }), 403
         
-        # Find the user
+        # Get MongoDB manager and find the user
+        db_manager = get_mongodb_manager()
         user = db_manager.find_one('users', {'id': user_id})
         if not user:
             return jsonify({
@@ -418,7 +421,8 @@ def delete_user(user_id):
         current_user = get_current_user()
         current_role = current_user.get('role', 'user') if current_user else 'user'
         
-        # Find the user to delete
+        # Get MongoDB manager and find the user to delete
+        db_manager = get_mongodb_manager()
         user = db_manager.find_one('users', {'id': user_id})
         if not user:
             return jsonify({
