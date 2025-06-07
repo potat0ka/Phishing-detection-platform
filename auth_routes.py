@@ -15,6 +15,9 @@ from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
+# Initialize database manager
+db_manager = get_mongodb_manager()
+
 # Create authentication blueprint
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 

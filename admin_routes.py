@@ -28,6 +28,9 @@ from datetime import datetime, timedelta
 import json
 import logging
 import uuid
+
+# Initialize database manager
+db_manager = get_mongodb_manager()
 import time
 import random
 

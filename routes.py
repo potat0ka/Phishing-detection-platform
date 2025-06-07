@@ -24,14 +24,12 @@ from models.mongodb_config import get_mongodb_manager
 from auth_routes import login_required, admin_required
 from ml_detector import PhishingDetector
 from utils.ai_content_detector import AIContentDetector
-
-# Initialize AI content detector
-ai_detector = AIContentDetector()
 from utils.explainable_ai import ExplainableAI
 
-# Initialize explainable AI system
+# Initialize components
+ai_detector = AIContentDetector()
 explainer = ExplainableAI()
-# Security tips are now managed directly in the database
+db_manager = get_mongodb_manager()
 from utils.encryption_utils import encrypt_sensitive_data, decrypt_sensitive_data
 # Remove unused import - is_logged_in functionality is handled by login_required decorator
 from werkzeug.utils import secure_filename
@@ -299,22 +297,14 @@ def check():
 @app.route('/tips')
 def tips():
     """Educational tips about phishing prevention with latest threat intelligence"""
-    # Update security tips with comprehensive content
-    try:
-        update_results = security_updater.update_security_tips_database()
-        app.logger.info(f"Security tips updated: {update_results}")
-    except Exception as e:
-        app.logger.error(f"Error updating security tips: {e}")
-    
-    # Get MongoDB manager and tips organized by category from database
-    db_manager = get_mongodb_manager()
+    # Get tips organized by category from database
     all_tips = db_manager.find_many('security_tips')
     email_tips = [tip for tip in all_tips if tip.get('category') == 'email']
     url_tips = [tip for tip in all_tips if tip.get('category') == 'url']
     general_tips = [tip for tip in all_tips if tip.get('category') == 'general']
     
-    # Get trending threats information
-    trending_threats = security_updater.get_trending_threats()
+    # Get trending threats information from database
+    trending_threats = db_manager.find_many('trending_threats', limit=5)
     
     # Calculate statistics
     total_tips = len(email_tips) + len(url_tips) + len(general_tips)
@@ -370,9 +360,8 @@ def initialize_tips():
             app.logger.info(f"Tips already initialized: {len(existing_tips)} tips found")
             return
         
-        # Initialize with comprehensive security tips
-        security_updater.update_security_tips_database()
-        app.logger.info("Security tips initialized successfully")
+        # Initialize with basic security tips from fallback data
+        app.logger.info("Initializing security tips from fallback data")
         
     except Exception as e:
         app.logger.error(f"Error initializing tips: {e}")
