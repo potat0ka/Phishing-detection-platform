@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 @admin_bp.route('/')
+@admin_bp.route('/dashboard')
 @admin_required
 def admin_dashboard():
     """
