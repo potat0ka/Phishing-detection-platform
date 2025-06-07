@@ -171,5 +171,17 @@
     "session_id": "unknown",
     "created_at": "2025-06-07T08:36:36.464944",
     "_id": "c7a1e2be-5bbc-4bef-8d9e-e8768c9ec93e"
+  },
+  {
+    "timestamp": "2025-06-07T08:41:05.985569",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "27.34.76.45, 10.83.10.132",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 OPR/119.0.0.0",
+    "success": true,
+    "login_method": "password",
+    "session_id": "unknown",
+    "created_at": "2025-06-07T08:41:05.985645",
+    "_id": "7ba8092c-d4fe-45ba-a78a-ee7753a62a84"
   }
 ]

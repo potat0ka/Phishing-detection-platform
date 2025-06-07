@@ -267,7 +267,7 @@ def create_user():
             'message': 'Error occurred while creating user'
         }), 500
 
-@admin_bp.route('/user/<user_id>')
+@admin_bp.route('/get-user/<user_id>')
 @admin_required
 def get_user(user_id):
     """Get detailed user information for view details functionality"""
@@ -315,6 +315,100 @@ def get_user(user_id):
     except Exception as e:
         logger.error(f"Error getting user details: {e}")
         return jsonify({'success': False, 'error': f'Failed to get user details: {str(e)}'})
+
+@admin_bp.route('/edit-user/<user_id>', methods=['POST'])
+@admin_required
+def edit_user(user_id):
+    """Edit user information"""
+    try:
+        current_user = get_current_user()
+        current_role = current_user.get('role', 'user') if current_user else 'user'
+        
+        # Get form data
+        data = request.get_json()
+        username = data.get('username', '').strip()
+        email = data.get('email', '').strip()
+        role = data.get('role', 'user').strip()
+        
+        # Validate input
+        if not username or not email:
+            return jsonify({
+                'success': False,
+                'message': 'Username and email are required'
+            }), 400
+        
+        # Get MongoDB manager and find the user
+        db_manager = get_mongodb_manager()
+        user = db_manager.find_one('users', {'id': user_id})
+        
+        if not user:
+            return jsonify({
+                'success': False,
+                'message': 'User not found'
+            }), 404
+        
+        # Check role permissions
+        if current_role == 'sub_admin':
+            # Sub admins cannot edit super admins or other sub admins
+            if user.get('role') in ['super_admin', 'sub_admin']:
+                return jsonify({
+                    'success': False,
+                    'message': 'You do not have permission to edit this user'
+                }), 403
+            
+            # Sub admins cannot promote users to admin roles
+            if role in ['super_admin', 'sub_admin']:
+                return jsonify({
+                    'success': False,
+                    'message': 'You do not have permission to assign admin roles'
+                }), 403
+        
+        # Check if username/email already exists (excluding current user)
+        existing_user = db_manager.find_one('users', {
+            '$and': [
+                {'$or': [{'username': username}, {'email': email}]},
+                {'id': {'$ne': user_id}}
+            ]
+        })
+        
+        if existing_user:
+            if existing_user.get('username') == username:
+                return jsonify({
+                    'success': False,
+                    'message': 'Username already exists'
+                }), 400
+            else:
+                return jsonify({
+                    'success': False,
+                    'message': 'Email already exists'
+                }), 400
+        
+        # Update user
+        update_data = {
+            '$set': {
+                'username': username,
+                'email': email,
+                'role': role,
+                'updated_at': datetime.utcnow().isoformat(),
+                'updated_by': current_user.get('username')
+            }
+        }
+        
+        db_manager.update_one('users', {'id': user_id}, update_data)
+        
+        logger.info(f"Admin {current_user.get('username')} updated user {user_id}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'User updated successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error editing user: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error occurred while updating user'
+        }), 500
 
 @admin_bp.route('/user/<user_id>/reset-password', methods=['POST'])
 @admin_required
