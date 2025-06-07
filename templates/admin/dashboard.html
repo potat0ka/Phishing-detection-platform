@@ -1,33 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - AI Phishing Detection Platform</title>
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/loading-animations.css') }}" rel="stylesheet">
+    <!-- Bootstrap CSS with Replit theme -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Mascot Loading Animations -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loading-animations.css') }}">
     
     <style>
         :root {
-            --primary-color: 0 123 255;
-            --success-color: 25 135 84;
-            --warning-color: 255 193 7;
-            --danger-color: 220 53 69;
-            --info-color: 13 202 240;
-            --dark-color: 33 37 41;
-            --light-color: 248 249 250;
             --sidebar-width: 250px;
             --header-height: 70px;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, rgba(0, 123, 255, 0.03) 0%, rgba(13, 202, 240, 0.03) 100%);
-            min-height: 100vh;
         }
         
         .admin-container {
@@ -37,14 +33,13 @@
         
         .admin-sidebar {
             width: var(--sidebar-width);
-            background: linear-gradient(135deg, rgba(0, 123, 255, 0.95) 0%, rgba(13, 202, 240, 0.95) 100%);
-            backdrop-filter: blur(10px);
-            color: white;
+            background: var(--bs-dark);
+            border-right: 1px solid var(--bs-border-color);
+            color: var(--bs-body-color);
             position: fixed;
             height: 100vh;
             overflow-y: auto;
             z-index: 1000;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .admin-main {
@@ -52,32 +47,33 @@
             margin-left: var(--sidebar-width);
             display: flex;
             flex-direction: column;
+            background: var(--bs-body-bg);
         }
         
         .admin-header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: var(--bs-dark);
+            border-bottom: 1px solid var(--bs-border-color);
             padding: 1rem 2rem;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             height: var(--header-height);
             display: flex;
             align-items: center;
-            border-bottom: 1px solid rgba(0, 123, 255, 0.1);
         }
         
         .admin-content {
             flex: 1;
             padding: 2rem;
             overflow-y: auto;
+            background: var(--bs-body-bg);
         }
         
         .sidebar-brand {
             padding: 1.5rem 1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-bottom: 1px solid var(--bs-border-color);
             text-align: center;
         }
         
         .sidebar-brand h4 {
+            color: var(--bs-primary);
             font-weight: 700;
             margin-bottom: 0.25rem;
         }
@@ -87,9 +83,9 @@
         }
         
         .nav-link {
-            color: rgba(255,255,255,0.85);
+            color: var(--bs-secondary-color);
             padding: 0.875rem 1.25rem;
-            border-radius: 0.75rem;
+            border-radius: var(--bs-border-radius);
             margin: 0 0.75rem;
             border: none;
             background: none;
@@ -107,59 +103,47 @@
         }
         
         .nav-link:hover {
-            background-color: rgba(255,255,255,0.15);
-            color: white;
+            background-color: var(--bs-secondary-bg);
+            color: var(--bs-primary);
             transform: translateX(3px);
         }
         
         .nav-link.active {
-            background-color: rgba(255,255,255,0.2);
+            background-color: var(--bs-primary);
             color: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
         .sidebar-footer {
             padding: 1.25rem;
-            border-top: 1px solid rgba(255,255,255,0.2);
+            border-top: 1px solid var(--bs-border-color);
             margin-top: auto;
         }
         
         .stats-card {
             transition: all 0.3s ease;
-            border: none;
-            border-radius: 1rem;
-            overflow: hidden;
+            background: var(--bs-body-bg);
+            border: 1px solid var(--bs-border-color);
         }
         
         .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        }
-        
-        .stats-card .card-body {
-            padding: 1.5rem;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         .tab-content {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--bs-body-bg);
+            border: 1px solid var(--bs-border-color);
         }
         
         .table-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--bs-body-bg);
+            border: 1px solid var(--bs-border-color);
             overflow: hidden;
         }
         
         .card-header {
-            background: rgba(var(--primary-color), 0.05);
-            border-bottom: 1px solid rgba(var(--primary-color), 0.1);
+            background: var(--bs-secondary-bg);
+            border-bottom: 1px solid var(--bs-border-color);
             padding: 1.25rem;
             font-weight: 600;
         }
@@ -171,29 +155,29 @@
             font-weight: 600;
         }
         
-        .btn {
-            border-radius: 0.5rem;
-            font-weight: 500;
+        .threat-card {
+            transition: all 0.3s ease;
+            background: var(--bs-body-bg);
+            border: 1px solid var(--bs-border-color);
+        }
+        
+        .threat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .system-status {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--bs-border-radius);
+            background: var(--bs-secondary-bg);
+            margin-bottom: 0.5rem;
             transition: all 0.3s ease;
         }
         
-        .btn:hover {
-            transform: translateY(-1px);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, rgb(var(--primary-color)) 0%, rgb(var(--info-color)) 100%);
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            box-shadow: 0 8px 25px rgba(var(--primary-color), 0.3);
-        }
-        
-        .badge {
-            font-weight: 500;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.5rem;
+        .system-status:hover {
+            background: var(--bs-tertiary-bg);
         }
         
         @media (max-width: 768px) {
@@ -209,33 +193,6 @@
             .admin-main {
                 margin-left: 0;
             }
-        }
-        
-        /* Consistent hover effects */
-        .threat-card {
-            transition: all 0.3s ease;
-            border-radius: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .threat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* System status indicators */
-        .system-status {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            background: rgba(var(--light-color), 0.5);
-            margin-bottom: 0.5rem;
-            transition: all 0.3s ease;
-        }
-        
-        .system-status:hover {
-            background: rgba(var(--primary-color), 0.05);
         }
     </style>
 </head>
@@ -294,9 +251,9 @@
                 <div class="d-flex align-items-center text-white-50">
                     <i class="fas fa-user-circle me-2"></i>
                     <div>
-                        <small>{{ current_user.username if current_user else 'Admin' }}</small>
+                        <small class="text-white">{{ current_user.username if current_user else 'Admin' }}</small>
                         <br>
-                        <small>Administrator</small>
+                        <small class="text-white-50">Administrator</small>
                     </div>
                 </div>
                 <div class="mt-2">
@@ -318,8 +275,8 @@
                             <i class="fas fa-bars"></i>
                         </button>
                         <div>
-                            <h4 class="mb-0 text-dark">Admin Dashboard</h4>
-                            <small class="text-muted">Platform management and monitoring center</small>
+                            <h4 class="mb-0 text-white">Admin Dashboard</h4>
+                            <small class="text-white-50">Platform management and monitoring center</small>
                         </div>
                     </div>
                     <div class="d-flex gap-2">
