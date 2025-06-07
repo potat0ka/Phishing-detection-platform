@@ -87,5 +87,17 @@
     "login_method": "password",
     "session_id": "unknown",
     "_id": "login_logs_8_1022415882"
+  },
+  {
+    "timestamp": "2025-06-07T07:04:59.035464",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "27.34.76.45, 10.83.7.94",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 OPR/119.0.0.0",
+    "success": true,
+    "login_method": "password",
+    "session_id": "unknown",
+    "created_at": "2025-06-07T07:04:59.035562",
+    "_id": "886e3671-2b7f-4059-bdd1-4199a367c16d"
   }
 ]

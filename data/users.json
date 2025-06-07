@@ -9,9 +9,10 @@
     "active": true,
     "is_active": true,
     "created_at": "2025-06-05T10:00:00Z",
-    "last_login": "2025-06-07 06:02:36.159650",
+    "last_login": "2025-06-07 07:04:59.034635",
     "login_attempts": 0,
-    "locked_until": null
+    "locked_until": null,
+    "updated_at": "2025-06-07T07:04:59.034794"
   },
   {
     "id": "user_1749125333_6273",
