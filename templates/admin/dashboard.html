@@ -485,7 +485,7 @@
                                     </h5>
                                     <p class="text-white-50 mb-0">Manage user accounts, roles, and permissions</p>
                                 </div>
-                                <button class="btn btn-primary pulse-btn" onclick="alert('Add user functionality')">
+                                <button class="btn btn-primary pulse-btn" onclick="createUser()">
                                     <i class="fas fa-user-plus me-2"></i>Add New User
                                 </button>
                             </div>
@@ -514,6 +514,9 @@
                                         <table class="table table-hover mb-0">
                                             <thead class="bg-secondary">
                                                 <tr>
+                                                    <th class="border-0 fw-semibold text-white" style="width: 40px;">
+                                                        <input type="checkbox" id="selectAllUsers" onchange="selectAllUsers()" class="form-check-input">
+                                                    </th>
                                                     <th class="border-0 fw-semibold text-white">User</th>
                                                     <th class="border-0 fw-semibold text-white">Email</th>
                                                     <th class="border-0 fw-semibold text-white">Role</th>
@@ -2427,47 +2430,83 @@
                 }
             });
         });
-            const originalText = saveBtn.innerHTML;
-            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
-            saveBtn.disabled = true;
+
+        // Missing AI/ML Functions Implementation
+        function saveMLSettings() {
+            const form = document.getElementById('mlSettingsForm');
+            if (!form) return;
             
-            // Send to backend
-            fetch('/admin/create-safety-tip', {
+            const formData = new FormData(form);
+            const settings = {};
+            for (let [key, value] of formData.entries()) {
+                settings[key] = value;
+            }
+            
+            fetch('/admin/save-ml-settings', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(settings)
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Close modal
-                    bootstrap.Modal.getInstance(document.getElementById('addTipModal')).hide();
-                    
-                    // Reset form
-                    form.reset();
-                    
-                    // Refresh tips table
-                    loadSafetyTips();
-                    
-                    // Show success message
-                    showNotification('Success', data.message, 'success');
+                    alert('ML settings saved successfully!');
                 } else {
-                    showNotification('Error', data.message, 'error');
+                    alert('Error saving settings: ' + data.error);
                 }
             })
-            .catch(error => {
-                console.error('Error saving safety tip:', error);
-                showNotification('Error', 'Failed to save safety tip', 'error');
-            })
-            .finally(() => {
-                // Reset button state
-                saveBtn.innerHTML = originalText;
-                saveBtn.disabled = false;
-            });
+            .catch(error => alert('Error saving ML settings'));
         }
 
+        function retrainModel() {
+            if (confirm('Are you sure you want to retrain the AI model? This may take several minutes.')) {
+                fetch('/admin/retrain-model', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Model retrained successfully! New accuracy: ' + data.accuracy + '%');
+                    } else {
+                        alert('Error retraining model: ' + data.error);
+                    }
+                })
+                .catch(error => alert('Error retraining model'));
+            }
+        }
+
+        function validateModel() {
+            fetch('/admin/test-model', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Model validation complete! Accuracy: ' + data.accuracy + '%, Precision: ' + data.precision + '%, Recall: ' + data.recall + '%');
+                } else {
+                    alert('Error validating model: ' + data.error);
+                }
+            })
+            .catch(error => alert('Error validating model'));
+        }
+
+        function exportModel() {
+            fetch('/admin/export-model', { method: 'POST' })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'phishing_detection_model.pkl';
+                a.click();
+                window.URL.revokeObjectURL(url);
+                alert('Model exported successfully!');
+            })
+            .catch(error => alert('Error exporting model'));
+        }
+
+        function viewFullTrainingHistory() {
+            window.open('/admin/training-history', '_blank');
+        }
+    </script>
+
+    <script>
         function updateSafetyTip() {
             const form = document.getElementById('editTipForm');
             const tipId = form.id.value;
