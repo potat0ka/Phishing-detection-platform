@@ -2272,7 +2272,7 @@
             const formData = new FormData(form);
             const settings = Object.fromEntries(formData);
             
-            fetch('/admin/save-ml-settings', {
+            fetch('/admin/ai-ml/save-settings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -2543,7 +2543,7 @@
                 settings[key] = value;
             }
             
-            fetch('/admin/save-ml-settings', {
+            fetch('/admin/ai-ml/save-settings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(settings)

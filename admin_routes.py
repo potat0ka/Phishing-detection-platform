@@ -1577,6 +1577,8 @@ def test_model():
 def save_ml_settings():
     """Save ML configuration settings with validation and immediate application"""
     try:
+        from models.mongodb_config import get_mongodb_manager
+        db_manager = get_mongodb_manager()
         current_user = get_current_user()
         
         # Only Super Admin can modify ML settings

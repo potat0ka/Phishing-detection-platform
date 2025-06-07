@@ -1,0 +1,15 @@
+{
+  "id": "ml_config",
+  "confidence_threshold": 0.7,
+  "learning_rate": 0.001,
+  "batch_size": 32,
+  "max_features": 10000,
+  "auto_retrain": false,
+  "detection_sensitivity": "medium",
+  "enable_logging": true,
+  "model_update_interval": 24,
+  "updated_by": "super_admin_001",
+  "username": "super_admin",
+  "updated_at": "2025-06-07 08:34:26.880786",
+  "version": "v1.0"
+}
