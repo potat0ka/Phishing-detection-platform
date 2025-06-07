@@ -2049,7 +2049,7 @@
         }
 
         function runHealthCheck() {
-            fetch('/admin/health-check', {
+            fetch('/admin/health-check-admin', {
                 method: 'POST'
             })
             .then(response => response.json())
@@ -2294,20 +2294,139 @@
                 });
         }
 
+        // Missing AI/ML Functions
+        function showTrainingModal() {
+            const modal = new bootstrap.Modal(document.getElementById('trainingModal'));
+            modal.show();
+        }
+
+        function showTestModal() {
+            const modal = new bootstrap.Modal(document.getElementById('testModal'));
+            modal.show();
+        }
+
+        function applySettingsAndRetrain() {
+            saveMLSettings();
+            setTimeout(() => {
+                retrainModel();
+            }, 1000);
+        }
+
+        // User Management Bulk Operations
+        function selectAllUsers() {
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            const selectAll = document.getElementById('selectAllUsers');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            updateBulkActionButtons();
+        }
+
+        function updateBulkActionButtons() {
+            const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+            const bulkActions = document.getElementById('bulkActions');
+            
+            if (checkedBoxes.length > 0) {
+                bulkActions.style.display = 'block';
+                document.getElementById('selectedCount').textContent = checkedBoxes.length;
+            } else {
+                bulkActions.style.display = 'none';
+            }
+        }
+
+        function bulkDeleteUsers() {
+            const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+            const userIds = Array.from(checkedBoxes).map(cb => cb.value);
+            
+            if (userIds.length === 0) {
+                alert('Please select users to delete');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete ${userIds.length} selected users? This action cannot be undone.`)) {
+                fetch('/admin/bulk-delete-users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ user_ids: userIds })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`Successfully deleted ${data.deleted_count} users`);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting users');
+                });
+            }
+        }
+
+        function bulkExportUsers() {
+            const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+            const userIds = Array.from(checkedBoxes).map(cb => cb.value);
+            
+            if (userIds.length === 0) {
+                // Export all users if none selected
+                exportUsers();
+                return;
+            }
+            
+            fetch('/admin/bulk-export-users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_ids: userIds })
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `selected_users_export_${new Date().getTime()}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                alert(`Exported ${userIds.length} selected users successfully!`);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error exporting selected users');
+            });
+        }
+
+        function clearSelection() {
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            const selectAll = document.getElementById('selectAllUsers');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            selectAll.checked = false;
+            
+            updateBulkActionButtons();
+        }
+
         // Load initial data
         document.addEventListener('DOMContentLoaded', function() {
             loadSafetyTips();
-                description: form.description.value,
-                content: form.content.value,
-                category: form.category.value,
-                priority: form.priority.value,
-                status: form.status.value,
-                tags: form.tags.value,
-                icon: form.icon.value
-            };
             
-            // Show loading state
-            const saveBtn = document.querySelector('#addTipModal .btn-info');
+            // Add event listeners for user checkboxes
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('user-checkbox') || e.target.id === 'selectAllUsers') {
+                    updateBulkActionButtons();
+                }
+            });
+        });
             const originalText = saveBtn.innerHTML;
             saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
             saveBtn.disabled = true;

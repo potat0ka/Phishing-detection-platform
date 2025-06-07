@@ -2810,7 +2810,7 @@ def get_all_safety_tips():
     """Get all safety tips for admin management"""
     try:
         db_manager = get_mongodb_manager()
-        tips = list(db_manager.find('safety_tips', {}))
+        tips = list(db_manager.find_all('safety_tips'))
         
         return jsonify({
             'success': True,
@@ -2867,6 +2867,7 @@ def create_user_admin():
         }
         
         # Encrypt sensitive data
+        from utils.encryption_utils import encrypt_sensitive_data
         new_user['email'] = encrypt_sensitive_data(new_user['email'])
         new_user['username'] = encrypt_sensitive_data(new_user['username'])
         

@@ -99,5 +99,17 @@
     "session_id": "unknown",
     "created_at": "2025-06-07T07:04:59.035562",
     "_id": "886e3671-2b7f-4059-bdd1-4199a367c16d"
+  },
+  {
+    "timestamp": "2025-06-07T08:02:33.777690",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "127.0.0.1",
+    "user_agent": "curl/8.11.1",
+    "success": true,
+    "login_method": "password",
+    "session_id": "unknown",
+    "created_at": "2025-06-07T08:02:33.777759",
+    "_id": "a9dc0001-842a-4305-a322-8aa014c905f6"
   }
 ]
