@@ -590,7 +590,7 @@ def demote_user(user_id):
             'message': 'Error occurred while demoting user'
         }), 500
 
-@admin_bp.route('/user/<user_id>/delete', methods=['POST'])
+@admin_bp.route('/delete-user/<user_id>', methods=['POST'])
 @admin_required
 def delete_user(user_id):
     """

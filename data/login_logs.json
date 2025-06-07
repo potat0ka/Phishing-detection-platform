@@ -243,5 +243,77 @@
     "login_method": "password",
     "created_at": "2025-06-07T08:47:05.859840",
     "_id": "499d544c-9c16-4743-b98a-9aba1fb072f7"
+  },
+  {
+    "timestamp": "2025-06-07T08:48:02.396214",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "127.0.0.1",
+    "user_agent": "python-requests/2.32.3",
+    "success": false,
+    "failure_reason": "Invalid password",
+    "login_method": "password",
+    "created_at": "2025-06-07T08:48:02.396273",
+    "_id": "4f529c1d-3963-4a5f-9b3f-285d699662eb"
+  },
+  {
+    "timestamp": "2025-06-07T08:48:02.502971",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "127.0.0.1",
+    "user_agent": "python-requests/2.32.3",
+    "success": false,
+    "failure_reason": "Invalid password",
+    "login_method": "password",
+    "created_at": "2025-06-07T08:48:02.503035",
+    "_id": "03d13cb1-c3e4-4290-99f6-cfbad6f082d2"
+  },
+  {
+    "timestamp": "2025-06-07T08:48:02.604732",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "127.0.0.1",
+    "user_agent": "python-requests/2.32.3",
+    "success": false,
+    "failure_reason": "Invalid password",
+    "login_method": "password",
+    "created_at": "2025-06-07T08:48:02.604788",
+    "_id": "ec85b1ab-2b26-41e4-b12f-2488a6e01917"
+  },
+  {
+    "timestamp": "2025-06-07T08:48:02.705120",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "127.0.0.1",
+    "user_agent": "python-requests/2.32.3",
+    "success": false,
+    "failure_reason": "Invalid password",
+    "login_method": "password",
+    "created_at": "2025-06-07T08:48:02.705192",
+    "_id": "525eccd4-fd21-41d3-8073-1c91c4eaf631"
+  },
+  {
+    "timestamp": "2025-06-07T08:48:02.807802",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "127.0.0.1",
+    "user_agent": "python-requests/2.32.3",
+    "success": false,
+    "failure_reason": "Invalid password",
+    "login_method": "password",
+    "created_at": "2025-06-07T08:48:02.807857",
+    "_id": "9f9d8728-8266-44ec-9f69-85b9f9ad11d0"
+  },
+  {
+    "timestamp": "2025-06-07T08:48:08.642091",
+    "username": "potato",
+    "user_id": "users_2_1457165389",
+    "ip_address": "127.0.0.1",
+    "user_agent": "curl/8.11.1",
+    "success": false,
+    "failure_reason": "Invalid password",
+    "login_method": "password",
+    "created_at": "2025-06-07T08:48:08.642159",
+    "_id": "2b749306-0758-423c-b061-117b28415095"
   }
 ]

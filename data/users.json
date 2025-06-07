@@ -10,9 +10,9 @@
     "is_active": true,
     "created_at": "2025-06-05T10:00:00Z",
     "last_login": "2025-06-07 08:41:05.981593",
-    "login_attempts": 0,
-    "locked_until": null,
-    "updated_at": "2025-06-07T08:47:05.861898"
+    "login_attempts": 5,
+    "locked_until": "2025-06-07 09:18:02.808759",
+    "updated_at": "2025-06-07T08:48:02.808989"
   },
   {
     "id": "user_1749125333_6273",
@@ -24,10 +24,10 @@
     "active": true,
     "is_active": true,
     "created_at": "2025-06-05T12:08:53.460160",
-    "login_attempts": 0,
+    "login_attempts": 1,
     "last_login": "2025-06-07 08:36:36.458510",
     "locked_until": null,
-    "updated_at": "2025-06-07T08:36:36.458688"
+    "updated_at": "2025-06-07T08:48:08.643510"
   },
   {
     "username": "alice",
