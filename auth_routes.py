@@ -242,9 +242,18 @@ def login():
             decrypted_user = user
         
         # Check if account is locked
-        if decrypted_user.get('locked_until') and datetime.utcnow() < decrypted_user['locked_until']:
-            flash('Account temporarily locked. Please try again later.', 'error')
-            return render_template('auth/login.html')
+        locked_until = decrypted_user.get('locked_until')
+        if locked_until:
+            # Convert string to datetime if needed
+            if isinstance(locked_until, str):
+                try:
+                    locked_until = datetime.fromisoformat(locked_until.replace('Z', '+00:00'))
+                except:
+                    locked_until = None
+            
+            if locked_until and datetime.utcnow() < locked_until:
+                flash('Account temporarily locked. Please try again later.', 'error')
+                return render_template('auth/login.html')
         
         # Check if account is active
         if not decrypted_user.get('is_active', True):

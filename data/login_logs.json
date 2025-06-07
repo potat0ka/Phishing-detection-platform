@@ -183,5 +183,65 @@
     "session_id": "unknown",
     "created_at": "2025-06-07T08:41:05.985645",
     "_id": "7ba8092c-d4fe-45ba-a78a-ee7753a62a84"
+  },
+  {
+    "timestamp": "2025-06-07T08:46:27.961470",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "127.0.0.1",
+    "user_agent": "curl/8.11.1",
+    "success": false,
+    "failure_reason": "Invalid password",
+    "login_method": "password",
+    "created_at": "2025-06-07T08:46:27.961524",
+    "_id": "c016ee92-71e3-4aea-b9ae-eec8de637f53"
+  },
+  {
+    "timestamp": "2025-06-07T08:47:05.485844",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "127.0.0.1",
+    "user_agent": "python-requests/2.32.3",
+    "success": false,
+    "failure_reason": "Invalid password",
+    "login_method": "password",
+    "created_at": "2025-06-07T08:47:05.485924",
+    "_id": "8b1ab3cd-e77e-424c-a465-7bfdffa5e338"
+  },
+  {
+    "timestamp": "2025-06-07T08:47:05.607245",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "127.0.0.1",
+    "user_agent": "python-requests/2.32.3",
+    "success": false,
+    "failure_reason": "Invalid password",
+    "login_method": "password",
+    "created_at": "2025-06-07T08:47:05.607411",
+    "_id": "e525cbd9-62fe-43a1-8358-1f57a2d43ca8"
+  },
+  {
+    "timestamp": "2025-06-07T08:47:05.727926",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "127.0.0.1",
+    "user_agent": "python-requests/2.32.3",
+    "success": false,
+    "failure_reason": "Invalid password",
+    "login_method": "password",
+    "created_at": "2025-06-07T08:47:05.727977",
+    "_id": "8c6eb1e3-a6e6-4cb0-99a4-a06b8b4d0b79"
+  },
+  {
+    "timestamp": "2025-06-07T08:47:05.859779",
+    "username": "super_admin",
+    "user_id": "users_1_738192204",
+    "ip_address": "127.0.0.1",
+    "user_agent": "python-requests/2.32.3",
+    "success": false,
+    "failure_reason": "Invalid password",
+    "login_method": "password",
+    "created_at": "2025-06-07T08:47:05.859840",
+    "_id": "499d544c-9c16-4743-b98a-9aba1fb072f7"
   }
 ]
