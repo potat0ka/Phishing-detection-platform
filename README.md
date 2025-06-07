@@ -1,651 +1,288 @@
 # AI Phishing Detection Platform
 
-An advanced AI-powered phishing detection platform that combines cutting-edge machine learning technologies with user-friendly security analysis and educational insights. This comprehensive cybersecurity solution was developed as a final semester project for Bachelor of Computer Applications (BCA) at Saraswati Multiple Campus.
-
-## 📌 Project Overview
-
-This platform provides real-time detection and analysis of phishing attempts across multiple channels including URLs, emails, and text messages. Built with modern web technologies and machine learning algorithms, it offers both educational insights and practical security tools for users of all technical levels.
-
-**Key Capabilities:**
-- Real-time phishing detection with AI-powered analysis
-- Educational security tips and threat awareness
-- Role-based user management system
-- Comprehensive admin dashboard with analytics
-- Cross-platform compatibility and responsive design
+A comprehensive cybersecurity platform that uses artificial intelligence and machine learning to detect phishing URLs, emails, and malicious content. Built as a final semester project for cybersecurity education.
 
 ## 🚀 Features
 
-### Core Detection Capabilities
-- **URL Analysis**: Real-time phishing URL detection with threat intelligence
-- **Email Content Analysis**: Advanced email phishing detection with pattern recognition
-- **Message Analysis**: General text message phishing detection
-- **AI Content Detection**: Identify AI-generated content and deepfakes
-- **Explainable AI**: Detailed explanations of detection results with confidence scores
+- **AI-Powered Detection**: Advanced machine learning algorithms to identify phishing attempts
+- **Multi-Modal Analysis**: Detects phishing in URLs, emails, and AI-generated content
+- **User Management**: Role-based authentication system (Admin, Sub-Admin, Regular User)
+- **Educational Resources**: Interactive safety tips and learning materials
+- **Real-Time Monitoring**: Live dashboard with detection statistics
+- **Cross-Platform Support**: Runs on Windows, macOS, and Linux
 
-### User Management
-- **Role-Based Access Control**: Super Admin, Sub Admin, and Regular User roles
-- **Secure Authentication**: Encrypted user data and session management
-- **User Dashboard**: Personalized detection history and statistics
-- **Password Security**: Enforced strong password requirements
+## 🛠️ Technology Stack
 
-### Admin Features
-- **User Management**: Create, edit, and manage user accounts with bulk operations
-- **Analytics Dashboard**: Real-time system statistics and monitoring
-- **ML Model Management**: Train and optimize detection models
-- **Security Tips Management**: Educational content administration
-- **Data Export**: CSV export functionality for users and detections
-
-## 💻 Technology Stack
-
-- **Backend**: Python Flask web framework with modular architecture
-- **Database**: MongoDB Atlas with automatic local JSON fallback
-- **AI/ML**: TensorFlow, scikit-learn, NLTK for advanced threat detection
-- **Frontend**: Bootstrap 5 with responsive design and modern JavaScript
-- **Charts**: Chart.js for interactive data visualization
-- **Security**: Advanced encryption, secure session management, and CSRF protection
+- **Backend**: Python 3.11, Flask web framework
+- **Database**: MongoDB Atlas (cloud) with local JSON fallback
+- **Frontend**: Bootstrap 5, Chart.js for visualizations
+- **AI/ML**: scikit-learn, NLTK for natural language processing
+- **Security**: bcrypt for password hashing, custom encryption utilities
 
 ## 📋 Prerequisites
 
-- **Python**: Version 3.8 or higher
-- **Internet Connection**: For package installation
-- **MongoDB Atlas Account**: Optional (automatic fallback to local storage)
+- Python 3.8 or higher
+- pip (Python package installer)
+- MongoDB Atlas account (optional - local storage available)
+- Internet connection for package installation
 
-## 🔧 Cross-Platform Installation
+## ⚡ Quick Start
 
-### Automated Setup (Recommended)
-
-The platform includes an intelligent setup script that automatically detects your operating system and provides optimized installation options:
-
-```bash
-# Clone the repository
-git clone https://github.com/bigendran/phishing-detection-platform.git
-cd phishing-detection-platform
-
-# Run automated setup
-python setup.py
-```
-
-### Platform-Specific Installation
-
-#### Windows Users
-- **Minimal Installation**: Zero compilation, works on all Windows versions (85% accuracy)
-- **Basic Installation**: Enhanced features, standard dependencies (90% accuracy)  
-- **Full Installation**: Complete ML features, requires build tools (95% accuracy)
-
-See [WINDOWS_INSTALLATION.md](WINDOWS_INSTALLATION.md) for detailed Windows setup guide.
-
-#### macOS Users
-- **Basic Installation**: Fast setup with core features
-- **Full Installation**: Complete ML capabilities with Xcode tools
-
-#### Linux Users
-- **Basic Installation**: Minimal dependencies
-- **Full Installation**: Complete feature set with system compiler
-
-### Installation Features by Type
-
-| Feature | Minimal | Basic | Full |
-|---------|---------|-------|------|
-| Phishing Detection | ✅ (85%) | ✅ (90%) | ✅ (95%) |
-| User Authentication | ✅ | ✅ | ✅ |
-| Admin Dashboard | ✅ | ✅ | ✅ |
-| AI Content Detection | Basic | Enhanced | Complete |
-| Machine Learning | ❌ | Limited | Full |
-| Real-time Analytics | ✅ | ✅ | Advanced |
-
-### Automatic Fallback System
-
-The setup script includes comprehensive fallback handling:
-- Detects compilation capability automatically
-- Falls back to basic installation if build tools unavailable  
-- Provides minimal installation for maximum compatibility
-- Handles Unicode encoding issues across all platforms
-
-## 🛠️ Quick Start
-
-### Windows Users (Recommended)
-```bash
-# 1. Clone the repository
-git clone https://github.com/bigendran/phishing-detection-platform.git
-cd phishing-detection-platform
-
-# 2. Use the dedicated Windows installer (handles all compatibility issues)
-python install_windows.py
-
-# 3. Activate and run
-venv\Scripts\activate
-python main.py
-```
-
-### Cross-Platform Installation
-```bash
-# 1. Clone and setup
-git clone https://github.com/bigendran/phishing-detection-platform.git
-cd phishing-detection-platform
-python setup.py
-
-# 2. Activate environment and run
-# Windows: venv\Scripts\activate
-# macOS/Linux: source venv/bin/activate
-python main.py
-```
-
-### 3. Access the Platform
-Open your browser and navigate to: `http://localhost:8080`
-
-## 🔐 Default Admin Account
-
-For testing purposes, you can create an admin account through the registration page and then promote it via the database or use the built-in super admin functionality.
-
-### Automated Setup (Recommended)
-
-The easiest way to set up the platform on any operating system:
+### 1. Download and Setup
 
 ```bash
-# Download project files and extract to desired location
+# Clone or download this project
+git clone <your-repository-url>
 cd ai-phishing-detection-platform
 
-# Run the automated setup script
-python setup.py
+# Install required packages
+pip install -r requirements.txt
 ```
 
-The setup script will:
-- Detect your operating system automatically
-- Install the correct dependencies for your platform
-- Create virtual environment
-- Configure the .env file
-- Test the installation
-- Provide activation instructions
+### 2. Configure Environment
 
-### Manual Setup
+```bash
+# Copy environment template
+cp .env.example .env
 
-If you prefer manual installation, choose your operating system below:
+# Edit .env file with your settings (optional for basic usage)
+```
 
-### Windows Setup
+### 3. Run the Application
 
-1. **Install Python**
-   ```bash
-   # Download Python 3.8+ from python.org
-   # During installation, check "Add Python to PATH"
-   # Verify installation
+```bash
+# Start the web server
+python main.py
+```
+
+### 4. Access the Platform
+
+Open your web browser and go to: `http://localhost:8080`
+
+## 🔧 Detailed Installation Guide
+
+### Windows Installation
+
+1. **Install Python**:
+   - Download Python 3.8+ from [python.org](https://python.org)
+   - During installation, check "Add Python to PATH"
+
+2. **Open Command Prompt** and run:
+   ```cmd
    python --version
+   pip --version
    ```
 
-2. **Download and Setup Project**
-   ```bash
-   # Download project files and extract to desired location
-   cd ai-phishing-detection-platform
-   
-   # Create virtual environment
-   python -m venv venv
-   
-   # Activate virtual environment
-   venv\Scripts\activate
-   
-   # For Windows, use the Windows-compatible requirements file
-   pip install -r requirements-windows.txt
-   
-   # If you encounter compilation errors, try upgrading pip first:
-   python -m pip install --upgrade pip
-   pip install -r requirements-windows.txt
+3. **Install dependencies**:
+   ```cmd
+   pip install flask pymongo requests scikit-learn nltk beautifulsoup4 bcrypt
    ```
 
-### macOS Setup
-
-1. **Install Python and Prerequisites**
-   ```bash
-   # Install Homebrew (if not already installed)
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-   
-   # Install Python and development tools
-   brew install python3
-   
-   # Install Xcode Command Line Tools (for compilation)
-   xcode-select --install
-   
-   # Verify installation
-   python3 --version
+4. **Run the application**:
+   ```cmd
+   python main.py
    ```
 
-2. **Download and Setup Project**
+### macOS Installation
+
+1. **Install Python** (if not already installed):
    ```bash
-   # Download project files and extract to desired location
-   cd ai-phishing-detection-platform
-   
-   # Create virtual environment
-   python3 -m venv venv
-   
-   # Activate virtual environment
-   source venv/bin/activate
-   
-   # Upgrade pip first
-   python -m pip install --upgrade pip
-   
-   # Install macOS-optimized dependencies
-   pip install -r requirements-macos.txt
+   # Using Homebrew
+   brew install python
+
+   # Or download from python.org
    ```
 
-### Linux (Including Arch Linux) Setup
-
-1. **Install Python and Development Tools**
+2. **Install dependencies**:
    ```bash
-   # Ubuntu/Debian
+   pip3 install flask pymongo requests scikit-learn nltk beautifulsoup4 bcrypt
+   ```
+
+3. **Run the application**:
+   ```bash
+   python3 main.py
+   ```
+
+### Linux (Ubuntu/Debian) Installation
+
+1. **Update system and install Python**:
+   ```bash
    sudo apt update
-   sudo apt install python3 python3-pip python3-venv python3-dev build-essential
-   
-   # Arch Linux
-   sudo pacman -S python python-pip base-devel
-   
-   # CentOS/RHEL/Fedora
-   sudo dnf install python3 python3-pip python3-devel gcc gcc-c++ make
-   
-   # openSUSE
-   sudo zypper install python3 python3-pip python3-devel gcc gcc-c++
-   
-   # Verify installation
-   python3 --version
+   sudo apt install python3 python3-pip
    ```
 
-2. **Download and Setup Project**
+2. **Install dependencies**:
    ```bash
-   # Download project files and extract to desired location
-   cd ai-phishing-detection-platform
-   
-   # Create virtual environment
-   python3 -m venv venv
-   
-   # Activate virtual environment
-   source venv/bin/activate
-   
-   # Upgrade pip first
-   python -m pip install --upgrade pip
-   
-   # Install Linux-optimized dependencies
-   pip install -r requirements-linux.txt
+   pip3 install flask pymongo requests scikit-learn nltk beautifulsoup4 bcrypt
    ```
 
-## 🛢️ MongoDB Atlas Setup (Optional)
-
-The platform works without MongoDB Atlas using local JSON storage, but for production use, MongoDB Atlas is recommended.
-
-### Step-by-Step MongoDB Atlas Configuration
-
-1. **Create MongoDB Account**
-   - Visit [MongoDB Atlas](https://www.mongodb.com/atlas)
-   - Sign up for a free account
-   - Verify your email address
-
-2. **Create Database Cluster**
-   - Click "Build a Database"
-   - Choose "FREE" tier (M0 Sandbox)
-   - Select your preferred cloud provider and region
-   - Name your cluster (e.g., "ai-phishing-db")
-
-3. **Configure Database Access**
-   - Create a database user with username and password
-   - Add your IP address to the IP Access List (or use 0.0.0.0/0 for development)
-
-4. **Get Connection String**
-   - Click "Connect" on your cluster
-   - Choose "Connect your application"
-   - Copy the connection string
-
-5. **Configure Environment Variables**
+3. **Run the application**:
    ```bash
-   # Create .env file in project root
-   cp .env.example .env
-   
-   # Edit .env file with your MongoDB connection details
+   python3 main.py
    ```
 
-### Example .env Configuration
+### Arch Linux Installation
 
-Create a `.env` file in your project root with the following content:
-
-```ini
-# MongoDB Atlas Configuration
-MONGO_URI=mongodb+srv://potato:<db_password>@build-a-database.5k4i357.mongodb.net/?retryWrites=true&w=majority&appName=Build-a-Database
-
-# Flask Configuration
-FLASK_SECRET_KEY=your-unique-secret-key-here-change-for-production
-FLASK_ENV=development
-
-# Security Settings (Generate a random 32-character string)
-USER_ENCRYPTION_SECRET=your-32-character-encryption-secret
-
-# Application Settings
-DEBUG=True
-PORT=8080
-```
-
-**Important Security Notes:**
-- Replace `<db_password>` with your actual MongoDB password
-- Generate unique values for `FLASK_SECRET_KEY` and `USER_ENCRYPTION_SECRET`
-- Never commit the `.env` file to version control
-
-## 🚀 Running the Application
-
-1. **Activate Virtual Environment**
+1. **Install Python and pip**:
    ```bash
-   # Windows
-   venv\Scripts\activate
-   
-   # macOS/Linux
-   source venv/bin/activate
+   sudo pacman -S python python-pip
    ```
 
-2. **Start the Application**
+2. **Install dependencies**:
+   ```bash
+   pip install flask pymongo requests scikit-learn nltk beautifulsoup4 bcrypt
+   ```
+
+3. **Run the application**:
    ```bash
    python main.py
    ```
 
-3. **Access the Platform**
-   - Open your web browser
-   - Navigate to `http://localhost:8080`
-   - The application will display startup information in the terminal
+## 🗄️ Database Configuration
 
-## 🧪 How to Use the Project
+### Option 1: Local Storage (Default)
+The application works out-of-the-box with local JSON file storage. No additional setup required.
 
-### For Regular Users
+### Option 2: MongoDB Atlas (Cloud Database)
 
-1. **Registration and Login**
-   - Visit the homepage and click "Register"
-   - Create an account with a strong password (minimum 8 characters, uppercase, lowercase, numbers)
-   - Login with your credentials
+1. **Create MongoDB Atlas Account**:
+   - Go to [mongodb.com/atlas](https://mongodb.com/atlas)
+   - Create a free account and cluster
 
-2. **Dashboard Navigation**
-   - Access your personal dashboard after login
-   - View detection history and statistics
-   - Monitor your security analysis trends
+2. **Get Connection String**:
+   - In Atlas dashboard, click "Connect"
+   - Choose "Connect your application"
+   - Copy the connection string
 
-3. **Phishing Detection Analysis**
-   - **URL Analysis**: Paste suspicious URLs for real-time threat assessment
-   - **Email Analysis**: Copy and paste email content for phishing detection
-   - **Message Analysis**: Analyze text messages and social media content
-   - **AI Content Detection**: Identify potentially AI-generated content
+3. **Configure Environment**:
+   ```bash
+   # Edit .env file
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/phishing_detector
+   ```
 
-4. **Educational Resources**
-   - Visit the "Security Tips" section for cybersecurity education
-   - Learn about latest phishing techniques and prevention methods
-   - Access regularly updated threat intelligence
+### Option 3: Local MongoDB
 
-### For Administrators
+1. **Install MongoDB locally**:
+   - Windows: Download from [mongodb.com](https://mongodb.com)
+   - macOS: `brew install mongodb/brew/mongodb-community`
+   - Linux: Follow [official guide](https://docs.mongodb.com/manual/administration/install-on-linux/)
 
-1. **Admin Access**
-   - Super Admin and Sub Admin roles have additional privileges
-   - Access admin dashboard via `/admin` route
+2. **Configure Environment**:
+   ```bash
+   # Edit .env file
+   MONGODB_URI=mongodb://localhost:27017/phishing_detector
+   ```
 
-2. **User Management**
-   - Create, edit, and manage user accounts
-   - Promote/demote user roles (Super Admin only)
-   - Export user data and analytics
+## 🔐 Environment Configuration
 
-3. **System Administration**
-   - Monitor platform usage and security metrics
-   - Train and optimize ML detection models
-   - Manage security tips and educational content
-   - Generate comprehensive system reports
+Create a `.env` file in the project root:
 
-4. **Analytics and Reporting**
-   - View real-time system statistics
-   - Monitor detection accuracy and user engagement
-   - Export data for external analysis
+```env
+# Flask Settings
+FLASK_SECRET_KEY=your_secret_key_here
 
-## 🔒 Security Features
+# Database (optional - defaults to local storage)
+MONGODB_URI=mongodb://localhost:27017/phishing_detector
 
-- **Data Encryption**: All sensitive user data encrypted at rest using AES encryption
-- **Secure Sessions**: Flask session management with CSRF protection
-- **Role-Based Access Control**: Granular permission system with three user levels
-- **Input Validation**: Comprehensive sanitization of all user inputs
-- **Password Security**: Enforced strong password policies with secure hashing
-- **Rate Limiting**: Protection against abuse and automated attacks
+# Encryption (optional - auto-generated if not set)
+USER_ENCRYPTION_SECRET=your_encryption_key_here
 
-## 🤖 Machine Learning Information
-
-The platform employs ensemble learning techniques combining multiple detection methods:
-
-- **Pattern Recognition**: Rule-based phishing indicators and URL analysis
-- **Neural Networks**: TensorFlow-based deep learning models
-- **Natural Language Processing**: NLTK for advanced text analysis
-- **Threat Intelligence**: Offline database of known malicious indicators
-- **Explainable AI**: Detailed explanations of detection decisions
-
-## 🧼 Clean Code Practices
-
-This project follows industry best practices for maintainable code:
-
-- **Comprehensive Documentation**: Every function and module thoroughly commented
-- **Beginner-Friendly**: Code written with educational clarity in mind
-- **Modular Architecture**: Separation of concerns with clear file organization
-- **Error Handling**: Robust exception handling and user feedback
-- **Security First**: Secure coding practices throughout the application
-
-## 🛠️ Development and Deployment
-
-### Local Development
-```bash
-# Run in development mode with auto-reload
-python main.py
-
-# The application runs on http://localhost:8080
-# Debug mode is enabled for development
+# Application Settings
+DEBUG=True
+PORT=8080
+HOST=0.0.0.0
 ```
 
-### Production Considerations
-- Set `FLASK_ENV=production` in environment variables
-- Use a production WSGI server like Gunicorn
-- Configure proper SSL certificates
-- Set up database backups and monitoring
+## 🚀 Usage
+
+### For Regular Users
+1. **Register Account**: Create a new user account
+2. **Check URLs**: Paste suspicious URLs for AI analysis
+3. **Scan Emails**: Copy email content for phishing detection
+4. **Learn Security**: Browse educational safety tips
+
+### For Administrators
+1. **Login with Admin Account**: Use admin credentials
+2. **User Management**: Create, edit, and manage user accounts
+3. **Monitor Activity**: View detection logs and system statistics
+4. **Train AI Models**: Retrain machine learning models with new data
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Port Already in Use**:
+```bash
+# Change port in main.py or kill existing process
+lsof -ti:8080 | xargs kill -9  # macOS/Linux
+netstat -ano | findstr :8080   # Windows
+```
+
+**Module Not Found**:
+```bash
+# Reinstall dependencies
+pip install --force-reinstall -r requirements.txt
+```
+
+**Database Connection Failed**:
+- Application will automatically use local storage
+- Check MongoDB connection string in .env file
+- Ensure MongoDB service is running (if using local)
+
+### Platform-Specific Notes
+
+**Windows**:
+- Use `python` command (not `python3`)
+- Use Command Prompt or PowerShell
+- Ensure Python is in PATH
+
+**macOS**:
+- May need to use `python3` instead of `python`
+- Install Xcode Command Line Tools if needed
+
+**Linux**:
+- Use `python3` command
+- May need to install `python3-dev` package
+- Use `sudo` for system-wide installations
 
 ## 📁 Project Structure
 
 ```
 ai-phishing-detection-platform/
-├── main.py                 # Application entry point
-├── app.py                  # Flask application configuration
-├── routes.py               # User routes and endpoints
-├── auth_routes.py          # Authentication system
-├── admin_routes.py         # Admin panel functionality
-├── ml_detector.py          # Machine learning detection engine
-├── models/                 # Database models and configuration
-├── templates/              # HTML templates
-├── static/                 # CSS, JavaScript, and images
-├── utils/                  # Utility functions and helpers
-├── data/                   # Local data storage (JSON fallback)
-├── requirements-local.txt  # Python dependencies
-├── .env.example           # Environment configuration template
-└── README.md              # This documentation
+├── main.py                 # Main application entry point
+├── src/                    # Source code directory
+│   ├── app.py             # Flask application setup
+│   ├── routes.py          # Main application routes
+│   ├── auth_routes.py     # Authentication routes
+│   ├── admin_routes.py    # Admin panel routes
+│   ├── ml_detector.py     # AI detection algorithms
+│   ├── models/            # Database models
+│   └── utils/             # Utility functions
+├── templates/             # HTML templates
+├── static/               # CSS, JavaScript, images
+├── data/                 # Local data storage
+├── .env.example          # Environment template
+└── README.md            # This file
 ```
 
-## 🚨 Troubleshooting
+## 🤝 Contributing
 
-### Common Issues and Solutions
+This is an educational project. Feel free to:
+- Report bugs and issues
+- Suggest improvements
+- Submit educational enhancements
+- Share security insights
 
-1. **Windows Compilation Errors (NumPy, TensorFlow, etc.)**
-   
-   **Problem**: Error messages like "Unknown compiler(s)" or "metadata-generation-failed"
-   
-   **Solution A - Use Windows Requirements File (Recommended)**:
-   ```bash
-   # Use the pre-compiled Windows-compatible packages
-   pip install -r requirements-windows.txt
-   ```
-   
-   **Solution B - Install Build Tools**:
-   ```bash
-   # Download and install Microsoft C++ Build Tools from:
-   # https://visualstudio.microsoft.com/visual-cpp-build-tools/
-   
-   # Then retry installation
-   pip install -r requirements-local.txt
-   ```
-   
-   **Solution C - Use Conda (Alternative)**:
-   ```bash
-   # Install Anaconda or Miniconda
-   conda create -n phishing-detector python=3.9
-   conda activate phishing-detector
-   conda install numpy scipy scikit-learn tensorflow flask pymongo
-   pip install -r requirements-windows.txt
-   ```
+## 📄 License
 
-2. **Module Not Found Error**
-   ```bash
-   # Ensure virtual environment is activated
-   source venv/bin/activate  # macOS/Linux
-   venv\Scripts\activate     # Windows
-   
-   # Upgrade pip first
-   python -m pip install --upgrade pip
-   
-   # Reinstall dependencies
-   pip install -r requirements-windows.txt  # Windows
-   pip install -r requirements-local.txt    # macOS/Linux
-   ```
-
-3. **Python Version Compatibility**
-   ```bash
-   # Check Python version (must be 3.8+)
-   python --version
-   
-   # If using older Python, install newer version:
-   # Windows: Download from python.org
-   # macOS: brew install python@3.11
-   # Linux: sudo apt install python3.11
-   ```
-
-4. **Virtual Environment Issues**
-   ```bash
-   # Delete and recreate virtual environment
-   rm -rf venv          # Linux/macOS
-   rmdir /s venv        # Windows
-   
-   # Create new environment
-   python -m venv venv
-   
-   # Activate and install
-   venv\Scripts\activate                    # Windows
-   source venv/bin/activate                # macOS/Linux
-   pip install -r requirements-windows.txt # Windows
-   ```
-
-5. **MongoDB Connection Issues**
-   - Verify your connection string in `.env` file
-   - Check IP address whitelist in MongoDB Atlas dashboard
-   - Ensure database password doesn't contain special characters
-   - The application automatically falls back to local JSON storage if MongoDB fails
-
-6. **Port Already in Use (8080)**
-   ```bash
-   # Find and kill process using port 8080
-   # Linux/macOS
-   lsof -ti:8080 | xargs kill -9
-   
-   # Windows
-   netstat -ano | findstr :8080
-   taskkill /PID <PID_NUMBER> /F
-   
-   # Alternative: Change port in main.py
-   # Edit: app.run(host="0.0.0.0", port=8081, debug=True)
-   ```
-
-7. **Permission Errors**
-   ```bash
-   # Linux/macOS - Set executable permissions
-   chmod +x main.py
-   
-   # Windows - Run Command Prompt as Administrator
-   # Right-click Command Prompt -> "Run as administrator"
-   ```
-
-8. **SSL Certificate Errors**
-   ```bash
-   # Update certificates
-   pip install --upgrade certifi
-   
-   # For macOS additional step:
-   /Applications/Python\ 3.x/Install\ Certificates.command
-   ```
-
-9. **Memory Errors During Installation**
-   ```bash
-   # Install packages one by one
-   pip install flask
-   pip install numpy
-   pip install scikit-learn
-   # Continue with other packages
-   
-   # Or increase virtual memory on Windows
-   ```
-
-10. **Antivirus Blocking Installation**
-    - Temporarily disable antivirus during installation
-    - Add Python and project folder to antivirus whitelist
-    - Some antivirus software blocks pip installations
-
-### Requirements Files Compatibility
-
-| Platform | Requirements File | Notes |
-|----------|------------------|-------|
-| **Windows** | `requirements-windows.txt` | Pre-compiled packages, avoids C++ compilation |
-| **macOS** | `requirements-macos.txt` | Optimized for macOS with headless OpenCV |
-| **Linux** | `requirements-linux.txt` | Works on Ubuntu, Debian, Arch, CentOS, Fedora |
-| **Universal** | `requirements-local.txt` | Generic version, may require build tools |
-
-### Platform-Specific Notes
-
-**Windows Users:**
-- Use `requirements-windows.txt` to avoid compilation errors
-- Install Python from python.org, not Microsoft Store version
-- Ensure "Add Python to PATH" is checked during installation
-- If you encounter NumPy compilation errors, the Windows requirements file resolves this
-
-**macOS Users:**
-- Use `requirements-macos.txt` for optimal compatibility
-- Install Xcode Command Line Tools: `xcode-select --install`
-- Uses `opencv-python-headless` to avoid GUI dependencies
-
-**Linux Users:**
-- Use `requirements-linux.txt` for best results
-- Install development packages as shown in setup instructions
-- Works across major distributions (Ubuntu, Arch, CentOS, Fedora, openSUSE)
-
-## 📚 Educational Use
-
-This project serves as an excellent learning resource for:
-
-- **Web Development**: Flask framework, HTML/CSS/JavaScript
-- **Database Management**: MongoDB integration and data modeling
-- **Machine Learning**: TensorFlow, scikit-learn, and NLP techniques
-- **Cybersecurity**: Phishing detection and threat analysis
-- **Software Engineering**: Clean code practices and project organization
-
-## 🔄 Future Enhancements
-
-Potential improvements and extensions:
-- Mobile application development
-- Advanced threat intelligence integration
-- Real-time notification system
-- Multi-language support
-- API endpoints for third-party integration
+This project is created for educational purposes as part of a cybersecurity curriculum.
 
 ## 👨‍💻 Author
 
 **Bigendra Shrestha**  
-Final Semester Project  
-Bachelor of Computer Applications (BCA)  
-Saraswati Multiple Campus  
-
-*Developed as a comprehensive cybersecurity and AI project demonstrating practical applications of machine learning in threat detection and web application development.*
+Final Semester Student - Cybersecurity & AI  
+Saraswati Multiple Campus (8th Semester)
 
 ---
 
-## 📄 License
-
-Educational project - All rights reserved.
-
-## 🤝 Support
-
-For technical support, questions, or collaboration opportunities, please contact the development team.
-
-**Note**: This platform is designed for educational and research purposes. While robust security measures are implemented, always use multiple verification methods for critical security decisions in production environments.
+**⚠️ Educational Notice**: This platform is designed for learning cybersecurity concepts. Always verify results with additional security tools in production environments.
