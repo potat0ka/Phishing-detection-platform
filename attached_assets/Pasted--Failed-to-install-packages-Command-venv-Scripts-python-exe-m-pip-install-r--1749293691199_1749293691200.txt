@@ -1,0 +1,135 @@
+❌ Failed to install packages: Command '['venv\\Scripts\\python.exe', '-m', 'pip', 'install', '-r', 'requirements-windows-basic.txt']' returned non-zero exit status 1.
+Error output: WARNING: Ignoring invalid distribution ~ip (C:\Users\Admin\Phishing-detection-platform\venv\Lib\site-packages)
+WARNING: Ignoring invalid distribution ~ip (C:\Users\Admin\Phishing-detection-platform\venv\Lib\site-packages)
+WARNING: lxml 4.9.4 does not provide the extra 'html-clean'
+WARNING: The candidate selected for download or install is a yanked version: 'email-validator' candidate (version 2.1.0 at https://files.pythonhosted.org/packages/90/41/4767ff64e422734487a06384a66e62615b1f5cf9cf3b23295e22d3ecf711/email_validator-2.1.0-py3-none-any.whl (from https://pypi.org/simple/email-validator/) (requires-python:>=3.7))
+Reason for being yanked: Forgot to drop Python 3.7 from python_requires, see https://github.com/JoshData/python-email-validator/pull/118
+  error: subprocess-exited-with-error
+
+  Building wheel for lxml (pyproject.toml) did not run successfully.
+  exit code: 1
+
+  [113 lines of output]
+  <string>:67: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  C:\Users\Admin\AppData\Local\Temp\pip-build-env-h5ira4fp\overlay\Lib\site-packages\setuptools\dist.py:759: SetuptoolsDeprecationWarning: License classifiers are deprecated.
+  !!
+
+          ********************************************************************************
+          Please consider removing the following classifiers in favor of a SPDX license expression:
+
+          License :: OSI Approved :: BSD License
+
+          See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license for details.
+          ********************************************************************************
+
+  !!
+    self._finalize_license_expression()
+  Building lxml version 4.9.4.
+  Building without Cython.
+  Building against pre-built libxml2 andl libxslt libraries
+  running bdist_wheel
+  running build
+  running build_py
+  creating build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\builder.py -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\cssselect.py -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\doctestcompare.py -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\ElementInclude.py -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\pyclasslookup.py -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\sax.py -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\usedoctest.py -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\_elementpath.py -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\__init__.py -> build\lib.win-amd64-cpython-313\lxml
+  creating build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\__init__.py -> build\lib.win-amd64-cpython-313\lxml\includes
+  creating build\lib.win-amd64-cpython-313\lxml\html
+  copying src\lxml\html\builder.py -> build\lib.win-amd64-cpython-313\lxml\html
+  copying src\lxml\html\clean.py -> build\lib.win-amd64-cpython-313\lxml\html
+  copying src\lxml\html\defs.py -> build\lib.win-amd64-cpython-313\lxml\html
+  copying src\lxml\html\diff.py -> build\lib.win-amd64-cpython-313\lxml\html
+  copying src\lxml\html\ElementSoup.py -> build\lib.win-amd64-cpython-313\lxml\html
+  copying src\lxml\html\formfill.py -> build\lib.win-amd64-cpython-313\lxml\html
+  copying src\lxml\html\html5parser.py -> build\lib.win-amd64-cpython-313\lxml\html
+  copying src\lxml\html\soupparser.py -> build\lib.win-amd64-cpython-313\lxml\html
+  copying src\lxml\html\usedoctest.py -> build\lib.win-amd64-cpython-313\lxml\html
+  copying src\lxml\html\_diffcommand.py -> build\lib.win-amd64-cpython-313\lxml\html
+  copying src\lxml\html\_html5builder.py -> build\lib.win-amd64-cpython-313\lxml\html
+  copying src\lxml\html\_setmixin.py -> build\lib.win-amd64-cpython-313\lxml\html
+  copying src\lxml\html\__init__.py -> build\lib.win-amd64-cpython-313\lxml\html
+  creating build\lib.win-amd64-cpython-313\lxml\isoschematron
+  copying src\lxml\isoschematron\__init__.py -> build\lib.win-amd64-cpython-313\lxml\isoschematron
+  copying src\lxml\etree.h -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\etree_api.h -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\lxml.etree.h -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\lxml.etree_api.h -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\etree.pyx -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\objectify.pyx -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\apihelpers.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\classlookup.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\cleanup.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\debug.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\docloader.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\dtd.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\extensions.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\iterparse.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\nsclasses.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\objectpath.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\parser.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\parsertarget.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\proxy.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\public-api.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\readonlytree.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\relaxng.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\saxparser.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\schematron.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\serializer.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\xinclude.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\xmlerror.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\xmlid.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\xmlschema.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\xpath.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\xslt.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\xsltext.pxi -> build\lib.win-amd64-cpython-313\lxml
+  copying src\lxml\includes\c14n.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\config.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\dtdvalid.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\etreepublic.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\htmlparser.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\relaxng.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\schematron.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\tree.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\uri.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\xinclude.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\xmlerror.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\xmlparser.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\xmlschema.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\xpath.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\xslt.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\__init__.pxd -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\etree_defs.h -> build\lib.win-amd64-cpython-313\lxml\includes
+  copying src\lxml\includes\lxml-version.h -> build\lib.win-amd64-cpython-313\lxml\includes
+  creating build\lib.win-amd64-cpython-313\lxml\isoschematron\resources\rng
+  copying src\lxml\isoschematron\resources\rng\iso-schematron.rng -> build\lib.win-amd64-cpython-313\lxml\isoschematron\resources\rng
+  creating build\lib.win-amd64-cpython-313\lxml\isoschematron\resources\xsl
+  copying src\lxml\isoschematron\resources\xsl\RNG2Schtrn.xsl -> build\lib.win-amd64-cpython-313\lxml\isoschematron\resources\xsl
+  copying src\lxml\isoschematron\resources\xsl\XSD2Schtrn.xsl -> build\lib.win-amd64-cpython-313\lxml\isoschematron\resources\xsl
+  creating build\lib.win-amd64-cpython-313\lxml\isoschematron\resources\xsl\iso-schematron-xslt1
+  copying src\lxml\isoschematron\resources\xsl\iso-schematron-xslt1\iso_abstract_expand.xsl -> build\lib.win-amd64-cpython-313\lxml\isoschematron\resources\xsl\iso-schematron-xslt1
+  copying src\lxml\isoschematron\resources\xsl\iso-schematron-xslt1\iso_dsdl_include.xsl -> build\lib.win-amd64-cpython-313\lxml\isoschematron\resources\xsl\iso-schematron-xslt1
+  copying src\lxml\isoschematron\resources\xsl\iso-schematron-xslt1\iso_schematron_message.xsl -> build\lib.win-amd64-cpython-313\lxml\isoschematron\resources\xsl\iso-schematron-xslt1
+  copying src\lxml\isoschematron\resources\xsl\iso-schematron-xslt1\iso_schematron_skeleton_for_xslt1.xsl -> build\lib.win-amd64-cpython-313\lxml\isoschematron\resources\xsl\iso-schematron-xslt1
+  copying src\lxml\isoschematron\resources\xsl\iso-schematron-xslt1\iso_svrl_for_xslt1.xsl -> build\lib.win-amd64-cpython-313\lxml\isoschematron\resources\xsl\iso-schematron-xslt1
+  copying src\lxml\isoschematron\resources\xsl\iso-schematron-xslt1\readme.txt -> build\lib.win-amd64-cpython-313\lxml\isoschematron\resources\xsl\iso-schematron-xslt1
+  running build_ext
+  building 'lxml.etree' extension
+  error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/
+  [end of output]
+
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+  ERROR: Failed building wheel for lxml
+ERROR: Failed to build installable wheels for some pyproject.toml based projects (lxml)
+
+❌ Both full and basic installations failed
+Please check your Python installation and try again
+
+❌ Setup failed. Please check the error messages above.
