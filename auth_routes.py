@@ -384,26 +384,7 @@ def check_session():
     
     return jsonify({'valid': False}), 401
 
-@auth_bp.route('/profile')
-def profile():
-    """User profile management"""
-    if 'user_id' not in session:
-        return redirect(url_for('auth.login'))
-    
-    db_manager = get_mongodb_manager()
-    user = db_manager.find_one('users', {'_id': session['user_id']})
-    if not user:
-        session.clear()
-        return redirect(url_for('auth.login'))
-    
-    decrypted_user = decrypt_sensitive_data('user', user)
-    
-    # Get user statistics
-    detection_count = db_manager.count_documents('detections', {'user_id': session['user_id']})
-    
-    return render_template('auth/profile.html', 
-                         user=decrypted_user, 
-                         detection_count=detection_count)
+# Profile functionality removed - using login/logout only
 
 @auth_bp.route('/change-password', methods=['POST'])
 def change_password():
