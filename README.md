@@ -103,8 +103,8 @@ Open your web browser and go to: `http://localhost:8080`
 - Password: `potato123`
 
 **Regular User:**
-- Username: `user`
-- Password: `user123`
+- Username: `potato1`
+- Password: `123456789`
 
 *Note: Change these default passwords immediately after first login for security.*
 
