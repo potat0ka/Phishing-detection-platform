@@ -124,8 +124,8 @@ def admin_dashboard():
         nav_urls = {
             'dashboard': url_for('rbac.admin_dashboard'),
             'users': url_for('rbac.manage_users'),
-            'phishing': url_for('admin.manage_phishing'),
-            'safety_tips': url_for('admin.manage_safety_tips'),
+            'phishing': url_for('main.index'),  # Fixed: redirect to main page for now
+            'safety_tips': url_for('main.tips'),  # Fixed: redirect to tips page
             'check': url_for('main.check'),
             'analyze': url_for('main.analyze_media')
         }

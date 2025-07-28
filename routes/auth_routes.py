@@ -55,7 +55,7 @@ def register():
 
         # Check if user already exists using MongoDB
         client, users_collection = get_mongodb_connection()
-        if users_collection:
+        if users_collection is not None:
             existing_user = users_collection.find_one({'email': email})
             if existing_user:
                 flash('Email address already registered', 'error')
@@ -103,7 +103,7 @@ def login():
         client, users_collection = get_mongodb_connection()
         user = None
 
-        if users_collection:
+        if users_collection is not None:
             # Fetch user with users_collection.find_one({'email': email}) as specified
             user = users_collection.find_one({'email': email})
             if not user:
