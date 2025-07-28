@@ -22,6 +22,7 @@ import os
 import logging
 from flask import Flask, render_template
 from flask_pymongo import PyMongo
+from flask_login import LoginManager
 from config import config
 
 # Configure logging for better debugging
@@ -40,6 +41,41 @@ mongo = PyMongo(app)
 
 # Make mongo available to other modules (type: ignore for Flask extension)
 app.mongo = mongo  # type: ignore
+
+# Initialize Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'auth.login'  # type: ignore
+login_manager.login_message = 'Please log in to access this page.'
+login_manager.login_message_category = 'info'
+
+# Flask-Login User class
+from flask_login import UserMixin
+
+class User(UserMixin):
+    def __init__(self, user_id, username, email, role='user'):
+        self.id = str(user_id)
+        self.username = username
+        self.email = email
+        self.role = role
+
+# User loader for Flask-Login
+@login_manager.user_loader
+def load_user(user_id):
+    """Load user for Flask-Login sessions"""
+    try:
+        from models.user_model import UserModel
+        user_data = UserModel.find_user_by_id(int(user_id))
+        if user_data:
+            return User(
+                user_id=user_data['_id'],
+                username=user_data['username'],
+                email=user_data['email'],
+                role=user_data.get('role', 'user')
+            )
+    except Exception as e:
+        logger.error(f"Error loading user {user_id}: {e}")
+    return None
 
 # Initialize database models
 from models.database import init_db

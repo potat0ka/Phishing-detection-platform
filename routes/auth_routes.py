@@ -177,7 +177,26 @@ def login():
         except Exception:
             pass  # Don't fail login if update fails
 
+        # Flask-Login integration
+        try:
+            from flask_login import login_user
+            from app import User
+            flask_user = User(
+                user_id=user['_id'],
+                username=user['username'],
+                email=user['email'],
+                role=user.get('role', 'user')
+            )
+            login_user(flask_user, remember=True)
+        except ImportError:
+            logger.warning("Flask-Login integration failed - using session-only authentication")
+
         flash(f'Welcome back, {user.get("username", "User")}!', 'success')
+
+        # Handle next parameter for redirects after login
+        next_page = request.args.get('next')
+        if next_page:
+            return redirect(next_page)
 
         # Role-based redirect as specified: /rbac/{role}-dashboard
         user_role = user.get('role', 'user')
@@ -197,8 +216,16 @@ def login():
 
 @auth_bp.route('/logout')
 def logout():
-    """User logout - clears session"""
+    """User logout - clears session and Flask-Login"""
     username = session.get('username', 'User')
+    
+    # Flask-Login logout
+    try:
+        from flask_login import logout_user
+        logout_user()
+    except ImportError:
+        pass
+    
     session.clear()
     flash(f'Goodbye, {username}! You have been logged out.', 'info')
     return redirect(url_for('main.index'))

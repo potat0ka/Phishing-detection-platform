@@ -12,6 +12,7 @@ Author: Bigendra Shrestha
 """
 
 from flask import Blueprint, render_template, request, jsonify, current_app, session, redirect, url_for
+from flask_login import login_required
 from datetime import datetime
 from models import PhishingModel, SecurityTipsModel, AnalyticsModel
 from models.scan_history_model import ScanHistoryModel
@@ -62,6 +63,7 @@ def index():
                              db_connected=False)
 
 @main_bp.route('/check', methods=['GET', 'POST'])
+@login_required
 def check_url():
     """
     AI-powered phishing detection page
@@ -228,6 +230,7 @@ def tips():
                              stats={'total_tips': 0, 'url_count': 0, 'email_count': 0, 'general_count': 0})
 
 @main_bp.route('/analyze-text', methods=['GET', 'POST'])
+@login_required
 def analyze_text():
     """
     Text Analysis page for plagiarism and AI detection
@@ -510,6 +513,7 @@ def api_quick_check():
         })
 
 @main_bp.route('/analyze')
+@login_required
 def analyze_media():
     """
     Multimedia Authenticity Checker Page
