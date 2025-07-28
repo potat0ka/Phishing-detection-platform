@@ -7,6 +7,7 @@ This is an AI-powered phishing detection platform built with Flask and MongoDB. 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Platform positioning: Custom-built cybersecurity platform by Bigendra Shrestha without external development assistance.
 
 ## System Architecture
 
