@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}User Management - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="text-primary">
+                    <i class="fas fa-users me-2"></i>
+                    User Management
+                </h2>
+                {% if session.get('role') == 'superadmin' %}
+                    <a href="{{ url_for('rbac.superadmin_dashboard') }}" class="btn btn-outline-secondary">
+                {% else %}
+                    <a href="{{ url_for('rbac.admin_dashboard') }}" class="btn btn-outline-secondary">
+                {% endif %}
+                    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                </a>
+            </div>
+            <p class="text-muted">Manage user accounts and roles</p>
+        </div>
+    </div>
+
+    <!-- Create User Form -->
+    {% if current_user_can('manage_users') %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-gradient-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>
+                        Create New User
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('rbac.create_user') }}">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-control" name="username" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" name="password" required minlength="8">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Role</label>
+                                <select class="form-control" name="role" required>
+                                    <option value="user">User</option>
+                                    {% if current_user_can_manage('admin') %}
+                                    <option value="admin">Admin</option>
+                                    {% endif %}
+                                    {% if current_user_can_manage('superadmin') %}
+                                    <option value="superadmin">Super Admin</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Users List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Existing Users ({{ users|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if users %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td>
+                                            <i class="fas fa-user me-2"></i>
+                                            {{ user.username }}
+                                        </td>
+                                        <td>{{ user.email }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'danger' if user.role == 'superadmin' else ('warning' if user.role == 'admin' else 'primary') }}">
+                                                {{ user.role.title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if user.is_active else 'secondary' }}">
+                                                {{ 'Active' if user.is_active else 'Inactive' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ user.created_at[:10] if user.created_at else 'N/A' }}</td>
+                                        <td>
+                                            {% if current_user_can_manage(user.role) %}
+                                            <div class="btn-group btn-group-sm">
+                                                <!-- Role Update -->
+                                                <div class="dropdown">
+                                                    <button class="btn btn-outline-primary dropdown-toggle btn-sm" 
+                                                            type="button" data-bs-toggle="dropdown">
+                                                        <i class="fas fa-cog"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><h6 class="dropdown-header">Change Role</h6></li>
+                                                        {% if user.role != 'user' and current_user_can_manage('user') %}
+                                                        <li>
+                                                            <form method="POST" action="{{ url_for('rbac.update_user_role') }}" class="dropdown-item">
+                                                                <input type="hidden" name="user_id" value="{{ user._id }}">
+                                                                <input type="hidden" name="new_role" value="user">
+                                                                <button type="submit" class="btn btn-link p-0 text-decoration-none">
+                                                                    <i class="fas fa-user me-1"></i>Make User
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                        {% endif %}
+                                                        {% if user.role != 'admin' and current_user_can_manage('admin') %}
+                                                        <li>
+                                                            <form method="POST" action="{{ url_for('rbac.update_user_role') }}" class="dropdown-item">
+                                                                <input type="hidden" name="user_id" value="{{ user._id }}">
+                                                                <input type="hidden" name="new_role" value="admin">
+                                                                <button type="submit" class="btn btn-link p-0 text-decoration-none">
+                                                                    <i class="fas fa-user-shield me-1"></i>Make Admin
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                        {% endif %}
+                                                    </ul>
+                                                </div>
+                                                
+                                                <!-- Deactivate -->
+                                                {% if user.is_active %}
+                                                <form method="POST" action="{{ url_for('rbac.deactivate_user') }}" 
+                                                      style="display: inline;" 
+                                                      onsubmit="return confirm('Are you sure you want to deactivate {{ user.username }}?')">
+                                                    <input type="hidden" name="user_id" value="{{ user._id }}">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                        <i class="fas fa-ban"></i>
+                                                    </button>
+                                                </form>
+                                                {% endif %}
+                                            </div>
+                                            {% else %}
+                                            <span class="text-muted small">
+                                                <i class="fas fa-lock me-1"></i>
+                                                Protected
+                                            </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Users Found</h5>
+                            <p class="text-muted">No users are available for management.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

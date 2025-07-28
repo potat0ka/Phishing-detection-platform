@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Result - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="display-6 fw-bold">
+                    <i class="fas fa-chart-line text-primary me-3"></i>
+                    AI Analysis Complete
+                </h1>
+            </div>
+            
+            <!-- Error State -->
+            {% if error %}
+            <div class="card border-0 shadow-lg mb-4">
+                <div class="card-body p-5 text-center">
+                    <i class="fas fa-exclamation-triangle text-warning fs-1 mb-3"></i>
+                    <h3 class="text-warning mb-3">Analysis Error</h3>
+                    <p class="text-muted">{{ error }}</p>
+                    <a href="{{ url_for('main.check_url') }}" class="btn btn-primary mt-3">
+                        <i class="fas fa-arrow-left me-2"></i>Try Again
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Success Result -->
+            {% if result %}
+            <!-- Main Result Card -->
+            <div class="card border-0 shadow-lg mb-4">
+                <div class="card-body p-5">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="result-summary">
+                                {% set risk_color = 'success' if result.threat_level == 'low' else ('warning' if result.threat_level == 'medium' else 'danger') %}
+                                {% set risk_icon = 'fa-shield-alt' if result.threat_level == 'low' else ('fa-exclamation-triangle' if result.threat_level == 'medium' else 'fa-times-circle') %}
+                                {% set risk_label = 'Safe' if result.threat_level == 'low' else ('Suspicious' if result.threat_level == 'medium' else 'Dangerous') %}
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="result-icon me-4">
+                                        <i class="fas {{ risk_icon }} text-{{ risk_color }} fs-1"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="fw-bold text-{{ risk_color }} mb-1">
+                                            {{ risk_label }}
+                                        </h2>
+                                        <p class="text-dark mb-0">
+                                            {% if result.threat_level == 'low' %}
+                                                This content appears to be legitimate and safe.
+                                            {% elif result.threat_level == 'medium' %}
+                                                This content shows some warning signs and should be verified.
+                                            {% else %}
+                                                This content appears to be a phishing attempt. Do not interact with it.
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Confidence Score -->
+                                <div class="confidence-display">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold">AI Confidence Score</span>
+                                        <span class="fw-bold">{{ "%.1f"|format(result.confidence_score * 100) }}%</span>
+                                    </div>
+                                    <div class="progress progress-lg">
+                                        <div class="progress-bar bg-{{ risk_color }}" 
+                                             style="width: {{ result.confidence_score * 100 }}%">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <div class="risk-meter mx-auto mb-3" style="width: 120px; height: 120px;">
+                                    <canvas id="riskChart" width="120" height="120"></canvas>
+                                </div>
+                                <h6 class="text-muted">Threat Level</h6>
+                                <span class="badge bg-{{ risk_color }} fs-6 px-3 py-2">{{ risk_label }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analyzed Content -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 p-4">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-alt text-info me-2"></i>
+                        Analyzed Content
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="content-display">
+                        <div class="mb-2">
+                            <span class="badge bg-primary">
+                                {% if input_type == 'url' %}URL{% elif input_type == 'email' %}Email{% else %}Message{% endif %}
+                            </span>
+                        </div>
+                        <div class="border rounded p-3 bg-white">
+                            <pre class="mb-0 text-wrap text-dark">{{ content if content else (result.content if result and result.content else 'Content not provided') }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Warnings Section -->
+            {% if result.warnings %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 p-4">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-alt text-warning me-2"></i>
+                        Security Warnings
+                    </h5>
+                    <p class="text-muted mb-0 mt-2">Issues detected by our AI analysis:</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="warnings-list">
+                        {% for warning in result.warnings %}
+                        <div class="alert alert-warning d-flex align-items-start mb-3">
+                            <i class="fas fa-exclamation-triangle text-warning me-3 mt-1"></i>
+                            <div>
+                                <strong>Warning:</strong> {{ warning }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Explanation Section -->
+            {% if result.explanation %}
+            <div class="card border-0 shadow-lg mb-4">
+                <div class="card-header bg-gradient-primary text-white p-4">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <i class="fas fa-graduation-cap me-3"></i>
+                        AI Analysis Explanation
+                    </h5>
+                    <p class="mb-0 mt-2 text-white-50">Understanding how AI detected potential threats</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="explanation-content">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>AI Analysis:</strong> {{ result.explanation }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Comprehensive Scan Information -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        Scan Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="scan-detail-item mb-3">
+                                <strong>Content Type:</strong>
+                                <span class="badge bg-secondary ms-2">
+                                    {% if input_type == 'url' %}Website URL{% elif input_type == 'email' %}Email Content{% else %}Text Message{% endif %}
+                                </span>
+                            </div>
+                            <div class="scan-detail-item mb-3">
+                                <strong>Threat Assessment:</strong>
+                                <span class="badge bg-{{ risk_color }} ms-2">
+                                    {{ risk_label }} ({{ "%.0f"|format(result.confidence_score * 100) }}% confidence)
+                                </span>
+                            </div>
+                            {% if result.analysis_components %}
+                            <div class="scan-detail-item mb-3">
+                                <strong>Analysis Components:</strong>
+                                <div class="mt-2">
+                                    {% for component in result.analysis_components %}
+                                    <span class="badge bg-info me-1 mb-1">{{ component }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="scan-detail-item mb-3">
+                                <strong>Analysis Date:</strong>
+                                <span class="text-muted">{{ analysis_timestamp or 'Not available' }}</span>
+                            </div>
+                            {% if user_authenticated %}
+                            <div class="scan-detail-item mb-3">
+                                <strong>Scan ID:</strong>
+                                <span class="text-muted">{{ scan_id or 'Not saved' }}</span>
+                            </div>
+                            {% endif %}
+                            <div class="scan-detail-item mb-3">
+                                <strong>Content Length:</strong>
+                                <span class="text-muted">{{ content|length }} characters</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center mt-5">
+                <a href="{{ url_for('main.check_url') }}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-plus me-2"></i>Check Another URL
+                </a>
+                {% if user_authenticated %}
+                <a href="{{ url_for('rbac.user_dashboard') }}" class="btn btn-outline-primary btn-lg me-3">
+                    <i class="fas fa-chart-line me-2"></i>View Dashboard
+                </a>
+                {% endif %}
+                <a href="{{ url_for('main.security_tips') }}" class="btn btn-outline-info btn-lg">
+                    <i class="fas fa-lightbulb me-2"></i>Security Tips
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js for Risk Visualization -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Risk meter chart
+{% if result %}
+const ctx = document.getElementById('riskChart');
+if (ctx) {
+    const riskLevel = {{ result.confidence_score }};
+    const color = riskLevel > 0.7 ? '#dc3545' : (riskLevel > 0.4 ? '#ffc107' : '#198754');
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [riskLevel * 100, (1 - riskLevel) * 100],
+                backgroundColor: [color, '#e9ecef'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: false,
+            cutout: '70%',
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            }
+        }
+    });
+}
+{% endif %}
+</script>
+{% endblock %}

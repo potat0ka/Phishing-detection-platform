@@ -1,0 +1,192 @@
+# AI Phishing Detection Platform - Git Ignore Configuration
+# ==========================================================
+
+# Environment and Configuration Files
+.env
+.env.local
+.env.production
+*.env
+config.ini
+settings.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Virtual Environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+.virtualenv/
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+data/*.json
+data/users.json
+data/security_tips.json
+data/phishing_data.json
+data/scan_logs.json
+data/system_stats.json
+
+# Log Files
+*.log
+logs/
+*.out
+
+# Temporary Files
+tmp/
+temp/
+.tmp/
+.cache/
+*.tmp
+*.temp
+
+# Upload and Media Files
+uploads/
+media/
+static/uploads/
+user_uploads/
+
+# Backup Files
+*.bak
+*.backup
+*~
+
+# Security and API Keys
+secrets.json
+keys/
+certs/
+*.pem
+*.key
+*.crt
+
+# Test Coverage
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Flask
+instance/
+.webassets-cache
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# ML Models and Data
+*.pkl
+*.joblib
+models/trained/
+nltk_data/
+
+# Node.js (if using any frontend build tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Production builds
+build/
+dist/
+
+# Replit specific
+.replit
+replit.nix
+.config/
+.upm/
+
+# Custom project ignores
+cookies.txt
+login_test.html
+homepage_test.html
+test_document.txt
+0
+
+# Deployment
+.dockerignore
+docker-compose.override.yml
+
+# Keep these directories but ignore their contents
+uploads/.gitkeep
+logs/.gitkeep
+data/.gitkeep

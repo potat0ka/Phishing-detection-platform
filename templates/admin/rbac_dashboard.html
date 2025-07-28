@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if get_current_user_role() == 'superadmin' %}
+Super Admin Dashboard
+{% elif get_current_user_role() == 'admin' %}
+Admin Dashboard  
+{% else %}
+My Dashboard
+{% endif %}
+- AI Phishing Detection
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-chart-line text-primary me-2"></i>
+                    {% if get_current_user_role() == 'superadmin' %}
+                    Super Admin Dashboard
+                    {% elif get_current_user_role() == 'admin' %}
+                    Admin Dashboard
+                    {% else %}
+                    My Security Dashboard
+                    {% endif %}
+                </h1>
+                <div class="text-muted">
+                    <span class="badge bg-{{ 'danger' if get_current_user_role() == 'superadmin' else ('warning' if get_current_user_role() == 'admin' else 'primary') }}">
+                        {{ get_current_user_role().title() }}
+                    </span>
+                    <span class="ms-2">
+                        <i class="fas fa-clock me-1"></i>
+                        {{ current_time.strftime('%B %d, %Y at %I:%M %p') if current_time else 'Loading...' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="display-6 text-primary mb-2">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="mb-1">{{ stats.total_scans or 0 }}</h3>
+                    <p class="text-muted mb-0">Total Scans</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="display-6 text-danger mb-2">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="mb-1">{{ stats.phishing_detected or 0 }}</h3>
+                    <p class="text-muted mb-0">Threats Blocked</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="display-6 text-success mb-2">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 class="mb-1">{{ stats.clean_results or 0 }}</h3>
+                    <p class="text-muted mb-0">Safe Content</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="display-6 text-info mb-2">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <p class="mb-1 small">Member Since</p>
+                    <p class="text-muted mb-0">{{ current_time.strftime('%Y-%m-%d') if current_time else 'Unknown' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Quick Actions Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow h-100">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Basic user actions -->
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('main.check_url') }}" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-2"></i>
+                                New Scan
+                            </a>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('main.tips') }}" class="btn btn-info w-100">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                Security Tips
+                            </a>
+                        </div>
+
+                        <!-- Role-based actions -->
+                        {% if current_user_can('access_admin_panel') %}
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('main.analyze_text') }}" class="btn btn-warning w-100">
+                                <i class="fas fa-chart-line me-2"></i>
+                                System Analytics
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        {% if current_user_can('manage_users') %}
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('rbac.manage_users') }}" class="btn btn-success w-100">
+                                <i class="fas fa-users me-2"></i>
+                                Manage Users
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        {% if current_user_can('manage_content') %}
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('rbac.manage_safety_tips') }}" class="btn btn-info w-100">
+                                <i class="fas fa-shield-alt me-2"></i>
+                                Manage Safety Tips
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        {% if current_user_can('upload_models') %}
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('rbac.model_upload_page') }}" class="btn btn-purple w-100" style="background-color: #6f42c1; border-color: #6f42c1;">
+                                <i class="fas fa-brain me-2"></i>
+                                Upload Models
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        {% if current_user_can('reset_user_passwords') %}
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('rbac.view_password_reset_requests') }}" class="btn btn-orange w-100" style="background-color: #fd7e14; border-color: #fd7e14; color: white;">
+                                <i class="fas fa-key me-2"></i>
+                                Password Requests
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        <!-- User actions -->
+                        <div class="col-6 mb-3">
+                            <form method="POST" action="{{ url_for('rbac.request_password_reset') }}" style="display: inline;">
+                                <button type="submit" class="btn btn-outline-secondary w-100" 
+                                        onclick="return confirm('Request a password reset? An admin will review your request.')">
+                                    <i class="fas fa-lock me-2"></i>
+                                    Reset Password
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('auth.profile') }}" class="btn btn-secondary w-100">
+                                <i class="fas fa-user me-2"></i>
+                                Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role Information Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow h-100">
+                <div class="card-header bg-gradient-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Your Role & Permissions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-primary">Current Role:</h6>
+                        <span class="badge bg-{{ 'danger' if get_current_user_role() == 'superadmin' else ('warning' if get_current_user_role() == 'admin' else 'primary') }} fs-6">
+                            {{ get_current_user_role().title() }}
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="text-primary">Permissions:</h6>
+                        <div class="permission-list">
+                            {% if current_user_can('view_dashboard') %}
+                            <span class="badge bg-success me-1 mb-1">Dashboard Access</span>
+                            {% endif %}
+                            {% if current_user_can('run_scans') %}
+                            <span class="badge bg-success me-1 mb-1">Run Scans</span>
+                            {% endif %}
+                            {% if current_user_can('access_admin_panel') %}
+                            <span class="badge bg-warning me-1 mb-1">Admin Panel</span>
+                            {% endif %}
+                            {% if current_user_can('manage_users') %}
+                            <span class="badge bg-danger me-1 mb-1">User Management</span>
+                            {% endif %}
+                            {% if current_user_can('upload_models') %}
+                            <span class="badge bg-info me-1 mb-1">Model Upload</span>
+                            {% endif %}
+                            {% if current_user_can('reset_user_passwords') %}
+                            <span class="badge bg-dark me-1 mb-1">Password Reset</span>
+                            {% endif %}
+                            {% if current_user_can('system_management') %}
+                            <span class="badge bg-danger me-1 mb-1">System Management</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="role-description">
+                        {% if get_current_user_role() == 'superadmin' %}
+                        <p class="text-muted small">
+                            <i class="fas fa-crown text-warning me-1"></i>
+                            You have full system access and can manage all users and content.
+                        </p>
+                        {% elif get_current_user_role() == 'admin' %}
+                        <p class="text-muted small">
+                            <i class="fas fa-user-shield text-info me-1"></i>
+                            You can access admin features, manage regular users, and upload content.
+                        </p>
+                        {% else %}
+                        <p class="text-muted small">
+                            <i class="fas fa-user text-primary me-1"></i>
+                            You can access your personal dashboard and security analysis tools.
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    {% if recent_scans %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Recent Scan History
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Content</th>
+                                    <th>Type</th>
+                                    <th>Threat Level</th>
+                                    <th>Confidence</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for scan in recent_scans %}
+                                <tr>
+                                    <td>
+                                        <div class="text-truncate" style="max-width: 200px;">
+                                            {{ scan.content[:50] }}...
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            {{ scan.content_type.title() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'danger' if scan.threat_level == 'high' else ('warning' if scan.threat_level == 'medium' else 'success') }}">
+                                            {{ scan.threat_level.title() }}
+                                        </span>
+                                    </td>
+                                    <td>{{ (scan.confidence_score * 100)|round(1) }}%</td>
+                                    <td>{{ scan.timestamp[:10] if scan.timestamp else 'N/A' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add any dashboard-specific JavaScript here
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize any role-specific features
+    console.log('RBAC Dashboard loaded for role: {{ get_current_user_role() }}');
+});
+</script>
+{% endblock %}

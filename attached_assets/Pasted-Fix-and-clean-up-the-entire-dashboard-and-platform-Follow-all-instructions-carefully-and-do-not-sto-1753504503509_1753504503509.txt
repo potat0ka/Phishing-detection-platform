@@ -1,0 +1,49 @@
+Fix and clean up the entire dashboard and platform. Follow all instructions carefully and do not stop until the job is fully complete. If you're unsure about any file or code, open and review it first — do not hallucinate. Think before every step and reflect on the results after each change.
+
+Tasks:
+
+1. Use MongoDB user credentials for authentication and remove any old or hardcoded local login logic. All login, role management, and sessions must fetch user info (email, hashed password, role) from MongoDB's `users` collection.
+
+2. Fix the role-based dashboard system:
+   - When a user logs in, redirect them based on their role:
+     - `/superadmin-dashboard`
+     - `/admin-dashboard`
+     - `/user-dashboard`
+   - There should be no duplicate dashboards or conflicting templates for the same user.
+   - Show/hide dashboard features based on the user's role.
+
+3. Check all dashboard buttons and features:
+   - Remove any buttons that don’t work or produce only alert boxes.
+   - Any button that remains must have a working backend route or be removed.
+   - Do not leave any broken features on the UI.
+
+4. Refactor the codebase:
+   - Remove unused or duplicate files, templates, or scripts.
+   - Convert everything into a modular folder structure:
+     - `/routes` for Flask route handlers
+     - `/templates` for HTML files
+     - `/static` for CSS/JS
+     - `/models` for ML/phishing analysis models
+     - `/utils` for helper functions or validators
+   - Ensure all imports work after refactor.
+
+5. Fix the dashboard link in the navigation bar:
+   - It must route to the correct dashboard based on logged-in user role.
+   - Remove or redirect any old/broken dashboard paths.
+
+6. Fix the "Quick Phishing Check" on homepage:
+   - It should behave exactly like the working "Check URL" page and use the same backend analysis logic.
+
+7. Rename “Check URL” to “Check” in the navbar and update any linked paths to match.
+
+8. Ensure that all role-based permissions work:
+   - Superadmin: Can view/edit all, promote/demote users, reset any password, upload models and manage platform
+   - Admin: Can manage regular users, reset user passwords, upload models
+   - User: Can scan, view their history, request password reset
+
+Important:
+- Do not end your turn until everything above is fully working.
+- Always check the actual code and file structure before assuming.
+- Reflect after each tool call and verify the output.
+
+The result should be a clean, fully working, role-based phishing detection platform using MongoDB with no broken buttons, no duplicate files, and a clear modular structure.

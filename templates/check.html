@@ -1,0 +1,898 @@
+{% extends "base.html" %}
+
+{% block title %}Check Content - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-4 text-gradient">
+            <i class="fas fa-shield-halved text-primary me-3"></i>
+            AI Phishing Detection
+        </h1>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8">
+                <p class="lead text-muted mb-5 fs-5">
+                    Analyze URLs, emails, and messages using cutting-edge machine learning algorithms. 
+                    Get instant threat detection with detailed explanations.
+                </p>
+            </div>
+        </div>
+
+        <!-- Character section centered -->
+        <div class="d-flex justify-content-center mb-5">
+            <div class="character-container text-center" style="max-width: 300px;">
+                <!-- Enhanced character card -->
+                <div class="character-card p-3 rounded-3 position-relative overflow-hidden" 
+                     style="background: transparent;">
+                        
+                        <!-- Character image with enhanced styling -->
+                        <div class="character-image-wrapper position-relative">
+                            <img src="{{ url_for('static', filename='images/check-content-avatar.jpg') }}" 
+                                 alt="AI Security Expert" 
+                                 class="character-image img-fluid rounded-3 shadow"
+                                 style="max-height: 220px; width: auto; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.2);">
+                            
+                            <!-- Status indicator -->
+                            <div class="status-indicator position-absolute top-0 end-0 mt-2 me-2">
+                                <div class="status-dot bg-success rounded-circle shadow-sm" 
+                                     style="width: 12px; height: 12px; animation: pulse-dot 2s infinite;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Enhanced character info -->
+                        <div class="character-info mt-3">
+                            <div class="character-title mb-2">
+                                <h6 class="fw-bold text-white mb-1">PotatoKA Khancha</h6>
+                                <p class="text-muted mb-2" style="font-size: 0.8rem;">AI Security Specialist</p>
+                            </div>
+                            
+                            <div class="character-badges d-flex flex-column gap-1">
+                                <div class="badge bg-primary text-white px-3 py-1 rounded-pill shadow-sm fw-semibold" style="font-size: 0.75rem;">
+                                    <i class="fas fa-user-shield me-1"></i>
+                                    Your AI Security Expert
+                                </div>
+                                <div class="badge bg-success text-white px-3 py-1 rounded-pill shadow-sm fw-semibold" style="font-size: 0.75rem;">
+                                    <i class="fas fa-robot me-1"></i>
+                                    Ready to Analyze
+                                </div>
+                            </div>
+                            
+                            <!-- Quick stats -->
+                            <div class="character-stats mt-2 d-flex justify-content-around">
+                                <div class="stat-mini text-center">
+                                    <div class="stat-mini-number text-primary fw-bold" style="font-size: 0.9rem;">5M+</div>
+                                    <div class="stat-mini-label text-muted" style="font-size: 0.65rem;">Scans</div>
+                                </div>
+                                <div class="stat-mini text-center">
+                                    <div class="stat-mini-number text-success fw-bold" style="font-size: 0.9rem;">100%</div>
+                                    <div class="stat-mini-label text-muted" style="font-size: 0.65rem;">Uptime</div>
+                                </div>
+                                <div class="stat-mini text-center">
+                                    <div class="stat-mini-number text-info fw-bold" style="font-size: 0.9rem;">24/7</div>
+                                    <div class="stat-mini-label text-muted" style="font-size: 0.65rem;">Active</div>
+                                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detection Form Section -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-9">
+            <div class="detection-form-container">
+                <div class="form-header text-center mb-5">
+                    <h3 class="fw-bold text-dark mb-2">
+                        <i class="fas fa-search text-primary me-2"></i>
+                        Start Your Security Analysis
+                    </h3>
+                    <p class="text-muted mb-0">Choose your content type and let our AI analyze potential threats</p>
+                </div>
+
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="card-header bg-gradient text-white p-4" style="background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));">
+                        <h5 class="mb-0 d-flex align-items-center">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            AI-Powered Threat Detection
+                        </h5>
+                    </div>
+                    <div class="card-body p-5">
+                        <form method="POST" action="{{ url_for('main.check_url') }}" id="detectionForm">
+                            <!-- Input Type Selection -->
+                            <div class="selection-section mb-5">
+                                <div class="section-header text-center mb-4">
+                                    <h3 class="fw-bold text-white mb-2">
+                                        <i class="fas fa-crosshairs text-primary me-2"></i>
+                                        What would you like to analyze?
+                                    </h3>
+                                    <p class="text-muted mb-0">Select the type of content you want to check for potential threats</p>
+                                </div>
+                                <div class="row justify-content-center">
+                                    <div class="col-12 col-lg-10">
+                                        <div class="row g-4">
+                                            <div class="col-12 col-md-4">
+                                                <input type="radio" class="btn-check" name="input_type" 
+                                                       id="type_url" value="url" checked onchange="switchInputType('url')">
+                                                <label class="type-option-card w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4 rounded-3 border-2 border-primary text-decoration-none" for="type_url">
+                                                    <div class="option-icon mb-3">
+                                                        <i class="fas fa-link fs-2 text-primary"></i>
+                                                    </div>
+                                                    <h6 class="fw-bold mb-2" style="color: #2c3e50;">Website URL</h6>
+                                                    <p class="small text-center mb-0" style="color: #495057;">Check suspicious links and websites for phishing indicators</p>
+                                                </label>
+                                            </div>
+                                            <div class="col-12 col-md-4">
+                                                <input type="radio" class="btn-check" name="input_type" 
+                                                       id="type_email" value="email" onchange="switchInputType('email')">
+                                                <label class="type-option-card w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4 rounded-3 border-2 border-info text-decoration-none" for="type_email">
+                                                    <div class="option-icon mb-3">
+                                                        <i class="fas fa-envelope fs-2 text-info"></i>
+                                                    </div>
+                                                    <h6 class="fw-bold mb-2" style="color: #2c3e50;">Email Content</h6>
+                                                    <p class="small text-center mb-0" style="color: #495057;">Analyze email messages for scam and phishing patterns</p>
+                                                </label>
+                                            </div>
+                                            <div class="col-12 col-md-4">
+                                                <input type="radio" class="btn-check" name="input_type" 
+                                                       id="type_message" value="message" onchange="switchInputType('message')">
+                                                <label class="type-option-card w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4 rounded-3 border-2 border-success text-decoration-none" for="type_message">
+                                                    <div class="option-icon mb-3">
+                                                        <i class="fas fa-comment fs-2 text-success"></i>
+                                                    </div>
+                                                    <h6 class="fw-bold mb-2" style="color: #2c3e50;">Message/Text</h6>
+                                                    <p class="small text-center mb-0" style="color: #495057;">Check text messages and social media content for threats</p>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <!-- Content Input Section -->
+                            <div class="input-section mb-5">
+                                <div class="section-header text-center mb-4">
+                                    <h3 class="fw-bold text-white mb-2">
+                                        <i class="fas fa-edit text-primary me-2"></i>
+                                        Content to Analyze
+                                    </h3>
+                                    <p class="text-muted mb-0">Paste the URL, email content, or message you want to analyze</p>
+                                </div>
+                                <div class="input-wrapper">
+                                    <!-- URL Input (shown for URL type) -->
+                                    <input type="url" class="form-control form-control-lg border-2 rounded-3" 
+                                           name="url" id="url_input" 
+                                           placeholder="https://suspicious-website.com"
+                                           style="display: block;">
+                                    
+                                    <!-- Email Content Input (hidden initially) -->
+                                    <textarea class="form-control form-control-lg border-2 rounded-3" 
+                                             name="email_content" id="email_input" 
+                                             rows="6"
+                                             placeholder="Paste the email content here..."
+                                             style="resize: vertical; min-height: 120px; display: none;"></textarea>
+                                    
+                                    <!-- Message Content Input (hidden initially) -->
+                                    <textarea class="form-control form-control-lg border-2 rounded-3" 
+                                             name="message_content" id="message_input" 
+                                             rows="6"
+                                             placeholder="Paste the text message or social media content here..."
+                                             style="resize: vertical; min-height: 120px; display: none;"></textarea>
+                                    <div class="input-info mt-3 p-3 bg-light rounded-3">
+                                        <div class="d-flex align-items-start">
+                                            <i class="fas fa-lightbulb text-warning me-3 mt-1"></i>
+                                            <div>
+                                                <small class="fw-bold text-dark d-block mb-1">How it works:</small>
+                                                <small class="text-muted">Our AI analyzes patterns, language structure, and known threat indicators to detect potential phishing attempts with high accuracy.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <!-- AI Analysis Features -->
+                            <div class="features-section mb-5">
+                                <div class="section-header text-center mb-4">
+                                    <h3 class="fw-bold text-white mb-2">
+                                        <i class="fas fa-cogs text-primary me-2"></i>
+                                        AI Analysis Features
+                                    </h3>
+                                    <p class="text-muted mb-0">Advanced machine learning capabilities at your service</p>
+                                </div>
+                                <div class="features-grid row g-4">
+                                    <div class="col-lg-4">
+                                        <div class="feature-card h-100 p-4 bg-white rounded-3 shadow-sm border border-primary border-opacity-25">
+                                            <div class="feature-icon text-center mb-3">
+                                                <div class="icon-wrapper d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10" style="width: 60px; height: 60px;">
+                                                    <i class="fas fa-brain text-primary fs-4"></i>
+                                                </div>
+                                            </div>
+                                            <h6 class="fw-bold text-center mb-2">Pattern Recognition</h6>
+                                            <p class="text-muted small text-center mb-0">Advanced ML algorithms detect suspicious patterns and known threat signatures</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="feature-card h-100 p-4 bg-white rounded-3 shadow-sm border border-success border-opacity-25">
+                                            <div class="feature-icon text-center mb-3">
+                                                <div class="icon-wrapper d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10" style="width: 60px; height: 60px;">
+                                                    <i class="fas fa-chart-bar text-success fs-4"></i>
+                                                </div>
+                                            </div>
+                                            <h6 class="fw-bold text-center mb-2">Confidence Scoring</h6>
+                                            <p class="text-muted small text-center mb-0">Precise risk assessment with detailed confidence levels and explanations</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="feature-card h-100 p-4 bg-white rounded-3 shadow-sm border border-warning border-opacity-25">
+                                            <div class="feature-icon text-center mb-3">
+                                                <div class="icon-wrapper d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10" style="width: 60px; height: 60px;">
+                                                    <i class="fas fa-lightbulb text-warning fs-4"></i>
+                                                </div>
+                                            </div>
+                                            <h6 class="fw-bold text-center mb-2">Detailed Explanations</h6>
+                                            <p class="text-muted small text-center mb-0">Educational insights help you understand why content is flagged as suspicious</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Analyze Button Section -->
+                            <div class="analyze-section text-center">
+                                <div class="analyze-wrapper d-inline-block">
+                                    <button type="submit" id="analyzeBtn" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-lg">
+                                        <span class="btn-content d-flex align-items-center">
+                                            <span class="btn-text me-3">Analyze with AI</span>
+                                            <div class="spinner-border spinner-border-sm d-none" id="loadingSpinner" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <i class="fas fa-search-plus" id="searchIcon"></i>
+                                        </span>
+                                    </button>
+                                    <div class="analyze-info mt-3">
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-lock me-1"></i>
+                                            Your data is processed securely and never stored
+                                        </small>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Information Cards Section -->
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10 col-xl-9">
+                <div class="info-cards-section">
+                    <div class="section-header text-center mb-5">
+                        <h3 class="fw-bold text-primary mb-2">
+                            <i class="fas fa-brain text-primary me-2"></i>
+                            How Our AI Detection Works
+                        </h3>
+                        <p class="text-muted mb-0">Understanding the technology behind our advanced threat detection system</p>
+                    </div>
+                    <div class="row justify-content-center g-4">
+                        <div class="col-12 col-lg-11">
+                            <div class="row g-4">
+                        <div class="col-lg-4">
+                            <div class="info-card h-100 p-4 bg-white rounded-4 shadow-sm border">
+                                <div class="info-icon text-center mb-3">
+                                    <i class="fas fa-globe text-primary fs-2"></i>
+                                </div>
+                                <h6 class="fw-bold text-center mb-3">URL Analysis</h6>
+                                <p class="text-muted small text-center">Examine domain reputation, SSL certificates, URL structure, and redirect patterns to identify suspicious websites and phishing domains.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="info-card h-100 p-4 bg-white rounded-4 shadow-sm border">
+                                <div class="info-icon text-center mb-3">
+                                    <i class="fas fa-envelope-open text-info fs-2"></i>
+                                </div>
+                                <h6 class="fw-bold text-center mb-3">Email Detection</h6>
+                                <p class="text-muted small text-center">Analyze sender reputation, email headers, content patterns, and social engineering techniques to identify phishing emails and scams.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="info-card h-100 p-4 bg-white rounded-4 shadow-sm border">
+                                <div class="info-icon text-center mb-3">
+                                    <i class="fas fa-comments text-success fs-2"></i>
+                                </div>
+                                <h6 class="fw-bold text-center mb-3">Message Analysis</h6>
+                                <p class="text-muted small text-center">Detect manipulation tactics, urgency indicators, and fraudulent content patterns in text messages and social media communications.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                </div>
+            </div>
+            
+            <!-- Help Section -->
+            <div class="row mt-5 g-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 text-center">
+                            <i class="fas fa-link text-primary fs-3 mb-3"></i>
+                            <h6 class="fw-bold">URL Analysis</h6>
+                            <p class="text-muted small">
+                                Detect malicious domains, IP addresses, suspicious patterns, and typosquatting attempts.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 text-center">
+                            <i class="fas fa-envelope text-info fs-3 mb-3"></i>
+                            <h6 class="fw-bold">Email Detection</h6>
+                            <p class="text-muted small">
+                                Identify phishing emails using language analysis, sender verification, and content patterns.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 text-center">
+                            <i class="fas fa-comment text-secondary fs-3 mb-3"></i>
+                            <h6 class="fw-bold">Message Analysis</h6>
+                            <p class="text-muted small">
+                                Analyze text messages and social media content for manipulation tactics and scams.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Switch input type functionality
+function switchInputType(type) {
+    // Hide all inputs
+    document.getElementById('url_input').style.display = 'none';
+    document.getElementById('email_input').style.display = 'none';
+    document.getElementById('message_input').style.display = 'none';
+    
+    // Show selected input and make it required
+    const inputs = {
+        'url': document.getElementById('url_input'),
+        'email': document.getElementById('email_input'),
+        'message': document.getElementById('message_input')
+    };
+    
+    // Clear all required attributes
+    Object.values(inputs).forEach(input => input.removeAttribute('required'));
+    
+    // Show and require selected input
+    if (inputs[type]) {
+        inputs[type].style.display = 'block';
+        inputs[type].setAttribute('required', 'required');
+        inputs[type].focus();
+    }
+}
+
+// Form submission with loading animation
+document.getElementById('detectionForm').addEventListener('submit', function() {
+    const btn = document.getElementById('analyzeBtn');
+    const spinner = document.getElementById('loadingSpinner');
+    const btnText = btn.querySelector('.btn-text');
+    const searchIcon = document.getElementById('searchIcon');
+    
+    // Show loading state
+    btn.disabled = true;
+    spinner.classList.remove('d-none');
+    searchIcon.classList.add('d-none');
+    btnText.textContent = 'Analyzing...';
+});
+
+// Auto-resize textareas
+document.querySelectorAll('textarea').forEach(textarea => {
+    textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+});
+
+// Initialize with URL input visible
+document.addEventListener('DOMContentLoaded', function() {
+    switchInputType('url');
+});
+</script>
+
+<style>
+/* Enhanced hero section styling */
+.text-gradient {
+    background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-badge .badge {
+    animation: glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 5px rgba(var(--bs-primary-rgb), 0.3);
+    }
+    to {
+        box-shadow: 0 0 20px rgba(var(--bs-primary-rgb), 0.6);
+    }
+}
+
+.feature-badge {
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.feature-badge:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: currentColor;
+}
+
+.stat-item {
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+}
+
+.stat-number {
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover .stat-number {
+    transform: scale(1.1);
+}
+
+/* Enhanced stats section styling */
+.stats-section {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.stats-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-color: rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.stat-icon {
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.2);
+}
+
+.stat-number {
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.stat-card:hover .stat-number {
+    transform: scale(1.1);
+}
+
+.stats-header h6 {
+    color: var(--bs-dark);
+    font-weight: 700;
+}
+
+.stats-footer {
+    animation: fadeInUp 0.6s ease-out 0.3s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced form layout styling */
+.detection-form-container {
+    position: relative;
+}
+
+.form-header h3 {
+    background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.type-option-card {
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid transparent;
+    min-height: 160px;
+}
+
+.type-option-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+input[type="radio"]:checked + .type-option-card {
+    border-color: currentColor;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+}
+
+.option-icon {
+    transition: all 0.3s ease;
+}
+
+.type-option-card:hover .option-icon {
+    transform: scale(1.1);
+}
+
+.input-wrapper textarea {
+    transition: all 0.3s ease;
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.input-wrapper textarea:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+.feature-card {
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.icon-wrapper {
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .icon-wrapper {
+    transform: scale(1.1);
+}
+
+.analyze-wrapper button {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.analyze-wrapper button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(var(--bs-primary-rgb), 0.4);
+}
+
+.analyze-wrapper button:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.analyze-wrapper button:hover:before {
+    left: 100%;
+}
+
+.info-card {
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.info-icon {
+    transition: all 0.3s ease;
+}
+
+.info-card:hover .info-icon {
+    transform: scale(1.1);
+}
+
+.section-header {
+    position: relative;
+}
+
+.section-header::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--bs-primary), var(--bs-info));
+    border-radius: 2px;
+}
+
+/* Enhanced character card styling */
+.character-card {
+    transition: all 0.4s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.character-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+}
+
+.character-image {
+    transition: all 0.4s ease;
+}
+
+.character-image:hover {
+    transform: scale(1.05);
+}
+
+.pattern-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.2);
+    }
+}
+
+.character-badges .badge {
+    transition: all 0.3s ease;
+}
+
+.character-badges .badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-mini {
+    transition: all 0.3s ease;
+}
+
+.stat-mini:hover {
+    transform: translateY(-2px);
+}
+
+.trust-item {
+    transition: all 0.3s ease;
+}
+
+.trust-item:hover {
+    transform: translateY(-3px) scale(1.1);
+}
+
+/* Floating elements */
+.floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.floating-icon {
+    position: absolute;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    animation: float 4s ease-in-out infinite;
+}
+
+.floating-icon-1 {
+    top: 10%;
+    left: 5%;
+    animation-delay: 0s;
+}
+
+.floating-icon-2 {
+    top: 60%;
+    right: 5%;
+    animation-delay: 1.5s;
+}
+
+.floating-icon-3 {
+    top: 30%;
+    left: -5%;
+    animation-delay: 3s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-10px) rotate(90deg);
+    }
+    50% {
+        transform: translateY(-5px) rotate(180deg);
+    }
+    75% {
+        transform: translateY(-15px) rotate(270deg);
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 991.98px) {
+    .hero-section {
+        text-align: center;
+    }
+    
+    .character-container {
+        margin-top: 2rem;
+    }
+    
+    .character-image {
+        max-height: 250px !important;
+    }
+    
+    .security-features {
+        justify-content: center;
+    }
+    
+    .stats-section {
+        margin-top: 2rem;
+    }
+    
+    .stats-grid .col-4 {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .character-image {
+        max-height: 200px !important;
+    }
+    
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .character-card {
+        padding: 1rem !important;
+    }
+    
+    .stats-section {
+        padding: 1rem !important;
+        margin-top: 1.5rem;
+    }
+    
+    .stats-grid .col-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card {
+        padding: 1rem !important;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem !important;
+    }
+    
+    .security-features .feature-badge {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem !important;
+    }
+    
+    .hero-content p.lead {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .stats-section {
+        padding: 0.75rem !important;
+    }
+    
+    .stat-card {
+        padding: 0.75rem !important;
+    }
+    
+    .stat-number {
+        font-size: 1.25rem !important;
+    }
+    
+    .stat-label {
+        font-size: 0.7rem !important;
+    }
+    
+    .stats-header h6 {
+        font-size: 0.9rem;
+    }
+    
+    .hero-content h1 {
+        font-size: 1.75rem;
+    }
+    
+    .floating-elements {
+        display: none;
+    }
+}
+
+/* Enhanced visual effects */
+.hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(var(--bs-primary-rgb), 0.03) 0%, transparent 70%);
+    animation: float 6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(180deg);
+    }
+}
+
+.character-container {
+    position: relative;
+    z-index: 1;
+}
+</style>
+{% endblock %}

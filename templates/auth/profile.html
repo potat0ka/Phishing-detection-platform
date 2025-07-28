@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile - AI Phishing Detection{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>User Profile
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if session.user_id %}
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <strong>Username:</strong>
+                            </div>
+                            <div class="col-sm-9">
+                                {{ session.get('username', 'Not available') }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <strong>Email:</strong>
+                            </div>
+                            <div class="col-sm-9">
+                                {{ session.get('email', 'Not available') }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <strong>Role:</strong>
+                            </div>
+                            <div class="col-sm-9">
+                                {% set role = session.get('role', 'user') %}
+                                {% if role == 'superadmin' %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-crown me-1"></i>Super Admin
+                                    </span>
+                                {% elif role == 'admin' %}
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-shield-alt me-1"></i>Admin
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-user me-1"></i>User
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <strong>Account Status:</strong>
+                            </div>
+                            <div class="col-sm-9">
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i>Active
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('auth.change_password') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-key me-1"></i>Change Password
+                            </a>
+                            
+                            {% if session.get('role') in ['admin', 'superadmin'] %}
+                                {% if session.get('role') == 'superadmin' %}
+                                    <a href="{{ url_for('rbac.superadmin_dashboard') }}" class="btn btn-outline-success">
+                                {% else %}
+                                    <a href="{{ url_for('rbac.admin_dashboard') }}" class="btn btn-outline-success">
+                                {% endif %}
+                                    <i class="fas fa-cog me-1"></i>Admin Panel
+                                </a>
+                            {% endif %}
+                            
+                            {% if session.get('role') == 'superadmin' %}
+                                <a href="{{ url_for('rbac.superadmin_dashboard') }}" class="btn btn-outline-danger">
+                                    <i class="fas fa-crown me-1"></i>Super Admin Dashboard
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Please log in to view your profile information.
+                        </div>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Account Activity
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Activity tracking coming soon</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>Security Tips
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Use strong, unique passwords
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Enable two-factor authentication
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Keep your account information updated
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

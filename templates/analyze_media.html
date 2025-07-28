@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+
+{% block title %}Multimedia Authenticity Checker - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">
+            <i class="fas fa-microscope text-primary me-3"></i>
+            Multimedia Authenticity Checker
+        </h1>
+        <p class="lead text-muted">
+            Analyze text, images, videos, and audio for authenticity and AI-generated content
+        </p>
+    </div>
+
+    <!-- Alert for results -->
+    <div id="alertContainer" class="mb-4" style="display: none;">
+        <div class="alert" id="alertMessage" role="alert">
+            <div id="alertContent"></div>
+        </div>
+    </div>
+
+    <!-- Analysis Tabs -->
+    <div class="card border-0 shadow-lg">
+        <div class="card-header bg-gradient-primary text-white">
+            <ul class="nav nav-tabs card-header-tabs" id="analysisTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active text-white border-0" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-pane" type="button" role="tab">
+                        <i class="fas fa-file-alt me-2"></i>Text Analysis
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link text-white border-0" id="image-tab" data-bs-toggle="tab" data-bs-target="#image-pane" type="button" role="tab">
+                        <i class="fas fa-image me-2"></i>Image Analysis
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link text-white border-0" id="video-tab" data-bs-toggle="tab" data-bs-target="#video-pane" type="button" role="tab">
+                        <i class="fas fa-video me-2"></i>Video Analysis
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link text-white border-0" id="audio-tab" data-bs-toggle="tab" data-bs-target="#audio-pane" type="button" role="tab">
+                        <i class="fas fa-volume-up me-2"></i>Audio Analysis
+                    </button>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="card-body p-4">
+            <div class="tab-content" id="analysisTabContent">
+                
+                <!-- Text Analysis Tab -->
+                <div class="tab-pane fade show active" id="text-pane" role="tabpanel">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-file-alt text-primary me-2"></i>
+                        Text Authenticity Analysis
+                    </h5>
+                    <p class="text-muted mb-4">Check text for plagiarism and AI-generated content detection.</p>
+                    
+                    <form id="textAnalysisForm">
+                        <div class="mb-3">
+                            <label for="textContent" class="form-label">Text Content</label>
+                            <textarea class="form-control" id="textContent" name="text_content" rows="6" 
+                                      placeholder="Paste your text here for analysis..."></textarea>
+                            <div class="form-text">Minimum 10 characters required</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-search me-2"></i>
+                                Analyze Text
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Image Analysis Tab -->
+                <div class="tab-pane fade" id="image-pane" role="tabpanel">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-image text-success me-2"></i>
+                        Image Authenticity Analysis
+                    </h5>
+                    <p class="text-muted mb-4">Detect AI-generated images and reverse image search for authenticity.</p>
+                    
+                    <form id="imageAnalysisForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="imageFile" class="form-label">Upload Image</label>
+                            <input class="form-control" type="file" id="imageFile" name="image_file" 
+                                   accept=".jpg,.jpeg,.png,.gif">
+                            <div class="form-text">Supported formats: JPG, PNG, GIF (Max 30MB)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="image-preview border rounded p-3 text-center" id="imagePreview" style="min-height: 150px; display: none;">
+                                <img id="previewImg" src="" alt="Preview" style="max-height: 200px; max-width: 100%;">
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-image me-2"></i>
+                                Analyze Image
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Video Analysis Tab -->
+                <div class="tab-pane fade" id="video-pane" role="tabpanel">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-video text-warning me-2"></i>
+                        Video Authenticity Analysis
+                    </h5>
+                    <p class="text-muted mb-4">Detect video manipulation and deepfake content.</p>
+                    
+                    <form id="videoAnalysisForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="videoFile" class="form-label">Upload Video</label>
+                            <input class="form-control" type="file" id="videoFile" name="video_file" 
+                                   accept=".mp4,.avi,.mov,.mkv">
+                            <div class="form-text">Supported formats: MP4, AVI, MOV, MKV (Max 30MB, under 30s)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="video-preview border rounded p-3 text-center" id="videoPreview" style="min-height: 150px; display: none;">
+                                <video id="previewVideo" controls style="max-height: 200px; max-width: 100%;"></video>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="fas fa-video me-2"></i>
+                                Analyze Video
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Audio Analysis Tab -->
+                <div class="tab-pane fade" id="audio-pane" role="tabpanel">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-volume-up text-info me-2"></i>
+                        Audio Authenticity Analysis
+                    </h5>
+                    <p class="text-muted mb-4">Detect AI-synthesized voice and deepfake audio.</p>
+                    
+                    <form id="audioAnalysisForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="audioFile" class="form-label">Upload Audio</label>
+                            <input class="form-control" type="file" id="audioFile" name="audio_file" 
+                                   accept=".mp3,.wav,.m4a,.ogg">
+                            <div class="form-text">Supported formats: MP3, WAV, M4A, OGG (Max 30MB)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="audio-preview border rounded p-3 text-center" id="audioPreview" style="min-height: 100px; display: none;">
+                                <audio id="previewAudio" controls style="width: 100%;"></audio>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-info btn-lg">
+                                <i class="fas fa-volume-up me-2"></i>
+                                Analyze Audio
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="resultsSection" class="mt-5" style="display: none;">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Analysis Results
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="resultsContent">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="text-center mt-4" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Analyzing...</span>
+        </div>
+        <p class="mt-2 text-muted">Processing your content...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // File preview handlers
+    document.getElementById('imageFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.getElementById('videoFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            document.getElementById('previewVideo').src = url;
+            document.getElementById('videoPreview').style.display = 'block';
+        }
+    });
+
+    document.getElementById('audioFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            document.getElementById('previewAudio').src = url;
+            document.getElementById('audioPreview').style.display = 'block';
+        }
+    });
+
+    // Form submission handlers
+    const forms = ['textAnalysisForm', 'imageAnalysisForm', 'videoAnalysisForm', 'audioAnalysisForm'];
+    const analysisTypes = ['text', 'image', 'video', 'audio'];
+
+    forms.forEach((formId, index) => {
+        document.getElementById(formId).addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitAnalysis(analysisTypes[index], this);
+        });
+    });
+
+    function submitAnalysis(type, form) {
+        const formData = new FormData(form);
+        formData.append('analysis_type', type);
+
+        // Show loading spinner
+        document.getElementById('loadingSpinner').style.display = 'block';
+        document.getElementById('resultsSection').style.display = 'none';
+        hideAlert();
+
+        fetch('/analyze/process', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            
+            if (data.error) {
+                showAlert('danger', 'Analysis Error', data.error);
+            } else {
+                displayResults(data);
+            }
+        })
+        .catch(error => {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            showAlert('danger', 'Error', 'An error occurred during analysis. Please try again.');
+            console.error('Analysis error:', error);
+        });
+    }
+
+    function displayResults(data) {
+        const resultsContent = document.getElementById('resultsContent');
+        const contentType = data.content_type || 'Unknown';
+        
+        let verdictClass = 'text-warning';
+        if (data.authenticity_verdict) {
+            if (data.authenticity_verdict.includes('Likely Authentic') || data.authenticity_verdict.includes('Human')) {
+                verdictClass = 'text-success';
+            } else if (data.authenticity_verdict.includes('Likely AI') || data.authenticity_verdict.includes('Manipulated')) {
+                verdictClass = 'text-danger';
+            }
+        }
+
+        let resultsHtml = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="text-muted">Content Type</h6>
+                    <p class="mb-3"><span class="badge bg-secondary">${contentType.toUpperCase()}</span></p>
+                    
+                    <h6 class="text-muted">Authenticity Verdict</h6>
+                    <p class="mb-3 ${verdictClass} fw-bold">${data.authenticity_verdict || 'Unknown'}</p>
+                </div>
+                <div class="col-md-6">
+        `;
+
+        // Add type-specific metrics
+        if (data.plagiarism_score !== undefined) {
+            resultsHtml += `
+                <h6 class="text-muted">Plagiarism Score</h6>
+                <div class="progress mb-3">
+                    <div class="progress-bar ${data.plagiarism_score > 0.7 ? 'bg-danger' : data.plagiarism_score > 0.4 ? 'bg-warning' : 'bg-success'}" 
+                         style="width: ${data.plagiarism_score * 100}%"></div>
+                </div>
+                <p class="small text-muted">${(data.plagiarism_score * 100).toFixed(1)}% similarity detected</p>
+            `;
+        }
+
+        if (data.ai_likelihood !== undefined) {
+            resultsHtml += `
+                <h6 class="text-muted">AI Generation Likelihood</h6>
+                <div class="progress mb-3">
+                    <div class="progress-bar ${data.ai_likelihood > 0.8 ? 'bg-danger' : data.ai_likelihood > 0.5 ? 'bg-warning' : 'bg-success'}" 
+                         style="width: ${data.ai_likelihood * 100}%"></div>
+                </div>
+                <p class="small text-muted">${(data.ai_likelihood * 100).toFixed(1)}% AI generation probability</p>
+            `;
+        }
+
+        if (data.synthesis_likelihood !== undefined) {
+            resultsHtml += `
+                <h6 class="text-muted">Voice Synthesis Likelihood</h6>
+                <div class="progress mb-3">
+                    <div class="progress-bar ${data.synthesis_likelihood > 0.8 ? 'bg-danger' : data.synthesis_likelihood > 0.5 ? 'bg-warning' : 'bg-success'}" 
+                         style="width: ${data.synthesis_likelihood * 100}%"></div>
+                </div>
+                <p class="small text-muted">${(data.synthesis_likelihood * 100).toFixed(1)}% synthesis probability</p>
+            `;
+        }
+
+        if (data.manipulation_likelihood !== undefined) {
+            resultsHtml += `
+                <h6 class="text-muted">Manipulation Likelihood</h6>
+                <div class="progress mb-3">
+                    <div class="progress-bar ${data.manipulation_likelihood > 0.8 ? 'bg-danger' : data.manipulation_likelihood > 0.5 ? 'bg-warning' : 'bg-success'}" 
+                         style="width: ${data.manipulation_likelihood * 100}%"></div>
+                </div>
+                <p class="small text-muted">${(data.manipulation_likelihood * 100).toFixed(1)}% manipulation probability</p>
+            `;
+        }
+
+        resultsHtml += `
+                </div>
+            </div>
+        `;
+
+        // Add details if available
+        if (data.details && data.details.length > 0) {
+            resultsHtml += `
+                <hr class="my-4">
+                <h6 class="text-muted">Analysis Details</h6>
+                <ul class="list-group list-group-flush">
+            `;
+            data.details.forEach(detail => {
+                resultsHtml += `<li class="list-group-item border-0">${detail}</li>`;
+            });
+            resultsHtml += `</ul>`;
+        }
+
+        // Add metadata
+        if (data.analysis_timestamp) {
+            resultsHtml += `
+                <hr class="my-4">
+                <small class="text-muted">
+                    <i class="fas fa-clock me-1"></i>
+                    Analysis completed: ${new Date(data.analysis_timestamp).toLocaleString()}
+                </small>
+            `;
+        }
+
+        resultsContent.innerHTML = resultsHtml;
+        document.getElementById('resultsSection').style.display = 'block';
+        
+        // Scroll to results
+        document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function showAlert(type, title, message) {
+        const alertContainer = document.getElementById('alertContainer');
+        const alertMessage = document.getElementById('alertMessage');
+        const alertContent = document.getElementById('alertContent');
+        
+        alertMessage.className = `alert alert-${type}`;
+        alertContent.innerHTML = `<strong>${title}:</strong> ${message}`;
+        alertContainer.style.display = 'block';
+        
+        // Scroll to alert
+        alertContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function hideAlert() {
+        document.getElementById('alertContainer').style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

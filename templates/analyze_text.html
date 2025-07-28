@@ -1,0 +1,362 @@
+
+{% extends "base.html" %}
+
+{% block title %}Text Analysis - AI Phishing Detector{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">
+            <i class="fas fa-search-plus text-primary me-3"></i>
+            Text Analysis
+        </h1>
+        <p class="lead text-muted">
+            Detect plagiarism and AI-generated content in your text
+        </p>
+    </div>
+
+    <!-- Analysis Form -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-text me-2"></i>
+                        Submit Text for Analysis
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="/analyze-text" id="analysisForm">
+                        <!-- Text Input -->
+                        <div class="mb-4">
+                            <label for="text_content" class="form-label fw-bold">
+                                Text Content <span class="text-danger">*</span>
+                            </label>
+                            <textarea 
+                                class="form-control" 
+                                id="text_content" 
+                                name="text_content" 
+                                rows="15" 
+                                placeholder="Paste your text here for analysis... (minimum 50 characters, maximum 50,000 characters)"
+                                required
+                            >{{ request.form.get('text_content', '') if request.method == 'POST' else '' }}</textarea>
+                            <div class="form-text">
+                                <span id="charCount">0</span> characters 
+                                | <span id="wordCount">0</span> words
+                            </div>
+                        </div>
+
+                        <!-- Analysis Options -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Analysis Options</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="check_plagiarism" name="check_plagiarism" checked>
+                                        <label class="form-check-label" for="check_plagiarism">
+                                            <i class="fas fa-copy text-warning me-1"></i>
+                                            Plagiarism Detection
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="check_ai" name="check_ai" checked>
+                                        <label class="form-check-label" for="check_ai">
+                                            <i class="fas fa-robot text-info me-1"></i>
+                                            AI Content Detection
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="analyzeBtn" disabled>
+                                <i class="fas fa-search me-2"></i>Analyze Text
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    {% if result %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Analysis Results
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Overview Stats -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-3">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h6 class="text-muted mb-1">Text Length</h6>
+                                <h4 class="fw-bold">{{ result.text_length }}</h4>
+                                <small class="text-muted">characters</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h6 class="text-muted mb-1">Word Count</h6>
+                                <h4 class="fw-bold">{{ result.word_count }}</h4>
+                                <small class="text-muted">words</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h6 class="text-muted mb-1">Analysis Time</h6>
+                                <h4 class="fw-bold">{{ result.timestamp.split('T')[1][:8] if result.timestamp else 'N/A' }}</h4>
+                                <small class="text-muted">completed</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h6 class="text-muted mb-1">Components</h6>
+                                <h4 class="fw-bold">{{ result.analysis_components|length }}</h4>
+                                <small class="text-muted">analyzed</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plagiarism Results -->
+                    {% if result.plagiarism %}
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card h-100 border-warning">
+                                <div class="card-header bg-warning bg-opacity-10">
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-copy text-warning me-2"></i>
+                                        Plagiarism Analysis
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Score Display -->
+                                    <div class="text-center mb-3">
+                                        <div class="progress-circle">
+                                            <h2 class="fw-bold {% if result.plagiarism.percentage >= 70 %}text-danger{% elif result.plagiarism.percentage >= 40 %}text-warning{% else %}text-success{% endif %}">
+                                                {{ result.plagiarism.percentage }}%
+                                            </h2>
+                                        </div>
+                                        <p class="fw-bold mb-1">{{ result.plagiarism.level }}</p>
+                                        <small class="text-muted">Plagiarism Risk</small>
+                                    </div>
+
+                                    <!-- Details -->
+                                    {% if result.plagiarism.details %}
+                                    <div class="mt-3">
+                                        <h6 class="fw-bold">Findings:</h6>
+                                        <ul class="list-unstyled">
+                                            {% for detail in result.plagiarism.details %}
+                                            <li class="mb-1">
+                                                <i class="fas fa-chevron-right text-muted me-2"></i>
+                                                {{ detail }}
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if result.plagiarism.sources_found > 0 %}
+                                    <div class="alert alert-warning mt-3">
+                                        <small>
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            {{ result.plagiarism.sources_found }} potential source(s) detected
+                                        </small>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Detection Results -->
+                        <div class="col-md-6">
+                            <div class="card h-100 border-info">
+                                <div class="card-header bg-info bg-opacity-10">
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-robot text-info me-2"></i>
+                                        AI Content Detection
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Score Display -->
+                                    <div class="text-center mb-3">
+                                        <div class="progress-circle">
+                                            <h2 class="fw-bold {% if result.ai_detection.percentage >= 80 %}text-danger{% elif result.ai_detection.percentage >= 60 %}text-warning{% else %}text-success{% endif %}">
+                                                {{ result.ai_detection.percentage }}%
+                                            </h2>
+                                        </div>
+                                        <p class="fw-bold mb-1">{{ result.ai_detection.level }}</p>
+                                        <small class="text-muted">AI Probability</small>
+                                    </div>
+
+                                    <!-- Details -->
+                                    {% if result.ai_detection.details %}
+                                    <div class="mt-3">
+                                        <h6 class="fw-bold">Indicators:</h6>
+                                        <ul class="list-unstyled">
+                                            {% for detail in result.ai_detection.details %}
+                                            <li class="mb-1">
+                                                <i class="fas fa-chevron-right text-muted me-2"></i>
+                                                {{ detail }}
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if result.ai_detection.indicators_found > 0 %}
+                                    <div class="alert alert-info mt-3">
+                                        <small>
+                                            <i class="fas fa-lightbulb me-1"></i>
+                                            {{ result.ai_detection.indicators_found }} AI indicator(s) detected
+                                        </small>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Explanation -->
+                    {% if result.explanation %}
+                    <div class="alert alert-light border">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-lightbulb text-primary me-2"></i>
+                            Analysis Summary
+                        </h6>
+                        <p class="mb-0">{{ result.explanation }}</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Error Display -->
+                    {% if result.error %}
+                    <div class="alert alert-danger">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Analysis Error
+                        </h6>
+                        <p class="mb-0">{{ result.explanation }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Information Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="text-center mb-4">How Text Analysis Works</h3>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-copy text-warning fs-1 mb-3"></i>
+                    <h5 class="fw-bold">Plagiarism Detection</h5>
+                    <p class="text-muted">
+                        Analyzes text for potential copying by checking patterns, formatting, 
+                        sentence similarity, and common source indicators.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-robot text-info fs-1 mb-3"></i>
+                    <h5 class="fw-bold">AI Content Detection</h5>
+                    <p class="text-muted">
+                        Identifies AI-generated content by analyzing writing patterns, 
+                        vocabulary usage, and structural characteristics.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for real-time character/word counting -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const textArea = document.getElementById('text_content');
+    const charCount = document.getElementById('charCount');
+    const wordCount = document.getElementById('wordCount');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+
+    function updateCounts() {
+        const text = textArea.value;
+        const chars = text.length;
+        const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+        
+        charCount.textContent = chars;
+        wordCount.textContent = words;
+        
+        // Enable/disable button based on text length
+        if (chars >= 50 && chars <= 50000) {
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = '<i class="fas fa-search me-2"></i>Analyze Text';
+            textArea.classList.remove('is-invalid');
+            textArea.classList.add('is-valid');
+        } else {
+            analyzeBtn.disabled = true;
+            if (chars < 50) {
+                analyzeBtn.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Minimum 50 characters required';
+            } else if (chars > 50000) {
+                analyzeBtn.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Maximum 50,000 characters exceeded';
+            }
+            textArea.classList.remove('is-valid');
+            textArea.classList.add('is-invalid');
+        }
+    }
+
+    textArea.addEventListener('input', updateCounts);
+    updateCounts(); // Initial count
+});
+</script>
+
+<!-- Custom CSS for progress circles -->
+<style>
+.progress-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 8px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    position: relative;
+}
+
+.progress-circle::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    border-radius: 50%;
+    border: 8px solid transparent;
+    border-top-color: #007bff;
+    animation: spin 2s linear infinite;
+    opacity: 0.3;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}

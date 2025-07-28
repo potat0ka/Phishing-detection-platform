@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Initialize Super Admin - AI Phishing Detection{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-gradient-danger text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-crown me-2"></i>
+                        Initialize Super Admin Account
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>First-time Setup:</strong> Create the initial super admin account to manage the system.
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('rbac.initialize_superadmin') }}">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   value="superadmin" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="admin@phishingdetector.com" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   value="SuperAdmin123!" required minlength="8">
+                            <div class="form-text">Password must be at least 8 characters long</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="fas fa-crown me-2"></i>
+                                Create Super Admin Account
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-4">
+                        <h6 class="text-primary">Super Admin Permissions:</h6>
+                        <ul class="list-unstyled small">
+                            <li><i class="fas fa-check text-success me-2"></i>Full system access</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Manage all users and admins</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Upload and activate ML models</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Reset any user's password</li>
+                            <li><i class="fas fa-check text-success me-2"></i>System configuration</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Homepage
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

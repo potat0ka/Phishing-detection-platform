@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Login Help - AI Phishing Detection{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-gradient-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-question-circle me-2"></i>
+                        Login Help & Test Accounts
+                    </h4>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Login Instructions -->
+                    <div class="mb-4">
+                        <h5 class="text-primary">
+                            <i class="fas fa-info-circle me-2"></i>
+                            How to Login
+                        </h5>
+                        <div class="alert alert-info">
+                            <strong>Important:</strong> Use your <strong>email address</strong> (not username) to log in.
+                        </div>
+                    </div>
+
+                    <!-- Test Accounts -->
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white text-center">
+                                    <i class="fas fa-user me-2"></i>Regular User
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Username:</strong> testuser</p>
+                                    <p><strong>Email:</strong> user@test.com</p>
+                                    <p><strong>Password:</strong> password123</p>
+                                    <p class="small text-muted">Basic access: dashboard, scans, tips</p>
+                                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-sm w-100">
+                                        Login as User
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning text-dark text-center">
+                                    <i class="fas fa-user-shield me-2"></i>Admin
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Username:</strong> testadmin</p>
+                                    <p><strong>Email:</strong> admin@test.com</p>
+                                    <p><strong>Password:</strong> password123</p>
+                                    <p class="small text-muted">Manage users, approve resets, upload models</p>
+                                    <a href="{{ url_for('auth.login') }}" class="btn btn-warning btn-sm w-100">
+                                        Login as Admin
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <div class="card border-danger">
+                                <div class="card-header bg-danger text-white text-center">
+                                    <i class="fas fa-crown me-2"></i>Super Admin
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Username:</strong> testsuperadmin</p>
+                                    <p><strong>Email:</strong> superadmin@test.com</p>
+                                    <p><strong>Password:</strong> password123</p>
+                                    <p class="small text-muted">Full system control, manage all users</p>
+                                    <a href="{{ url_for('auth.login') }}" class="btn btn-danger btn-sm w-100">
+                                        Login as Super Admin
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Login Form -->
+                    <div class="mt-4">
+                        <h5 class="text-primary">
+                            <i class="fas fa-bolt me-2"></i>
+                            Quick Login
+                        </h5>
+                        <form method="POST" action="{{ url_for('auth.login') }}">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <select class="form-select" id="quickLoginSelect" onchange="fillLoginForm()">
+                                        <option value="">Choose account...</option>
+                                        <option value="user@test.com">Regular User</option>
+                                        <option value="admin@test.com">Admin</option>
+                                        <option value="superadmin@test.com">Super Admin</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="email" class="form-control" name="email" id="loginEmail" 
+                                           placeholder="Email address" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="password" class="form-control" name="password" id="loginPassword" 
+                                           placeholder="Password" value="password123" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Troubleshooting -->
+                    <div class="mt-4">
+                        <h5 class="text-primary">
+                            <i class="fas fa-wrench me-2"></i>
+                            Troubleshooting
+                        </h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Make sure you're using the <strong>email address</strong>, not username</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Password is exactly: <code>password123</code></li>
+                            <li><i class="fas fa-check text-success me-2"></i>Try copying and pasting the credentials</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Clear browser cache if you have login issues</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <div class="btn-group">
+                        <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-1"></i>Homepage
+                        </a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-plus me-1"></i>Create Account
+                        </a>
+                        <a href="{{ url_for('rbac.initialize_superadmin') }}" class="btn btn-outline-danger">
+                            <i class="fas fa-crown me-1"></i>Setup Super Admin
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function fillLoginForm() {
+    const select = document.getElementById('quickLoginSelect');
+    const emailInput = document.getElementById('loginEmail');
+    const passwordInput = document.getElementById('loginPassword');
+    
+    if (select.value) {
+        emailInput.value = select.value;
+        passwordInput.value = 'password123';
+    }
+}
+</script>
+{% endblock %}

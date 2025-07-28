@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Model Upload - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="text-primary">
+                    <i class="fas fa-brain me-2"></i>
+                    ML Model Management
+                </h2>
+                {% if session.get('role') == 'superadmin' %}
+                    <a href="{{ url_for('rbac.superadmin_dashboard') }}" class="btn btn-outline-secondary">
+                {% else %}
+                    <a href="{{ url_for('rbac.admin_dashboard') }}" class="btn btn-outline-secondary">
+                {% endif %}
+                    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                </a>
+            </div>
+            <p class="text-muted">Upload and manage machine learning models for the detection system</p>
+        </div>
+    </div>
+
+    <!-- Upload Form -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-gradient-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-upload me-2"></i>
+                        Upload New Model
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('rbac.upload_model') }}" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">Model File</label>
+                                <input type="file" class="form-control" name="model_file" 
+                                       accept=".pkl,.joblib,.model" required>
+                                <div class="form-text">Supported formats: .pkl, .joblib, .model</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Model Type</label>
+                                <select class="form-control" name="model_type" required>
+                                    <option value="">Select model type...</option>
+                                    <option value="url_model">URL Detection Model</option>
+                                    <option value="email_model">Email Detection Model</option>
+                                    <option value="text_model">Text Analysis Model</option>
+                                    <option value="vectorizer">Feature Vectorizer</option>
+                                    <option value="ensemble">Ensemble Model</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-upload me-2"></i>Upload Model
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Uploaded Models -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Uploaded Models ({{ models|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if models %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Model Name</th>
+                                        <th>Type</th>
+                                        <th>File Size</th>
+                                        <th>Uploaded By</th>
+                                        <th>Upload Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for model in models %}
+                                    <tr>
+                                        <td>
+                                            <i class="fas fa-file-code me-2"></i>
+                                            {{ model.filename }}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">
+                                                {{ model.model_type.replace('_', ' ').title() }}
+                                            </span>
+                                        </td>
+                                        <td>{{ (model.file_size / 1024 / 1024)|round(2) }} MB</td>
+                                        <td>User {{ model.uploaded_by }}</td>
+                                        <td>{{ model.uploaded_at[:10] if model.uploaded_at else 'N/A' }}</td>
+                                        <td>
+                                            {% if model.activated %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Active
+                                            </span>
+                                            {% else %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>Uploaded
+                                            </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if not model.activated %}
+                                            <form method="POST" action="{{ url_for('rbac.activate_model') }}" 
+                                                  style="display: inline;" 
+                                                  onsubmit="return confirm('Are you sure you want to activate this model? This may affect system performance.')">
+                                                <input type="hidden" name="upload_id" value="{{ model._id }}">
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-play me-1"></i>Activate
+                                                </button>
+                                            </form>
+                                            {% else %}
+                                            <span class="text-success small">
+                                                <i class="fas fa-check-circle me-1"></i>
+                                                In Use
+                                            </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-brain fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Models Uploaded</h5>
+                            <p class="text-muted">Upload your first machine learning model to get started.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Information -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-gradient-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Model Upload Guidelines
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Supported Model Types:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>URL Detection Models (.pkl)</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Email Analysis Models (.pkl)</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Text Classification Models (.pkl)</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Feature Vectorizers (.pkl)</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Ensemble Models (.joblib)</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Requirements:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-info text-info me-2"></i>Models must be scikit-learn compatible</li>
+                                <li><i class="fas fa-info text-info me-2"></i>Maximum file size: 100MB</li>
+                                <li><i class="fas fa-info text-info me-2"></i>Models should be pre-trained and validated</li>
+                                <li><i class="fas fa-info text-info me-2"></i>Include preprocessing in the model pipeline</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
