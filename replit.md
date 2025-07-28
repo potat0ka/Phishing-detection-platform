@@ -9,6 +9,16 @@ This is an AI-powered phishing detection platform built with Flask and MongoDB. 
 Preferred communication style: Simple, everyday language.
 Platform positioning: Custom-built cybersecurity platform by Bigendra Shrestha without external development assistance.
 
+## Recent System Updates
+
+### July 28, 2025 - File Upload Feature Restored
+- Fixed text authenticity analysis file upload functionality 
+- Resolved backend import error that was preventing file processing
+- Enhanced JavaScript file handling with better user feedback
+- Added console logging for debugging file upload issues
+- File upload now fully operational for .txt, .pdf, .docx, and image files
+- Users can click upload area or drag files for analysis
+
 ## System Architecture
 
 ### Backend Architecture

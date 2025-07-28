@@ -564,6 +564,7 @@ def extract_text_from_file(file_input) -> Dict[str, Any]:
                     def seek(self, pos):
                         self.position = pos
                 
+                import os
                 content = f.read()
                 mock_file = MockFile(file_input, content)
                 return text_analysis_service.extract_text_from_file(mock_file)

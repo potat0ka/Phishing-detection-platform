@@ -282,12 +282,12 @@
                                 <i class="fas fa-upload me-2"></i>
                                 Upload File (Optional)
                             </label>
-                            <div class="border-2 border-dashed border-primary rounded p-4 text-center upload-area" onclick="document.getElementById('text_file').click()" style="cursor: pointer;">
+                            <div class="border-2 border-dashed border-primary rounded p-4 text-center upload-area" id="uploadArea" style="cursor: pointer;">
                                 <input type="file" 
                                        class="form-control d-none" 
                                        id="text_file" 
                                        name="text_file"
-                                       accept=".txt,.pdf,.docx,.jpg,.jpeg,.png"
+                                       accept=".txt,.pdf,.docx,.jpg,.jpeg,.png,.gif"
                                        onchange="handleFileUpload(this)">
                                 <div class="upload-content">
                                     <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
@@ -428,21 +428,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // File upload handling function
     window.handleFileUpload = function(input) {
-        if (input.files.length > 0) {
+        console.log('File upload triggered', input.files);
+        if (input.files && input.files.length > 0) {
             const file = input.files[0];
+            console.log('Selected file:', file.name, file.size, file.type);
+            
             const uploadContent = document.querySelector('.upload-content');
             const fileInfo = document.querySelector('.file-info');
             
-            uploadContent.classList.add('d-none');
-            fileInfo.classList.remove('d-none');
-            fileInfo.querySelector('.filename').textContent = file.name;
-            
-            // Clear text area when file is selected
-            const textArea = document.getElementById('text_content');
-            textArea.value = '';
-            updateCounts();
+            if (uploadContent && fileInfo) {
+                uploadContent.classList.add('d-none');
+                fileInfo.classList.remove('d-none');
+                fileInfo.querySelector('.filename').textContent = file.name;
+                
+                // Clear text area when file is selected
+                const textArea = document.getElementById('text_content');
+                if (textArea) {
+                    textArea.value = '';
+                    updateCounts();
+                }
+                
+                // Change upload area styling to show file is selected
+                const uploadArea = document.getElementById('uploadArea');
+                if (uploadArea) {
+                    uploadArea.classList.add('border-success');
+                    uploadArea.classList.remove('border-primary');
+                }
+                
+                console.log('File upload UI updated successfully');
+            }
         }
     };
+    
+    // Make upload area clickable
+    const uploadArea = document.getElementById('uploadArea');
+    if (uploadArea) {
+        uploadArea.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'BUTTON') {
+                document.getElementById('text_file').click();
+            }
+        });
+    }
 
     // File upload handling
     fileInput.addEventListener('change', function() {
@@ -451,9 +477,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Clear file function
     window.clearFile = function() {
-        fileInput.value = '';
-        uploadContent.classList.remove('d-none');
-        fileInfo.classList.add('d-none');
+        const fileInput = document.getElementById('text_file');
+        const uploadContent = document.querySelector('.upload-content');
+        const fileInfo = document.querySelector('.file-info');
+        const uploadArea = document.getElementById('uploadArea');
+        
+        if (fileInput) fileInput.value = '';
+        if (uploadContent) uploadContent.classList.remove('d-none');
+        if (fileInfo) fileInfo.classList.add('d-none');
+        if (uploadArea) {
+            uploadArea.classList.remove('border-success');
+            uploadArea.classList.add('border-primary');
+        }
+        
+        console.log('File cleared');
     };
 
     // Drag and drop
