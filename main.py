@@ -21,7 +21,7 @@ if __name__ == '__main__':
         try:
             from models.safety_tips_model import SafetyTipsModel
             from models.scan_history_model import ScanHistoryModel
-            from utils.mongodb_utils import setup_test_users
+            from services.mongo_service import mongo_service
             logger.info("Scan history model imported successfully")
 
             # Check if safety tips model exists before importing

@@ -14,7 +14,7 @@ Author: Bigendra Shrestha
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from models.user_model import UserModel
 from utils.validation import validate_email, validate_password
-from utils.mongodb_utils import get_mongodb_connection, verify_password, hash_password
+from services.mongo_service import hash_password, verify_password
 import logging
 import bcrypt
 
@@ -53,18 +53,16 @@ def register():
             flash('Passwords do not match', 'error')
             return render_template('auth/register.html')
 
-        # Check if user already exists using MongoDB
-        client, users_collection = get_mongodb_connection()
-        if users_collection is not None:
-            existing_user = users_collection.find_one({'email': email})
-            if existing_user:
-                flash('Email address already registered', 'error')
-                return render_template('auth/register.html')
+        # Check if user already exists using UserModel
+        existing_user = UserModel.find_user_by_email(email)
+        if existing_user:
+            flash('Email address already registered', 'error')
+            return render_template('auth/register.html')
 
-            existing_username = users_collection.find_one({'username': username})
-            if existing_username:
-                flash('Username already taken', 'error')
-                return render_template('auth/register.html')
+        existing_username = UserModel.find_user_by_username(username)
+        if existing_username:
+            flash('Username already taken', 'error')
+            return render_template('auth/register.html')
 
         # Create new user with bcrypt hashed password
         user_id = UserModel.create_user(username, email, password)
@@ -99,23 +97,11 @@ def login():
             flash('Email and password are required', 'error')
             return render_template('auth/login.html')
 
-        # Query MongoDB users collection as specified
-        client, users_collection = get_mongodb_connection()
-        user = None
-
-        if users_collection is not None:
-            # Fetch user with users_collection.find_one({'email': email}) as specified
-            user = users_collection.find_one({'email': email})
-            if not user:
-                # Also try username as fallback for flexibility
-                user = users_collection.find_one({'username': email})
-
-        # Fallback to file storage if MongoDB fails
+        # Find user using UserModel (handles MongoDB and file fallback)
+        user = UserModel.find_user_by_email(email)
         if not user:
-            print("MongoDB user not found, falling back to file storage...")
-            user = UserModel.find_user_by_email(email)
-            if not user:
-                user = UserModel.find_user_by_username(email)
+            # Also try username as fallback for flexibility
+            user = UserModel.find_user_by_username(email)
 
         if not user:
             flash('Invalid email/username or password', 'error')

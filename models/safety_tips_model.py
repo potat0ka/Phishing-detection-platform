@@ -300,6 +300,19 @@ class SafetyTipsModel:
             logger.error(f"Error initializing default tips: {e}")
     
     @staticmethod
+    def get_featured_tip():
+        """Get a featured tip for homepage display"""
+        try:
+            tips = SafetyTipsModel.get_all_tips()
+            if tips:
+                # Return the first tip as featured
+                return tips[0]
+            return SafetyTipsModel.get_default_tips()[0]
+        except Exception as e:
+            logger.error(f"Error getting featured tip: {e}")
+            return SafetyTipsModel.get_default_tips()[0]
+    
+    @staticmethod
     def get_default_tips():
         """Get default safety tips for initialization"""
         return [

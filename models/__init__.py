@@ -15,7 +15,7 @@ from .safety_tips_model import SafetyTipsModel
 from .scan_history_model import ScanHistoryModel
 from .rbac_model import RBACModel
 from .analytics_model import AnalyticsModel
-from .security_tips_model import SecurityTipsModel
+# Removed duplicate security_tips_model - using safety_tips_model instead
 from .phishing_model import PhishingModel
 
 # Make models available when importing from models package
@@ -25,6 +25,5 @@ __all__ = [
     'ScanHistoryModel', 
     'RBACModel', 
     'AnalyticsModel',
-    'SecurityTipsModel',
     'PhishingModel'
 ]

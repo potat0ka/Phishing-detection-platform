@@ -14,7 +14,7 @@ Author: Bigendra Shrestha
 from flask import Blueprint, render_template, request, jsonify, current_app, session, redirect, url_for
 from flask_login import login_required
 from datetime import datetime
-from models import PhishingModel, SecurityTipsModel, AnalyticsModel
+from models import PhishingModel, SafetyTipsModel, AnalyticsModel
 from models.scan_history_model import ScanHistoryModel
 from utils.phishing_detector import PhishingDetector
 from utils.validation import validate_url
@@ -45,7 +45,7 @@ def index():
         # Get data from MongoDB models
         system_stats = AnalyticsModel.get_system_stats()
         recent_threats = PhishingModel.get_recent_threats(limit=3)
-        featured_tip = SecurityTipsModel.get_featured_tip()
+        featured_tip = SafetyTipsModel.get_featured_tip()
 
         # Check if database is connected (for template display)
         db_connected = current_app.mongo.db is not None  # type: ignore

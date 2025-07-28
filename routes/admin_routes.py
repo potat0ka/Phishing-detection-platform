@@ -13,7 +13,7 @@ Author: Bigendra Shrestha
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from functools import wraps
-from models import PhishingModel, SecurityTipsModel, UserModel, AnalyticsModel
+from models import PhishingModel, SafetyTipsModel, UserModel, AnalyticsModel
 from utils.validation import validate_url
 import logging
 
@@ -233,7 +233,7 @@ def add_security_tip():
             flash('Title and content are required', 'error')
             return redirect(url_for('admin.admin_panel'))
         
-        result = SecurityTipsModel.add_tip(title, content, category, difficulty)
+        result = SafetyTipsModel.add_tip(title, content, category, difficulty)
         
         if result:
             flash('Security tip added successfully', 'success')
@@ -260,7 +260,7 @@ def edit_security_tip(tip_id):
             flash('Title and content are required', 'error')
             return redirect(url_for('admin.admin_panel'))
         
-        result = SecurityTipsModel.update_tip(tip_id, title, content, category, difficulty)
+        result = SafetyTipsModel.update_tip(tip_id, title, content, category, difficulty)
         
         if result:
             flash('Security tip updated successfully', 'success')
@@ -278,7 +278,7 @@ def edit_security_tip(tip_id):
 def delete_security_tip(tip_id):
     """Delete security tip"""
     try:
-        result = SecurityTipsModel.delete_tip(tip_id)
+        result = SafetyTipsModel.delete_tip(tip_id)
         
         if result:
             flash('Security tip deleted successfully', 'success')

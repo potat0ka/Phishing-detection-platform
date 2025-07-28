@@ -9,8 +9,8 @@ Author: Bigendra Shrestha
 """
 
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
 from .database import db
+from services.mongo_service import hash_password, verify_password
 
 class UserModel:
     """
@@ -27,8 +27,7 @@ class UserModel:
         """Create a new user account with bcrypt hashing"""
         try:
             # Hash the password with bcrypt
-            import bcrypt
-            password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            password_hash = hash_password(password)
             
             user_data = {
                 'username': username,
@@ -151,10 +150,7 @@ class UserModel:
         """Verify user password with bcrypt"""
         try:
             if user and 'password_hash' in user:
-                import bcrypt
-                stored_password = user['password_hash'].encode('utf-8')
-                password_bytes = password.encode('utf-8')
-                return bcrypt.checkpw(password_bytes, stored_password)
+                return verify_password(password, user['password_hash'])
             return False
         except Exception:
             return False
