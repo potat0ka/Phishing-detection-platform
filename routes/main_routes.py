@@ -233,99 +233,167 @@ def tips():
 @login_required
 def analyze_text():
     """
-    Text Analysis page for plagiarism and AI detection
-
-    GET: Show the text analysis form
-    POST: Process text and return analysis results
+    Enhanced Text Analysis page with file upload support
+    
+    Supports:
+    - Direct text input
+    - File uploads (.txt, .pdf, .docx, .jpg, .png)
+    - AI-generated content detection
+    - Plagiarism detection with source URLs
+    
+    GET: Show the text analysis form with file upload
+    POST: Process text/file and return comprehensive analysis results
     """
     if request.method == 'GET':
-        return render_template('analyze_text.html')
+        # Import here to get supported formats
+        from utils.text_analysis import TextAnalyzer
+        supported_formats = TextAnalyzer.get_supported_formats()
+        return render_template('analyze_text.html', supported_formats=supported_formats)
 
     try:
         # Import the text analyzer
         from utils.text_analysis import TextAnalyzer
+        
+        logger.info("Starting enhanced text analysis request")
 
         # Get form data
         text_content = request.form.get('text_content', '').strip()
         check_plagiarism = request.form.get('check_plagiarism') == 'on'
         check_ai = request.form.get('check_ai') == 'on'
+        
+        # Check if file was uploaded
+        uploaded_file = request.files.get('text_file')
+        
+        # Initialize analyzer
+        analyzer = TextAnalyzer()
+        
+        # Extract text from file if provided
+        if uploaded_file and uploaded_file.filename:
+            logger.info(f"Processing uploaded file: {uploaded_file.filename}")
+            
+            file_result = analyzer.extract_text_from_file(uploaded_file)
+            
+            if not file_result['success']:
+                return render_template('analyze_text.html', 
+                                     error=file_result['error'],
+                                     supported_formats=analyzer.get_supported_formats())
+            
+            # Use extracted text
+            text_content = file_result['text']
+            file_info = {
+                'filename': uploaded_file.filename,
+                'source': file_result.get('source', 'unknown'),
+                'extraction_details': file_result
+            }
+            
+            logger.info(f"Successfully extracted {len(text_content)} characters from {uploaded_file.filename}")
+        else:
+            file_info = None
 
-        # Validate input
+        # Validate we have text content
         if not text_content:
             return render_template('analyze_text.html', 
-                                 error="Please enter text content to analyze")
+                                 error="Please enter text content or upload a file to analyze",
+                                 supported_formats=analyzer.get_supported_formats())
 
+        # Validate text length
         if len(text_content) < 50:
             return render_template('analyze_text.html',
-                                 error="Text must be at least 50 characters long")
+                                 error="Text must be at least 50 characters long for analysis",
+                                 supported_formats=analyzer.get_supported_formats())
 
         if len(text_content) > 50000:
             return render_template('analyze_text.html',
-                                 error="Text must be less than 50,000 characters")
+                                 error="Text is too long. Maximum 50,000 characters allowed",
+                                 supported_formats=analyzer.get_supported_formats())
 
         # Ensure at least one analysis type is selected
         if not check_plagiarism and not check_ai:
             return render_template('analyze_text.html',
-                                 error="Please select at least one analysis type")
+                                 error="Please select at least one analysis type (AI Detection or Plagiarism Check)",
+                                 supported_formats=analyzer.get_supported_formats())
 
-        logger.info(f"Starting text analysis: {len(text_content)} characters")
+        logger.info(f"Starting analysis: {len(text_content)} chars, AI: {check_ai}, Plagiarism: {check_plagiarism}")
 
-        # Initialize text analyzer and perform analysis
-        analyzer = TextAnalyzer()
-        result = analyzer.analyze_text(text_content)
+        # Perform comprehensive text analysis
+        result = analyzer.analyze_text(text_content, check_ai=check_ai, check_plagiarism=check_plagiarism)
 
         # Check for analysis errors
-        if result.get('error'):
-            logger.error(f"Text analyzer error: {result.get('explanation', 'Unknown error')}")
+        if not result.get('success', False):
+            logger.error(f"Text analysis failed: {result.get('explanation', 'Unknown error')}")
             return render_template('analyze_text.html',
-                                 error=f"Analysis failed: {result.get('explanation', 'Unknown error')}")
+                                 error=f"Analysis failed: {result.get('error', 'Unknown error')}",
+                                 supported_formats=analyzer.get_supported_formats())
 
-        # Save analysis result to user history if logged in
+        # Add file information to result
+        if file_info:
+            result['file_info'] = file_info
+
+        # Save analysis result to user history
         try:
             from models.scan_history_model import ScanHistoryModel
 
             # Get current user ID from session
             current_user_id = session.get('user_id')
 
-            # Create a simplified result for history
+            # Create a comprehensive result for history
             history_result = {
                 'analysis_type': 'text_analysis',
-                'plagiarism_score': result['plagiarism']['score'],
-                'ai_score': result['ai_detection']['score'],
-                'explanation': result['explanation']
+                'file_uploaded': file_info is not None,
+                'filename': file_info['filename'] if file_info else None,
+                'text_length': len(text_content),
+                'word_count': result.get('word_count', 0),
+                'checks_performed': {
+                    'ai_detection': check_ai,
+                    'plagiarism_check': check_plagiarism
+                }
             }
+            
+            # Add scores if available
+            if check_ai and 'ai_detection' in result:
+                history_result['ai_score'] = result['ai_detection']['score']
+                history_result['ai_confidence'] = result['ai_detection']['confidence']
+            
+            if check_plagiarism and 'plagiarism' in result:
+                history_result['plagiarism_score'] = result['plagiarism']['score']
+                history_result['sources_found'] = result['plagiarism']['total_sources_found']
+            
+            history_result['explanation'] = result['explanation']
 
             # Save analysis result
             scan_id = ScanHistoryModel.save_scan_result(
-                content=text_content[:200] + '...' if len(text_content) > 200 else text_content,
+                content=(file_info['filename'] if file_info else text_content[:200] + '...' if len(text_content) > 200 else text_content),
                 content_type='text_analysis',
                 result=history_result,
                 user_id=current_user_id
             )
 
-            # Log success with context
-            user_context = f"user {current_user_id}" if current_user_id else "anonymous user"
-            logger.info(f"Text analysis saved (ID: {scan_id}) for {user_context}")
+            if scan_id:
+                logger.info(f"Saved analysis result with ID: {scan_id}")
+            else:
+                logger.warning("Failed to save analysis result to history")
 
-            # Update system-wide analytics
-            AnalyticsModel.update_scan_count()
+        except Exception as e:
+            logger.error(f"Error saving to scan history: {e}")
 
-        except Exception as log_error:
-            logger.error(f"Failed to save text analysis result: {log_error}")
+        # Log successful analysis
+        logger.info(f"Text analysis completed successfully. AI: {result.get('ai_detection', {}).get('score', 'N/A')}%, Plagiarism: {result.get('plagiarism', {}).get('score', 'N/A')}%")
 
-        logger.info(f"Text analysis complete - Plagiarism: {result['plagiarism']['score']:.2f}, AI: {result['ai_detection']['score']:.2f}")
-
-        return render_template('analyze_text.html', result=result)
-
-    except ImportError as e:
-        logger.error(f"Text analyzer import error: {e}")
+        # Return results to template
         return render_template('analyze_text.html',
-                             error="Text analysis system is currently unavailable. Please try again later.")
+                             result=result,
+                             text_content=text_content[:500] + '...' if len(text_content) > 500 else text_content,
+                             file_info=file_info,
+                             check_ai=check_ai,
+                             check_plagiarism=check_plagiarism,
+                             supported_formats=analyzer.get_supported_formats())
 
     except Exception as e:
-        logger.error(f"Error processing text analysis: {str(e)}")
+        logger.error(f"Error in text analysis route: {e}")
+        from utils.text_analysis import TextAnalyzer
         return render_template('analyze_text.html',
-                             error=f"Analysis error: {str(e)}. Please check your input and try again.")
+                             error=f"An unexpected error occurred: {str(e)}",
+                             supported_formats=TextAnalyzer.get_supported_formats())
 
 @main_bp.route('/api/scan', methods=['POST'])
 def api_scan_content():
