@@ -127,7 +127,7 @@ def admin_dashboard():
             'phishing': url_for('main.index'),  # Fixed: redirect to main page for now
             'safety_tips': url_for('main.tips'),  # Fixed: redirect to tips page
             'check': url_for('main.check_url'),
-            'analyze': url_for('main.analyze')
+            'analyze': url_for('main.analyze_text')
         }
 
         return render_template('admin/rbac_dashboard.html', 
