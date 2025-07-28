@@ -307,12 +307,47 @@
                                         Detects AI content and plagiarism with detailed source analysis
                                     </p>
                                 </div>
+                                <!-- File Progress Section -->
+                                <div class="file-progress d-none">
+                                    <div class="progress mb-3" style="height: 8px;">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+                                             role="progressbar" 
+                                             style="width: 0%" 
+                                             id="uploadProgress">
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="progress-message text-primary fw-bold mb-2" id="progressMessage">
+                                            <i class="fas fa-upload me-2"></i>
+                                            Starting upload...
+                                        </div>
+                                        <div class="progress-percentage text-muted small" id="progressPercentage">0%</div>
+                                    </div>
+                                </div>
+
+                                <!-- File Success Section -->
                                 <div class="file-info d-none">
-                                    <i class="fas fa-file me-2 text-success"></i>
-                                    <span class="filename text-success fw-bold"></span>
-                                    <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="clearFile()">
-                                        <i class="fas fa-times"></i> Remove
-                                    </button>
+                                    <div class="text-center mb-3">
+                                        <div class="success-animation">
+                                            <i class="fas fa-check-circle fa-3x text-success mb-2"></i>
+                                        </div>
+                                        <h6 class="text-success fw-bold mb-2">
+                                            <span class="filename"></span> uploaded successfully!
+                                        </h6>
+                                        <div class="file-details text-muted small mb-3">
+                                            <span class="file-size"></span> • 
+                                            <span class="file-type"></span> • 
+                                            <span class="upload-time"></span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <button type="button" class="btn btn-sm btn-outline-success" disabled>
+                                            <i class="fas fa-file-check me-1"></i> Ready for Analysis
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearFile()">
+                                            <i class="fas fa-times me-1"></i> Remove
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -426,39 +461,167 @@ document.addEventListener('DOMContentLoaded', function() {
     textArea.addEventListener('input', updateCounts);
     updateCounts(); // Initial count
 
-    // File upload handling function
+    // File upload handling function with progress simulation
     window.handleFileUpload = function(input) {
         console.log('File upload triggered', input.files);
         if (input.files && input.files.length > 0) {
             const file = input.files[0];
             console.log('Selected file:', file.name, file.size, file.type);
             
-            const uploadContent = document.querySelector('.upload-content');
-            const fileInfo = document.querySelector('.file-info');
-            
-            if (uploadContent && fileInfo) {
-                uploadContent.classList.add('d-none');
-                fileInfo.classList.remove('d-none');
-                fileInfo.querySelector('.filename').textContent = file.name;
-                
-                // Clear text area when file is selected
-                const textArea = document.getElementById('text_content');
-                if (textArea) {
-                    textArea.value = '';
-                    updateCounts();
-                }
-                
-                // Change upload area styling to show file is selected
-                const uploadArea = document.getElementById('uploadArea');
-                if (uploadArea) {
-                    uploadArea.classList.add('border-success');
-                    uploadArea.classList.remove('border-primary');
-                }
-                
-                console.log('File upload UI updated successfully');
-            }
+            // Start upload progress simulation
+            startUploadProgress(file);
         }
     };
+
+    // Upload progress simulation with encouraging messages
+    function startUploadProgress(file) {
+        const uploadContent = document.querySelector('.upload-content');
+        const fileProgress = document.querySelector('.file-progress');
+        const fileInfo = document.querySelector('.file-info');
+        const uploadArea = document.getElementById('uploadArea');
+        
+        // Hide upload content, show progress
+        if (uploadContent) uploadContent.classList.add('d-none');
+        if (fileProgress) fileProgress.classList.remove('d-none');
+        if (uploadArea) {
+            uploadArea.classList.add('border-primary');
+            uploadArea.style.backgroundColor = '#f8f9fa';
+        }
+
+        const progressBar = document.getElementById('uploadProgress');
+        const progressMessage = document.getElementById('progressMessage');
+        const progressPercentage = document.getElementById('progressPercentage');
+        
+        // Encouraging messages with icons
+        const messages = [
+            { text: "Starting upload...", icon: "fas fa-rocket", color: "text-primary" },
+            { text: "Reading your file...", icon: "fas fa-file-import", color: "text-info" },
+            { text: "Processing content...", icon: "fas fa-cogs", color: "text-warning" },
+            { text: "Preparing for analysis...", icon: "fas fa-magic", color: "text-success" },
+            { text: "Almost there...", icon: "fas fa-star", color: "text-success" },
+            { text: "Upload complete!", icon: "fas fa-check", color: "text-success" }
+        ];
+        
+        let progress = 0;
+        let messageIndex = 0;
+        
+        // Simulate upload progress
+        const progressInterval = setInterval(() => {
+            // Vary progress speed for realism
+            const increment = Math.random() * 15 + 5; // 5-20% increments
+            progress = Math.min(progress + increment, 100);
+            
+            // Update progress bar
+            if (progressBar) {
+                progressBar.style.width = progress + '%';
+                
+                // Change colors as progress increases
+                if (progress < 30) {
+                    progressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary';
+                } else if (progress < 70) {
+                    progressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-info';
+                } else if (progress < 90) {
+                    progressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-warning';
+                } else {
+                    progressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-success';
+                }
+            }
+            
+            // Update percentage
+            if (progressPercentage) {
+                progressPercentage.textContent = Math.round(progress) + '%';
+            }
+            
+            // Update encouraging messages
+            const targetMessageIndex = Math.floor((progress / 100) * (messages.length - 1));
+            if (targetMessageIndex > messageIndex && messages[targetMessageIndex]) {
+                messageIndex = targetMessageIndex;
+                const message = messages[messageIndex];
+                if (progressMessage) {
+                    progressMessage.innerHTML = `<i class="${message.icon} me-2"></i>${message.text}`;
+                    progressMessage.className = `progress-message fw-bold mb-2 ${message.color}`;
+                }
+            }
+            
+            // Complete upload
+            if (progress >= 100) {
+                clearInterval(progressInterval);
+                setTimeout(() => {
+                    completeUpload(file);
+                }, 500);
+            }
+        }, 200 + Math.random() * 300); // Variable timing for realism
+    }
+
+    // Complete upload and show success
+    function completeUpload(file) {
+        const fileProgress = document.querySelector('.file-progress');
+        const fileInfo = document.querySelector('.file-info');
+        const uploadArea = document.getElementById('uploadArea');
+        
+        // Hide progress, show success
+        if (fileProgress) fileProgress.classList.add('d-none');
+        if (fileInfo) fileInfo.classList.remove('d-none');
+        
+        // Update file information
+        if (fileInfo) {
+            const filename = fileInfo.querySelector('.filename');
+            const fileSize = fileInfo.querySelector('.file-size');
+            const fileType = fileInfo.querySelector('.file-type');
+            const uploadTime = fileInfo.querySelector('.upload-time');
+            
+            if (filename) filename.textContent = file.name;
+            if (fileSize) fileSize.textContent = formatFileSize(file.size);
+            if (fileType) fileType.textContent = file.type || getFileTypeFromName(file.name);
+            if (uploadTime) uploadTime.textContent = 'Just now';
+        }
+        
+        // Style upload area for success
+        if (uploadArea) {
+            uploadArea.classList.remove('border-primary');
+            uploadArea.classList.add('border-success');
+            uploadArea.style.backgroundColor = '#d1e7dd';
+        }
+        
+        // Clear text area when file is selected
+        const textArea = document.getElementById('text_content');
+        if (textArea) {
+            textArea.value = '';
+            updateCounts();
+        }
+        
+        // Trigger success animation
+        const successIcon = document.querySelector('.success-animation i');
+        if (successIcon) {
+            successIcon.style.animation = 'bounce 1s ease-in-out';
+        }
+        
+        console.log('File upload completed successfully');
+    }
+
+    // Helper functions
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function getFileTypeFromName(filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        const types = {
+            'txt': 'Text Document',
+            'pdf': 'PDF Document', 
+            'docx': 'Word Document',
+            'doc': 'Word Document',
+            'jpg': 'JPEG Image',
+            'jpeg': 'JPEG Image',
+            'png': 'PNG Image',
+            'gif': 'GIF Image'
+        };
+        return types[ext] || 'Unknown';
+    }
     
     // Make upload area clickable
     const uploadArea = document.getElementById('uploadArea');
@@ -475,22 +638,45 @@ document.addEventListener('DOMContentLoaded', function() {
         handleFileUpload(this);
     });
 
-    // Clear file function
+    // Clear file function with reset
     window.clearFile = function() {
         const fileInput = document.getElementById('text_file');
         const uploadContent = document.querySelector('.upload-content');
         const fileInfo = document.querySelector('.file-info');
+        const fileProgress = document.querySelector('.file-progress');
         const uploadArea = document.getElementById('uploadArea');
         
+        // Reset file input
         if (fileInput) fileInput.value = '';
+        
+        // Show upload content, hide others
         if (uploadContent) uploadContent.classList.remove('d-none');
         if (fileInfo) fileInfo.classList.add('d-none');
+        if (fileProgress) fileProgress.classList.add('d-none');
+        
+        // Reset upload area styling
         if (uploadArea) {
-            uploadArea.classList.remove('border-success');
+            uploadArea.classList.remove('border-success', 'border-warning');
             uploadArea.classList.add('border-primary');
+            uploadArea.style.backgroundColor = '';
         }
         
-        console.log('File cleared');
+        // Reset progress elements
+        const progressBar = document.getElementById('uploadProgress');
+        const progressMessage = document.getElementById('progressMessage');
+        const progressPercentage = document.getElementById('progressPercentage');
+        
+        if (progressBar) {
+            progressBar.style.width = '0%';
+            progressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary';
+        }
+        if (progressMessage) {
+            progressMessage.innerHTML = '<i class="fas fa-upload me-2"></i>Starting upload...';
+            progressMessage.className = 'progress-message text-primary fw-bold mb-2';
+        }
+        if (progressPercentage) progressPercentage.textContent = '0%';
+        
+        console.log('File cleared and UI reset');
     };
 
     // Drag and drop
@@ -565,6 +751,96 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .border-start {
     border-left: 3px solid;
+}
+
+/* Upload Progress Animations */
+.file-progress {
+    animation: slideDown 0.5s ease-out;
+}
+
+.file-info {
+    animation: slideDown 0.5s ease-out;
+}
+
+.success-animation {
+    animation: zoomIn 0.6s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Progress Bar Enhancements */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.progress-bar {
+    transition: width 0.3s ease;
+    border-radius: 10px;
+}
+
+/* Upload Area States */
+.upload-area.uploading {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(13, 110, 253, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+    }
+}
+
+/* Message Color Transitions */
+.progress-message {
+    transition: color 0.3s ease;
+}
+
+/* File Details Styling */
+.file-details {
+    background: rgba(25, 135, 84, 0.1);
+    border-radius: 6px;
+    padding: 6px 12px;
+    display: inline-block;
 }
 </style>
 
