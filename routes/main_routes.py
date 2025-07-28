@@ -18,6 +18,7 @@ from models import PhishingModel, SecurityTipsModel, AnalyticsModel
 from models.scan_history_model import ScanHistoryModel
 from utils.phishing_detector import PhishingDetector
 from utils.validation import validate_url
+from services.text_analysis import analyze_text_content, extract_text_from_file
 import logging
 import os
 
@@ -122,9 +123,38 @@ def check_url():
 
         logger.info(f"Starting {input_type} analysis: {content[:50]}...")
 
-        # Initialize ML detector and analyze content
-        detector = MLPhishingDetector()
-        result = detector.analyze_content(content, input_type)
+        # For message/text content, use shared text analysis service
+        if input_type == 'message' and len(content) >= 50:
+            logger.info("Using shared text analysis service for message content")
+            text_result = analyze_text_content(content, check_ai=True, check_plagiarism=True, source="homepage")
+            
+            if text_result.get('success'):
+                # Convert text analysis result to ML detector format for consistency
+                threat_level = 'low'
+                if text_result.get('ai_detection', {}).get('percentage', 0) >= 60:
+                    threat_level = 'medium'
+                if text_result.get('plagiarism', {}).get('percentage', 0) >= 40:
+                    threat_level = 'high'
+                
+                result = {
+                    'threat_level': threat_level,
+                    'confidence_score': 0.85,  # High confidence for text analysis
+                    'explanation': text_result.get('explanation', ''),
+                    'warnings': [],
+                    'details': {
+                        'ai_detection': text_result.get('ai_detection', {}),
+                        'plagiarism': text_result.get('plagiarism', {}),
+                        'text_analysis': True
+                    }
+                }
+                logger.info(f"Text analysis completed: AI {text_result.get('ai_detection', {}).get('percentage', 0)}%, Plagiarism {text_result.get('plagiarism', {}).get('percentage', 0)}%")
+            else:
+                logger.warning(f"Text analysis failed: {text_result.get('error')}")
+                return render_template('result.html', error=text_result.get('error', 'Text analysis failed'))
+        else:
+            # Use ML detector for URL and email content, or short message content
+            detector = MLPhishingDetector()
+            result = detector.analyze_content(content, input_type)
 
         # Check for analysis errors
         if result.get('error'):
@@ -245,16 +275,13 @@ def analyze_text():
     POST: Process text/file and return comprehensive analysis results
     """
     if request.method == 'GET':
-        # Import here to get supported formats
-        from utils.text_analysis import TextAnalyzer
-        supported_formats = TextAnalyzer.get_supported_formats()
+        # Import shared service to get supported formats
+        from services.text_analysis import text_analysis_service
+        supported_formats = text_analysis_service.get_supported_formats()
         return render_template('analyze_text.html', supported_formats=supported_formats)
 
     try:
-        # Import the text analyzer
-        from utils.text_analysis import TextAnalyzer
-        
-        logger.info("Starting enhanced text analysis request")
+        logger.info("Starting enhanced text analysis request using shared service")
 
         # Get form data
         text_content = request.form.get('text_content', '').strip()
@@ -264,25 +291,24 @@ def analyze_text():
         # Check if file was uploaded
         uploaded_file = request.files.get('text_file')
         
-        # Initialize analyzer
-        analyzer = TextAnalyzer()
-        
-        # Extract text from file if provided
+        # Extract text from file if provided using shared service
         if uploaded_file and uploaded_file.filename:
             logger.info(f"Processing uploaded file: {uploaded_file.filename}")
             
-            file_result = analyzer.extract_text_from_file(uploaded_file)
+            file_result = extract_text_from_file(uploaded_file)
             
             if not file_result['success']:
+                # Get supported formats from the service
+                from services.text_analysis import text_analysis_service
                 return render_template('analyze_text.html', 
                                      error=file_result['error'],
-                                     supported_formats=analyzer.get_supported_formats())
+                                     supported_formats=text_analysis_service.get_supported_formats())
             
             # Use extracted text
             text_content = file_result['text']
             file_info = {
                 'filename': uploaded_file.filename,
-                'source': file_result.get('source', 'unknown'),
+                'file_type': file_result.get('file_type', 'unknown'),
                 'extraction_details': file_result
             }
             
@@ -290,40 +316,45 @@ def analyze_text():
         else:
             file_info = None
 
+        # Get supported formats for error handling
+        from services.text_analysis import text_analysis_service
+        supported_formats = text_analysis_service.get_supported_formats()
+
         # Validate we have text content
         if not text_content:
             return render_template('analyze_text.html', 
                                  error="Please enter text content or upload a file to analyze",
-                                 supported_formats=analyzer.get_supported_formats())
+                                 supported_formats=supported_formats)
 
-        # Validate text length
+        # Validate text length (using shared service validation)
         if len(text_content) < 50:
             return render_template('analyze_text.html',
                                  error="Text must be at least 50 characters long for analysis",
-                                 supported_formats=analyzer.get_supported_formats())
+                                 supported_formats=supported_formats)
 
         if len(text_content) > 50000:
             return render_template('analyze_text.html',
                                  error="Text is too long. Maximum 50,000 characters allowed",
-                                 supported_formats=analyzer.get_supported_formats())
+                                 supported_formats=supported_formats)
 
         # Ensure at least one analysis type is selected
         if not check_plagiarism and not check_ai:
             return render_template('analyze_text.html',
                                  error="Please select at least one analysis type (AI Detection or Plagiarism Check)",
-                                 supported_formats=analyzer.get_supported_formats())
+                                 supported_formats=supported_formats)
 
         logger.info(f"Starting analysis: {len(text_content)} chars, AI: {check_ai}, Plagiarism: {check_plagiarism}")
 
-        # Perform comprehensive text analysis
-        result = analyzer.analyze_text(text_content, check_ai=check_ai, check_plagiarism=check_plagiarism)
+        # Perform comprehensive text analysis using shared service
+        source = "file_upload" if file_info else "manual"
+        result = analyze_text_content(text_content, check_ai=check_ai, check_plagiarism=check_plagiarism, source=source)
 
         # Check for analysis errors
         if not result.get('success', False):
-            logger.error(f"Text analysis failed: {result.get('explanation', 'Unknown error')}")
+            logger.error(f"Text analysis failed: {result.get('error', 'Unknown error')}")
             return render_template('analyze_text.html',
                                  error=f"Analysis failed: {result.get('error', 'Unknown error')}",
-                                 supported_formats=analyzer.get_supported_formats())
+                                 supported_formats=supported_formats)
 
         # Add file information to result
         if file_info:
@@ -386,14 +417,14 @@ def analyze_text():
                              file_info=file_info,
                              check_ai=check_ai,
                              check_plagiarism=check_plagiarism,
-                             supported_formats=analyzer.get_supported_formats())
+                             supported_formats=supported_formats)
 
     except Exception as e:
         logger.error(f"Error in text analysis route: {e}")
-        from utils.text_analysis import TextAnalyzer
+        from services.text_analysis import text_analysis_service
         return render_template('analyze_text.html',
                              error=f"An unexpected error occurred: {str(e)}",
-                             supported_formats=TextAnalyzer.get_supported_formats())
+                             supported_formats=text_analysis_service.get_supported_formats())
 
 @main_bp.route('/api/scan', methods=['POST'])
 def api_scan_content():
