@@ -536,14 +536,42 @@ def analyze_text_content(text: str, check_ai: bool = True, check_plagiarism: boo
     """
     return text_analysis_service.analyze_text(text, check_ai, check_plagiarism, source)
 
-def extract_text_from_file(file_obj) -> Dict[str, Any]:
+def extract_text_from_file(file_input) -> Dict[str, Any]:
     """
     Convenience function for file text extraction.
     
     Args:
-        file_obj: File object from form upload
+        file_input: File object from form upload OR file path string
         
     Returns:
         Dict containing extracted text or error
     """
-    return text_analysis_service.extract_text_from_file(file_obj)
+    # Handle file path strings
+    if isinstance(file_input, str):
+        # file_input is a file path
+        try:
+            with open(file_input, 'rb') as f:
+                # Create a mock file object with filename attribute
+                class MockFile:
+                    def __init__(self, file_path, content):
+                        self.filename = os.path.basename(file_path)
+                        self.content = content
+                        self.position = 0
+                    
+                    def read(self):
+                        return self.content
+                    
+                    def seek(self, pos):
+                        self.position = pos
+                
+                content = f.read()
+                mock_file = MockFile(file_input, content)
+                return text_analysis_service.extract_text_from_file(mock_file)
+        except Exception as e:
+            return {
+                'success': False,
+                'error': f'Failed to read file: {str(e)}'
+            }
+    else:
+        # Handle file objects directly
+        return text_analysis_service.extract_text_from_file(file_input)

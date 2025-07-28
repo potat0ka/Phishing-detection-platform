@@ -21,6 +21,8 @@ from utils.validation import validate_url
 from services.text_analysis import analyze_text_content, extract_text_from_file
 import logging
 import os
+from werkzeug.utils import secure_filename
+from flask import current_app
 
 logger = logging.getLogger(__name__)
 
@@ -273,31 +275,75 @@ def analyze_text():
         
         # Check if file was uploaded
         uploaded_file = request.files.get('text_file')
+        file_info = None
         
         # Extract text from file if provided using shared service
         if uploaded_file and uploaded_file.filename:
             logger.info(f"Processing uploaded file: {uploaded_file.filename}")
             
-            file_result = extract_text_from_file(uploaded_file)
+            # Validate file type
+            filename = secure_filename(uploaded_file.filename)
+            file_ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
             
-            if not file_result['success']:
-                # Get supported formats from the service
+            allowed_extensions = current_app.config.get('ALLOWED_EXTENSIONS', {'txt', 'pdf', 'docx', 'jpg', 'jpeg', 'png', 'gif'})
+            
+            if file_ext not in allowed_extensions:
                 from services.text_analysis import text_analysis_service
                 return render_template('analyze_text.html', 
-                                     error=file_result['error'],
+                                     error=f"File type '.{file_ext}' not supported. Allowed types: {', '.join(allowed_extensions)}",
                                      supported_formats=text_analysis_service.get_supported_formats())
             
-            # Use extracted text
-            text_content = file_result['text']
-            file_info = {
-                'filename': uploaded_file.filename,
-                'file_type': file_result.get('file_type', 'unknown'),
-                'extraction_details': file_result
-            }
+            # Save file temporarily for processing
+            upload_folder = current_app.config.get('UPLOAD_FOLDER', 'uploads')
+            os.makedirs(upload_folder, exist_ok=True)
             
-            logger.info(f"Successfully extracted {len(text_content)} characters from {uploaded_file.filename}")
-        else:
-            file_info = None
+            import tempfile
+            import uuid
+            
+            # Create unique filename to avoid conflicts
+            unique_filename = f"{uuid.uuid4()}_{filename}"
+            file_path = os.path.join(upload_folder, unique_filename)
+            
+            try:
+                # Save the uploaded file
+                uploaded_file.save(file_path)
+                logger.info(f"File saved to: {file_path}")
+                
+                # Extract text from the saved file
+                file_result = extract_text_from_file(file_path)
+                
+                # Clean up the temporary file
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                
+                if not file_result['success']:
+                    from services.text_analysis import text_analysis_service
+                    return render_template('analyze_text.html', 
+                                         error=file_result['error'],
+                                         supported_formats=text_analysis_service.get_supported_formats())
+                
+                # Use extracted text
+                text_content = file_result['text']
+                file_info = {
+                    'filename': uploaded_file.filename,
+                    'file_type': file_result.get('file_type', file_ext),
+                    'source': file_result.get('source', 'file_upload'),
+                    'size': len(text_content),
+                    'extraction_details': file_result
+                }
+                
+                logger.info(f"Successfully extracted {len(text_content)} characters from {uploaded_file.filename}")
+                
+            except Exception as e:
+                # Clean up file if it exists
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                
+                logger.error(f"Error processing uploaded file: {e}")
+                from services.text_analysis import text_analysis_service
+                return render_template('analyze_text.html', 
+                                     error=f"Error processing file: {str(e)}",
+                                     supported_formats=text_analysis_service.get_supported_formats())
 
         # Get supported formats for error handling
         from services.text_analysis import text_analysis_service
