@@ -123,34 +123,11 @@ def check_url():
 
         logger.info(f"Starting {input_type} analysis: {content[:50]}...")
 
-        # For message/text content, use shared text analysis service
+        # For message/text content, use shared text analysis service (same as analyze-text)
         if input_type == 'message' and len(content) >= 50:
-            logger.info("Using shared text analysis service for message content")
-            text_result = analyze_text_content(content, check_ai=True, check_plagiarism=True, source="homepage")
-            
-            if text_result.get('success'):
-                # Convert text analysis result to ML detector format for consistency
-                threat_level = 'low'
-                if text_result.get('ai_detection', {}).get('percentage', 0) >= 60:
-                    threat_level = 'medium'
-                if text_result.get('plagiarism', {}).get('percentage', 0) >= 40:
-                    threat_level = 'high'
-                
-                result = {
-                    'threat_level': threat_level,
-                    'confidence_score': 0.85,  # High confidence for text analysis
-                    'explanation': text_result.get('explanation', ''),
-                    'warnings': [],
-                    'details': {
-                        'ai_detection': text_result.get('ai_detection', {}),
-                        'plagiarism': text_result.get('plagiarism', {}),
-                        'text_analysis': True
-                    }
-                }
-                logger.info(f"Text analysis completed: AI {text_result.get('ai_detection', {}).get('percentage', 0)}%, Plagiarism {text_result.get('plagiarism', {}).get('percentage', 0)}%")
-            else:
-                logger.warning(f"Text analysis failed: {text_result.get('error')}")
-                return render_template('result.html', error=text_result.get('error', 'Text analysis failed'))
+            logger.info("Using shared text analysis service for message content - redirecting to analyze-text for consistency")
+            # Redirect to analyze-text route for identical experience
+            return redirect(url_for('main.analyze_text') + f'?prefilled_text={content[:500]}')
         else:
             # Use ML detector for URL and email content, or short message content
             detector = MLPhishingDetector()
@@ -278,7 +255,13 @@ def analyze_text():
         # Import shared service to get supported formats
         from services.text_analysis import text_analysis_service
         supported_formats = text_analysis_service.get_supported_formats()
-        return render_template('analyze_text.html', supported_formats=supported_formats)
+        
+        # Check if text was prefilled from homepage redirect
+        prefilled_text = request.args.get('prefilled_text', '').strip()
+        
+        return render_template('analyze_text.html', 
+                             supported_formats=supported_formats,
+                             prefilled_text=prefilled_text)
 
     try:
         logger.info("Starting enhanced text analysis request using shared service")

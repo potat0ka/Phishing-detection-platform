@@ -285,7 +285,7 @@
                                 name="text_content" 
                                 rows="12" 
                                 placeholder="Paste your text here for analysis... (minimum 50 characters, maximum 50,000 characters)"
-                            >{{ request.form.get('text_content', '') if request.method == 'POST' else '' }}</textarea>
+                            >{{ prefilled_text if prefilled_text else (request.form.get('text_content', '') if request.method == 'POST' else '') }}</textarea>
                             <div class="form-text">
                                 <span id="charCount">0</span> characters 
                                 | <span id="wordCount">0</span> words
