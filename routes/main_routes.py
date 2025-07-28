@@ -239,7 +239,6 @@ def tips():
                              stats={'total_tips': 0, 'url_count': 0, 'email_count': 0, 'general_count': 0})
 
 @main_bp.route('/analyze-text', methods=['GET', 'POST'])
-@login_required
 def analyze_text():
     """
     Enhanced Text Analysis page with file upload support

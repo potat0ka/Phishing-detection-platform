@@ -282,15 +282,16 @@
                                 <i class="fas fa-upload me-2"></i>
                                 Upload File (Optional)
                             </label>
-                            <div class="border-2 border-dashed border-primary rounded p-4 text-center upload-area">
+                            <div class="border-2 border-dashed border-primary rounded p-4 text-center upload-area" onclick="document.getElementById('text_file').click()" style="cursor: pointer;">
                                 <input type="file" 
                                        class="form-control d-none" 
                                        id="text_file" 
                                        name="text_file"
-                                       accept="{{ supported_formats|join(',') if supported_formats else '.txt,.pdf,.docx,.jpg,.jpeg,.png' }}">
+                                       accept=".txt,.pdf,.docx,.jpg,.jpeg,.png"
+                                       onchange="handleFileUpload(this)">
                                 <div class="upload-content">
                                     <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
-                                    <h6>Drop files here or <span class="text-primary" style="cursor: pointer;" onclick="document.getElementById('text_file').click()">browse</span></h6>
+                                    <h6>Drop files here or <span class="text-primary">click to browse</span></h6>
                                     <p class="text-muted small mb-0">
                                         <strong>Supported formats:</strong> 
                                         {% if supported_formats %}
@@ -307,10 +308,10 @@
                                     </p>
                                 </div>
                                 <div class="file-info d-none">
-                                    <i class="fas fa-file me-2"></i>
-                                    <span class="filename"></span>
+                                    <i class="fas fa-file me-2 text-success"></i>
+                                    <span class="filename text-success fw-bold"></span>
                                     <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="clearFile()">
-                                        <i class="fas fa-times"></i>
+                                        <i class="fas fa-times"></i> Remove
                                     </button>
                                 </div>
                             </div>
@@ -425,18 +426,27 @@ document.addEventListener('DOMContentLoaded', function() {
     textArea.addEventListener('input', updateCounts);
     updateCounts(); // Initial count
 
-    // File upload handling
-    fileInput.addEventListener('change', function() {
-        if (this.files.length > 0) {
-            const file = this.files[0];
+    // File upload handling function
+    window.handleFileUpload = function(input) {
+        if (input.files.length > 0) {
+            const file = input.files[0];
+            const uploadContent = document.querySelector('.upload-content');
+            const fileInfo = document.querySelector('.file-info');
+            
             uploadContent.classList.add('d-none');
             fileInfo.classList.remove('d-none');
             fileInfo.querySelector('.filename').textContent = file.name;
             
             // Clear text area when file is selected
+            const textArea = document.getElementById('text_content');
             textArea.value = '';
             updateCounts();
         }
+    };
+
+    // File upload handling
+    fileInput.addEventListener('change', function() {
+        handleFileUpload(this);
     });
 
     // Clear file function
