@@ -594,9 +594,8 @@ def api_quick_check():
             'message': f'Analysis error: {str(e)}. Please check your input and try again.'
         })
 
-@main_bp.route('/analyze')
-@login_required
-def analyze_media():
+@main_bp.route('/analyze-media')
+def analyze_media_page():
     """
     Multimedia Authenticity Checker Page
 
@@ -623,14 +622,63 @@ def process_media_analysis():
         result = None
 
         if analysis_type == 'text':
-            # Handle text analysis
+            # Handle text analysis with enhanced file upload support
             text_content = request.form.get('text_content', '').strip()
+            check_ai = request.form.get('check_ai') == 'on'
+            check_plagiarism = request.form.get('check_plagiarism') == 'on'
+            
+            # Check if file was uploaded
+            uploaded_file = request.files.get('text_file')
+            file_info = None
+            
+            # Extract text from file if provided
+            if uploaded_file and uploaded_file.filename:
+                logger.info(f"Processing uploaded file in media analysis: {uploaded_file.filename}")
+                
+                file_result = extract_text_from_file(uploaded_file)
+                
+                if not file_result['success']:
+                    return jsonify({'error': f"File processing failed: {file_result['error']}"}), 400
+                
+                # Use extracted text
+                text_content = file_result['text']
+                file_info = {
+                    'filename': uploaded_file.filename,
+                    'file_type': file_result.get('file_type', 'unknown'),
+                    'extraction_details': file_result
+                }
+                
+                logger.info(f"Successfully extracted {len(text_content)} characters from {uploaded_file.filename}")
+            
+            # Validate text content
             if not text_content:
-                return jsonify({'error': 'Please enter text content'}), 400
-            if len(text_content) < 10:
-                return jsonify({'error': 'Text must be at least 10 characters long'}), 400
-
-            result = analyzer.analyze_content('text', text_content)
+                return jsonify({'error': 'Please enter text content or upload a file'}), 400
+            if len(text_content) < 50:
+                return jsonify({'error': 'Text must be at least 50 characters long'}), 400
+            
+            # Perform enhanced text analysis using shared service
+            source = "file_upload" if file_info else "manual"
+            result = analyze_text_content(text_content, check_ai=check_ai, check_plagiarism=check_plagiarism, source=source)
+            
+            # Check for analysis errors
+            if not result.get('success', False):
+                return jsonify({'error': f"Analysis failed: {result.get('error', 'Unknown error')}"}), 400
+            
+            # Add file information to result
+            if file_info:
+                result['file_info'] = file_info
+            
+            # Convert to format expected by frontend
+            media_result = {
+                'content_type': 'text',
+                'authenticity_verdict': f"AI Detection: {result.get('ai_detection', {}).get('percentage', 0)}% | Plagiarism: {result.get('plagiarism', {}).get('percentage', 0)}%",
+                'ai_likelihood': result.get('ai_detection', {}).get('percentage', 0) / 100.0,
+                'plagiarism_score': result.get('plagiarism', {}).get('percentage', 0) / 100.0,
+                'detailed_analysis': result,
+                'file_info': file_info
+            }
+            
+            return jsonify(media_result)
 
         elif analysis_type in ['image', 'video', 'audio']:
             # Handle file uploads
@@ -654,10 +702,10 @@ def process_media_analysis():
             if file_ext not in allowed_extensions[analysis_type]:
                 return jsonify({'error': f'Invalid file type. Allowed: {", ".join(allowed_extensions[analysis_type])}'}), 400
 
-            # Check file size (30MB limit)
+            # Check file size (1000MB limit)
             file_data = file.read()
-            if len(file_data) > 30 * 1024 * 1024:
-                return jsonify({'error': 'File too large. Maximum size: 30MB'}), 400
+            if len(file_data) > 1000 * 1024 * 1024:
+                return jsonify({'error': 'File too large. Maximum size: 1000MB'}), 400
 
             result = analyzer.analyze_content(analysis_type, file_data, filename)
 

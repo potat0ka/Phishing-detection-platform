@@ -52,7 +52,7 @@ class TextAnalyzer:
     SUPPORTED_DOCX_FORMATS = ['.docx', '.doc']
     SUPPORTED_IMAGE_FORMATS = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff']
     
-    MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+    MAX_FILE_SIZE = 1000 * 1024 * 1024  # 1000MB
     MIN_TEXT_LENGTH = 50
     MAX_TEXT_LENGTH = 50000
     
