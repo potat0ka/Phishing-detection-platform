@@ -468,9 +468,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Enhanced visual results for text analysis
     function showTextResults(data) {
-        // Extract scores from the response format
-        const aiScore = data.ai_detection ? data.ai_detection.percentage : 0;
-        const plagiarismScore = data.plagiarism ? data.plagiarism.percentage : 0;
+        // Extract scores from the unified response format
+        const aiScore = Math.round((data.ai_likelihood || 0) * 100);
+        const plagiarismScore = Math.round((data.plagiarism_score || 0) * 100);
         
         // Show success alert
         const alertContainer = document.getElementById('alertContainer');
@@ -578,16 +578,16 @@ document.addEventListener('DOMContentLoaded', function() {
                             <h6 class="mb-0"><i class="fas fa-search me-2"></i>Detection Summary</h6>
                         </div>
                         <div class="card-body">
-                            ${data.ai_detection ? `
+                            ${data.detailed_analysis && data.detailed_analysis.ai_detection ? `
                             <div class="mb-2">
                                 <strong>AI Detection:</strong><br>
-                                <span class="badge ${aiScore > 70 ? 'bg-danger' : aiScore > 30 ? 'bg-warning' : 'bg-success'}">${data.ai_detection.category}</span>
+                                <span class="badge ${aiScore > 70 ? 'bg-danger' : aiScore > 30 ? 'bg-warning' : 'bg-success'}">${data.detailed_analysis.ai_detection.category || (aiScore > 70 ? 'High AI Content' : aiScore > 30 ? 'Moderate AI Content' : 'Human Content')}</span>
                             </div>
                             ` : ''}
-                            ${data.plagiarism ? `
+                            ${data.detailed_analysis && data.detailed_analysis.plagiarism ? `
                             <div class="mb-2">
                                 <strong>Plagiarism Check:</strong><br>
-                                <span class="badge ${plagiarismScore > 70 ? 'bg-danger' : plagiarismScore > 30 ? 'bg-warning' : 'bg-success'}">${data.plagiarism.category}</span>
+                                <span class="badge ${plagiarismScore > 70 ? 'bg-danger' : plagiarismScore > 30 ? 'bg-warning' : 'bg-success'}">${data.detailed_analysis.plagiarism.category || (plagiarismScore > 70 ? 'High Similarity' : plagiarismScore > 30 ? 'Moderate Similarity' : 'Original Content')}</span>
                             </div>
                             ` : ''}
                             ${data.explanation ? `
@@ -598,7 +598,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             </div>
-            ${data.plagiarism && data.plagiarism.sources && data.plagiarism.sources.length > 0 ? `
+            ${data.detailed_analysis && data.detailed_analysis.plagiarism && data.detailed_analysis.plagiarism.sources && data.detailed_analysis.plagiarism.sources.length > 0 ? `
             <div class="row mt-4">
                 <div class="col-12">
                     <div class="card border-warning">
@@ -607,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                ${data.plagiarism.sources.map((source, index) => `
+                                ${data.detailed_analysis.plagiarism.sources.map((source, index) => `
                                 <div class="col-md-4 mb-3">
                                     <div class="border rounded p-3">
                                         <h6 class="text-primary">Source ${index + 1}</h6>
