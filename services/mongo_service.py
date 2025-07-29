@@ -47,14 +47,16 @@ class MongoService:
                 logger.error("No MongoDB URI found in environment variables")
                 return False
             
-            # Connect to MongoDB with optimized settings
+            # Connect to MongoDB with optimized settings for better compatibility
             self.client = MongoClient(
                 mongo_uri,
-                serverSelectionTimeoutMS=10000,
+                serverSelectionTimeoutMS=15000,  # Increased timeout
+                connectTimeoutMS=20000,          # Connection timeout
+                socketTimeoutMS=20000,           # Socket timeout
                 tlsAllowInvalidCertificates=True,
                 retryWrites=True,
-                maxPoolSize=50,
-                minPoolSize=5
+                maxPoolSize=10,                  # Reduced pool size for local use
+                minPoolSize=1
             )
             
             # Test connection with ping

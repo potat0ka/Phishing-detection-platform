@@ -7,10 +7,9 @@
    python install_local.py
    ```
 
-2. **Set up Environment** (optional - MongoDB will fallback to local files):
+2. **Set up MongoDB Connection**:
    ```bash
-   # Create .env file with your MongoDB connection
-   echo "MONGODB_URI=your_mongodb_connection_string" > .env
+   python setup_mongodb.py
    ```
 
 3. **Run the Application**:
