@@ -268,22 +268,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         showLoading();
         
-        fetch('/analyze/process', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            hideLoading();
-            if (data.error) {
-                showResults('error', data.error);
-            } else {
-                // Add analysis type to data for proper routing
-                data.analysis_type = 'image';
-                showMultimediaResults('image', data);
-            }
-        })
-        .catch(error => {
+        // Submit form normally to get HTML response
+        this.submit();
+    });(error => {
             hideLoading();
             showResults('error', 'Network error occurred. Please try again.');
         });
@@ -323,26 +310,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         showLoading();
         
-        fetch('/analyze/process', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            hideLoading();
-            if (data.error) {
-                showResults('error', data.error);
-            } else {
-                // FORCE USE OF ENHANCED VISUAL RESULTS - NEVER SHOW JSON
-                console.log('Success response received, showing enhanced results:', data);
-                document.getElementById('alertContainer').style.display = 'none';
-                showEnhancedResults(data);
-            }
-        })
-        .catch(error => {
-            hideLoading();
-            showResults('error', 'Network error occurred. Please try again.');
-        });
+        // Submit form normally to get HTML response
+        this.submit();
     });
 
     // Video analysis form submission  
@@ -359,25 +328,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         showLoading();
         
-        fetch('/analyze/process', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            hideLoading();
-            if (data.error) {
-                showResults('error', data.error);
-            } else {
-                // Add analysis type to data for proper routing
-                data.analysis_type = 'video';
-                showMultimediaResults('video', data);
-            }
-        })
-        .catch(error => {
-            hideLoading();
-            showResults('error', 'Network error occurred. Please try again.');
-        });
+        // Submit form normally to get HTML response
+        this.submit();
     });
 
     // Audio analysis form submission
@@ -394,25 +346,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         showLoading();
         
-        fetch('/analyze/process', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            hideLoading();
-            if (data.error) {
-                showResults('error', data.error);
-            } else {
-                // Add analysis type to data for proper routing
-                data.analysis_type = 'audio';
-                showMultimediaResults('audio', data);
-            }
-        })
-        .catch(error => {
-            hideLoading();
-            showResults('error', 'Network error occurred. Please try again.');
-        });
+        // Submit form normally to get HTML response
+        this.submit();
     });
 
     // Show loading function

@@ -759,7 +759,9 @@ def process_media_analysis():
         if not analysis_type and text_content:
             analysis_type = 'text'
         elif analysis_type and analysis_type not in ['text', 'image', 'video', 'audio']:
-            return jsonify({'error': 'Invalid analysis type'}), 400
+            return render_template('analyze_results.html', 
+                                 error="Invalid analysis type", 
+                                 analysis_type=analysis_type)
 
         result = None
 
@@ -780,7 +782,9 @@ def process_media_analysis():
                 file_result = extract_text_from_file(uploaded_file)
                 
                 if not file_result['success']:
-                    return jsonify({'error': f"File processing failed: {file_result['error']}"}), 400
+                    return render_template('analyze_results.html', 
+                                     error=f"File processing failed: {file_result['error']}", 
+                                     analysis_type='text')
                 
                 # Use extracted text
                 text_content = file_result['text']
@@ -794,9 +798,13 @@ def process_media_analysis():
             
             # Validate text content
             if not text_content:
-                return jsonify({'error': 'Please enter text content or upload a file'}), 400
+                return render_template('analyze_results.html', 
+                                     error='Please enter text content or upload a file', 
+                                     analysis_type='text')
             if len(text_content) < 50:
-                return jsonify({'error': 'Text must be at least 50 characters long'}), 400
+                return render_template('analyze_results.html', 
+                                     error='Text must be at least 50 characters long', 
+                                     analysis_type='text')
             
             # Perform enhanced text analysis using shared service
             source = "file_upload" if file_info else "manual"
@@ -804,7 +812,9 @@ def process_media_analysis():
             
             # Check for analysis errors
             if not result.get('success', False):
-                return jsonify({'error': f"Analysis failed: {result.get('error', 'Unknown error')}"}), 400
+                return render_template('analyze_results.html', 
+                                     error=f"Analysis failed: {result.get('error', 'Unknown error')}", 
+                                     analysis_type='text')
             
             # Add file information to result
             if file_info:
@@ -820,47 +830,67 @@ def process_media_analysis():
                 'file_info': file_info
             }
             
-            return jsonify(media_result)
+            # Calculate percentages for display
+            ai_percentage = round(result.get('ai_detection', {}).get('percentage', 0))
+            plagiarism_percentage = round(result.get('plagiarism', {}).get('percentage', 0))
+            
+            return render_template('analyze_results.html',
+                                 analysis_type='text',
+                                 success=True,
+                                 ai_percentage=ai_percentage,
+                                 plagiarism_percentage=plagiarism_percentage,
+                                 text_length=len(text_content),
+                                 ai_detection_enabled=check_ai,
+                                 plagiarism_detection_enabled=check_plagiarism,
+                                 file_info=file_info,
+                                 detailed_analysis=result.get('detailed_analysis', {}),
+                                 plagiarism_sources=result.get('plagiarism_sources', []))
 
         elif analysis_type in ['image', 'video', 'audio']:
             # Handle file uploads
             file_key = f'{analysis_type}_file'
             if file_key not in request.files:
-                return jsonify({'error': f'No {analysis_type} file uploaded'}), 400
+                return render_template('analyze_results.html', 
+                                     error=f'No {analysis_type} file uploaded', 
+                                     analysis_type=analysis_type)
             
             uploaded_file = request.files[file_key]
             if not uploaded_file or not uploaded_file.filename:
-                return jsonify({'error': f'No {analysis_type} file selected'}), 400
+                return render_template('analyze_results.html', 
+                                     error=f'No {analysis_type} file selected', 
+                                     analysis_type=analysis_type)
             
             logger.info(f"Processing {analysis_type} file: {uploaded_file.filename}")
             
-            # For now, return placeholder analysis for multimedia files
-            # TODO: Implement actual multimedia analysis algorithms
-            result = {
-                'content_type': analysis_type,
-                'filename': uploaded_file.filename,
-                'file_size': len(uploaded_file.read()),
-                'authenticity_verdict': f'{analysis_type.title()} analysis completed',
-                'ai_likelihood': 0.15,  # Low AI generation probability as placeholder
-                'manipulation_score': 0.20,  # Low manipulation score as placeholder
-                'analysis_notes': [
-                    f'{analysis_type.title()} file received and processed',
-                    'Basic metadata extraction completed',
-                    'Advanced analysis features coming soon'
-                ]
-            }
+            # Get file size
+            file_size = len(uploaded_file.read())
+            uploaded_file.seek(0)  # Reset file pointer
             
-            # Reset file pointer after reading
-            uploaded_file.seek(0)
+            # For multimedia files, show placeholder analysis results
+            authenticity_score = 85  # High authenticity as placeholder
+            manipulation_detected = False  # No manipulation detected as placeholder
             
-            return jsonify(result)
+            return render_template('analyze_results.html',
+                                 analysis_type=analysis_type,
+                                 success=True,
+                                 filename=uploaded_file.filename,
+                                 file_size=file_size,
+                                 authenticity_score=authenticity_score,
+                                 manipulation_detected=manipulation_detected,
+                                 metadata_analysis={'status': 'Completed', 'format': analysis_type.upper()},
+                                 technical_details={'processing': 'Advanced analysis features coming soon'})
 
         else:
-            return jsonify({'error': 'Invalid analysis type specified'}), 400
+            return render_template('analyze_results.html', 
+                                 error='Invalid analysis type specified', 
+                                 analysis_type='unknown')
 
     except Exception as e:
         logger.error(f"Media analysis error: {e}")
-        return jsonify({'error': f'Analysis failed: {str(e)}'}), 500
+        return render_template('analyze_results.html', 
+                             error='Analysis failed', 
+                             error_details=f'Analysis error: {str(e)}. Please check your input and try again.',
+                             analysis_type=request.form.get('analysis_type', 'unknown'))
 
 @main_bp.route('/analytics')
 def analytics():
