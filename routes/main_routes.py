@@ -66,6 +66,7 @@ def index():
                              db_connected=False)
 
 @main_bp.route('/check', methods=['GET', 'POST'])
+@login_required
 def check_url():
     """
     AI-powered phishing detection page
@@ -730,6 +731,7 @@ def api_quick_check():
         })
 
 @main_bp.route('/analyze-media')
+@login_required
 def analyze_media_page():
     """
     Multimedia Authenticity Checker Page

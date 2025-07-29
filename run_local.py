@@ -86,6 +86,14 @@ def main():
         print("❌ Dependency check failed")
         sys.exit(1)
     
+    # Create test user
+    print("👤 Creating test user account...")
+    try:
+        subprocess.run([sys.executable, "create_test_user.py"], check=True, capture_output=True)
+        print("✅ Test user created")
+    except:
+        print("⚠️  Test user creation skipped (may already exist)")
+    
     # Run application
     run_application()
 
