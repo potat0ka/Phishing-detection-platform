@@ -77,14 +77,13 @@ def load_user(user_id):
         logger.error(f"Error loading user {user_id}: {e}")
     return None
 
-# Initialize database models
-from models.database import init_db
-db = init_db(mongo)
+# Initialize MongoDB service
+from services.mongo_service import mongo_service
 
 # Initialize scan history model
 try:
     from models.scan_history_model import initialize_scan_history_model
-    initialize_scan_history_model(db)
+    initialize_scan_history_model()
     logger.info("Scan history model initialized successfully")
 except Exception as e:
     logger.error(f"Failed to initialize scan history model: {e}")

@@ -10,7 +10,7 @@ Author: Bigendra Shrestha
 
 import logging
 from datetime import datetime
-from .database import db
+from services.mongo_service import mongo_service
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +27,8 @@ class PhishingModel:
     @staticmethod
     def get_all_phishing_data():
         """Get all phishing data from database or fallback"""
-        if db and db.connected:
-            return db.find_documents('phishing_data')
+        if mongo_service.is_connected():
+            return mongo_service.find_documents('phishing_data')
         else:
             # Fallback data when MongoDB is not available
             return PhishingModel.get_fallback_data()
@@ -45,15 +45,15 @@ class PhishingModel:
             'detected_at': datetime.utcnow()
         }
         
-        if db and db.connected:
-            return db.insert_document('phishing_data', phishing_data)
+        if mongo_service.is_connected():
+            return mongo_service.insert_document('phishing_data', phishing_data)
         return None
     
     @staticmethod
     def update_phishing_status(url, new_status):
         """Update the status of a phishing URL"""
-        if db and db.connected:
-            return db.update_document(
+        if mongo_service.is_connected():
+            return mongo_service.update_document(
                 'phishing_data',
                 {'url': url},
                 {'$set': {'status': new_status}}
@@ -64,9 +64,9 @@ class PhishingModel:
     def update_phishing_url(data_id, url, category, status, description, confidence_score):
         """Update complete phishing URL entry"""
         try:
-            if db and db.connected:
+            if mongo_service.is_connected():
                 # Update in MongoDB
-                result = db.update_document(
+                result = mongo_service.update_document(
                     'phishing_data',
                     {'_id': data_id},
                     {'$set': {
@@ -91,15 +91,15 @@ class PhishingModel:
     @staticmethod
     def delete_phishing_url(url):
         """Delete a phishing URL from database"""
-        if db and db.connected:
-            return db.delete_document('phishing_data', {'url': url})
+        if mongo_service.is_connected():
+            return mongo_service.delete_documentss('phishing_data', {'url': url})
         return 0
     
     @staticmethod
     def get_recent_threats(limit=5):
         """Get recent phishing threats"""
-        if db and db.connected:
-            return db.find_documents('phishing_data', limit=limit)
+        if mongo_service.is_connected():
+            return mongo_service.find_documents('phishing_data', limit=limit)
         else:
             fallback_data = PhishingModel.get_fallback_data()
             return fallback_data[:limit]

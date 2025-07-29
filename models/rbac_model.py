@@ -15,7 +15,7 @@ Author: AI Assistant
 
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
-from .database import db
+from services.mongo_service import mongo_service
 import logging
 import secrets
 import os
@@ -102,8 +102,8 @@ class RBACModel:
                 'approved_at': None
             }
             
-            if db and db.connected:
-                result = db.insert_document('password_reset_requests', request_data)
+            if mongo_service.is_connected():
+                result = mongo_service.insert_document('password_reset_requests', request_data)
                 logger.info(f"Password reset request created for user {user_id}")
                 return str(result) if result else None
             
@@ -138,8 +138,8 @@ class RBACModel:
     def get_pending_password_reset_requests():
         """Get all pending password reset requests"""
         try:
-            if db and db.connected:
-                return db.find_documents('password_reset_requests', {'status': 'pending'})
+            if mongo_service.is_connected():
+                return mongo_service.find_documents('password_reset_requests', {'status': 'pending'})
             
             # Fallback to file storage
             import json
@@ -164,8 +164,8 @@ class RBACModel:
         try:
             # Find the reset request
             reset_request = None
-            if db and db.connected:
-                reset_request = db.find_document('password_reset_requests', {'_id': request_id})
+            if mongo_service.is_connected():
+                reset_request = mongo_service.find_document('password_reset_requests', {'_id': request_id})
             else:
                 # Fallback to file storage
                 import json
@@ -193,16 +193,16 @@ class RBACModel:
             user_id = reset_request['user_id']
             password_hash = generate_password_hash(new_password)
             
-            if db and db.connected:
+            if mongo_service.is_connected():
                 # Update user password
-                user_update = db.update_document(
+                user_update = mongo_service.update_document(
                     'users',
                     {'_id': user_id},
                     {'$set': {'password_hash': password_hash}}
                 )
                 
                 # Mark request as approved
-                db.update_document(
+                mongo_service.update_document(
                     'password_reset_requests',
                     {'_id': request_id},
                     {'$set': {
@@ -260,8 +260,8 @@ class RBACModel:
                 'status': 'active'
             }
             
-            if db and db.connected:
-                result = db.insert_document('model_uploads', upload_record)
+            if mongo_service.is_connected():
+                result = mongo_service.insert_document('model_uploads', upload_record)
                 logger.info(f"Model uploaded: {safe_filename} by user {uploaded_by_user_id}")
                 return str(result) if result else safe_filename
             
@@ -293,8 +293,8 @@ class RBACModel:
     def get_model_uploads():
         """Get list of uploaded models"""
         try:
-            if db and db.connected:
-                return db.find_documents('model_uploads', {'status': 'active'})
+            if mongo_service.is_connected():
+                return mongo_service.find_documents('model_uploads', {'status': 'active'})
             
             # Fallback to file storage
             import json
@@ -320,8 +320,8 @@ class RBACModel:
             # This would integrate with the ML detector to load the new model
             # For now, just mark as activated
             
-            if db and db.connected:
-                result = db.update_document(
+            if mongo_service.is_connected():
+                result = mongo_service.update_document(
                     'model_uploads',
                     {'_id': upload_id},
                     {'$set': {
@@ -352,8 +352,8 @@ class RBACModel:
                 'ip_address': None  # Could be captured from request context
             }
             
-            if db and db.connected:
-                result = db.insert_document('admin_audit_log', log_entry)
+            if mongo_service.is_connected():
+                result = mongo_service.insert_document('admin_audit_log', log_entry)
                 return str(result) if result else None
             
             # Fallback to file logging
@@ -388,8 +388,8 @@ class RBACModel:
         """Decline password reset request"""
         try:
             # Update request status to declined
-            if db and db.connected:
-                result = db.update_document(
+            if mongo_service.is_connected():
+                result = mongo_service.update_document(
                     'password_reset_requests',
                     {'_id': request_id},
                     {'$set': {

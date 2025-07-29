@@ -8,8 +8,11 @@ It tracks usage metrics, detection rates, and system performance.
 Author: Bigendra Shrestha
 """
 
+import logging
 from datetime import datetime
-from .database import db
+from services.mongo_service import mongo_service
+
+logger = logging.getLogger(__name__)
 
 class AnalyticsModel:
     """
@@ -25,9 +28,9 @@ class AnalyticsModel:
     def get_user_scan_count(user_id):
         """Get total scans performed by a specific user"""
         try:
-            if db and db.connected:
+            if mongo_service.is_connected():
                 # Count scans for this user
-                scan_logs = db.find_documents('scan_logs', {'user_id': str(user_id)})
+                scan_logs = mongo_service.find_documents('scan_logs', {'user_id': str(user_id)})
                 return len(scan_logs)
             return 0
         except Exception as e:
@@ -38,9 +41,9 @@ class AnalyticsModel:
     def get_user_threat_count(user_id):
         """Get total threats detected in user's scans"""
         try:
-            if db and db.connected:
+            if mongo_service.is_connected():
                 # Count threats detected for this user
-                scan_logs = db.find_documents('scan_logs', {
+                scan_logs = mongo_service.find_documents('scan_logs', {
                     'user_id': str(user_id),
                     'result': {'$in': ['high', 'medium']}
                 })
@@ -54,8 +57,8 @@ class AnalyticsModel:
     def get_user_recent_scans(user_id, limit=5):
         """Get recent scans for a specific user"""
         try:
-            if db and db.connected:
-                scan_logs = db.find_documents('scan_logs', 
+            if mongo_service.is_connected():
+                scan_logs = mongo_service.find_documents('scan_logs', 
                                             {'user_id': str(user_id)}, 
                                             sort=[('timestamp', -1)], 
                                             limit=limit)
@@ -80,8 +83,8 @@ class AnalyticsModel:
     @staticmethod
     def get_system_stats():
         """Get current system statistics"""
-        if db and db.connected:
-            stats = db.find_documents('system_stats')
+        if mongo_service.is_connected():
+            stats = mongo_service.find_documents('system_stats')
             return stats[0] if stats else AnalyticsModel.get_fallback_stats()
         else:
             return AnalyticsModel.get_fallback_stats()
@@ -89,8 +92,8 @@ class AnalyticsModel:
     @staticmethod
     def update_scan_count():
         """Increment total scan count"""
-        if db and db.connected:
-            return db.update_document(
+        if mongo_service.is_connected():
+            return mongo_service.update_document(
                 'system_stats',
                 {},
                 {'$inc': {'total_scans': 1}}
@@ -100,8 +103,8 @@ class AnalyticsModel:
     @staticmethod
     def update_threat_blocked():
         """Increment threats blocked count"""
-        if db and db.connected:
-            return db.update_document(
+        if mongo_service.is_connected():
+            return mongo_service.update_document(
                 'system_stats',
                 {},
                 {'$inc': {'threats_blocked': 1}}
@@ -119,23 +122,23 @@ class AnalyticsModel:
             'user_agent': None  # Could add request headers if needed
         }
         
-        if db and db.connected:
-            return db.insert_document('scan_logs', scan_log)
+        if mongo_service.is_connected():
+            return mongo_service.insert_document('scan_logs', scan_log)
         return None
     
     @staticmethod
     def get_recent_scans(limit=10):
         """Get recent scan activities"""
-        if db and db.connected:
-            return db.find_documents('scan_logs', limit=limit)
+        if mongo_service.is_connected():
+            return mongo_service.find_documents('scan_logs', limit=limit)
         return []
     
     @staticmethod
     def get_detection_stats():
         """Get detection statistics by category"""
-        if db and db.connected:
+        if mongo_service.is_connected():
             # In a real implementation, this would use MongoDB aggregation
-            phishing_data = db.find_documents('phishing_data')
+            phishing_data = mongo_service.find_documents('phishing_data')
             stats = {
                 'total_threats': len(phishing_data),
                 'phishing': len([p for p in phishing_data if p.get('category') == 'phishing']),
@@ -166,8 +169,8 @@ class AnalyticsModel:
     @staticmethod
     def initialize_stats():
         """Initialize system statistics in database"""
-        if db and db.connected:
-            existing_stats = db.find_documents('system_stats')
+        if mongo_service.is_connected():
+            existing_stats = mongo_service.find_documents('system_stats')
             if not existing_stats:
                 initial_stats = {
                     'total_scans': 0,
@@ -177,5 +180,5 @@ class AnalyticsModel:
                     'uptime': '100%',
                     'last_updated': datetime.utcnow()
                 }
-                return db.insert_document('system_stats', initial_stats)
+                return mongo_service.insert_document('system_stats', initial_stats)
         return None

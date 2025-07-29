@@ -10,7 +10,7 @@ Author: AI Assistant
 """
 
 from datetime import datetime
-from .database import db
+from services.mongo_service import mongo_service
 import logging
 import os
 import json
@@ -33,8 +33,8 @@ class SafetyTipsModel:
     def get_all_tips():
         """Get all safety tips from MongoDB or file storage"""
         try:
-            if db and db.connected:
-                tips = db.find_documents('safety_tips', {})
+            if mongo_service.is_connected():
+                tips = mongo_service.find_documents('safety_tips', {})
                 if tips:
                     return tips
             
@@ -54,8 +54,8 @@ class SafetyTipsModel:
     def get_tips_by_category(category):
         """Get safety tips filtered by category"""
         try:
-            if db and db.connected:
-                tips = db.find_documents('safety_tips', {'category': category})
+            if mongo_service.is_connected():
+                tips = mongo_service.find_documents('safety_tips', {'category': category})
                 return tips
             else:
                 # Fallback to file storage
@@ -87,8 +87,8 @@ class SafetyTipsModel:
                 'is_active': True
             }
             
-            if db and db.connected:
-                return db.insert_document('safety_tips', tip_data)
+            if mongo_service.is_connected():
+                return mongo_service.insert_document('safety_tips', tip_data)
             else:
                 # Fallback to file storage
                 return SafetyTipsModel._save_to_file(tip_data)
@@ -103,8 +103,8 @@ class SafetyTipsModel:
             if category not in SafetyTipsModel.CATEGORIES:
                 return False
             
-            if db and db.connected:
-                result = db.update_document(
+            if mongo_service.is_connected():
+                result = mongo_service.update_document(
                     'safety_tips',
                     {'_id': tip_id},
                     {
@@ -128,8 +128,8 @@ class SafetyTipsModel:
     def delete_tip(tip_id):
         """Delete safety tip"""
         try:
-            if db and db.connected:
-                result = db.delete_document('safety_tips', {'_id': tip_id})
+            if mongo_service.is_connected():
+                result = mongo_service.delete_documents('safety_tips', {'_id': tip_id})
                 return result > 0
             else:
                 # Fallback to file storage
@@ -142,8 +142,8 @@ class SafetyTipsModel:
     def get_tip_by_id(tip_id):
         """Get single tip by ID"""
         try:
-            if db and db.connected:
-                tips = db.find_documents('safety_tips', {'_id': tip_id})
+            if mongo_service.is_connected():
+                tips = mongo_service.find_documents('safety_tips', {'_id': tip_id})
                 return tips[0] if tips else None
             else:
                 # Fallback to file storage
@@ -273,13 +273,13 @@ class SafetyTipsModel:
     def initialize_default_tips():
         """Initialize database with default safety tips"""
         try:
-            if db and db.connected:
+            if mongo_service.is_connected():
                 # Check if tips already exist
-                existing_tips = db.find_documents('safety_tips', {})
+                existing_tips = mongo_service.find_documents('safety_tips', {})
                 if not existing_tips:
                     default_tips = SafetyTipsModel.get_default_tips()
                     for tip in default_tips:
-                        db.insert_document('safety_tips', tip)
+                        mongo_service.insert_document('safety_tips', tip)
             else:
                 # File storage fallback
                 tips_file = 'data/safety_tips.json'

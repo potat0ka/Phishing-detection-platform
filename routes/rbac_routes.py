@@ -21,7 +21,7 @@ from utils.rbac_decorators import (
 from models.rbac_model import RBACModel
 from models.user_model import UserModel
 from models.safety_tips_model import SafetyTipsModel
-from models.database import db
+from services.mongo_service import mongo_service
 from datetime import datetime
 import logging
 import os
@@ -243,8 +243,8 @@ def upload_model_legacy():
             }
 
             # Store upload record
-            if db and db.connected:
-                db.insert_document('model_uploads', upload_record)
+            if db and mongo_service.connected:
+                mongo_service.insert_document('model_uploads', upload_record)
 
             flash(f'Model {filename} uploaded successfully', 'success')
             logger.info(f"Model uploaded: {filename} by {session.get('username')}")
@@ -279,8 +279,8 @@ def update_safety_tips():
         }
 
         # Store safety tip
-        if db and db.connected:
-            db.insert_document('safety_tips', tip_record)
+        if db and mongo_service.connected:
+            mongo_service.insert_document('safety_tips', tip_record)
         else:
             # File-based fallback
             import json
