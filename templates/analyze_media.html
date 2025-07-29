@@ -60,14 +60,14 @@
                     </h5>
                     <p class="text-muted mb-4">Check text for plagiarism and AI-generated content detection. Upload documents or images with OCR processing.</p>
                     
-                    <form id="textAnalysisForm" enctype="multipart/form-data">
+                    <form action="/api/scan" method="POST" enctype="multipart/form-data" id="textAnalysisForm">
                         <!-- File Upload Section -->
                         <div class="mb-4">
                             <label class="form-label fw-bold">
                                 <i class="fas fa-upload me-2"></i>
                                 Upload File (Optional)
                             </label>
-                            <div class="border-2 border-dashed border-primary rounded p-4 text-center upload-area">
+                            <div class="border-2 border-dashed border-primary rounded p-4 text-center upload-area" id="mediaUploadArea">
                                 <input type="file" 
                                        class="form-control d-none" 
                                        id="text_file" 
@@ -105,23 +105,30 @@
                         </div>
 
                         <!-- Analysis Options -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="check_ai" name="check_ai" checked>
-                                    <label class="form-check-label" for="check_ai">
-                                        <i class="fas fa-robot me-1"></i>
-                                        AI Content Detection
-                                    </label>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Analysis Options</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="check_plagiarism" name="check_plagiarism" checked>
+                                        <label class="form-check-label" for="check_plagiarism">
+                                            <i class="fas fa-copy text-warning me-1"></i>
+                                            <strong>Plagiarism Detection</strong>
+                                            <br>
+                                            <small class="text-muted">Check for copied content from web sources</small>
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="check_plagiarism" name="check_plagiarism" checked>
-                                    <label class="form-check-label" for="check_plagiarism">
-                                        <i class="fas fa-copy me-1"></i>
-                                        Plagiarism Detection
-                                    </label>
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="check_ai" name="check_ai" checked>
+                                        <label class="form-check-label" for="check_ai">
+                                            <i class="fas fa-robot text-info me-1"></i>
+                                            <strong>AI Content Detection</strong>
+                                            <br>
+                                            <small class="text-muted">Detect AI-generated text patterns</small>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -261,20 +268,194 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // File upload handler for text analysis file upload
-    document.getElementById('text_file').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            document.getElementById('fileName').textContent = file.name;
-            document.getElementById('filePreview').style.display = 'block';
-        }
-    });
+    // Enhanced file upload handling with progress - matches analyze_text.html
+    const textFileInput = document.getElementById('text_file');
+    const mediaUploadArea = document.getElementById('mediaUploadArea');
+    
+    if (textFileInput && mediaUploadArea) {
+        // Make upload area clickable
+        mediaUploadArea.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'BUTTON') {
+                textFileInput.click();
+            }
+        });
+        
+        // File selection handler
+        textFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('filePreview').style.display = 'block';
+                
+                // Clear text content when file is selected
+                const textContent = document.getElementById('textContent');
+                if (textContent) {
+                    textContent.value = '';
+                }
+            }
+        });
+    }
 
     // Clear file function
     window.clearFile = function() {
         document.getElementById('text_file').value = '';
         document.getElementById('filePreview').style.display = 'none';
     };
+
+    // Form submission handler for unified text analysis
+    document.getElementById('textAnalysisForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const textContent = formData.get('text_content');
+        const fileInput = document.getElementById('text_file');
+        const checkAI = document.getElementById('check_ai').checked;
+        const checkPlagiarism = document.getElementById('check_plagiarism').checked;
+        
+        // Validate content
+        if (!textContent.trim() && (!fileInput.files || fileInput.files.length === 0)) {
+            showResults('error', 'Please provide text content or upload a file for analysis.');
+            return;
+        }
+        
+        // Validate analysis options
+        if (!checkAI && !checkPlagiarism) {
+            showResults('error', 'Please select at least one analysis option (AI Detection or Plagiarism Check).');
+            return;
+        }
+        
+        // Show loading
+        showLoading();
+        
+        // Debug logging
+        console.log('Submitting unified text analysis:', {
+            textLength: textContent ? textContent.length : 0,
+            hasFile: fileInput.files && fileInput.files.length > 0,
+            checkAI: checkAI,
+            checkPlagiarism: checkPlagiarism
+        });
+        
+        // Submit to unified API endpoint
+        fetch('/api/scan', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            hideLoading();
+            
+            if (data.error) {
+                showResults('error', data.error);
+            } else {
+                showResults('success', data);
+            }
+        })
+        .catch(error => {
+            console.error('Request failed:', error);
+            hideLoading();
+            showResults('error', 'An error occurred while processing your request: ' + error.message);
+        });
+    });
+
+    // Show loading function
+    function showLoading() {
+        document.getElementById('loadingSpinner').style.display = 'block';
+        document.getElementById('resultsSection').style.display = 'none';
+    }
+
+    // Hide loading function
+    function hideLoading() {
+        document.getElementById('loadingSpinner').style.display = 'none';
+    }
+
+    // Show results function
+    function showResults(type, data) {
+        const resultsSection = document.getElementById('resultsSection');
+        const resultsContent = document.getElementById('resultsContent');
+        
+        if (type === 'error') {
+            resultsContent.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Error:</strong> ${data}
+                </div>
+            `;
+        } else {
+            // Format success results using unified display format
+            const aiScore = data.ai_likelihood ? Math.round(data.ai_likelihood * 100) : 0;
+            const plagiarismScore = data.plagiarism_score ? Math.round(data.plagiarism_score * 100) : 0;
+            
+            resultsContent.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-info">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i class="fas fa-robot me-2"></i>AI Content Detection</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <div class="display-6 fw-bold text-info">${aiScore}%</div>
+                                    <p class="text-muted">AI-generated probability</p>
+                                </div>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-info" style="width: ${aiScore}%"></div>
+                                </div>
+                                <p class="small text-muted mb-0">
+                                    ${aiScore > 70 ? 'High probability of AI generation' : 
+                                      aiScore > 30 ? 'Moderate probability of AI generation' : 
+                                      'Low probability of AI generation'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-warning">
+                            <div class="card-header bg-warning text-dark">
+                                <h6 class="mb-0"><i class="fas fa-copy me-2"></i>Plagiarism Detection</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <div class="display-6 fw-bold text-warning">${plagiarismScore}%</div>
+                                    <p class="text-muted">Content similarity</p>
+                                </div>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-warning" style="width: ${plagiarismScore}%"></div>
+                                </div>
+                                <p class="small text-muted mb-0">
+                                    ${plagiarismScore > 70 ? 'High similarity to existing content' : 
+                                      plagiarismScore > 30 ? 'Moderate similarity detected' : 
+                                      'Low similarity to existing content'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ${data.file_info ? `
+                <div class="mt-3">
+                    <div class="alert alert-info">
+                        <i class="fas fa-file me-2"></i>
+                        <strong>File processed:</strong> ${data.file_info.filename} (${data.file_info.size})
+                    </div>
+                </div>
+                ` : ''}
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary me-2" onclick="location.reload()">
+                        <i class="fas fa-plus me-2"></i>Analyze Another
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="window.location.href='/'">
+                        <i class="fas fa-home me-2"></i>Back to Home
+                    </button>
+                </div>
+            `;
+        }
+        
+        resultsSection.style.display = 'block';
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }
 
     // Drag and drop functionality for text file upload
     const uploadArea = document.querySelector('.upload-area');

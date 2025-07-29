@@ -623,20 +623,24 @@ document.addEventListener('DOMContentLoaded', function() {
         return types[ext] || 'Unknown';
     }
     
-    // Make upload area clickable
+    // Make upload area clickable and set up file input handler
     const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('text_file');
+    
     if (uploadArea) {
         uploadArea.addEventListener('click', function(e) {
             if (e.target.tagName !== 'BUTTON') {
-                document.getElementById('text_file').click();
+                fileInput.click();
             }
         });
     }
 
     // File upload handling
-    fileInput.addEventListener('change', function() {
-        handleFileUpload(this);
-    });
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            handleFileUpload(this);
+        });
+    }
 
     // Clear file function with reset
     window.clearFile = function() {

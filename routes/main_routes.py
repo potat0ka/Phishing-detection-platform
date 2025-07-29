@@ -457,64 +457,155 @@ def analyze_text():
 @main_bp.route('/api/scan', methods=['POST'])
 def api_scan_content():
     """
-    API endpoint for content scanning (URL, Email, or Message)
-
+    Unified API endpoint for all content analysis types.
+    Handles:
+    1. Text analysis (AI detection + plagiarism) with form data for file uploads
+    2. ML phishing detection for URL/email/message via JSON data
+    
     Returns JSON response for AJAX requests or API clients.
-    Supports all three content types with comprehensive ML analysis.
     """
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({'error': 'No data provided'}), 400
+        # Check if this is a form-based request (file upload for text analysis)
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            # Handle unified text analysis with file upload
+            logger.info("API scan request received - unified text analysis endpoint")
+            
+            # Get form data
+            text_content = request.form.get('text_content', '').strip()
+            check_ai = request.form.get('check_ai') == 'on'
+            check_plagiarism = request.form.get('check_plagiarism') == 'on'
+            
+            logger.info(f"Form data received: text_length={len(text_content)}, check_ai={check_ai}, check_plagiarism={check_plagiarism}")
+            
+            # Check for file upload
+            uploaded_file = request.files.get('text_file')
+            file_info = None
+            
+            # Process file if uploaded
+            if uploaded_file and uploaded_file.filename:
+                logger.info(f"Processing uploaded file: {uploaded_file.filename}")
+                
+                try:
+                    # Extract text from file using shared service
+                    extracted_text = extract_text_from_file(uploaded_file)
+                    if extracted_text and extracted_text.get('success'):
+                        text_content = extracted_text['text']
+                        file_info = {
+                            'filename': uploaded_file.filename,
+                            'size': f"{len(text_content)} characters",
+                            'type': uploaded_file.content_type or 'Unknown'
+                        }
+                        logger.info(f"Successfully extracted {len(text_content)} characters from file")
+                    else:
+                        error_msg = extracted_text.get('error', 'Failed to extract text from file') if extracted_text else 'Failed to process uploaded file'
+                        logger.error(f"File processing failed: {error_msg}")
+                        return jsonify({'error': error_msg}), 400
+                except Exception as e:
+                    logger.error(f"File extraction error: {e}")
+                    return jsonify({'error': f'Failed to process file: {str(e)}'}), 400
+            
+            # Validate content
+            if not text_content:
+                logger.warning("No text content provided")
+                return jsonify({'error': 'Please enter text content or upload a file'}), 400
+            
+            if len(text_content) < 50:
+                logger.warning(f"Text too short: {len(text_content)} characters")
+                return jsonify({'error': 'Text must be at least 50 characters long for analysis'}), 400
+            
+            # Validate analysis options
+            if not check_ai and not check_plagiarism:
+                logger.warning("No analysis options selected")
+                return jsonify({'error': 'Please select at least one analysis option (AI Detection or Plagiarism Check)'}), 400
+            
+            # Perform enhanced text analysis using shared service
+            source = "file_upload" if file_info else "manual"
+            logger.info(f"Starting unified analysis: source={source}, ai={check_ai}, plagiarism={check_plagiarism}")
+            
+            result = analyze_text_content(text_content, check_ai=check_ai, check_plagiarism=check_plagiarism, source=source)
+            
+            # Check for analysis errors
+            if not result.get('success', False):
+                error_msg = result.get('error', 'Unknown analysis error')
+                logger.error(f"Analysis failed: {error_msg}")
+                return jsonify({'error': f"Analysis failed: {error_msg}"}), 400
+            
+            # Add file information to result
+            if file_info:
+                result['file_info'] = file_info
+            
+            # Convert to format expected by frontend (unified format)
+            ai_percentage = result.get('ai_detection', {}).get('percentage', 0)
+            plagiarism_percentage = result.get('plagiarism', {}).get('percentage', 0)
+            
+            unified_result = {
+                'content_type': 'text',
+                'success': True,
+                'authenticity_verdict': f"AI Detection: {ai_percentage}% | Plagiarism: {plagiarism_percentage}%",
+                'ai_likelihood': ai_percentage / 100.0,
+                'plagiarism_score': plagiarism_percentage / 100.0,
+                'detailed_analysis': result,
+                'file_info': file_info,
+                'timestamp': result.get('timestamp')
+            }
+            
+            logger.info(f"Analysis completed successfully: AI={ai_percentage}%, Plagiarism={plagiarism_percentage}%")
+            return jsonify(unified_result)
+        
+        else:
+            # Handle JSON-based phishing detection (original functionality)
+            data = request.get_json()
+            if not data:
+                return jsonify({'error': 'No data provided'}), 400
 
-        # Extract content and type
-        content = data.get('content', '').strip()
-        content_type = data.get('content_type', '').strip()
+            # Extract content and type
+            content = data.get('content', '').strip()
+            content_type = data.get('content_type', '').strip()
 
-        if not content:
-            return jsonify({'error': 'Content is required'}), 400
+            if not content:
+                return jsonify({'error': 'Content is required'}), 400
 
-        if content_type not in ['url', 'email', 'message']:
-            return jsonify({'error': 'Content type must be url, email, or message'}), 400
+            if content_type not in ['url', 'email', 'message']:
+                return jsonify({'error': 'Content type must be url, email, or message'}), 400
 
-        # Validate content based on type
-        if content_type == 'url' and not validate_url(content):
-            return jsonify({'error': 'Invalid URL format'}), 400
+            # Validate content based on type
+            if content_type == 'url' and not validate_url(content):
+                return jsonify({'error': 'Invalid URL format'}), 400
 
-        if content_type in ['email', 'message'] and len(content) < 5:
-            return jsonify({'error': 'Content too short for analysis'}), 400
+            if content_type in ['email', 'message'] and len(content) < 5:
+                return jsonify({'error': 'Content too short for analysis'}), 400
 
-        # Import and use ML detector
-        from utils.ml_detector import MLPhishingDetector
+            # Import and use ML detector
+            from utils.ml_detector import MLPhishingDetector
 
-        detector = MLPhishingDetector()
-        result = detector.analyze_content(content, content_type)
+            detector = MLPhishingDetector()
+            result = detector.analyze_content(content, content_type)
 
-        # Check for analysis errors
-        if result.get('error'):
-            return jsonify({'error': result.get('warnings', ['Analysis failed'])[0]}), 500
+            # Check for analysis errors
+            if result.get('error'):
+                return jsonify({'error': result.get('warnings', ['Analysis failed'])[0]}), 500
 
-        # Save comprehensive scan result for API requests
-        try:
-            from models.scan_history_model import ScanHistoryModel
+            # Save comprehensive scan result for API requests
+            try:
+                from models.scan_history_model import ScanHistoryModel
 
-            # Get current user ID from session (API calls may be authenticated)
-            current_user_id = session.get('user_id')
+                # Get current user ID from session (API calls may be authenticated)
+                current_user_id = session.get('user_id')
 
-            # Save detailed scan result
-            scan_id = ScanHistoryModel.save_scan_result(
-                content=content,
-                content_type=content_type,
-                result=result,
-                user_id=current_user_id
-            )
+                # Save detailed scan result
+                scan_id = ScanHistoryModel.save_scan_result(
+                    content=content,
+                    content_type=content_type,
+                    result=result,
+                    user_id=current_user_id
+                )
 
-            logger.info(f"API scan saved (ID: {scan_id})")
+                logger.info(f"API scan saved (ID: {scan_id})")
 
-        except Exception as log_error:
-            logger.error(f"Failed to save API scan result: {log_error}")
+            except Exception as log_error:
+                logger.error(f"Failed to save API scan result: {log_error}")
 
-        return jsonify(result)
+            return jsonify(result)
 
     except ImportError as e:
         logger.error(f"ML detector import error: {e}")
