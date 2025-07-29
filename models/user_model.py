@@ -154,3 +154,66 @@ class UserModel:
         except Exception as e:
             logger.error(f"Error updating user role: {e}")
             return False
+    
+    @staticmethod
+    def get_user_count():
+        """Get total number of users"""
+        try:
+            if mongo_service.is_connected():
+                return mongo_service.count_documents('users', {})
+            return 0
+        except Exception as e:
+            logger.error(f"Error getting user count: {e}")
+            return 0
+    
+    @staticmethod
+    def get_admin_count():
+        """Get total number of admin users"""
+        try:
+            if mongo_service.is_connected():
+                return mongo_service.count_documents('users', {'role': 'admin'})
+            return 0
+        except Exception as e:
+            logger.error(f"Error getting admin count: {e}")
+            return 0
+    
+    @staticmethod
+    def get_superadmin_count():
+        """Get total number of superadmin users"""
+        try:
+            if mongo_service.is_connected():
+                return mongo_service.count_documents('users', {'role': 'superadmin'})
+            return 0
+        except Exception as e:
+            logger.error(f"Error getting superadmin count: {e}")
+            return 0
+    
+    @staticmethod
+    def get_users_by_role(role):
+        """Get all users with specified role"""
+        try:
+            if mongo_service.is_connected():
+                return mongo_service.find_documents('users', {'role': role})
+            return []
+        except Exception as e:
+            logger.error(f"Error getting users by role: {e}")
+            return []
+    
+    @staticmethod
+    def deactivate_user(user_id):
+        """Deactivate a user account"""
+        try:
+            if mongo_service.is_connected():
+                from bson import ObjectId
+                if isinstance(user_id, str):
+                    user_id = ObjectId(user_id)
+                result = mongo_service.update_document(
+                    'users',
+                    {'_id': user_id},
+                    {'is_active': False, 'deactivated_at': datetime.utcnow()}
+                )
+                return result > 0
+            return False
+        except Exception as e:
+            logger.error(f"Error deactivating user: {e}")
+            return False

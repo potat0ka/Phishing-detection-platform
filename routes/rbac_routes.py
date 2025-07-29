@@ -243,7 +243,7 @@ def upload_model_legacy():
             }
 
             # Store upload record
-            if db and mongo_service.connected:
+            if mongo_service.is_connected():
                 mongo_service.insert_document('model_uploads', upload_record)
 
             flash(f'Model {filename} uploaded successfully', 'success')
@@ -279,7 +279,7 @@ def update_safety_tips():
         }
 
         # Store safety tip
-        if db and mongo_service.connected:
+        if mongo_service.is_connected():
             mongo_service.insert_document('safety_tips', tip_record)
         else:
             # File-based fallback

@@ -201,14 +201,3 @@ def is_mongo_connected() -> bool:
     """Check MongoDB connection status (convenience function)"""
     return mongo_service.is_connected()
 
-def hash_password(password: str) -> str:
-    """Hash password using bcrypt"""
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-def verify_password(password: str, hashed_password: str) -> bool:
-    """Verify password against bcrypt hash"""
-    try:
-        return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
-    except Exception as e:
-        logger.error(f"Password verification error: {e}")
-        return False
