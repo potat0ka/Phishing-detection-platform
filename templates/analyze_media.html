@@ -460,58 +460,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return; // Exit early to avoid showing basic alert
         }
         
-        // Show detailed results if available
-        if (type === 'success' && data.detailed_analysis) {
-            document.getElementById('resultsSection').style.display = 'block';
-            const resultsContent = document.getElementById('resultsContent');
-            
-            resultsContent.innerHTML = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card border-info">
-                            <div class="card-header bg-info text-white">
-                                <h6 class="mb-0"><i class="fas fa-robot me-2"></i>AI Content Detection</h6>
-                            </div>
-                            <div class="card-body">
-                                <div class="text-center">
-                                    <div class="display-6 fw-bold text-info">${aiScore}%</div>
-                                    <p class="text-muted">AI-generated probability</p>
-                                </div>
-                                <div class="progress mb-2">
-                                    <div class="progress-bar bg-info" style="width: ${aiScore}%"></div>
-                                </div>
-                                <p class="small text-muted mb-0">
-                                    ${aiScore > 70 ? 'High probability of AI generation' : 
-                                      aiScore > 30 ? 'Moderate probability of AI generation' : 
-                                      'Low probability of AI generation'}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card border-warning">
-                            <div class="card-header bg-warning text-dark">
-                                <h6 class="mb-0"><i class="fas fa-copy me-2"></i>Plagiarism Detection</h6>
-                            </div>
-                            <div class="card-body">
-                                <div class="text-center">
-                                    <div class="display-6 fw-bold text-warning">${plagiarismScore}%</div>
-                                    <p class="text-muted">Content similarity</p>
-                                </div>
-                                <div class="progress mb-2">
-                                    <div class="progress-bar bg-warning" style="width: ${plagiarismScore}%"></div>
-                                </div>
-                                <p class="small text-muted mb-0">
-                                    ${plagiarismScore > 70 ? 'High similarity detected' : 
-                                      plagiarismScore > 30 ? 'Moderate similarity detected' : 
-                                      'Low similarity detected'}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
+        // Show the alert for error and info messages only
+        document.getElementById('resultsSection').style.display = 'none';
+        
+
     }
 
     // Enhanced visual results for text analysis
