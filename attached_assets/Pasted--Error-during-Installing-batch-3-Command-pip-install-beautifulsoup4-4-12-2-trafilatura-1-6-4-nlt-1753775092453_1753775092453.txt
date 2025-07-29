@@ -1,0 +1,434 @@
+❌ Error during Installing batch 3
+Command: pip install beautifulsoup4==4.12.2 trafilatura==1.6.4 nltk==3.8.1 python-docx>=1.2.0 pdfplumber>=0.11.7
+Error: WARNING: lxml 4.9.4 does not provide the extra 'html-clean'
+  DEPRECATION: Building 'lxml' using the legacy setup.py bdist_wheel mechanism, which will be removed in a future version. pip 25.3 will enforce this behaviour change. A possible replacement is to use the standardized build interface by setting the `--use-pep517` option, (possibly combined with `--no-build-isolation`), or adding a `pyproject.toml` file to the source tree of 'lxml'. Discussion can be found at https://github.com/pypa/pip/issues/6334
+  error: subprocess-exited-with-error
+  
+  × python setup.py bdist_wheel did not run successfully.
+  │ exit code: 1
+  ╰─> [417 lines of output]
+      Building lxml version 4.9.4.
+      /tmp/pip-install-f05uu8gj/lxml_b7bee0c1a2164b028b6d46b11062ea26/setup.py:67: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
+        import pkg_resources
+      Building without Cython.
+      Building against libxml2 2.14.5 and libxslt 1.1.43
+      /home/pepsy/miniconda3/lib/python3.13/site-packages/setuptools/dist.py:759: SetuptoolsDeprecationWarning: License classifiers are deprecated.
+      !!
+      
+              ********************************************************************************
+              Please consider removing the following classifiers in favor of a SPDX license expression:
+      
+              License :: OSI Approved :: BSD License
+      
+              See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license for details.
+              ********************************************************************************
+      
+      !!
+        self._finalize_license_expression()
+      running bdist_wheel
+      running build
+      running build_py
+      creating build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/usedoctest.py -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/sax.py -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/pyclasslookup.py -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/doctestcompare.py -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/cssselect.py -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/builder.py -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/_elementpath.py -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/__init__.py -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/ElementInclude.py -> build/lib.linux-x86_64-cpython-313/lxml
+      creating build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/__init__.py -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      creating build/lib.linux-x86_64-cpython-313/lxml/html
+      copying src/lxml/html/usedoctest.py -> build/lib.linux-x86_64-cpython-313/lxml/html
+      copying src/lxml/html/soupparser.py -> build/lib.linux-x86_64-cpython-313/lxml/html
+      copying src/lxml/html/html5parser.py -> build/lib.linux-x86_64-cpython-313/lxml/html
+      copying src/lxml/html/formfill.py -> build/lib.linux-x86_64-cpython-313/lxml/html
+      copying src/lxml/html/diff.py -> build/lib.linux-x86_64-cpython-313/lxml/html
+      copying src/lxml/html/defs.py -> build/lib.linux-x86_64-cpython-313/lxml/html
+      copying src/lxml/html/clean.py -> build/lib.linux-x86_64-cpython-313/lxml/html
+      copying src/lxml/html/builder.py -> build/lib.linux-x86_64-cpython-313/lxml/html
+      copying src/lxml/html/_setmixin.py -> build/lib.linux-x86_64-cpython-313/lxml/html
+      copying src/lxml/html/_html5builder.py -> build/lib.linux-x86_64-cpython-313/lxml/html
+      copying src/lxml/html/_diffcommand.py -> build/lib.linux-x86_64-cpython-313/lxml/html
+      copying src/lxml/html/__init__.py -> build/lib.linux-x86_64-cpython-313/lxml/html
+      copying src/lxml/html/ElementSoup.py -> build/lib.linux-x86_64-cpython-313/lxml/html
+      creating build/lib.linux-x86_64-cpython-313/lxml/isoschematron
+      copying src/lxml/isoschematron/__init__.py -> build/lib.linux-x86_64-cpython-313/lxml/isoschematron
+      copying src/lxml/etree.h -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/etree_api.h -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/lxml.etree.h -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/lxml.etree_api.h -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/objectify.pyx -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/etree.pyx -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/xsltext.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/xslt.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/xpath.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/xmlschema.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/xmlid.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/xmlerror.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/xinclude.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/serializer.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/schematron.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/saxparser.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/relaxng.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/readonlytree.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/public-api.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/proxy.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/parsertarget.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/parser.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/objectpath.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/nsclasses.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/iterparse.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/extensions.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/dtd.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/docloader.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/debug.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/cleanup.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/classlookup.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/apihelpers.pxi -> build/lib.linux-x86_64-cpython-313/lxml
+      copying src/lxml/includes/xslt.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/xpath.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/xmlschema.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/xmlparser.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/xmlerror.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/xinclude.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/uri.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/tree.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/schematron.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/relaxng.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/htmlparser.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/etreepublic.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/dtdvalid.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/config.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/c14n.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/__init__.pxd -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/lxml-version.h -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      copying src/lxml/includes/etree_defs.h -> build/lib.linux-x86_64-cpython-313/lxml/includes
+      creating build/lib.linux-x86_64-cpython-313/lxml/isoschematron/resources/rng
+      copying src/lxml/isoschematron/resources/rng/iso-schematron.rng -> build/lib.linux-x86_64-cpython-313/lxml/isoschematron/resources/rng
+      creating build/lib.linux-x86_64-cpython-313/lxml/isoschematron/resources/xsl
+      copying src/lxml/isoschematron/resources/xsl/XSD2Schtrn.xsl -> build/lib.linux-x86_64-cpython-313/lxml/isoschematron/resources/xsl
+      copying src/lxml/isoschematron/resources/xsl/RNG2Schtrn.xsl -> build/lib.linux-x86_64-cpython-313/lxml/isoschematron/resources/xsl
+      creating build/lib.linux-x86_64-cpython-313/lxml/isoschematron/resources/xsl/iso-schematron-xslt1
+      copying src/lxml/isoschematron/resources/xsl/iso-schematron-xslt1/iso_svrl_for_xslt1.xsl -> build/lib.linux-x86_64-cpython-313/lxml/isoschematron/resources/xsl/iso-schematron-xslt1
+      copying src/lxml/isoschematron/resources/xsl/iso-schematron-xslt1/iso_schematron_skeleton_for_xslt1.xsl -> build/lib.linux-x86_64-cpython-313/lxml/isoschematron/resources/xsl/iso-schematron-xslt1
+      copying src/lxml/isoschematron/resources/xsl/iso-schematron-xslt1/iso_schematron_message.xsl -> build/lib.linux-x86_64-cpython-313/lxml/isoschematron/resources/xsl/iso-schematron-xslt1
+      copying src/lxml/isoschematron/resources/xsl/iso-schematron-xslt1/iso_dsdl_include.xsl -> build/lib.linux-x86_64-cpython-313/lxml/isoschematron/resources/xsl/iso-schematron-xslt1
+      copying src/lxml/isoschematron/resources/xsl/iso-schematron-xslt1/iso_abstract_expand.xsl -> build/lib.linux-x86_64-cpython-313/lxml/isoschematron/resources/xsl/iso-schematron-xslt1
+      copying src/lxml/isoschematron/resources/xsl/iso-schematron-xslt1/readme.txt -> build/lib.linux-x86_64-cpython-313/lxml/isoschematron/resources/xsl/iso-schematron-xslt1
+      running build_ext
+      building 'lxml.etree' extension
+      creating build/temp.linux-x86_64-cpython-313/src/lxml
+      gcc -pthread -B /home/pepsy/miniconda3/compiler_compat -fno-strict-overflow -Wsign-compare -DNDEBUG -O2 -Wall -fPIC -O2 -isystem /home/pepsy/miniconda3/include -fPIC -O2 -isystem /home/pepsy/miniconda3/include -fPIC -DCYTHON_CLINE_IN_TRACEBACK=0 -I/usr/include/libxml2 -Isrc -Isrc/lxml/includes -I/home/pepsy/miniconda3/include/python3.13 -c src/lxml/etree.c -o build/temp.linux-x86_64-cpython-313/src/lxml/etree.o -w
+      src/lxml/etree.c: In function ‘__Pyx_init_assertions_enabled’:
+      src/lxml/etree.c:5988:39: error: implicit declaration of function ‘_PyInterpreterState_GetConfig’; did you mean ‘PyInterpreterState_GetID’? [-Wimplicit-function-declaration]
+       5988 |     __pyx_assertions_enabled_flag = ! _PyInterpreterState_GetConfig(__Pyx_PyThreadState_Current->interp)->optimization_level;
+            |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            |                                       PyInterpreterState_GetID
+      src/lxml/etree.c:5988:105: error: invalid type argument of ‘->’ (have ‘int’)
+       5988 |     __pyx_assertions_enabled_flag = ! _PyInterpreterState_GetConfig(__Pyx_PyThreadState_Current->interp)->optimization_level;
+            |                                                                                                         ^~
+      src/lxml/etree.c: In function ‘__pyx_f_4lxml_5etree_14_ParserContext_prepare’:
+      src/lxml/etree.c:113221:38: error: assignment to ‘xmlStructuredErrorFunc’ {aka ‘void (*)(void *, const struct _xmlError *)’} from incompatible pointer type ‘void (*)(void *, xmlError *)’ {aka ‘void (*)(void *, struct _xmlError *)’} [-Wincompatible-pointer-types]
+      113221 |   __pyx_v_self->_c_ctxt->sax->serror = __pyx_f_4lxml_5etree__receiveParserError;
+             |                                      ^
+      src/lxml/etree.c:7472:13: note: ‘__pyx_f_4lxml_5etree__receiveParserError’ declared here
+       7472 | static void __pyx_f_4lxml_5etree__receiveParserError(void *, xmlError *); /*proto*/
+            |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      In file included from /usr/include/libxml2/libxml/valid.h:16,
+                       from /usr/include/libxml2/libxml/parser.h:20,
+                       from /usr/include/libxml2/libxml/tree.h:17,
+                       from src/lxml/includes/etree_defs.h:189,
+                       from src/lxml/etree.c:864:
+      /usr/include/libxml2/libxml/xmlerror.h:871:16: note: ‘xmlStructuredErrorFunc’ declared here
+        871 | typedef void (*xmlStructuredErrorFunc) (void *userData, const xmlError *error);
+            |                ^~~~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_f_4lxml_5etree_11_BaseParser__registerHtmlErrorHandler’:
+      src/lxml/etree.c:117709:25: error: assignment to ‘xmlStructuredErrorFunc’ {aka ‘void (*)(void *, const struct _xmlError *)’} from incompatible pointer type ‘void (*)(void *, xmlError *)’ {aka ‘void (*)(void *, struct _xmlError *)’} [-Wincompatible-pointer-types]
+      117709 |     __pyx_v_sax->serror = __pyx_f_4lxml_5etree__receiveParserError;
+             |                         ^
+      src/lxml/etree.c:113855:13: note: ‘__pyx_f_4lxml_5etree__receiveParserError’ declared here
+      113855 | static void __pyx_f_4lxml_5etree__receiveParserError(void *__pyx_v_c_context, xmlError *__pyx_v_error) {
+             |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      /usr/include/libxml2/libxml/xmlerror.h:871:16: note: ‘xmlStructuredErrorFunc’ declared here
+        871 | typedef void (*xmlStructuredErrorFunc) (void *userData, const xmlError *error);
+            |                ^~~~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_pf_4lxml_5etree_11TreeBuilder_4data’:
+      src/lxml/etree.c:137976:66: error: passing argument 1 of ‘__pyx_f_4lxml_5etree_11TreeBuilder__handleSaxData’ from incompatible pointer type [-Wincompatible-pointer-types]
+      137976 |   __pyx_t_1 = __pyx_f_4lxml_5etree_11TreeBuilder__handleSaxData(((struct __pyx_obj_4lxml_5etree__SaxParserTarget *)__pyx_v_self), __pyx_v_data); if (unlikely(__pyx_t_1 == ((int)-1))) __PYX_ERR(3, 834, __pyx_L1_error)
+             |                                                                 ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |                                                                  |
+             |                                                                  struct __pyx_obj_4lxml_5etree__SaxParserTarget *
+      src/lxml/etree.c:137352:105: note: expected ‘struct __pyx_obj_4lxml_5etree_TreeBuilder *’ but argument is of type ‘struct __pyx_obj_4lxml_5etree__SaxParserTarget *’
+      137352 | static int __pyx_f_4lxml_5etree_11TreeBuilder__handleSaxData(struct __pyx_obj_4lxml_5etree_TreeBuilder *__pyx_v_self, PyObject *__pyx_v_data) {
+             |                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_pf_4lxml_5etree_11TreeBuilder_6start’:
+      src/lxml/etree.c:138137:67: error: passing argument 1 of ‘__pyx_f_4lxml_5etree_11TreeBuilder__handleSaxStart’ from incompatible pointer type [-Wincompatible-pointer-types]
+      138137 |   __pyx_t_3 = __pyx_f_4lxml_5etree_11TreeBuilder__handleSaxStart(((struct __pyx_obj_4lxml_5etree__SaxParserTarget *)__pyx_v_self), __pyx_v_tag, __pyx_v_attrs, __pyx_v_nsmap); if (unlikely(!__pyx_t_3)) __PYX_ERR(3, 843, __pyx_L1_error)
+             |                                                                  ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |                                                                   |
+             |                                                                   struct __pyx_obj_4lxml_5etree__SaxParserTarget *
+      src/lxml/etree.c:136951:112: note: expected ‘struct __pyx_obj_4lxml_5etree_TreeBuilder *’ but argument is of type ‘struct __pyx_obj_4lxml_5etree__SaxParserTarget *’
+      136951 | static PyObject *__pyx_f_4lxml_5etree_11TreeBuilder__handleSaxStart(struct __pyx_obj_4lxml_5etree_TreeBuilder *__pyx_v_self, PyObject *__pyx_v_tag, PyObject *__pyx_v_attrib, PyObject *__pyx_v_nsmap) {
+             |                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_pf_4lxml_5etree_11TreeBuilder_8end’:
+      src/lxml/etree.c:138208:65: error: passing argument 1 of ‘__pyx_f_4lxml_5etree_11TreeBuilder__handleSaxEnd’ from incompatible pointer type [-Wincompatible-pointer-types]
+      138208 |   __pyx_t_1 = __pyx_f_4lxml_5etree_11TreeBuilder__handleSaxEnd(((struct __pyx_obj_4lxml_5etree__SaxParserTarget *)__pyx_v_self), __pyx_v_tag); if (unlikely(!__pyx_t_1)) __PYX_ERR(3, 850, __pyx_L1_error)
+             |                                                                ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |                                                                 |
+             |                                                                 struct __pyx_obj_4lxml_5etree__SaxParserTarget *
+      src/lxml/etree.c:137251:110: note: expected ‘struct __pyx_obj_4lxml_5etree_TreeBuilder *’ but argument is of type ‘struct __pyx_obj_4lxml_5etree__SaxParserTarget *’
+      137251 | static PyObject *__pyx_f_4lxml_5etree_11TreeBuilder__handleSaxEnd(struct __pyx_obj_4lxml_5etree_TreeBuilder *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_tag) {
+             |                                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_pf_4lxml_5etree_11TreeBuilder_10pi’:
+      src/lxml/etree.c:138409:64: error: passing argument 1 of ‘__pyx_f_4lxml_5etree_11TreeBuilder__handleSaxPi’ from incompatible pointer type [-Wincompatible-pointer-types]
+      138409 |   __pyx_t_1 = __pyx_f_4lxml_5etree_11TreeBuilder__handleSaxPi(((struct __pyx_obj_4lxml_5etree__SaxParserTarget *)__pyx_v_self), __pyx_v_target, __pyx_v_data); if (unlikely(!__pyx_t_1)) __PYX_ERR(3, 861, __pyx_L1_error)
+             |                                                               ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |                                                                |
+             |                                                                struct __pyx_obj_4lxml_5etree__SaxParserTarget *
+      src/lxml/etree.c:137401:109: note: expected ‘struct __pyx_obj_4lxml_5etree_TreeBuilder *’ but argument is of type ‘struct __pyx_obj_4lxml_5etree__SaxParserTarget *’
+      137401 | static PyObject *__pyx_f_4lxml_5etree_11TreeBuilder__handleSaxPi(struct __pyx_obj_4lxml_5etree_TreeBuilder *__pyx_v_self, PyObject *__pyx_v_target, PyObject *__pyx_v_data) {
+             |                                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_pf_4lxml_5etree_11TreeBuilder_12comment’:
+      src/lxml/etree.c:138472:69: error: passing argument 1 of ‘__pyx_f_4lxml_5etree_11TreeBuilder__handleSaxComment’ from incompatible pointer type [-Wincompatible-pointer-types]
+      138472 |   __pyx_t_1 = __pyx_f_4lxml_5etree_11TreeBuilder__handleSaxComment(((struct __pyx_obj_4lxml_5etree__SaxParserTarget *)__pyx_v_self), __pyx_v_comment); if (unlikely(!__pyx_t_1)) __PYX_ERR(3, 869, __pyx_L1_error)
+             |                                                                    ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |                                                                     |
+             |                                                                     struct __pyx_obj_4lxml_5etree__SaxParserTarget *
+      src/lxml/etree.c:137607:114: note: expected ‘struct __pyx_obj_4lxml_5etree_TreeBuilder *’ but argument is of type ‘struct __pyx_obj_4lxml_5etree__SaxParserTarget *’
+      137607 | static PyObject *__pyx_f_4lxml_5etree_11TreeBuilder__handleSaxComment(struct __pyx_obj_4lxml_5etree_TreeBuilder *__pyx_v_self, PyObject *__pyx_v_comment) {
+             |                                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_f_4lxml_5etree_12_BaseContext__set_xpath_context’:
+      src/lxml/etree.c:181971:28: error: assignment to ‘xmlStructuredErrorFunc’ {aka ‘void (*)(void *, const struct _xmlError *)’} from incompatible pointer type ‘void (*)(void *, xmlError *)’ {aka ‘void (*)(void *, struct _xmlError *)’} [-Wincompatible-pointer-types]
+      181971 |   __pyx_v_xpathCtxt->error = __pyx_f_4lxml_5etree__receiveXPathError;
+             |                            ^
+      src/lxml/etree.c:7546:13: note: ‘__pyx_f_4lxml_5etree__receiveXPathError’ declared here
+       7546 | static void __pyx_f_4lxml_5etree__receiveXPathError(void *, xmlError *); /*proto*/
+            |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      /usr/include/libxml2/libxml/xmlerror.h:871:16: note: ‘xmlStructuredErrorFunc’ declared here
+        871 | typedef void (*xmlStructuredErrorFunc) (void *userData, const xmlError *error);
+            |                ^~~~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_pf_4lxml_5etree_4XSLT_18__call__’:
+      src/lxml/etree.c:203486:73: error: passing argument 1 of ‘__pyx_f_4lxml_5etree_12_XSLTContext__copy’ from incompatible pointer type [-Wincompatible-pointer-types]
+      203486 |     __pyx_t_1 = ((PyObject *)__pyx_f_4lxml_5etree_12_XSLTContext__copy(((struct __pyx_obj_4lxml_5etree__BaseContext *)__pyx_v_self->_context))); if (unlikely(!__pyx_t_1)) __PYX_ERR(4, 550, __pyx_L9_error)
+             |                                                                        ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |                                                                         |
+             |                                                                         struct __pyx_obj_4lxml_5etree__BaseContext *
+      src/lxml/etree.c:201169:138: note: expected ‘struct __pyx_obj_4lxml_5etree__XSLTContext *’ but argument is of type ‘struct __pyx_obj_4lxml_5etree__BaseContext *’
+      201169 | static struct __pyx_obj_4lxml_5etree__BaseContext *__pyx_f_4lxml_5etree_12_XSLTContext__copy(struct __pyx_obj_4lxml_5etree__XSLTContext *__pyx_v_self) {
+             |                                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_f_4lxml_5etree__copyXSLT’:
+      src/lxml/etree.c:205311:71: error: passing argument 1 of ‘__pyx_f_4lxml_5etree_12_XSLTContext__copy’ from incompatible pointer type [-Wincompatible-pointer-types]
+      205311 |   __pyx_t_1 = ((PyObject *)__pyx_f_4lxml_5etree_12_XSLTContext__copy(((struct __pyx_obj_4lxml_5etree__BaseContext *)__pyx_v_stylesheet->_context))); if (unlikely(!__pyx_t_1)) __PYX_ERR(4, 691, __pyx_L1_error)
+             |                                                                      ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |                                                                       |
+             |                                                                       struct __pyx_obj_4lxml_5etree__BaseContext *
+      src/lxml/etree.c:201169:138: note: expected ‘struct __pyx_obj_4lxml_5etree__XSLTContext *’ but argument is of type ‘struct __pyx_obj_4lxml_5etree__BaseContext *’
+      201169 | static struct __pyx_obj_4lxml_5etree__BaseContext *__pyx_f_4lxml_5etree_12_XSLTContext__copy(struct __pyx_obj_4lxml_5etree__XSLTContext *__pyx_v_self) {
+             |                                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_pf_4lxml_5etree_7RelaxNG_2__init__’:
+      src/lxml/etree.c:219245:60: error: passing argument 2 of ‘xmlRelaxNGSetParserStructuredErrors’ from incompatible pointer type [-Wincompatible-pointer-types]
+      219245 |   xmlRelaxNGSetParserStructuredErrors(__pyx_v_parser_ctxt, __pyx_f_4lxml_5etree__receiveError, ((void *)__pyx_v_self->__pyx_base._error_log));
+             |                                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |                                                            |
+             |                                                            void (*)(void *, xmlError *) {aka void (*)(void *, struct _xmlError *)}
+      In file included from src/lxml/etree.c:905:
+      /usr/include/libxml2/libxml/relaxng.h:157:65: note: expected ‘xmlStructuredErrorFunc’ {aka ‘void (*)(void *, const struct _xmlError *)’} but argument is of type ‘void (*)(void *, xmlError *)’ {aka ‘void (*)(void *, struct _xmlError *)’}
+        157 |                                          xmlStructuredErrorFunc serror,
+            |                                          ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+      src/lxml/etree.c:49484:13: note: ‘__pyx_f_4lxml_5etree__receiveError’ declared here
+      49484 | static void __pyx_f_4lxml_5etree__receiveError(void *__pyx_v_c_log_handler, xmlError *__pyx_v_error) {
+            |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      /usr/include/libxml2/libxml/xmlerror.h:871:16: note: ‘xmlStructuredErrorFunc’ declared here
+        871 | typedef void (*xmlStructuredErrorFunc) (void *userData, const xmlError *error);
+            |                ^~~~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_pf_4lxml_5etree_7RelaxNG_6__call__’:
+      src/lxml/etree.c:219663:60: error: passing argument 2 of ‘xmlRelaxNGSetValidStructuredErrors’ from incompatible pointer type [-Wincompatible-pointer-types]
+      219663 |     xmlRelaxNGSetValidStructuredErrors(__pyx_v_valid_ctxt, __pyx_f_4lxml_5etree__receiveError, ((void *)__pyx_v_self->__pyx_base._error_log));
+             |                                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |                                                            |
+             |                                                            void (*)(void *, xmlError *) {aka void (*)(void *, struct _xmlError *)}
+      /usr/include/libxml2/libxml/relaxng.h:190:66: note: expected ‘xmlStructuredErrorFunc’ {aka ‘void (*)(void *, const struct _xmlError *)’} but argument is of type ‘void (*)(void *, xmlError *)’ {aka ‘void (*)(void *, struct _xmlError *)’}
+        190 |                                           xmlStructuredErrorFunc serror, void *ctx);
+            |                                           ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+      src/lxml/etree.c:49484:13: note: ‘__pyx_f_4lxml_5etree__receiveError’ declared here
+      49484 | static void __pyx_f_4lxml_5etree__receiveError(void *__pyx_v_c_log_handler, xmlError *__pyx_v_error) {
+            |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      /usr/include/libxml2/libxml/xmlerror.h:871:16: note: ‘xmlStructuredErrorFunc’ declared here
+        871 | typedef void (*xmlStructuredErrorFunc) (void *userData, const xmlError *error);
+            |                ^~~~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_pf_4lxml_5etree_9XMLSchema_2__init__’:
+      src/lxml/etree.c:220552:59: error: passing argument 2 of ‘xmlSchemaSetParserStructuredErrors’ from incompatible pointer type [-Wincompatible-pointer-types]
+      220552 |   xmlSchemaSetParserStructuredErrors(__pyx_v_parser_ctxt, __pyx_f_4lxml_5etree__receiveError, ((void *)__pyx_v_self->__pyx_base._error_log));
+             |                                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |                                                           |
+             |                                                           void (*)(void *, xmlError *) {aka void (*)(void *, struct _xmlError *)}
+      In file included from src/lxml/etree.c:906:
+      /usr/include/libxml2/libxml/xmlschemas.h:157:65: note: expected ‘xmlStructuredErrorFunc’ {aka ‘void (*)(void *, const struct _xmlError *)’} but argument is of type ‘void (*)(void *, xmlError *)’ {aka ‘void (*)(void *, struct _xmlError *)’}
+        157 |                                          xmlStructuredErrorFunc serror,
+            |                                          ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+      src/lxml/etree.c:49484:13: note: ‘__pyx_f_4lxml_5etree__receiveError’ declared here
+      49484 | static void __pyx_f_4lxml_5etree__receiveError(void *__pyx_v_c_log_handler, xmlError *__pyx_v_error) {
+            |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      /usr/include/libxml2/libxml/xmlerror.h:871:16: note: ‘xmlStructuredErrorFunc’ declared here
+        871 | typedef void (*xmlStructuredErrorFunc) (void *userData, const xmlError *error);
+            |                ^~~~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_pf_4lxml_5etree_9XMLSchema_6__call__’:
+      src/lxml/etree.c:221095:59: error: passing argument 2 of ‘xmlSchemaSetValidStructuredErrors’ from incompatible pointer type [-Wincompatible-pointer-types]
+      221095 |     xmlSchemaSetValidStructuredErrors(__pyx_v_valid_ctxt, __pyx_f_4lxml_5etree__receiveError, ((void *)__pyx_v_self->__pyx_base._error_log));
+             |                                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |                                                           |
+             |                                                           void (*)(void *, xmlError *) {aka void (*)(void *, struct _xmlError *)}
+      /usr/include/libxml2/libxml/xmlschemas.h:190:65: note: expected ‘xmlStructuredErrorFunc’ {aka ‘void (*)(void *, const struct _xmlError *)’} but argument is of type ‘void (*)(void *, xmlError *)’ {aka ‘void (*)(void *, struct _xmlError *)’}
+        190 |                                          xmlStructuredErrorFunc serror,
+            |                                          ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+      src/lxml/etree.c:49484:13: note: ‘__pyx_f_4lxml_5etree__receiveError’ declared here
+      49484 | static void __pyx_f_4lxml_5etree__receiveError(void *__pyx_v_c_log_handler, xmlError *__pyx_v_error) {
+            |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      /usr/include/libxml2/libxml/xmlerror.h:871:16: note: ‘xmlStructuredErrorFunc’ declared here
+        871 | typedef void (*xmlStructuredErrorFunc) (void *userData, const xmlError *error);
+            |                ^~~~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_f_4lxml_5etree_30_ParserSchemaValidationContext_connect’:
+      src/lxml/etree.c:221860:66: error: passing argument 2 of ‘xmlSchemaSetValidStructuredErrors’ from incompatible pointer type [-Wincompatible-pointer-types]
+      221860 |     xmlSchemaSetValidStructuredErrors(__pyx_v_self->_valid_ctxt, __pyx_f_4lxml_5etree__receiveError, ((void *)__pyx_v_error_log));
+             |                                                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |                                                                  |
+             |                                                                  void (*)(void *, xmlError *) {aka void (*)(void *, struct _xmlError *)}
+      /usr/include/libxml2/libxml/xmlschemas.h:190:65: note: expected ‘xmlStructuredErrorFunc’ {aka ‘void (*)(void *, const struct _xmlError *)’} but argument is of type ‘void (*)(void *, xmlError *)’ {aka ‘void (*)(void *, struct _xmlError *)’}
+        190 |                                          xmlStructuredErrorFunc serror,
+            |                                          ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+      src/lxml/etree.c:49484:13: note: ‘__pyx_f_4lxml_5etree__receiveError’ declared here
+      49484 | static void __pyx_f_4lxml_5etree__receiveError(void *__pyx_v_c_log_handler, xmlError *__pyx_v_error) {
+            |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      /usr/include/libxml2/libxml/xmlerror.h:871:16: note: ‘xmlStructuredErrorFunc’ declared here
+        871 | typedef void (*xmlStructuredErrorFunc) (void *userData, const xmlError *error);
+            |                ^~~~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_pf_4lxml_5etree_10Schematron_6__call__’:
+      src/lxml/etree.c:223037:63: error: passing argument 2 of ‘xmlSchematronSetValidStructuredErrors’ from incompatible pointer type [-Wincompatible-pointer-types]
+      223037 |     xmlSchematronSetValidStructuredErrors(__pyx_v_valid_ctxt, __pyx_f_4lxml_5etree__receiveError, ((void *)__pyx_v_self->__pyx_base._error_log));
+             |                                                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |                                                               |
+             |                                                               void (*)(void *, xmlError *) {aka void (*)(void *, struct _xmlError *)}
+      In file included from src/lxml/etree.c:907:
+      /usr/include/libxml2/libxml/schematron.h:106:66: note: expected ‘xmlStructuredErrorFunc’ {aka ‘void (*)(void *, const struct _xmlError *)’} but argument is of type ‘void (*)(void *, xmlError *)’ {aka ‘void (*)(void *, struct _xmlError *)’}
+        106 |                                           xmlStructuredErrorFunc serror,
+            |                                           ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+      src/lxml/etree.c:49484:13: note: ‘__pyx_f_4lxml_5etree__receiveError’ declared here
+      49484 | static void __pyx_f_4lxml_5etree__receiveError(void *__pyx_v_c_log_handler, xmlError *__pyx_v_error) {
+            |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      /usr/include/libxml2/libxml/xmlerror.h:871:16: note: ‘xmlStructuredErrorFunc’ declared here
+        871 | typedef void (*xmlStructuredErrorFunc) (void *userData, const xmlError *error);
+            |                ^~~~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__pyx_pymod_exec_etree’:
+      src/lxml/etree.c:6652:38: error: implicit declaration of function ‘_PyDict_SetItem_KnownHash’; did you mean ‘_PyDict_GetItem_KnownHash’? [-Wimplicit-function-declaration]
+       6652 |     (likely(PyDict_CheckExact(ns)) ? _PyDict_SetItem_KnownHash(ns, name, value, ((PyASCIIObject *) name)->hash) : PyObject_SetItem(ns, name, value))
+            |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c:255376:7: note: in expansion of macro ‘__Pyx_SetNameInClass’
+      255376 |   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_getitem, __pyx_t_9) < 0) __PYX_ERR(0, 97, __pyx_L1_error)
+             |       ^~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__Pyx_PyUnicode_Join’:
+      src/lxml/etree.c:264446:13: error: implicit declaration of function ‘_PyUnicode_FastCopyCharacters’; did you mean ‘PyUnicode_CopyCharacters’? [-Wimplicit-function-declaration]
+      264446 |             _PyUnicode_FastCopyCharacters(result_uval, char_pos, uval, 0, ulength);
+             |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |             PyUnicode_CopyCharacters
+      src/lxml/etree.c: In function ‘__Pyx_PyIter_Next2’:
+      src/lxml/etree.c:265182:35: error: ‘_PyObject_NextNotImplemented’ undeclared (first use in this function); did you mean ‘PyObject_HashNotImplemented’?
+      265182 |         if (unlikely(iternext == &_PyObject_NextNotImplemented))
+             |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c:1096:43: note: in definition of macro ‘unlikely’
+       1096 |   #define unlikely(x) __builtin_expect(!!(x), 0)
+            |                                           ^
+      src/lxml/etree.c:265182:35: note: each undeclared identifier is reported only once for each function it appears in
+      265182 |         if (unlikely(iternext == &_PyObject_NextNotImplemented))
+             |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c:1096:43: note: in definition of macro ‘unlikely’
+       1096 |   #define unlikely(x) __builtin_expect(!!(x), 0)
+            |                                           ^
+      src/lxml/etree.c: In function ‘__Pyx_PyGen_Send’:
+      src/lxml/etree.c:265973:13: error: implicit declaration of function ‘_PyGen_SetStopIterationValue’; did you mean ‘__Pyx_PyGen__FetchStopIterationValue’? [-Wimplicit-function-declaration]
+      265973 |             _PyGen_SetStopIterationValue(result);
+             |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             |             __Pyx_PyGen__FetchStopIterationValue
+      src/lxml/etree.c: In function ‘__Pyx_Coroutine_AwaitableIterError’:
+      src/lxml/etree.c:267806:5: error: implicit declaration of function ‘_PyErr_FormatFromCause’ [-Wimplicit-function-declaration]
+      267806 |     _PyErr_FormatFromCause(
+             |     ^~~~~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__Pyx_set_iter_next’:
+      src/lxml/etree.c:268071:19: error: implicit declaration of function ‘_PySet_NextEntry’ [-Wimplicit-function-declaration]
+      268071 |         int ret = _PySet_NextEntry(iter_obj, ppos, value, &hash);
+             |                   ^~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__Pyx_PyInt_As_int’:
+      src/lxml/etree.c:269066:27: error: too few arguments to function ‘_PyLong_AsByteArray’; expected 6, have 5
+      269066 |                 int ret = _PyLong_AsByteArray((PyLongObject *)v,
+             |                           ^~~~~~~~~~~~~~~~~~~
+      In file included from /home/pepsy/miniconda3/include/python3.13/longobject.h:107,
+                       from /home/pepsy/miniconda3/include/python3.13/Python.h:81,
+                       from src/lxml/etree.c:96:
+      /home/pepsy/miniconda3/include/python3.13/cpython/longobject.h:111:17: note: declared here
+        111 | PyAPI_FUNC(int) _PyLong_AsByteArray(PyLongObject* v,
+            |                 ^~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__Pyx_PyInt_As_size_t’:
+      src/lxml/etree.c:269375:27: error: too few arguments to function ‘_PyLong_AsByteArray’; expected 6, have 5
+      269375 |                 int ret = _PyLong_AsByteArray((PyLongObject *)v,
+             |                           ^~~~~~~~~~~~~~~~~~~
+      /home/pepsy/miniconda3/include/python3.13/cpython/longobject.h:111:17: note: declared here
+        111 | PyAPI_FUNC(int) _PyLong_AsByteArray(PyLongObject* v,
+            |                 ^~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__Pyx_PyInt_As_unsigned_int’:
+      src/lxml/etree.c:269571:27: error: too few arguments to function ‘_PyLong_AsByteArray’; expected 6, have 5
+      269571 |                 int ret = _PyLong_AsByteArray((PyLongObject *)v,
+             |                           ^~~~~~~~~~~~~~~~~~~
+      /home/pepsy/miniconda3/include/python3.13/cpython/longobject.h:111:17: note: declared here
+        111 | PyAPI_FUNC(int) _PyLong_AsByteArray(PyLongObject* v,
+            |                 ^~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__Pyx_PyInt_As_signed__char’:
+      src/lxml/etree.c:269767:27: error: too few arguments to function ‘_PyLong_AsByteArray’; expected 6, have 5
+      269767 |                 int ret = _PyLong_AsByteArray((PyLongObject *)v,
+             |                           ^~~~~~~~~~~~~~~~~~~
+      /home/pepsy/miniconda3/include/python3.13/cpython/longobject.h:111:17: note: declared here
+        111 | PyAPI_FUNC(int) _PyLong_AsByteArray(PyLongObject* v,
+            |                 ^~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__Pyx_PyInt_As_unsigned_short’:
+      src/lxml/etree.c:270001:27: error: too few arguments to function ‘_PyLong_AsByteArray’; expected 6, have 5
+      270001 |                 int ret = _PyLong_AsByteArray((PyLongObject *)v,
+             |                           ^~~~~~~~~~~~~~~~~~~
+      /home/pepsy/miniconda3/include/python3.13/cpython/longobject.h:111:17: note: declared here
+        111 | PyAPI_FUNC(int) _PyLong_AsByteArray(PyLongObject* v,
+            |                 ^~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__Pyx_PyInt_As_xmlChar’:
+      src/lxml/etree.c:270235:27: error: too few arguments to function ‘_PyLong_AsByteArray’; expected 6, have 5
+      270235 |                 int ret = _PyLong_AsByteArray((PyLongObject *)v,
+             |                           ^~~~~~~~~~~~~~~~~~~
+      /home/pepsy/miniconda3/include/python3.13/cpython/longobject.h:111:17: note: declared here
+        111 | PyAPI_FUNC(int) _PyLong_AsByteArray(PyLongObject* v,
+            |                 ^~~~~~~~~~~~~~~~~~~
+      src/lxml/etree.c: In function ‘__Pyx_PyInt_As_long’:
+      src/lxml/etree.c:270438:27: error: too few arguments to function ‘_PyLong_AsByteArray’; expected 6, have 5
+      270438 |                 int ret = _PyLong_AsByteArray((PyLongObject *)v,
+             |                           ^~~~~~~~~~~~~~~~~~~
+      /home/pepsy/miniconda3/include/python3.13/cpython/longobject.h:111:17: note: declared here
+        111 | PyAPI_FUNC(int) _PyLong_AsByteArray(PyLongObject* v,
+            |                 ^~~~~~~~~~~~~~~~~~~
+      Compile failed: command '/usr/bin/gcc' failed with exit code 1
+      creating tmp
+      cc -I/usr/include/libxml2 -I/usr/include/libxml2 -c /tmp/xmlXPathInitpo0e7260.c -o tmp/xmlXPathInitpo0e7260.o
+      /tmp/xmlXPathInitpo0e7260.c: In function ‘main’:
+      /tmp/xmlXPathInitpo0e7260.c:3:5: warning: ‘xmlXPathInit’ is deprecated [-Wdeprecated-declarations]
+          3 |     xmlXPathInit();
+            |     ^~~~~~~~~~~~
+      In file included from /tmp/xmlXPathInitpo0e7260.c:1:
+      /usr/include/libxml2/libxml/xpath.h:558:21: note: declared here
+        558 |                     xmlXPathInit                (void);
+            |                     ^~~~~~~~~~~~
+      cc tmp/xmlXPathInitpo0e7260.o -lxml2 -o a.out
+      error: command '/usr/bin/gcc' failed with exit code 1
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+  ERROR: Failed building wheel for lxml
+ERROR: Failed to build installable wheels for some pyproject.toml based projects (lxml)
+
+
+❌ Installation failed. Please check the 
