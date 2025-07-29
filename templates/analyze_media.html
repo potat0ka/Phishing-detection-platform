@@ -67,7 +67,7 @@
                                 <i class="fas fa-upload me-2"></i>
                                 Upload File (Optional)
                             </label>
-                            <div class="border-2 border-dashed border-primary rounded p-4 text-center upload-area" id="mediaUploadArea">
+                            <div class="border-2 border-dashed border-primary rounded p-4 text-center upload-area" id="mediaUploadArea" style="cursor: pointer;">
                                 <input type="file" 
                                        class="form-control d-none" 
                                        id="text_file" 
@@ -75,7 +75,7 @@
                                        accept=".txt,.pdf,.docx,.jpg,.jpeg,.png,.bmp,.tiff">
                                 <div class="upload-content">
                                     <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
-                                    <h6>Drop files here or <span class="text-primary" style="cursor: pointer;" onclick="document.getElementById('text_file').click()">browse</span></h6>
+                                    <h6>Drop files here or <span class="text-primary fw-bold" style="cursor: pointer; text-decoration: underline;">click to browse</span></h6>
                                     <p class="text-muted small mb-0">
                                         <strong>Supported formats:</strong> .txt, .pdf, .docx, .jpg, .jpeg, .png, .bmp, .tiff
                                         <br>
@@ -275,17 +275,28 @@ document.addEventListener('DOMContentLoaded', function() {
     if (textFileInput && mediaUploadArea) {
         // Make upload area clickable
         mediaUploadArea.addEventListener('click', function(e) {
-            if (e.target.tagName !== 'BUTTON') {
+            console.log('Upload area clicked:', e.target);
+            if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+                console.log('Triggering file input click');
                 textFileInput.click();
             }
         });
         
         // File selection handler
         textFileInput.addEventListener('change', function(e) {
+            console.log('File input changed:', e.target.files);
             const file = e.target.files[0];
             if (file) {
-                document.getElementById('fileName').textContent = file.name;
-                document.getElementById('filePreview').style.display = 'block';
+                console.log('File selected:', file.name);
+                const fileNameElement = document.getElementById('fileName');
+                const filePreviewElement = document.getElementById('filePreview');
+                
+                if (fileNameElement) {
+                    fileNameElement.textContent = file.name;
+                }
+                if (filePreviewElement) {
+                    filePreviewElement.style.display = 'block';
+                }
                 
                 // Clear text content when file is selected
                 const textContent = document.getElementById('textContent');
@@ -293,6 +304,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     textContent.value = '';
                 }
             }
+        });
+    } else {
+        console.error('File input or upload area not found:', {
+            textFileInput: !!textFileInput,
+            mediaUploadArea: !!mediaUploadArea
         });
     }
 
