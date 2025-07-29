@@ -268,15 +268,23 @@ document.addEventListener('DOMContentLoaded', function() {
         
         showLoading();
         
-        // Placeholder for image analysis - implement actual API call
-        setTimeout(() => {
+        fetch('/analyze/process', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
             hideLoading();
-            showResults('success', {
-                ai_likelihood: Math.random() * 0.8,
-                authenticity_score: Math.random() * 100,
-                message: 'Image analysis completed (placeholder functionality)'
-            });
-        }, 2000);
+            if (data.error) {
+                showResults('error', data.error);
+            } else {
+                showMultimediaResults('image', data);
+            }
+        })
+        .catch(error => {
+            hideLoading();
+            showResults('error', 'Network error occurred. Please try again.');
+        });
     });
 
     // Video file upload handling
@@ -323,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.error) {
                 showResults('error', data.error);
             } else {
-                showResults('success', data);
+                showTextResults(data);
             }
         })
         .catch(error => {
@@ -356,7 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.error) {
                 showResults('error', data.error);
             } else {
-                showResults('success', data);
+                showMultimediaResults('video', data);
             }
         })
         .catch(error => {
@@ -389,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.error) {
                 showResults('error', data.error);
             } else {
-                showResults('success', data);
+                showMultimediaResults('audio', data);
             }
         })
         .catch(error => {
@@ -504,6 +512,245 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         }
+    }
+
+    // Enhanced visual results for text analysis
+    function showTextResults(data) {
+        const aiScore = data.ai_likelihood ? Math.round(data.ai_likelihood * 100) : 0;
+        const plagiarismScore = data.plagiarism_score ? Math.round(data.plagiarism_score * 100) : 0;
+        
+        // Show success alert
+        const alertContainer = document.getElementById('alertContainer');
+        const alertMessage = document.getElementById('alertMessage');
+        const alertContent = document.getElementById('alertContent');
+        
+        alertMessage.className = 'alert alert-success';
+        alertContent.innerHTML = `
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>Text Analysis Complete!</strong><br>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <small class="text-muted">AI Detection:</small><br>
+                    <span class="badge ${aiScore > 70 ? 'bg-danger' : aiScore > 30 ? 'bg-warning' : 'bg-success'}">${aiScore}% AI-Generated</span>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">Plagiarism Check:</small><br>
+                    <span class="badge ${plagiarismScore > 70 ? 'bg-danger' : plagiarismScore > 30 ? 'bg-warning' : 'bg-success'}">${plagiarismScore}% Similar</span>
+                </div>
+            </div>
+        `;
+        alertContainer.style.display = 'block';
+
+        // Show detailed results
+        const resultsContent = document.getElementById('resultsContent');
+        resultsContent.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card border-info h-100">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0"><i class="fas fa-robot me-2"></i>AI Content Detection</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <div class="display-6 fw-bold text-info">${aiScore}%</div>
+                                <p class="text-muted">AI-generated probability</p>
+                            </div>
+                            <div class="progress mb-3" style="height: 12px;">
+                                <div class="progress-bar bg-info" style="width: ${aiScore}%"></div>
+                            </div>
+                            <p class="small text-muted mb-0">
+                                ${aiScore > 70 ? 'High probability of AI generation' : 
+                                  aiScore > 30 ? 'Moderate probability of AI generation' : 
+                                  'Low probability of AI generation'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-warning h-100">
+                        <div class="card-header bg-warning text-dark">
+                            <h6 class="mb-0"><i class="fas fa-copy me-2"></i>Plagiarism Detection</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <div class="display-6 fw-bold text-warning">${plagiarismScore}%</div>
+                                <p class="text-muted">Content similarity</p>
+                            </div>
+                            <div class="progress mb-3" style="height: 12px;">
+                                <div class="progress-bar bg-warning" style="width: ${plagiarismScore}%"></div>
+                            </div>
+                            <p class="small text-muted mb-0">
+                                ${plagiarismScore > 70 ? 'High similarity detected' : 
+                                  plagiarismScore > 30 ? 'Moderate similarity detected' : 
+                                  'Low similarity detected'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ${data.file_info ? `
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="fas fa-file me-2"></i>
+                        <strong>File processed:</strong> ${data.file_info.filename}
+                    </div>
+                </div>
+            </div>
+            ` : ''}
+            <div class="text-center mt-4">
+                <button class="btn btn-primary me-2" onclick="location.reload()">
+                    <i class="fas fa-plus me-2"></i>Analyze Another
+                </button>
+                <button class="btn btn-outline-secondary" onclick="window.location.href='/'">
+                    <i class="fas fa-home me-2"></i>Back to Home
+                </button>
+            </div>
+        `;
+        
+        document.getElementById('resultsSection').style.display = 'block';
+        document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Enhanced visual results for multimedia (image, video, audio)
+    function showMultimediaResults(type, data) {
+        const typeIcons = {
+            'image': 'fas fa-image',
+            'video': 'fas fa-video', 
+            'audio': 'fas fa-volume-up'
+        };
+        
+        const typeColors = {
+            'image': 'success',
+            'video': 'warning',
+            'audio': 'info'
+        };
+
+        const aiScore = data.ai_likelihood ? Math.round(data.ai_likelihood * 100) : 0;
+        const manipulationScore = data.manipulation_score ? Math.round(data.manipulation_score * 100) : 0;
+        
+        // Show success alert
+        const alertContainer = document.getElementById('alertContainer');
+        const alertMessage = document.getElementById('alertMessage');
+        const alertContent = document.getElementById('alertContent');
+        
+        alertMessage.className = 'alert alert-success';
+        alertContent.innerHTML = `
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>${type.charAt(0).toUpperCase() + type.slice(1)} Analysis Complete!</strong><br>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <small class="text-muted">AI Generation:</small><br>
+                    <span class="badge ${aiScore > 70 ? 'bg-danger' : aiScore > 30 ? 'bg-warning' : 'bg-success'}">${aiScore}% AI-Generated</span>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">Manipulation:</small><br>
+                    <span class="badge ${manipulationScore > 70 ? 'bg-danger' : manipulationScore > 30 ? 'bg-warning' : 'bg-success'}">${manipulationScore}% Manipulated</span>
+                </div>
+            </div>
+        `;
+        alertContainer.style.display = 'block';
+
+        // Show detailed results
+        const resultsContent = document.getElementById('resultsContent');
+        resultsContent.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card border-info h-100">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0"><i class="fas fa-robot me-2"></i>AI Generation Detection</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <div class="display-6 fw-bold text-info">${aiScore}%</div>
+                                <p class="text-muted">AI-generated probability</p>
+                            </div>
+                            <div class="progress mb-3" style="height: 12px;">
+                                <div class="progress-bar bg-info" style="width: ${aiScore}%"></div>
+                            </div>
+                            <p class="small text-muted mb-0">
+                                ${aiScore > 70 ? 'High probability of AI generation' : 
+                                  aiScore > 30 ? 'Moderate probability of AI generation' : 
+                                  'Low probability of AI generation'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-danger h-100">
+                        <div class="card-header bg-danger text-white">
+                            <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Manipulation Detection</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <div class="display-6 fw-bold text-danger">${manipulationScore}%</div>
+                                <p class="text-muted">Manipulation probability</p>
+                            </div>
+                            <div class="progress mb-3" style="height: 12px;">
+                                <div class="progress-bar bg-danger" style="width: ${manipulationScore}%"></div>
+                            </div>
+                            <p class="small text-muted mb-0">
+                                ${manipulationScore > 70 ? 'High manipulation detected' : 
+                                  manipulationScore > 30 ? 'Moderate manipulation detected' : 
+                                  'Low manipulation detected'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card border-${typeColors[type]}">
+                        <div class="card-header bg-${typeColors[type]} text-white">
+                            <h6 class="mb-0"><i class="${typeIcons[type]} me-2"></i>File Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <strong>Filename:</strong><br>
+                                    <span class="text-muted">${data.filename || 'Unknown'}</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>File Size:</strong><br>
+                                    <span class="text-muted">${formatFileSize(data.file_size || 0)}</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>Content Type:</strong><br>
+                                    <span class="text-muted">${type.charAt(0).toUpperCase() + type.slice(1)}</span>
+                                </div>
+                            </div>
+                            ${data.analysis_notes ? `
+                            <hr class="my-3">
+                            <h6 class="text-muted">Analysis Notes:</h6>
+                            <ul class="list-unstyled">
+                                ${data.analysis_notes.map(note => `<li><i class="fas fa-check text-success me-2"></i>${note}</li>`).join('')}
+                            </ul>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button class="btn btn-primary me-2" onclick="location.reload()">
+                    <i class="fas fa-plus me-2"></i>Analyze Another
+                </button>
+                <button class="btn btn-outline-secondary" onclick="window.location.href='/'">
+                    <i class="fas fa-home me-2"></i>Back to Home
+                </button>
+            </div>
+        `;
+        
+        document.getElementById('resultsSection').style.display = 'block';
+        document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Helper function to format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 });
 </script>
