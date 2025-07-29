@@ -60,7 +60,7 @@
                     </h5>
                     <p class="text-muted mb-4">Analyze text content for AI-generated content and plagiarism detection</p>
                     
-                    <form id="textAnalysisForm" method="POST" action="/api/scan" enctype="multipart/form-data">
+                    <form id="textAnalysisForm" method="POST" action="/analyze/process" enctype="multipart/form-data">
                         <input type="hidden" name="analysis_type" value="text">
                         
                         <!-- Text Input -->
@@ -120,7 +120,8 @@
                     </h5>
                     <p class="text-muted mb-4">Detect AI-generated images and reverse image search for authenticity.</p>
                     
-                    <form id="imageAnalysisForm" enctype="multipart/form-data">
+                    <form id="imageAnalysisForm" method="POST" action="/analyze/process" enctype="multipart/form-data">
+                        <input type="hidden" name="analysis_type" value="image">
                         <div class="mb-3">
                             <label for="imageFile" class="form-label">Upload Image</label>
                             <input class="form-control" type="file" id="imageFile" name="image_file" 
@@ -151,7 +152,8 @@
                     </h5>
                     <p class="text-muted mb-4">Detect video manipulation and deepfake content.</p>
                     
-                    <form id="videoAnalysisForm" enctype="multipart/form-data">
+                    <form id="videoAnalysisForm" method="POST" action="/analyze/process" enctype="multipart/form-data">
+                        <input type="hidden" name="analysis_type" value="video">
                         <div class="mb-3">
                             <label for="videoFile" class="form-label">Upload Video</label>
                             <input class="form-control" type="file" id="videoFile" name="video_file" 
@@ -182,7 +184,8 @@
                     </h5>
                     <p class="text-muted mb-4">Detect AI-synthesized voice and deepfake audio.</p>
                     
-                    <form id="audioAnalysisForm" enctype="multipart/form-data">
+                    <form id="audioAnalysisForm" method="POST" action="/analyze/process" enctype="multipart/form-data">
+                        <input type="hidden" name="analysis_type" value="audio">
                         <div class="mb-3">
                             <label for="audioFile" class="form-label">Upload Audio</label>
                             <input class="form-control" type="file" id="audioFile" name="audio_file" 
@@ -276,16 +279,123 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000);
     });
 
+    // Video file upload handling
+    document.getElementById('videoFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const videoUrl = URL.createObjectURL(file);
+            document.getElementById('previewVideo').src = videoUrl;
+            document.getElementById('videoPreview').style.display = 'block';
+        }
+    });
+
+    // Audio file upload handling
+    document.getElementById('audioFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const audioUrl = URL.createObjectURL(file);
+            document.getElementById('previewAudio').src = audioUrl;
+            document.getElementById('audioPreview').style.display = 'block';
+        }
+    });
+
+    // Text analysis form submission
+    document.getElementById('textAnalysisForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const textContent = formData.get('text_content');
+        
+        if (!textContent || textContent.trim().length < 50) {
+            showResults('error', 'Please enter at least 50 characters of text for analysis.');
+            return;
+        }
+        
+        showLoading();
+        
+        fetch('/analyze/process', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            hideLoading();
+            if (data.error) {
+                showResults('error', data.error);
+            } else {
+                showResults('success', data);
+            }
+        })
+        .catch(error => {
+            hideLoading();
+            showResults('error', 'Network error occurred. Please try again.');
+        });
+    });
+
     // Video analysis form submission  
     document.getElementById('videoAnalysisForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        showResults('info', 'Video analysis feature coming soon!');
+        
+        const formData = new FormData(this);
+        const videoFile = formData.get('video_file');
+        
+        if (!videoFile || videoFile.size === 0) {
+            showResults('error', 'Please select a video file for analysis.');
+            return;
+        }
+        
+        showLoading();
+        
+        fetch('/analyze/process', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            hideLoading();
+            if (data.error) {
+                showResults('error', data.error);
+            } else {
+                showResults('success', data);
+            }
+        })
+        .catch(error => {
+            hideLoading();
+            showResults('error', 'Network error occurred. Please try again.');
+        });
     });
 
     // Audio analysis form submission
     document.getElementById('audioAnalysisForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        showResults('info', 'Audio analysis feature coming soon!');
+        
+        const formData = new FormData(this);
+        const audioFile = formData.get('audio_file');
+        
+        if (!audioFile || audioFile.size === 0) {
+            showResults('error', 'Please select an audio file for analysis.');
+            return;
+        }
+        
+        showLoading();
+        
+        fetch('/analyze/process', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            hideLoading();
+            if (data.error) {
+                showResults('error', data.error);
+            } else {
+                showResults('success', data);
+            }
+        })
+        .catch(error => {
+            hideLoading();
+            showResults('error', 'Network error occurred. Please try again.');
+        });
     });
 
     // Show loading function
@@ -322,13 +432,30 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             alertMessage.className = 'alert alert-success';
             const aiScore = data.ai_likelihood ? Math.round(data.ai_likelihood * 100) : 0;
-            const authenticityScore = data.authenticity_score ? Math.round(data.authenticity_score) : 0;
+            const plagiarismScore = data.plagiarism_score ? Math.round(data.plagiarism_score * 100) : 0;
             
             alertContent.innerHTML = `
                 <i class="fas fa-check-circle me-2"></i>
-                <strong>Analysis completed:</strong> AI likelihood: ${aiScore}%, Authenticity: ${authenticityScore}%
-                ${data.message ? `<br><small class="text-muted">${data.message}</small>` : ''}
+                <strong>Analysis Complete!</strong><br>
+                <div class="mt-2">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">AI Detection:</small><br>
+                            <span class="badge ${aiScore > 70 ? 'bg-danger' : aiScore > 30 ? 'bg-warning' : 'bg-success'}">${aiScore}% AI-Generated</span>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Plagiarism Check:</small><br>
+                            <span class="badge ${plagiarismScore > 70 ? 'bg-danger' : plagiarismScore > 30 ? 'bg-warning' : 'bg-success'}">${plagiarismScore}% Similar</span>
+                        </div>
+                    </div>
+                </div>
             `;
+        }
+        
+        // Show detailed results if available
+        if (type === 'success' && data.detailed_analysis) {
+            document.getElementById('resultsSection').style.display = 'block';
+            const resultsContent = document.getElementById('resultsContent');
             
             resultsContent.innerHTML = `
                 <div class="row">
@@ -367,152 +494,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <div class="progress-bar bg-warning" style="width: ${plagiarismScore}%"></div>
                                 </div>
                                 <p class="small text-muted mb-0">
-                                    ${plagiarismScore > 70 ? 'High similarity to existing content' : 
+                                    ${plagiarismScore > 70 ? 'High similarity detected' : 
                                       plagiarismScore > 30 ? 'Moderate similarity detected' : 
-                                      'Low similarity to existing content'}
+                                      'Low similarity detected'}
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
-                ${data.file_info ? `
-                <div class="mt-3">
-                    <div class="alert alert-info">
-                        <i class="fas fa-file me-2"></i>
-                        <strong>File processed:</strong> ${data.file_info.filename} (${data.file_info.size})
-                    </div>
-                </div>
-                ` : ''}
-                <div class="text-center mt-4">
-                    <button class="btn btn-primary me-2" onclick="location.reload()">
-                        <i class="fas fa-plus me-2"></i>Analyze Another
-                    </button>
-                    <button class="btn btn-outline-secondary" onclick="window.location.href='/'">
-                        <i class="fas fa-home me-2"></i>Back to Home
-                    </button>
-                </div>
             `;
         }
-    }
-
-    // Video file preview
-    document.getElementById('videoFile').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const url = URL.createObjectURL(file);
-            document.getElementById('previewVideo').src = url;
-            document.getElementById('videoPreview').style.display = 'block';
-        }
-    });
-
-    // Audio file preview  
-    document.getElementById('audioFile').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const url = URL.createObjectURL(file);
-            document.getElementById('previewAudio').src = url;
-            document.getElementById('audioPreview').style.display = 'block';
-        }
-    });
-                <div class="col-md-6">
-        `;
-
-        // Add type-specific metrics
-        if (data.plagiarism_score !== undefined) {
-            resultsHtml += `
-                <h6 class="text-muted">Plagiarism Score</h6>
-                <div class="progress mb-3">
-                    <div class="progress-bar ${data.plagiarism_score > 0.7 ? 'bg-danger' : data.plagiarism_score > 0.4 ? 'bg-warning' : 'bg-success'}" 
-                         style="width: ${data.plagiarism_score * 100}%"></div>
-                </div>
-                <p class="small text-muted">${(data.plagiarism_score * 100).toFixed(1)}% similarity detected</p>
-            `;
-        }
-
-        if (data.ai_likelihood !== undefined) {
-            resultsHtml += `
-                <h6 class="text-muted">AI Generation Likelihood</h6>
-                <div class="progress mb-3">
-                    <div class="progress-bar ${data.ai_likelihood > 0.8 ? 'bg-danger' : data.ai_likelihood > 0.5 ? 'bg-warning' : 'bg-success'}" 
-                         style="width: ${data.ai_likelihood * 100}%"></div>
-                </div>
-                <p class="small text-muted">${(data.ai_likelihood * 100).toFixed(1)}% AI generation probability</p>
-            `;
-        }
-
-        if (data.synthesis_likelihood !== undefined) {
-            resultsHtml += `
-                <h6 class="text-muted">Voice Synthesis Likelihood</h6>
-                <div class="progress mb-3">
-                    <div class="progress-bar ${data.synthesis_likelihood > 0.8 ? 'bg-danger' : data.synthesis_likelihood > 0.5 ? 'bg-warning' : 'bg-success'}" 
-                         style="width: ${data.synthesis_likelihood * 100}%"></div>
-                </div>
-                <p class="small text-muted">${(data.synthesis_likelihood * 100).toFixed(1)}% synthesis probability</p>
-            `;
-        }
-
-        if (data.manipulation_likelihood !== undefined) {
-            resultsHtml += `
-                <h6 class="text-muted">Manipulation Likelihood</h6>
-                <div class="progress mb-3">
-                    <div class="progress-bar ${data.manipulation_likelihood > 0.8 ? 'bg-danger' : data.manipulation_likelihood > 0.5 ? 'bg-warning' : 'bg-success'}" 
-                         style="width: ${data.manipulation_likelihood * 100}%"></div>
-                </div>
-                <p class="small text-muted">${(data.manipulation_likelihood * 100).toFixed(1)}% manipulation probability</p>
-            `;
-        }
-
-        resultsHtml += `
-                </div>
-            </div>
-        `;
-
-        // Add details if available
-        if (data.details && data.details.length > 0) {
-            resultsHtml += `
-                <hr class="my-4">
-                <h6 class="text-muted">Analysis Details</h6>
-                <ul class="list-group list-group-flush">
-            `;
-            data.details.forEach(detail => {
-                resultsHtml += `<li class="list-group-item border-0">${detail}</li>`;
-            });
-            resultsHtml += `</ul>`;
-        }
-
-        // Add metadata
-        if (data.analysis_timestamp) {
-            resultsHtml += `
-                <hr class="my-4">
-                <small class="text-muted">
-                    <i class="fas fa-clock me-1"></i>
-                    Analysis completed: ${new Date(data.analysis_timestamp).toLocaleString()}
-                </small>
-            `;
-        }
-
-        resultsContent.innerHTML = resultsHtml;
-        document.getElementById('resultsSection').style.display = 'block';
-        
-        // Scroll to results
-        document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function showAlert(type, title, message) {
-        const alertContainer = document.getElementById('alertContainer');
-        const alertMessage = document.getElementById('alertMessage');
-        const alertContent = document.getElementById('alertContent');
-        
-        alertMessage.className = `alert alert-${type}`;
-        alertContent.innerHTML = `<strong>${title}:</strong> ${message}`;
-        alertContainer.style.display = 'block';
-        
-        // Scroll to alert
-        alertContainer.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function hideAlert() {
-        document.getElementById('alertContainer').style.display = 'none';
     }
 });
 </script>
