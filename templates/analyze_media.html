@@ -278,6 +278,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.error) {
                 showResults('error', data.error);
             } else {
+                // Add analysis type to data for proper routing
+                data.analysis_type = 'image';
                 showMultimediaResults('image', data);
             }
         })
@@ -331,6 +333,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.error) {
                 showResults('error', data.error);
             } else {
+                // Add analysis type to data for proper routing
+                data.analysis_type = 'text';
                 showTextResults(data);
             }
         })
@@ -364,6 +368,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.error) {
                 showResults('error', data.error);
             } else {
+                // Add analysis type to data for proper routing
+                data.analysis_type = 'video';
                 showMultimediaResults('video', data);
             }
         })
@@ -397,6 +403,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.error) {
                 showResults('error', data.error);
             } else {
+                // Add analysis type to data for proper routing
+                data.analysis_type = 'audio';
                 showMultimediaResults('audio', data);
             }
         })
@@ -438,26 +446,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 ${data}
             `;
         } else {
-            alertMessage.className = 'alert alert-success';
-            const aiScore = data.ai_likelihood ? Math.round(data.ai_likelihood * 100) : 0;
-            const plagiarismScore = data.plagiarism_score ? Math.round(data.plagiarism_score * 100) : 0;
+            // For success results, hide the basic alert and show enhanced visual results
+            alertContainer.style.display = 'none';
             
-            alertContent.innerHTML = `
-                <i class="fas fa-check-circle me-2"></i>
-                <strong>Analysis Complete!</strong><br>
-                <div class="mt-2">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <small class="text-muted">AI Detection:</small><br>
-                            <span class="badge ${aiScore > 70 ? 'bg-danger' : aiScore > 30 ? 'bg-warning' : 'bg-success'}">${aiScore}% AI-Generated</span>
-                        </div>
-                        <div class="col-md-6">
-                            <small class="text-muted">Plagiarism Check:</small><br>
-                            <span class="badge ${plagiarismScore > 70 ? 'bg-danger' : plagiarismScore > 30 ? 'bg-warning' : 'bg-success'}">${plagiarismScore}% Similar</span>
-                        </div>
-                    </div>
-                </div>
-            `;
+            // Determine if this is text analysis or multimedia analysis
+            if (data.ai_detection || data.plagiarism || data.text_length) {
+                showTextResults(data);
+            } else {
+                // Default to multimedia results for non-text analysis
+                const analysisType = data.analysis_type || 'multimedia';
+                showMultimediaResults(analysisType, data);
+            }
+            return; // Exit early to avoid showing basic alert
         }
         
         // Show detailed results if available
