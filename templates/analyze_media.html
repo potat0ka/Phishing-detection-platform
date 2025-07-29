@@ -335,6 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // Add analysis type to data for proper routing
                 data.analysis_type = 'text';
+                console.log('Calling showTextResults with data:', data);
                 showTextResults(data);
             }
         })
@@ -468,9 +469,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Enhanced visual results for text analysis
     function showTextResults(data) {
+        console.log('showTextResults called with data:', data);
+        
         // Extract scores from the unified response format
         const aiScore = Math.round((data.ai_likelihood || 0) * 100);
         const plagiarismScore = Math.round((data.plagiarism_score || 0) * 100);
+        
+        console.log('Scores calculated:', { aiScore, plagiarismScore });
         
         // Show success alert
         const alertContainer = document.getElementById('alertContainer');

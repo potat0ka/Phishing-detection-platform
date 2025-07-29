@@ -752,8 +752,13 @@ def process_media_analysis():
 
         # Get analysis type from form
         analysis_type = request.form.get('analysis_type', '').strip()
+        text_content = request.form.get('text_content', '').strip()
 
-        if analysis_type not in ['text', 'image', 'video', 'audio']:
+        # For form-based submissions (text analysis), analysis_type may not be set
+        # Default to 'text' if text_content is provided without explicit analysis_type  
+        if not analysis_type and text_content:
+            analysis_type = 'text'
+        elif analysis_type and analysis_type not in ['text', 'image', 'video', 'audio']:
             return jsonify({'error': 'Invalid analysis type'}), 400
 
         result = None
