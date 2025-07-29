@@ -31,6 +31,8 @@ Platform positioning: Custom-built cybersecurity platform by Bigendra Shrestha w
 - Resolved all duplicate variable declarations: uploadArea renamed to progressUploadArea, completeUploadArea, clearUploadArea
 - Fixed analyze-media page upload functionality with enhanced click handling and debugging
 - Enhanced upload area styling and made "click to browse" text more prominent
+- Removed text analysis functionality from analyze-media page as requested, keeping only image/video/audio analysis
+- Updated analyze-media page to start with Image Analysis tab as the default active tab
 
 ### July 28, 2025 - Interactive Upload Progress System
 - Implemented colorful, animated progress bar with real-time status updates

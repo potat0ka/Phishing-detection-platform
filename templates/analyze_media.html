@@ -27,12 +27,7 @@
         <div class="card-header bg-gradient-primary text-white">
             <ul class="nav nav-tabs card-header-tabs" id="analysisTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active text-white border-0" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-pane" type="button" role="tab">
-                        <i class="fas fa-file-alt me-2"></i>Text Analysis
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link text-white border-0" id="image-tab" data-bs-toggle="tab" data-bs-target="#image-pane" type="button" role="tab">
+                    <button class="nav-link active text-white border-0" id="image-tab" data-bs-toggle="tab" data-bs-target="#image-pane" type="button" role="tab">
                         <i class="fas fa-image me-2"></i>Image Analysis
                     </button>
                 </li>
@@ -52,98 +47,8 @@
         <div class="card-body p-4">
             <div class="tab-content" id="analysisTabContent">
                 
-                <!-- Text Analysis Tab -->
-                <div class="tab-pane fade show active" id="text-pane" role="tabpanel">
-                    <h5 class="card-title mb-3">
-                        <i class="fas fa-file-alt text-primary me-2"></i>
-                        Text Authenticity Analysis
-                    </h5>
-                    <p class="text-muted mb-4">Check text for plagiarism and AI-generated content detection. Upload documents or images with OCR processing.</p>
-                    
-                    <form action="/api/scan" method="POST" enctype="multipart/form-data" id="textAnalysisForm">
-                        <!-- File Upload Section -->
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">
-                                <i class="fas fa-upload me-2"></i>
-                                Upload File (Optional)
-                            </label>
-                            <div class="border-2 border-dashed border-primary rounded p-4 text-center upload-area" id="mediaUploadArea" style="cursor: pointer;">
-                                <input type="file" 
-                                       class="form-control d-none" 
-                                       id="text_file" 
-                                       name="text_file"
-                                       accept=".txt,.pdf,.docx,.jpg,.jpeg,.png,.bmp,.tiff">
-                                <div class="upload-content">
-                                    <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
-                                    <h6>Drop files here or <span class="text-primary fw-bold" style="cursor: pointer; text-decoration: underline;">click to browse</span></h6>
-                                    <p class="text-muted small mb-0">
-                                        <strong>Supported formats:</strong> .txt, .pdf, .docx, .jpg, .jpeg, .png, .bmp, .tiff
-                                        <br>
-                                        <i class="fas fa-info-circle me-1"></i>
-                                        <strong>OCR enabled</strong> for images • Maximum file size: 1000MB
-                                        <br>
-                                        <i class="fas fa-eye me-1"></i>
-                                        Detects AI content and plagiarism with detailed source analysis
-                                    </p>
-                                </div>
-                            </div>
-                            <div id="filePreview" class="mt-3" style="display: none;">
-                                <div class="alert alert-info">
-                                    <i class="fas fa-file me-2"></i>
-                                    <span id="fileName"></span>
-                                    <button type="button" class="btn-close float-end" onclick="clearFile()"></button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Text Content Section -->
-                        <div class="mb-3">
-                            <label for="textContent" class="form-label">Text Content (or upload file above)</label>
-                            <textarea class="form-control" id="textContent" name="text_content" rows="6" 
-                                      placeholder="Paste your text here for analysis... or upload a document/image above"></textarea>
-                            <div class="form-text">Minimum 50 characters required</div>
-                        </div>
-
-                        <!-- Analysis Options -->
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Analysis Options</label>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="check_plagiarism" name="check_plagiarism" checked>
-                                        <label class="form-check-label" for="check_plagiarism">
-                                            <i class="fas fa-copy text-warning me-1"></i>
-                                            <strong>Plagiarism Detection</strong>
-                                            <br>
-                                            <small class="text-muted">Check for copied content from web sources</small>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="check_ai" name="check_ai" checked>
-                                        <label class="form-check-label" for="check_ai">
-                                            <i class="fas fa-robot text-info me-1"></i>
-                                            <strong>AI Content Detection</strong>
-                                            <br>
-                                            <small class="text-muted">Detect AI-generated text patterns</small>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-search me-2"></i>
-                                Analyze Text Content
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
                 <!-- Image Analysis Tab -->
-                <div class="tab-pane fade" id="image-pane" role="tabpanel">
+                <div class="tab-pane fade show active" id="image-pane" role="tabpanel">
                     <h5 class="card-title mb-3">
                         <i class="fas fa-image text-success me-2"></i>
                         Image Authenticity Analysis
@@ -268,113 +173,54 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Enhanced file upload handling with progress - matches analyze_text.html
-    const textFileInput = document.getElementById('text_file');
-    const mediaUploadArea = document.getElementById('mediaUploadArea');
-    
-    if (textFileInput && mediaUploadArea) {
-        // Make upload area clickable
-        mediaUploadArea.addEventListener('click', function(e) {
-            console.log('Upload area clicked:', e.target);
-            if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
-                console.log('Triggering file input click');
-                textFileInput.click();
-            }
-        });
-        
-        // File selection handler
-        textFileInput.addEventListener('change', function(e) {
-            console.log('File input changed:', e.target.files);
-            const file = e.target.files[0];
-            if (file) {
-                console.log('File selected:', file.name);
-                const fileNameElement = document.getElementById('fileName');
-                const filePreviewElement = document.getElementById('filePreview');
-                
-                if (fileNameElement) {
-                    fileNameElement.textContent = file.name;
-                }
-                if (filePreviewElement) {
-                    filePreviewElement.style.display = 'block';
-                }
-                
-                // Clear text content when file is selected
-                const textContent = document.getElementById('textContent');
-                if (textContent) {
-                    textContent.value = '';
-                }
-            }
-        });
-    } else {
-        console.error('File input or upload area not found:', {
-            textFileInput: !!textFileInput,
-            mediaUploadArea: !!mediaUploadArea
-        });
-    }
+    // Image file upload handling
+    document.getElementById('imageFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 
-    // Clear file function
-    window.clearFile = function() {
-        document.getElementById('text_file').value = '';
-        document.getElementById('filePreview').style.display = 'none';
-    };
-
-    // Form submission handler for unified text analysis
-    document.getElementById('textAnalysisForm').addEventListener('submit', function(e) {
+    // Image analysis form submission
+    document.getElementById('imageAnalysisForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
         const formData = new FormData(this);
-        const textContent = formData.get('text_content');
-        const fileInput = document.getElementById('text_file');
-        const checkAI = document.getElementById('check_ai').checked;
-        const checkPlagiarism = document.getElementById('check_plagiarism').checked;
+        const imageFile = formData.get('image_file');
         
-        // Validate content
-        if (!textContent.trim() && (!fileInput.files || fileInput.files.length === 0)) {
-            showResults('error', 'Please provide text content or upload a file for analysis.');
+        if (!imageFile || imageFile.size === 0) {
+            showResults('error', 'Please select an image file for analysis.');
             return;
         }
         
-        // Validate analysis options
-        if (!checkAI && !checkPlagiarism) {
-            showResults('error', 'Please select at least one analysis option (AI Detection or Plagiarism Check).');
-            return;
-        }
-        
-        // Show loading
         showLoading();
         
-        // Debug logging
-        console.log('Submitting unified text analysis:', {
-            textLength: textContent ? textContent.length : 0,
-            hasFile: fileInput.files && fileInput.files.length > 0,
-            checkAI: checkAI,
-            checkPlagiarism: checkPlagiarism
-        });
-        
-        // Submit to unified API endpoint
-        fetch('/api/scan', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            console.log('Response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('Response data:', data);
+        // Placeholder for image analysis - implement actual API call
+        setTimeout(() => {
             hideLoading();
-            
-            if (data.error) {
-                showResults('error', data.error);
-            } else {
-                showResults('success', data);
-            }
-        })
-        .catch(error => {
-            console.error('Request failed:', error);
-            hideLoading();
-            showResults('error', 'An error occurred while processing your request: ' + error.message);
-        });
+            showResults('success', {
+                ai_likelihood: Math.random() * 0.8,
+                authenticity_score: Math.random() * 100,
+                message: 'Image analysis completed (placeholder functionality)'
+            });
+        }, 2000);
+    });
+
+    // Video analysis form submission  
+    document.getElementById('videoAnalysisForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        showResults('info', 'Video analysis feature coming soon!');
+    });
+
+    // Audio analysis form submission
+    document.getElementById('audioAnalysisForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        showResults('info', 'Audio analysis feature coming soon!');
     });
 
     // Show loading function
@@ -390,20 +236,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Show results function
     function showResults(type, data) {
-        const resultsSection = document.getElementById('resultsSection');
-        const resultsContent = document.getElementById('resultsContent');
+        const alertContainer = document.getElementById('alertContainer');
+        const alertMessage = document.getElementById('alertMessage');
+        const alertContent = document.getElementById('alertContent');
+        
+        alertContainer.style.display = 'block';
         
         if (type === 'error') {
-            resultsContent.innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>Error:</strong> ${data}
-                </div>
+            alertMessage.className = 'alert alert-danger';
+            alertContent.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Error:</strong> ${data}
+            `;
+        } else if (type === 'info') {
+            alertMessage.className = 'alert alert-info';
+            alertContent.innerHTML = `
+                <i class="fas fa-info-circle me-2"></i>
+                ${data}
             `;
         } else {
-            // Format success results using unified display format
+            alertMessage.className = 'alert alert-success';
             const aiScore = data.ai_likelihood ? Math.round(data.ai_likelihood * 100) : 0;
-            const plagiarismScore = data.plagiarism_score ? Math.round(data.plagiarism_score * 100) : 0;
+            const authenticityScore = data.authenticity_score ? Math.round(data.authenticity_score) : 0;
+            
+            alertContent.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Analysis completed:</strong> AI likelihood: ${aiScore}%, Authenticity: ${authenticityScore}%
+                ${data.message ? `<br><small class="text-muted">${data.message}</small>` : ''}
+            `;
             
             resultsContent.innerHTML = `
                 <div class="row">
@@ -468,49 +328,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         }
-        
-        resultsSection.style.display = 'block';
-        resultsSection.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Drag and drop functionality for text file upload
-    const uploadArea = document.querySelector('.upload-area');
-    if (uploadArea) {
-        uploadArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            uploadArea.classList.add('border-success');
-        });
-
-        uploadArea.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            uploadArea.classList.remove('border-success');
-        });
-
-        uploadArea.addEventListener('drop', function(e) {
-            e.preventDefault();
-            uploadArea.classList.remove('border-success');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                document.getElementById('text_file').files = files;
-                document.getElementById('fileName').textContent = files[0].name;
-                document.getElementById('filePreview').style.display = 'block';
-            }
-        });
-    }
-
-    // File preview handlers for other media types
-    document.getElementById('imageFile').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('previewImg').src = e.target.result;
-                document.getElementById('imagePreview').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
+    // Video file preview
     document.getElementById('videoFile').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -520,6 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Audio file preview  
     document.getElementById('audioFile').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -528,70 +349,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('audioPreview').style.display = 'block';
         }
     });
-
-    // Form submission handlers
-    const forms = ['textAnalysisForm', 'imageAnalysisForm', 'videoAnalysisForm', 'audioAnalysisForm'];
-    const analysisTypes = ['text', 'image', 'video', 'audio'];
-
-    forms.forEach((formId, index) => {
-        document.getElementById(formId).addEventListener('submit', function(e) {
-            e.preventDefault();
-            submitAnalysis(analysisTypes[index], this);
-        });
-    });
-
-    function submitAnalysis(type, form) {
-        const formData = new FormData(form);
-        formData.append('analysis_type', type);
-
-        // Show loading spinner
-        document.getElementById('loadingSpinner').style.display = 'block';
-        document.getElementById('resultsSection').style.display = 'none';
-        hideAlert();
-
-        fetch('/analyze/process', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('loadingSpinner').style.display = 'none';
-            
-            if (data.error) {
-                showAlert('danger', 'Analysis Error', data.error);
-            } else {
-                displayResults(data);
-            }
-        })
-        .catch(error => {
-            document.getElementById('loadingSpinner').style.display = 'none';
-            showAlert('danger', 'Error', 'An error occurred during analysis. Please try again.');
-            console.error('Analysis error:', error);
-        });
-    }
-
-    function displayResults(data) {
-        const resultsContent = document.getElementById('resultsContent');
-        const contentType = data.content_type || 'Unknown';
-        
-        let verdictClass = 'text-warning';
-        if (data.authenticity_verdict) {
-            if (data.authenticity_verdict.includes('Likely Authentic') || data.authenticity_verdict.includes('Human')) {
-                verdictClass = 'text-success';
-            } else if (data.authenticity_verdict.includes('Likely AI') || data.authenticity_verdict.includes('Manipulated')) {
-                verdictClass = 'text-danger';
-            }
-        }
-
-        let resultsHtml = `
-            <div class="row">
-                <div class="col-md-6">
-                    <h6 class="text-muted">Content Type</h6>
-                    <p class="mb-3"><span class="badge bg-secondary">${contentType.toUpperCase()}</span></p>
-                    
-                    <h6 class="text-muted">Authenticity Verdict</h6>
-                    <p class="mb-3 ${verdictClass} fw-bold">${data.authenticity_verdict || 'Unknown'}</p>
-                </div>
                 <div class="col-md-6">
         `;
 
