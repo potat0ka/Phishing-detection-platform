@@ -48,43 +48,28 @@
     </div>
 </section>
 
-<!-- Quick Check Section -->
-<section class="quick-check-section py-5 bg-dark">
+<!-- Quick Navigation Section -->
+<section class="quick-nav-section py-5 bg-dark">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card border-0 shadow-lg">
-                    <div class="card-body p-4">
-                        <h3 class="text-center mb-4">
-                            <i class="fas fa-bolt text-warning me-2"></i>
-                            Quick Phishing Check
-                        </h3>
-                        <form class="quick-check-form" method="POST" action="{{ url_for('main.check_url') }}">
-                            <div class="mb-3">
-                                <label for="input_type" class="form-label">What would you like to check?</label>
-                                <select class="form-select" name="input_type" id="input_type" required>
-                                    <option value="url">Website URL</option>
-                                    <option value="email">Email Content</option>
-                                    <option value="message">Message/Text</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="input_content" class="form-label">Content to Analyze</label>
-                                <textarea class="form-control" name="input_content" id="input_content" 
-                                         rows="4" placeholder="Paste URL, email content, or message here..." required></textarea>
-                            </div>
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-robot me-2"></i>
-                                    Analyze with AI
-                                </button>
-                            </div>
-                        </form>
-
-                        <!-- Analysis Result Display -->
-                        <div id="analysisResult" class="mt-4" style="display: none;">
-                            <!-- Results will be populated here via JavaScript -->
-                        </div>
+            <div class="col-lg-8 text-center">
+                <h3 class="mb-4">
+                    <i class="fas fa-bolt text-warning me-2"></i>
+                    Start Your Security Analysis
+                </h3>
+                <p class="lead text-muted mb-4">Choose your preferred analysis method</p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a href="{{ url_for('main.analyze_text') }}" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-file-alt me-2"></i>
+                            Text Analysis
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url_for('main.analyze_media') }}" class="btn btn-success btn-lg w-100">
+                            <i class="fas fa-microscope me-2"></i>
+                            Multimedia Analysis
+                        </a>
                     </div>
                 </div>
             </div>
