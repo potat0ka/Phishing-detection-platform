@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const charCount = document.getElementById('charCount');
     const wordCount = document.getElementById('wordCount');
     const fileInput = document.getElementById('text_file');
-    const uploadArea = document.querySelector('.upload-area');
+    const mainUploadArea = document.querySelector('.upload-area');
     const uploadContent = document.querySelector('.upload-content');
     const fileInfo = document.querySelector('.file-info');
     const form = document.getElementById('analysisForm');
@@ -478,14 +478,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const uploadContent = document.querySelector('.upload-content');
         const fileProgress = document.querySelector('.file-progress');
         const fileInfo = document.querySelector('.file-info');
-        const uploadArea = document.getElementById('uploadArea');
+        const progressUploadArea = document.getElementById('uploadArea');
         
         // Hide upload content, show progress
         if (uploadContent) uploadContent.classList.add('d-none');
         if (fileProgress) fileProgress.classList.remove('d-none');
-        if (uploadArea) {
-            uploadArea.classList.add('border-primary');
-            uploadArea.style.backgroundColor = '#f8f9fa';
+        if (progressUploadArea) {
+            progressUploadArea.classList.add('border-primary');
+            progressUploadArea.style.backgroundColor = '#f8f9fa';
         }
 
         const progressBar = document.getElementById('uploadProgress');
@@ -557,7 +557,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function completeUpload(file) {
         const fileProgress = document.querySelector('.file-progress');
         const fileInfo = document.querySelector('.file-info');
-        const uploadArea = document.getElementById('uploadArea');
+        const completeUploadArea = document.getElementById('uploadArea');
         
         // Hide progress, show success
         if (fileProgress) fileProgress.classList.add('d-none');
@@ -577,10 +577,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Style upload area for success
-        if (uploadArea) {
-            uploadArea.classList.remove('border-primary');
-            uploadArea.classList.add('border-success');
-            uploadArea.style.backgroundColor = '#d1e7dd';
+        if (completeUploadArea) {
+            completeUploadArea.classList.remove('border-primary');
+            completeUploadArea.classList.add('border-success');
+            completeUploadArea.style.backgroundColor = '#d1e7dd';
         }
         
         // Clear text area when file is selected
@@ -624,20 +624,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Make upload area clickable and set up file input handler
-    const uploadArea = document.getElementById('uploadArea');
-    const fileInput = document.getElementById('text_file');
+    const textUploadArea = document.getElementById('uploadArea');
+    const textFileInput = document.getElementById('text_file');
     
-    if (uploadArea) {
-        uploadArea.addEventListener('click', function(e) {
+    if (textUploadArea) {
+        textUploadArea.addEventListener('click', function(e) {
             if (e.target.tagName !== 'BUTTON') {
-                fileInput.click();
+                textFileInput.click();
             }
         });
     }
 
     // File upload handling
-    if (fileInput) {
-        fileInput.addEventListener('change', function() {
+    if (textFileInput) {
+        textFileInput.addEventListener('change', function() {
             handleFileUpload(this);
         });
     }
@@ -648,7 +648,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const uploadContent = document.querySelector('.upload-content');
         const fileInfo = document.querySelector('.file-info');
         const fileProgress = document.querySelector('.file-progress');
-        const uploadArea = document.getElementById('uploadArea');
+        const clearUploadArea = document.getElementById('uploadArea');
         
         // Reset file input
         if (fileInput) fileInput.value = '';
@@ -659,10 +659,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (fileProgress) fileProgress.classList.add('d-none');
         
         // Reset upload area styling
-        if (uploadArea) {
-            uploadArea.classList.remove('border-success', 'border-warning');
-            uploadArea.classList.add('border-primary');
-            uploadArea.style.backgroundColor = '';
+        if (clearUploadArea) {
+            clearUploadArea.classList.remove('border-success', 'border-warning');
+            clearUploadArea.classList.add('border-primary');
+            clearUploadArea.style.backgroundColor = '';
         }
         
         // Reset progress elements
