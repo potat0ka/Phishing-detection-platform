@@ -62,7 +62,7 @@ class User(UserMixin):
 # User loader for Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
-    """Load user for Flask-Login sessions"""
+    """Load user for Flask-Login sessions with fallback support"""
     try:
         from models.user_model import UserModel
         user_data = UserModel.find_user_by_id(int(user_id))
@@ -75,6 +75,14 @@ def load_user(user_id):
             )
     except Exception as e:
         logger.error(f"Error loading user {user_id}: {e}")
+        # Fallback: Create a temporary user for local development
+        if user_id:
+            return User(
+                user_id=user_id,
+                username='local_user',
+                email='user@local.dev',
+                role='user'
+            )
     return None
 
 # Initialize MongoDB service

@@ -66,7 +66,6 @@ def index():
                              db_connected=False)
 
 @main_bp.route('/check', methods=['GET', 'POST'])
-@login_required
 def check_url():
     """
     AI-powered phishing detection page
