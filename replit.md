@@ -38,7 +38,7 @@ Platform positioning: Custom-built cybersecurity platform by Bigendra Shrestha w
 - Text Analysis is now the default active tab on analyze-media page
 - Restored Quick Phishing Check form to homepage as requested
 - Added Text Analysis as proper tab (not link) in analyze-media page
-- Text Analysis tab includes Quick Phishing Check form with link to advanced text analysis
+- Text Analysis tab includes AI detection and plagiarism analysis form with link to advanced text analysis
 - Text Analysis is now the default active tab on analyze-media page
 - Homepage now has both quick check form and navigation buttons to advanced analysis pages
 
