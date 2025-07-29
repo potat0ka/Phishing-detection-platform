@@ -90,7 +90,7 @@ def login():
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '')
 
-        print("Login attempt for:", email)
+        logger.info(f"Login attempt for: {email}")
 
         # Validate input
         if not email or not password:
@@ -107,15 +107,15 @@ def login():
             flash('Invalid email/username or password', 'error')
             return render_template('auth/login.html')
 
-        # Debug logging
-        print(f"Login attempt for: {email}")
-        print(f"User from DB: {user}")
+        # Authentication logging
+        logger.debug(f"User lookup result: {bool(user)}")
+        logger.debug(f"Authentication attempt for: {email}")
         
         # Get password hash from user document
         stored_password_hash = user.get('password_hash') or user.get('password', '')
         
         if not stored_password_hash:
-            print(f"Login failed for: {email} - No password hash found")
+            logger.warning(f"Login failed for: {email} - No password hash found")
             flash('Invalid email/username or password', 'error')
             return render_template('auth/login.html')
 
@@ -132,16 +132,14 @@ def login():
 
             # Verify password using bcrypt
             if not bcrypt.checkpw(password_bytes, stored_hash_bytes):
-                print(f"Login failed for: {email} - Password verification failed")
-                print(f"Expected hash format: {stored_password_hash[:20]}...")
+                logger.warning(f"Login failed for: {email} - Password verification failed")
                 flash('Invalid email/username or password', 'error')
                 return render_template('auth/login.html')
                 
-            print(f"Login successful for: {email}")
+            logger.info(f"Login successful for: {email}")
 
         except Exception as bcrypt_error:
-            print(f"Bcrypt verification error for {email}: {bcrypt_error}")
-            print(f"Stored hash: {stored_password_hash}")
+            logger.error(f"Bcrypt verification error for {email}: {bcrypt_error}")
             flash('Invalid email/username or password', 'error')
             return render_template('auth/login.html')
 
@@ -186,7 +184,7 @@ def login():
 
         # Role-based redirect as specified: /rbac/{role}-dashboard
         user_role = user.get('role', 'user')
-        print(f"Redirecting {email} with role {user_role} to /rbac/{user_role}-dashboard")
+        logger.info(f"Redirecting {email} with role {user_role} to dashboard")
         
         if user_role == 'superadmin':
             return redirect('/rbac/superadmin-dashboard')

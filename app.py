@@ -141,17 +141,16 @@ def inject_app_info():
 
 if __name__ == '__main__':
     # App startup message for beginners
-    print("=" * 60)
-    print("🚀 AI Phishing Detection Platform")
-    print("=" * 60)
-    print(f"📝 Author: {app.config['AUTHOR']}")
-    print("🎓 Project: Final Semester - Cybersecurity & AI")
-    print("=" * 60)
-    print("🌐 Starting web server...")
-    print("📖 For beginners: This creates a website on your computer")
-    print("🔗 Once started, open: http://localhost:8080")
-    print("🛑 Press Ctrl+C to stop the server")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("AI Phishing Detection Platform Starting")
+    logger.info("=" * 60)
+    logger.info(f"Author: {app.config['AUTHOR']}")
+    logger.info("Project: Cybersecurity & AI Platform")
+    logger.info("=" * 60)
+    logger.info("Web server starting...")
+    logger.info("Access URL: http://localhost:8080")
+    logger.info("Press Ctrl+C to stop the server")
+    logger.info("=" * 60)
     
     # Start Flask development server  
     app.run(host='0.0.0.0', port=8080, debug=True)
