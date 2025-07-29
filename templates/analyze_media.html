@@ -333,10 +333,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.error) {
                 showResults('error', data.error);
             } else {
-                // Add analysis type to data for proper routing
-                data.analysis_type = 'text';
-                console.log('Calling showTextResults with data:', data);
-                showTextResults(data);
+                // COMPLETELY BYPASS old system and show enhanced visual results
+                document.getElementById('alertContainer').style.display = 'none';
+                showEnhancedResults(data);
             }
         })
         .catch(error => {
@@ -465,6 +464,104 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('resultsSection').style.display = 'none';
         
 
+    }
+
+    // NEW ENHANCED RESULTS FUNCTION - GUARANTEED VISUAL DISPLAY
+    function showEnhancedResults(data) {
+        const aiScore = Math.round((data.ai_likelihood || 0) * 100);
+        const plagiarismScore = Math.round((data.plagiarism_score || 0) * 100);
+        
+        // FORCE SHOW THE RESULTS SECTION
+        const resultsSection = document.getElementById('resultsSection');
+        resultsSection.style.display = 'block';
+        resultsSection.innerHTML = `
+            <div class="container-fluid">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="alert alert-success" role="alert">
+                            <h4 class="alert-heading"><i class="fas fa-check-circle"></i> Analysis Complete!</h4>
+                            <p class="mb-0">Your text has been analyzed using advanced AI detection and plagiarism checking algorithms.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="card border-primary shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="fas fa-robot me-2"></i>AI Content Detection</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="display-1 fw-bold text-primary mb-3">${aiScore}%</div>
+                                <p class="lead text-muted mb-3">AI-generated probability</p>
+                                <div class="progress mb-3" style="height: 20px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: ${aiScore}%" aria-valuenow="${aiScore}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <span class="badge ${aiScore > 70 ? 'bg-danger' : aiScore > 30 ? 'bg-warning' : 'bg-success'} p-2">
+                                    ${aiScore > 70 ? 'High AI Content' : aiScore > 30 ? 'Moderate AI Content' : 'Human Content'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 mb-4">
+                        <div class="card border-warning shadow-sm">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0"><i class="fas fa-copy me-2"></i>Plagiarism Detection</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="display-1 fw-bold text-warning mb-3">${plagiarismScore}%</div>
+                                <p class="lead text-muted mb-3">Content similarity</p>
+                                <div class="progress mb-3" style="height: 20px;">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: ${plagiarismScore}%" aria-valuenow="${plagiarismScore}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <span class="badge ${plagiarismScore > 70 ? 'bg-danger' : plagiarismScore > 30 ? 'bg-warning' : 'bg-success'} p-2">
+                                    ${plagiarismScore > 70 ? 'High Similarity' : plagiarismScore > 30 ? 'Moderate Similarity' : 'Original Content'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card border-info">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Analysis Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <strong>Text Length:</strong><br>
+                                        <span class="text-muted">${data.detailed_analysis?.text_length || 'Unknown'} characters</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <strong>Analysis Type:</strong><br>
+                                        <span class="text-muted">Complete Analysis</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <strong>Processing Time:</strong><br>
+                                        <span class="text-muted">Real-time</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary btn-lg me-3" onclick="location.reload()">
+                        <i class="fas fa-plus me-2"></i>Analyze Another Text
+                    </button>
+                    <button class="btn btn-outline-secondary btn-lg" onclick="window.location.href='/'">
+                        <i class="fas fa-home me-2"></i>Back to Home
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Scroll to results
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
     }
 
     // Enhanced visual results for text analysis
