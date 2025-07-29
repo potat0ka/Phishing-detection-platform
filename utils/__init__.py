@@ -22,21 +22,3 @@ __all__ = [
     'format_confidence_score',
     'format_threat_level'
 ]
-"""
-Utilities Package
-================
-
-This package contains utility functions and helpers for the application.
-"""
-
-from .validation import validate_email, validate_password, validate_url
-# MongoDB utilities moved to services/mongo_service.py for better organization
-
-__all__ = [
-    'validate_email', 
-    'validate_password', 
-    'validate_url',
-    'get_mongodb_connection',
-    'hash_password',
-    'verify_password'
-]

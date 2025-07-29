@@ -14,7 +14,7 @@ Author: Bigendra Shrestha
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from models.user_model import UserModel
 from utils.validation import validate_email, validate_password
-from services.mongo_service import hash_password, verify_password
+from models.user_model import hash_password, verify_password
 import logging
 import bcrypt
 
