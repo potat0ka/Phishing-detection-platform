@@ -333,7 +333,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.error) {
                 showResults('error', data.error);
             } else {
-                // COMPLETELY BYPASS old system and show enhanced visual results
+                // FORCE USE OF ENHANCED VISUAL RESULTS - NEVER SHOW JSON
+                console.log('Success response received, showing enhanced results:', data);
                 document.getElementById('alertContainer').style.display = 'none';
                 showEnhancedResults(data);
             }
@@ -446,17 +447,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 ${data}
             `;
         } else {
-            // For success results, hide the basic alert and show enhanced visual results
+            // ALWAYS USE ENHANCED VISUAL RESULTS - NO EXCEPTIONS
             alertContainer.style.display = 'none';
-            
-            // Determine if this is text analysis or multimedia analysis
-            if (data.ai_detection || data.plagiarism || data.text_length) {
-                showTextResults(data);
-            } else {
-                // Default to multimedia results for non-text analysis
-                const analysisType = data.analysis_type || 'multimedia';
-                showMultimediaResults(analysisType, data);
-            }
+            showEnhancedResults(data);
             return; // Exit early to avoid showing basic alert
         }
         
