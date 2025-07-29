@@ -36,6 +36,9 @@ Platform positioning: Custom-built cybersecurity platform by Bigendra Shrestha w
 - Moved Quick Phishing Check from homepage to analyze-media page as new Text Analysis tab
 - Replaced homepage Quick Check section with navigation buttons to Text and Multimedia analysis pages
 - Text Analysis is now the default active tab on analyze-media page
+- Removed text analysis form from analyze-media page, replaced with link to analyze-text page
+- Updated analyze-media page to focus only on multimedia content (Image, Video, Audio analysis)
+- Image Analysis is now the default active tab on analyze-media page
 
 ### July 28, 2025 - Interactive Upload Progress System
 - Implemented colorful, animated progress bar with real-time status updates

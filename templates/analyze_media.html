@@ -27,12 +27,12 @@
         <div class="card-header bg-gradient-primary text-white">
             <ul class="nav nav-tabs card-header-tabs" id="analysisTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active text-white border-0" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-pane" type="button" role="tab">
+                    <a href="{{ url_for('main.analyze_text') }}" class="nav-link text-white border-0">
                         <i class="fas fa-file-alt me-2"></i>Text Analysis
-                    </button>
+                    </a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link text-white border-0" id="image-tab" data-bs-toggle="tab" data-bs-target="#image-pane" type="button" role="tab">
+                    <button class="nav-link active text-white border-0" id="image-tab" data-bs-toggle="tab" data-bs-target="#image-pane" type="button" role="tab">
                         <i class="fas fa-image me-2"></i>Image Analysis
                     </button>
                 </li>
@@ -52,42 +52,8 @@
         <div class="card-body p-4">
             <div class="tab-content" id="analysisTabContent">
                 
-                <!-- Text Analysis Tab -->
-                <div class="tab-pane fade show active" id="text-pane" role="tabpanel">
-                    <h3 class="text-center mb-4">
-                        <i class="fas fa-bolt text-warning me-2"></i>
-                        Quick Phishing Check
-                    </h3>
-                    <form class="quick-check-form" method="POST" action="{{ url_for('main.check_url') }}">
-                        <div class="mb-3">
-                            <label for="input_type" class="form-label">What would you like to check?</label>
-                            <select class="form-select" name="input_type" id="input_type" required>
-                                <option value="url">Website URL</option>
-                                <option value="email">Email Content</option>
-                                <option value="message">Message/Text</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="input_content" class="form-label">Content to Analyze</label>
-                            <textarea class="form-control" name="input_content" id="input_content" 
-                                     rows="4" placeholder="Paste URL, email content, or message here..." required></textarea>
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-robot me-2"></i>
-                                Analyze with AI
-                            </button>
-                        </div>
-                    </form>
-
-                    <!-- Analysis Result Display -->
-                    <div id="analysisResult" class="mt-4" style="display: none;">
-                        <!-- Results will be populated here via JavaScript -->
-                    </div>
-                </div>
-                
                 <!-- Image Analysis Tab -->
-                <div class="tab-pane fade" id="image-pane" role="tabpanel">
+                <div class="tab-pane fade show active" id="image-pane" role="tabpanel">
                     <h5 class="card-title mb-3">
                         <i class="fas fa-image text-success me-2"></i>
                         Image Authenticity Analysis
