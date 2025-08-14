@@ -16,13 +16,43 @@ from flask_login import login_required
 from datetime import datetime
 from models import PhishingModel, SafetyTipsModel, AnalyticsModel
 from models.scan_history_model import ScanHistoryModel
-from utils.phishing_detector import PhishingDetector
+# Removed basic PhishingDetector - using ML-based detectors only
 from utils.validation import validate_url
 from services.text_analysis import analyze_text_content, extract_text_from_file
 import logging
 import os
 from werkzeug.utils import secure_filename
 from flask import current_app
+
+# Import advanced ML detector
+try:
+    from utils.advanced_ml_detector import AdvancedMLPhishingDetector, validate_detector_requirements
+    ADVANCED_ML_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"Advanced ML detector not available: {e}")
+    ADVANCED_ML_AVAILABLE = False
+
+# Global advanced detector instance
+advanced_detector = None
+
+def get_advanced_detector():
+    """Get or initialize the advanced ML detector"""
+    global advanced_detector
+    if ADVANCED_ML_AVAILABLE and advanced_detector is None:
+        try:
+            requirements = validate_detector_requirements()
+            config = {
+                'enable_bert': requirements.get('bert_support', False),
+                'enable_web_feeds': requirements.get('web_scraping', False),
+                'learning_rate': 0.01,
+                'max_features': 10000
+            }
+            advanced_detector = AdvancedMLPhishingDetector(config)
+            logger.info("Advanced ML detector initialized successfully")
+        except Exception as e:
+            logger.error(f"Failed to initialize advanced detector: {e}")
+            return None
+    return advanced_detector
 
 logger = logging.getLogger(__name__)
 
@@ -131,9 +161,30 @@ def check_url():
             # Redirect to analyze-text route for identical experience
             return redirect(url_for('main.analyze_text') + f'?prefilled_text={content[:500]}')
         else:
-            # Use ML detector for URL and email content, or short message content
-            detector = MLPhishingDetector()
-            result = detector.analyze_content(content, input_type)
+            # Check if advanced mode is requested
+            use_advanced = request.form.get('use_advanced', 'false').lower() == 'true'
+            
+            if use_advanced and ADVANCED_ML_AVAILABLE:
+                # Use advanced ML detector
+                detector = get_advanced_detector()
+                if detector:
+                    logger.info(f"Using advanced ML detector for {input_type} analysis")
+                    result = detector.analyze_content(
+                        content=content,
+                        content_type=input_type,
+                        metadata={'source': 'web_interface', 'timestamp': datetime.utcnow().isoformat()}
+                    )
+                    result['detector_type'] = 'advanced_ml'
+                else:
+                    logger.warning("Advanced detector not available, falling back to basic ML")
+                    detector = MLPhishingDetector()
+                    result = detector.analyze_content(content, input_type)
+                    result['detector_type'] = 'basic_ml'
+            else:
+                # Use basic ML detector
+                detector = MLPhishingDetector()
+                result = detector.analyze_content(content, input_type)
+                result['detector_type'] = 'basic_ml'
 
         # Check for analysis errors
         if result.get('error'):
@@ -271,6 +322,7 @@ def analyze_text():
         text_content = request.form.get('text_content', '').strip()
         check_plagiarism = request.form.get('check_plagiarism') == 'on'
         check_ai = request.form.get('check_ai') == 'on'
+        use_enhanced = request.form.get('use_enhanced') == 'on'
         
         # Check if file was uploaded
         uploaded_file = request.files.get('text_file')
@@ -375,7 +427,7 @@ def analyze_text():
 
         # Perform comprehensive text analysis using shared service
         source = "file_upload" if file_info else "manual"
-        result = analyze_text_content(text_content, check_ai=check_ai, check_plagiarism=check_plagiarism, source=source)
+        result = analyze_text_content(text_content, check_ai=check_ai, check_plagiarism=check_plagiarism, source=source, use_enhanced=use_enhanced)
 
         # Check for analysis errors
         if not result.get('success', False):
@@ -474,6 +526,7 @@ def api_scan_content():
             text_content = request.form.get('text_content', '').strip()
             check_ai = request.form.get('check_ai') == 'on'
             check_plagiarism = request.form.get('check_plagiarism') == 'on'
+            use_enhanced = request.form.get('use_enhanced') == 'on'
             
             logger.info(f"Form data received: text_length={len(text_content)}, check_ai={check_ai}, check_plagiarism={check_plagiarism}")
             
@@ -520,9 +573,9 @@ def api_scan_content():
             
             # Perform enhanced text analysis using shared service
             source = "file_upload" if file_info else "manual"
-            logger.info(f"Starting unified analysis: source={source}, ai={check_ai}, plagiarism={check_plagiarism}")
+            logger.info(f"Starting unified analysis: source={source}, ai={check_ai}, plagiarism={check_plagiarism}, enhanced={use_enhanced}")
             
-            result = analyze_text_content(text_content, check_ai=check_ai, check_plagiarism=check_plagiarism, source=source)
+            result = analyze_text_content(text_content, check_ai=check_ai, check_plagiarism=check_plagiarism, source=source, use_enhanced=use_enhanced)
             
             # Check for analysis errors
             if not result.get('success', False):
@@ -770,6 +823,7 @@ def process_media_analysis():
             text_content = request.form.get('text_content', '').strip()
             check_ai = request.form.get('check_ai') == 'on'
             check_plagiarism = request.form.get('check_plagiarism') == 'on'
+            use_enhanced = request.form.get('use_enhanced') == 'on'
             
             # Check if file was uploaded
             uploaded_file = request.files.get('text_file')
@@ -808,7 +862,7 @@ def process_media_analysis():
             
             # Perform enhanced text analysis using shared service
             source = "file_upload" if file_info else "manual"
-            result = analyze_text_content(text_content, check_ai=check_ai, check_plagiarism=check_plagiarism, source=source)
+            result = analyze_text_content(text_content, check_ai=check_ai, check_plagiarism=check_plagiarism, source=source, use_enhanced=use_enhanced)
             
             # Check for analysis errors
             if not result.get('success', False):
@@ -892,7 +946,324 @@ def process_media_analysis():
                              error_details=f'Analysis error: {str(e)}. Please check your input and try again.',
                              analysis_type=request.form.get('analysis_type', 'unknown'))
 
-@main_bp.route('/analytics')
-def analytics():
-    """Analytics page - redirect to analyze for now"""
-    return redirect(url_for('main.analyze'))
+@main_bp.route('/advanced-analysis', methods=['GET', 'POST'])
+@login_required
+def advanced_analysis():
+    """
+    Advanced ML Analysis Page with Self-Learning Capabilities
+    
+    GET: Show advanced analysis form with additional options
+    POST: Process content using advanced ML models with ensemble learning
+    """
+    if request.method == 'GET':
+        # Check if advanced ML is available
+        requirements = validate_detector_requirements() if ADVANCED_ML_AVAILABLE else {}
+        return render_template('advanced_analysis.html', 
+                             advanced_available=ADVANCED_ML_AVAILABLE,
+                             requirements=requirements)
+    
+    try:
+        if not ADVANCED_ML_AVAILABLE:
+            return render_template('result.html',
+                                 error="Advanced ML analysis is not available. Please check system requirements.")
+        
+        # Get advanced detector
+        detector = get_advanced_detector()
+        if not detector:
+            return render_template('result.html',
+                                 error="Advanced ML detector could not be initialized.")
+        
+        # Get form data
+        input_type = request.form.get('input_type', '').strip()
+        content = ''
+        
+        # Extract content based on type
+        if input_type == 'url':
+            content = request.form.get('url', '').strip()
+            if not content or not validate_url(content):
+                return render_template('result.html',
+                                     error="Please enter a valid URL")
+        elif input_type == 'email':
+            content = request.form.get('email_content', '').strip()
+            if not content or len(content) < 10:
+                return render_template('result.html',
+                                     error="Please enter at least 10 characters of email content")
+        elif input_type == 'message':
+            content = request.form.get('message_content', '').strip()
+            if not content or len(content) < 5:
+                return render_template('result.html',
+                                     error="Please enter at least 5 characters of message content")
+        else:
+            return render_template('result.html',
+                                 error="Please select a content type")
+        
+        # Get additional options
+        enable_learning = request.form.get('enable_learning', 'false').lower() == 'true'
+        detailed_analysis = request.form.get('detailed_analysis', 'false').lower() == 'true'
+        
+        logger.info(f"Starting advanced {input_type} analysis: {content[:50]}...")
+        
+        # Perform advanced analysis
+        metadata = {
+            'source': 'web_interface_advanced',
+            'timestamp': datetime.utcnow().isoformat(),
+            'user_id': session.get('user_id'),
+            'enable_learning': enable_learning,
+            'detailed_analysis': detailed_analysis
+        }
+        
+        result = detector.analyze_content(
+            content=content,
+            content_type=input_type,
+            metadata=metadata
+        )
+        
+        result['detector_type'] = 'advanced_ml_ensemble'
+        result['learning_enabled'] = enable_learning
+        
+        # Save scan result
+        try:
+            from models.scan_history_model import ScanHistoryModel
+            
+            scan_id = ScanHistoryModel.save_scan_result(
+                content=content,
+                content_type=input_type,
+                result=result,
+                user_id=session.get('user_id'),
+                analysis_type='advanced_ml'
+            )
+            
+            # Update analytics
+            AnalyticsModel.update_scan_count()
+            if result['threat_level'] in ['high', 'medium']:
+                AnalyticsModel.update_threat_blocked()
+                
+        except Exception as log_error:
+            logger.error(f"Failed to save advanced scan result: {log_error}")
+        
+        logger.info(f"Advanced {input_type} analysis complete - Threat: {result['threat_level']}, Score: {result['risk_score']:.3f}")
+        
+        # Create result context
+        result_context = {
+            'result': result,
+            'content': content,
+            'input_type': input_type,
+            'analysis_timestamp': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC'),
+            'scan_id': locals().get('scan_id'),
+            'user_authenticated': session.get('user_id') is not None,
+            'advanced_analysis': True
+        }
+        
+        return render_template('advanced_result.html', **result_context)
+        
+    except Exception as e:
+        logger.error(f"Advanced analysis error: {str(e)}")
+        return render_template('result.html',
+                             error=f"Advanced analysis failed: {str(e)}")
+
+@main_bp.route('/api/advanced/analyze', methods=['POST'])
+def api_advanced_analyze():
+    """
+    Advanced ML Analysis API Endpoint
+    
+    JSON API for advanced phishing detection with ensemble models
+    """
+    try:
+        if not ADVANCED_ML_AVAILABLE:
+            return jsonify({
+                'success': False,
+                'error': 'Advanced ML analysis not available',
+                'timestamp': datetime.utcnow().isoformat()
+            }), 503
+        
+        # Get advanced detector
+        detector = get_advanced_detector()
+        if not detector:
+            return jsonify({
+                'success': False,
+                'error': 'Advanced ML detector not initialized',
+                'timestamp': datetime.utcnow().isoformat()
+            }), 503
+        
+        # Get JSON data
+        data = request.get_json()
+        if not data:
+            return jsonify({
+                'success': False,
+                'error': 'JSON data required',
+                'timestamp': datetime.utcnow().isoformat()
+            }), 400
+        
+        # Validate required fields
+        content = data.get('content', '').strip()
+        content_type = data.get('content_type', 'text')
+        
+        if not content:
+            return jsonify({
+                'success': False,
+                'error': 'Content is required',
+                'timestamp': datetime.utcnow().isoformat()
+            }), 400
+        
+        if len(content) > 10000:  # Limit content length
+            return jsonify({
+                'success': False,
+                'error': 'Content too long (max 10000 characters)',
+                'timestamp': datetime.utcnow().isoformat()
+            }), 400
+        
+        # Perform analysis
+        metadata = data.get('metadata', {})
+        metadata.update({
+            'source': 'api_advanced',
+            'timestamp': datetime.utcnow().isoformat()
+        })
+        
+        result = detector.analyze_content(
+            content=content,
+            content_type=content_type,
+            metadata=metadata
+        )
+        
+        # Add API metadata
+        result.update({
+            'success': True,
+            'api_version': '2.0',
+            'detector_type': 'advanced_ml_ensemble',
+            'timestamp': datetime.utcnow().isoformat()
+        })
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"API advanced analysis error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': 'Analysis failed',
+            'details': str(e),
+            'timestamp': datetime.utcnow().isoformat()
+        }), 500
+
+@main_bp.route('/api/advanced/learn', methods=['POST'])
+@login_required
+def api_advanced_learn():
+    """
+    Advanced ML Learning API Endpoint
+    
+    Allows users to provide feedback for continuous learning
+    """
+    try:
+        if not ADVANCED_ML_AVAILABLE:
+            return jsonify({
+                'success': False,
+                'error': 'Advanced ML learning not available'
+            }), 503
+        
+        detector = get_advanced_detector()
+        if not detector:
+            return jsonify({
+                'success': False,
+                'error': 'Advanced ML detector not initialized'
+            }), 503
+        
+        data = request.get_json()
+        if not data:
+            return jsonify({
+                'success': False,
+                'error': 'JSON data required'
+            }), 400
+        
+        # Validate required fields
+        content = data.get('content', '').strip()
+        is_phishing = data.get('is_phishing')
+        content_type = data.get('content_type', 'text')
+        
+        if not content or is_phishing is None:
+            return jsonify({
+                'success': False,
+                'error': 'Content and is_phishing fields are required'
+            }), 400
+        
+        if not isinstance(is_phishing, bool):
+            return jsonify({
+                'success': False,
+                'error': 'is_phishing must be a boolean value'
+            }), 400
+        
+        # Learn from feedback
+        metadata = data.get('metadata', {})
+        metadata.update({
+            'source': 'user_feedback',
+            'user_id': session.get('user_id'),
+            'timestamp': datetime.utcnow().isoformat()
+        })
+        
+        result = detector.learn_from_feedback(
+            content=content,
+            is_phishing=is_phishing,
+            content_type=content_type,
+            metadata=metadata
+        )
+        
+        if result['success']:
+            logger.info(f"Learning feedback received: {content_type} -> {is_phishing}")
+            return jsonify({
+                'success': True,
+                'message': 'Feedback incorporated successfully',
+                'timestamp': datetime.utcnow().isoformat()
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': result.get('error', 'Learning failed')
+            }), 400
+        
+    except Exception as e:
+        logger.error(f"API learning error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': 'Learning failed',
+            'details': str(e)
+        }), 500
+
+@main_bp.route('/api/advanced/metrics', methods=['GET'])
+@login_required
+def api_advanced_metrics():
+    """
+    Advanced ML Performance Metrics API
+    
+    Returns detailed performance metrics and confusion matrix
+    """
+    try:
+        if not ADVANCED_ML_AVAILABLE:
+            return jsonify({
+                'success': False,
+                'error': 'Advanced ML metrics not available'
+            }), 503
+        
+        detector = get_advanced_detector()
+        if not detector:
+            return jsonify({
+                'success': False,
+                'error': 'Advanced ML detector not initialized'
+            }), 503
+        
+        # Get performance metrics
+        metrics = detector.get_performance_metrics()
+        
+        # Add metadata
+        metrics.update({
+            'success': True,
+            'timestamp': datetime.utcnow().isoformat(),
+            'detector_type': 'advanced_ml_ensemble'
+        })
+        
+        return jsonify(metrics)
+        
+    except Exception as e:
+        logger.error(f"API metrics error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to retrieve metrics',
+            'details': str(e)
+        }), 500

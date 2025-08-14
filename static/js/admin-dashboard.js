@@ -222,11 +222,11 @@ function togglePasswordField() {
 }
 
 function updateLiveStats() {
-    fetch('/admin/live-stats')
+    fetch('/admin/api/stats')
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                const stats = data.stats;
+            if (data.status === 'success') {
+                const stats = data.system_stats;
                 updateElementIfExists('totalUsers', stats.total_users);
                 updateElementIfExists('totalScans', stats.total_scans);
                 updateElementIfExists('threatsDetected', stats.threats_detected);

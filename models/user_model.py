@@ -40,7 +40,8 @@ class UserModel:
                 'is_active': True,
                 'created_at': datetime.utcnow(),
                 'last_login': None,
-                'login_attempts': 0
+                'login_attempts': 0,
+                'profile_photo': None  # Path to profile photo
             }
             
             if mongo_service.is_connected():
@@ -61,82 +62,35 @@ class UserModel:
     
     @staticmethod
     def find_user_by_email(email):
-        """Find user by email address with file fallback"""
+        """Find user by email"""
         try:
             if mongo_service.is_connected():
                 return mongo_service.find_document('users', {'email': email})
             else:
-                # Fallback to file-based authentication
-                return UserModel._find_user_in_file('email', email)
+                logger.warning("MongoDB not connected")
+                return None
         except Exception as e:
             logger.error(f"Error finding user by email: {e}")
-            # Try file fallback on error
-            return UserModel._find_user_in_file('email', email)
-    
-    @staticmethod
-    def _find_user_in_file(field, value):
-        """Fallback method to find user in local file"""
-        import json
-        import os
-        
-        try:
-            # Check if test users file exists
-            if os.path.exists('data/test_users.json'):
-                with open('data/test_users.json', 'r') as f:
-                    users = json.load(f)
-                
-                for user in users:
-                    if user.get(field) == value:
-                        logger.info(f"Found user in file: {field}={value}")
-                        return user
-            
-            # Default test user if no file exists
-            if field == 'email' and value == 'test@example.com':
-                return UserModel._get_default_test_user()
-            elif field == 'username' and value == 'testuser':
-                return UserModel._get_default_test_user()
-            elif field == '_id' and value == 1:
-                return UserModel._get_default_test_user()
-            
-            logger.info(f"User not found in file: {field}={value}")
-            return None
-            
-        except Exception as e:
-            logger.error(f"Error reading user file: {e}")
             return None
     
-    @staticmethod
-    def _get_default_test_user():
-        """Get default test user data"""
-        import bcrypt
-        password_hash = bcrypt.hashpw('password123'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-        return {
-            "_id": 1,
-            "username": "testuser",
-            "email": "test@example.com",
-            "password_hash": password_hash,
-            "role": "user",
-            "created_at": datetime.utcnow().isoformat(),
-            "active": True
-        }
+
     
     @staticmethod
     def find_user_by_username(username):
-        """Find user by username with file fallback"""
+        """Find user by username"""
         try:
             if mongo_service.is_connected():
                 return mongo_service.find_document('users', {'username': username})
             else:
-                # Fallback to file-based authentication
-                return UserModel._find_user_in_file('username', username)
+                logger.warning("MongoDB not connected")
+                return None
         except Exception as e:
             logger.error(f"Error finding user by username: {e}")
-            # Try file fallback on error
-            return UserModel._find_user_in_file('username', username)
+            return None
     
     @staticmethod
     def find_user_by_id(user_id):
-        """Find user by ID with file fallback"""
+        """Find user by ID"""
         try:
             if mongo_service.is_connected():
                 from bson import ObjectId
@@ -144,12 +98,11 @@ class UserModel:
                     user_id = ObjectId(user_id)
                 return mongo_service.find_document('users', {'_id': user_id})
             else:
-                # Fallback to file-based authentication
-                return UserModel._find_user_in_file('_id', int(user_id))
+                logger.warning("MongoDB not connected")
+                return None
         except Exception as e:
             logger.error(f"Error finding user by ID: {e}")
-            # Try file fallback on error
-            return UserModel._find_user_in_file('_id', int(user_id))
+            return None
     
     @staticmethod
     def authenticate_user(email, password):
@@ -256,6 +209,29 @@ class UserModel:
             return []
     
     @staticmethod
+    def update_user_password(user_id, new_password):
+        """Update user password with bcrypt hashing"""
+        try:
+            if mongo_service.is_connected():
+                from bson import ObjectId
+                if isinstance(user_id, str):
+                    user_id = ObjectId(user_id)
+                
+                # Hash the new password
+                password_hash = hash_password(new_password)
+                
+                result = mongo_service.update_document(
+                    'users',
+                    {'_id': user_id},
+                    {'password_hash': password_hash}
+                )
+                return result > 0
+            return False
+        except Exception as e:
+            logger.error(f"Error updating user password: {e}")
+            return False
+    
+    @staticmethod
     def deactivate_user(user_id):
         """Deactivate a user account"""
         try:
@@ -272,4 +248,36 @@ class UserModel:
             return False
         except Exception as e:
             logger.error(f"Error deactivating user: {e}")
+            return False
+    
+    @staticmethod
+    def update_profile_photo(user_id, photo_path):
+        """Update user's profile photo"""
+        try:
+            if mongo_service.is_connected():
+                from bson import ObjectId
+                if isinstance(user_id, str):
+                    user_id = ObjectId(user_id)
+                
+                # Use update_one with proper query and update format
+                collection = mongo_service.get_collection('users')
+                if collection is not None:
+                    result = collection.update_one(
+                        {'_id': user_id},
+                        {'$set': {'profile_photo': photo_path, 'updated_at': datetime.utcnow()}}
+                    )
+                    if result.modified_count > 0:
+                        logger.info(f"Profile photo updated for user: {user_id}")
+                        return True
+                    else:
+                        logger.warning(f"User not found for profile photo update: {user_id}")
+                        return False
+                else:
+                    logger.error("Could not get users collection")
+                    return False
+            else:
+                logger.warning("MongoDB not connected for profile photo update")
+                return False
+        except Exception as e:
+            logger.error(f"Error updating profile photo: {e}")
             return False

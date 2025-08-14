@@ -61,6 +61,7 @@
                             <i class="fas fa-microscope me-1"></i>Analyze Media
                         </a>
                     </li>
+
                 </ul>
 
                 <ul class="navbar-nav">
@@ -81,10 +82,24 @@
                             {% endif %}
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-1"></i>{{ session.username }}
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                                {% if session.profile_photo %}
+                                    <div class="position-relative me-2">
+                                        <img src="{{ session.profile_photo }}" alt="Profile" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
+                                        <i class="fas fa-globe position-absolute" style="bottom: -2px; right: -2px; font-size: 12px; color: #007bff; background: white; border-radius: 50%; padding: 2px;"></i>
+                                    </div>
+                                {% else %}
+                                    <div class="position-relative me-2">
+                                        <i class="fas fa-user-circle" style="font-size: 30px; color: #6c757d;"></i>
+                                        <i class="fas fa-globe position-absolute" style="bottom: 2px; right: -2px; font-size: 12px; color: #007bff; background: white; border-radius: 50%; padding: 2px;"></i>
+                                    </div>
+                                {% endif %}
+                                {{ session.username }}
                             </a>
                             <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}">
+                                    <i class="fas fa-user me-1"></i>Profile
+                                </a></li>
                                 <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
                                     <i class="fas fa-sign-out-alt me-1"></i>Logout
                                 </a></li>

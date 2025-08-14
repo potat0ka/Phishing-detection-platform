@@ -56,35 +56,8 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-@admin_bp.route('/dashboard')
-@login_required
-def dashboard_redirect():
-    """
-    Redirect old dashboard route to proper RBAC dashboard based on user role
-    """
-    user_role = session.get('role', 'user')
-    
-    if user_role == 'superadmin':
-        return redirect(url_for('rbac.superadmin_dashboard'))
-    elif user_role == 'admin':
-        return redirect(url_for('rbac.admin_dashboard'))
-    else:
-        return redirect(url_for('rbac.user_dashboard'))
-
-@admin_bp.route('/admin-panel')
-@admin_required
-def admin_panel():
-    """
-    Admin panel - redirect to RBAC dashboard based on user role
-    """
-    user_role = session.get('role', 'user')
-    
-    if user_role == 'superadmin':
-        return redirect(url_for('rbac.superadmin_dashboard'))
-    elif user_role == 'admin':
-        return redirect(url_for('rbac.admin_dashboard'))
-    else:
-        return redirect(url_for('rbac.user_dashboard'))
+# Dashboard routes removed - handled by rbac_routes.py
+# All dashboard functionality is now centralized in RBAC routes
 
 @admin_bp.route('/phishing/add', methods=['POST'])
 @admin_required
@@ -103,7 +76,7 @@ def add_phishing_url():
         
         if not url or not validate_url(url):
             flash('Please enter a valid URL', 'error')
-            return redirect(url_for('admin.admin_panel'))
+            return redirect(url_for('rbac.admin_dashboard'))
         
         # Add to database
         result = PhishingModel.add_phishing_url(
@@ -123,7 +96,7 @@ def add_phishing_url():
         logger.error(f"Error adding phishing URL: {e}")
         flash('Error adding phishing URL', 'error')
     
-    return redirect(url_for('admin.admin_panel'))
+    return redirect(url_for('rbac.admin_dashboard'))
 
 @admin_bp.route('/phishing/edit/<data_id>')
 @admin_required
@@ -143,14 +116,14 @@ def edit_phishing_data(data_id):
         
         if not current_entry:
             flash('Phishing data entry not found', 'error')
-            return redirect(url_for('admin.admin_panel'))
+            return redirect(url_for('rbac.admin_dashboard'))
         
         return render_template('admin/edit_phishing.html', entry=current_entry)
         
     except Exception as e:
         logger.error(f"Error loading phishing data for edit: {e}")
         flash('Error loading phishing data', 'error')
-        return redirect(url_for('admin.admin_panel'))
+        return redirect(url_for('rbac.admin_dashboard'))
 
 @admin_bp.route('/phishing/update/<data_id>', methods=['POST'])
 @admin_required
@@ -181,7 +154,7 @@ def update_phishing_data(data_id):
         
         if result:
             flash('Phishing URL updated successfully', 'success')
-            return redirect(url_for('admin.admin_panel'))
+            return redirect(url_for('rbac.admin_dashboard'))
         else:
             flash('Failed to update phishing URL', 'error')
             return redirect(url_for('admin.edit_phishing_data', data_id=data_id))
@@ -202,7 +175,7 @@ def delete_phishing_url():
         
         if not url:
             flash('URL is required', 'error')
-            return redirect(url_for('admin.admin_panel'))
+            return redirect(url_for('rbac.admin_dashboard'))
         
         result = PhishingModel.delete_phishing_url(url)
         
@@ -215,7 +188,7 @@ def delete_phishing_url():
         logger.error(f"Error deleting phishing URL: {e}")
         flash('Error deleting phishing URL', 'error')
     
-    return redirect(url_for('admin.admin_panel'))
+    return redirect(url_for('rbac.admin_dashboard'))
 
 @admin_bp.route('/tips/add', methods=['POST'])
 @admin_required
@@ -231,7 +204,7 @@ def add_security_tip():
         
         if not title or not content:
             flash('Title and content are required', 'error')
-            return redirect(url_for('admin.admin_panel'))
+            return redirect(url_for('rbac.admin_dashboard'))
         
         result = SafetyTipsModel.add_tip(title, content, category, difficulty)
         
@@ -244,7 +217,7 @@ def add_security_tip():
         logger.error(f"Error adding security tip: {e}")
         flash('Error adding security tip', 'error')
     
-    return redirect(url_for('admin.admin_panel'))
+    return redirect(url_for('rbac.admin_dashboard'))
 
 @admin_bp.route('/tips/edit/<tip_id>', methods=['POST'])
 @admin_required
@@ -258,7 +231,7 @@ def edit_security_tip(tip_id):
         
         if not title or not content:
             flash('Title and content are required', 'error')
-            return redirect(url_for('admin.admin_panel'))
+            return redirect(url_for('rbac.admin_dashboard'))
         
         result = SafetyTipsModel.update_tip(tip_id, title, content, category, difficulty)
         
@@ -271,7 +244,7 @@ def edit_security_tip(tip_id):
         logger.error(f"Error updating security tip: {e}")
         flash('Error updating security tip', 'error')
     
-    return redirect(url_for('admin.admin_panel'))
+    return redirect(url_for('rbac.admin_dashboard'))
 
 @admin_bp.route('/tips/delete/<tip_id>', methods=['POST'])
 @admin_required
@@ -289,7 +262,7 @@ def delete_security_tip(tip_id):
         logger.error(f"Error deleting security tip: {e}")
         flash('Error deleting security tip', 'error')
     
-    return redirect(url_for('admin.admin_panel'))
+    return redirect(url_for('rbac.admin_dashboard'))
 
 @admin_bp.route('/users')
 @admin_required
@@ -318,7 +291,7 @@ def update_user_role():
         
         if not user_id or not new_role:
             flash('User ID and role are required', 'error')
-            return redirect(url_for('admin.admin_panel'))
+            return redirect(url_for('rbac.admin_dashboard'))
         
         result = UserModel.update_user_role(user_id, new_role)
         
@@ -331,7 +304,7 @@ def update_user_role():
         logger.error(f"Error updating user role: {e}")
         flash('Error updating user role', 'error')
     
-    return redirect(url_for('admin.admin_panel'))
+    return redirect(url_for('rbac.admin_dashboard'))
 
 @admin_bp.route('/api/stats')
 @admin_required

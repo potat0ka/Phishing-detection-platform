@@ -16,6 +16,18 @@ import re
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 
+# Import enhanced detection algorithms
+try:
+    from .enhanced_detection import (
+        enhanced_ai_detector, 
+        enhanced_plagiarism_detector, 
+        analyze_content_enhanced
+    )
+    ENHANCED_DETECTION_AVAILABLE = True
+except ImportError:
+    ENHANCED_DETECTION_AVAILABLE = False
+    logging.warning("Enhanced detection algorithms not available, using fallback methods")
+
 logger = logging.getLogger(__name__)
 
 class AIContentDetector:
@@ -40,12 +52,13 @@ class AIContentDetector:
             r'\b(?:lol|haha|omg|wtf|tbh|imo)\b'
         ]
     
-    def analyze_text_authenticity(self, text: str) -> Dict:
+    def analyze_text_authenticity(self, text: str, use_enhanced: bool = True) -> Dict:
         """
-        Analyze text for AI-generated content indicators
+        Analyze text for AI-generated content indicators with enhanced algorithms
         
         Args:
             text: Text content to analyze
+            use_enhanced: Whether to use enhanced detection algorithms
             
         Returns:
             Dict containing analysis results
@@ -58,6 +71,24 @@ class AIContentDetector:
                 'indicators': []
             }
         
+        # Use enhanced detection if available and requested
+        if use_enhanced and ENHANCED_DETECTION_AVAILABLE:
+            try:
+                enhanced_result = enhanced_ai_detector.analyze_text(text)
+                return {
+                    'is_ai_generated': enhanced_result['is_ai_generated'],
+                    'confidence_score': enhanced_result['confidence_score'],
+                    'ai_score': enhanced_result.get('ai_score', 0),
+                    'human_score': enhanced_result.get('human_score', 0),
+                    'reason': enhanced_result.get('reason', 'Enhanced AI analysis'),
+                    'indicators': enhanced_result['indicators'],
+                    'analysis_timestamp': enhanced_result['timestamp'],
+                    'enhanced': True
+                }
+            except Exception as e:
+                logger.warning(f"Enhanced AI detection failed, falling back to basic method: {e}")
+        
+        # Fallback to original method
         try:
             # Count AI and human indicators
             ai_score = 0
@@ -104,7 +135,8 @@ class AIContentDetector:
                 'human_score': human_score,
                 'reason': f"Analysis based on {total_score} indicators",
                 'indicators': found_indicators[:10],  # Limit to top 10
-                'analysis_timestamp': datetime.utcnow().isoformat()
+                'analysis_timestamp': datetime.utcnow().isoformat(),
+                'enhanced': False
             }
             
         except Exception as e:
@@ -128,13 +160,14 @@ class PlagiarismDetector:
             "scholar.google.com"
         ]
     
-    def check_plagiarism(self, text: str, check_online: bool = False) -> Dict:
+    def check_plagiarism(self, text: str, check_online: bool = False, use_enhanced: bool = True) -> Dict:
         """
-        Check text for potential plagiarism
+        Check text for potential plagiarism with enhanced algorithms
         
         Args:
             text: Text content to check
             check_online: Whether to check against online sources
+            use_enhanced: Whether to use enhanced detection algorithms
             
         Returns:
             Dict containing plagiarism analysis results
@@ -147,6 +180,24 @@ class PlagiarismDetector:
                 'reason': 'Text too short for plagiarism detection'
             }
         
+        # Use enhanced detection if available and requested
+        if use_enhanced and ENHANCED_DETECTION_AVAILABLE:
+            try:
+                enhanced_result = enhanced_plagiarism_detector.analyze_text(text)
+                return {
+                    'has_plagiarism': enhanced_result['has_plagiarism'],
+                    'confidence_score': enhanced_result['confidence_score'],
+                    'plagiarism_score': enhanced_result.get('plagiarism_score', 0),
+                    'sources_found': enhanced_result.get('sources_found', []),
+                    'indicators': enhanced_result['indicators'],
+                    'reason': enhanced_result.get('reason', 'Enhanced plagiarism analysis'),
+                    'analysis_timestamp': enhanced_result['timestamp'],
+                    'enhanced': True
+                }
+            except Exception as e:
+                logger.warning(f"Enhanced plagiarism detection failed, falling back to basic method: {e}")
+        
+        # Fallback to original method
         try:
             # Basic plagiarism indicators
             plagiarism_score = 0
@@ -195,7 +246,8 @@ class PlagiarismDetector:
                 'sources_found': found_sources,
                 'indicators': indicators,
                 'reason': f"Analysis based on {len(indicators)} indicators",
-                'analysis_timestamp': datetime.utcnow().isoformat()
+                'analysis_timestamp': datetime.utcnow().isoformat(),
+                'enhanced': False
             }
             
         except Exception as e:

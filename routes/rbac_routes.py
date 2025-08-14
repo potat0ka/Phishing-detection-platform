@@ -60,17 +60,42 @@ def superadmin_dashboard():
     """Super Admin dashboard with full platform control"""
     try:
         # Get comprehensive statistics for super admin
+        from models.scan_history_model import ScanHistoryModel
+        from models.analytics_model import AnalyticsModel
+        
+        # Initialize with fallback data
+        recent_scans_data = []
+        system_stats = {'total_scans': 0, 'threats_detected': 0}
+        
+        try:
+            recent_scans_data = ScanHistoryModel.get_recent_scans(limit=10) or []
+            system_stats = AnalyticsModel.get_system_stats() or {'total_scans': 0, 'threats_detected': 0}
+        except Exception as db_error:
+            logger.warning(f"Database error in superadmin dashboard: {db_error}")
+            # Continue with fallback data
+        
+        # Safe statistics calculation with fallbacks
+        total_scans = system_stats.get('total_scans', 0)
+        threats_detected = system_stats.get('threats_detected', 0)
+        
         stats = {
-            'total_users': UserModel.get_user_count(),
-            'total_admins': UserModel.get_admin_count(),
-            'total_superadmins': UserModel.get_superadmin_count(),
-            'pending_password_resets': len(RBACModel.get_pending_password_reset_requests()),
-            'recent_uploads': RBACModel.get_model_uploads()[:5],
+            'total_users': UserModel.get_user_count() or 0,
+            'total_admins': UserModel.get_admin_count() or 0,
+            'total_superadmins': UserModel.get_superadmin_count() or 0,
+            'total_scans': total_scans,
+            'threats_detected': threats_detected,
+            'phishing_detected': threats_detected,
+            'clean_results': max(0, total_scans - threats_detected),
+            'pending_password_resets': len(RBACModel.get_pending_password_reset_requests() or []),
+            'recent_uploads': (RBACModel.get_model_uploads() or [])[:5],
             'system_health': 'Operational'
         }
 
-        # Get all users for management
-        all_users = UserModel.get_all_users()
+        # Get all users for management with fallback
+        try:
+            all_users = UserModel.get_all_users() or []
+        except Exception:
+            all_users = []
 
         # Add template context functions
         def get_current_user_role():
@@ -78,18 +103,38 @@ def superadmin_dashboard():
 
         def current_user_can(permission):
             user_role = session.get('role', 'user')
-            return RBACModel.has_permission(user_role, permission)
+            try:
+                return RBACModel.has_permission(user_role, permission)
+            except Exception:
+                return False
 
         return render_template('admin/rbac_dashboard.html', 
                              stats=stats, 
                              users=all_users,
+                             recent_scans=recent_scans_data,
                              current_time=datetime.utcnow(),
                              get_current_user_role=get_current_user_role,
                              current_user_can=current_user_can)
     except Exception as e:
-        logger.error(f"Error loading superadmin dashboard: {e}")
-        flash('Error loading dashboard', 'error')
-        return redirect(url_for('main.index'))
+        logger.error(f"Critical error loading superadmin dashboard: {e}")
+        # Return a minimal dashboard instead of redirecting
+        fallback_stats = {
+            'total_scans': 0, 'phishing_detected': 0, 'clean_results': 0,
+            'total_users': 0, 'system_health': 'Error'
+        }
+        
+        def get_current_user_role():
+            return session.get('role', 'user')
+        def current_user_can(permission):
+            return False
+            
+        return render_template('admin/rbac_dashboard.html', 
+                             stats=fallback_stats, 
+                             users=[], recent_scans=[],
+                             current_time=datetime.utcnow(),
+                             get_current_user_role=get_current_user_role,
+                             current_user_can=current_user_can,
+                             dashboard_error=True)
 
 @rbac_bp.route('/admin-dashboard')
 @role_required('admin', 'superadmin')
@@ -99,18 +144,43 @@ def admin_dashboard():
         current_role = session.get('role')
 
         # Get statistics appropriate for admin level
+        from models.scan_history_model import ScanHistoryModel
+        from models.analytics_model import AnalyticsModel
+        
+        # Initialize with fallback data
+        recent_scans_data = []
+        system_stats = {'total_scans': 0, 'threats_detected': 0}
+        
+        try:
+            recent_scans_data = ScanHistoryModel.get_recent_scans(limit=10) or []
+            system_stats = AnalyticsModel.get_system_stats() or {'total_scans': 0, 'threats_detected': 0}
+        except Exception as db_error:
+            logger.warning(f"Database error in admin dashboard: {db_error}")
+            # Continue with fallback data
+        
+        # Safe statistics calculation
+        total_scans = system_stats.get('total_scans', 0)
+        threats_detected = system_stats.get('threats_detected', 0)
+        
         stats = {
-            'total_users': UserModel.get_user_count(),
-            'pending_password_resets': len(RBACModel.get_pending_password_reset_requests()),
-            'recent_scans': 25,  # Will be implemented with scan history
+            'total_users': UserModel.get_user_count() or 0,
+            'pending_password_resets': len(RBACModel.get_pending_password_reset_requests() or []),
+            'recent_scans': len(recent_scans_data),
+            'total_scans': total_scans,
+            'threats_detected': threats_detected,
+            'phishing_detected': threats_detected,
+            'clean_results': max(0, total_scans - threats_detected),
             'active_models': 3
         }
 
         # Admins can only see regular users, superadmins see all
-        if current_role == 'superadmin':
-            manageable_users = UserModel.get_all_users()
-        else:
-            manageable_users = UserModel.get_users_by_role('user')
+        try:
+            if current_role == 'superadmin':
+                manageable_users = UserModel.get_all_users() or []
+            else:
+                manageable_users = UserModel.get_users_by_role('user') or []
+        except Exception:
+            manageable_users = []
 
         # Add template context functions
         def get_current_user_role():
@@ -118,14 +188,17 @@ def admin_dashboard():
 
         def current_user_can(permission):
             user_role = session.get('role', 'user')
-            return RBACModel.has_permission(user_role, permission)
+            try:
+                return RBACModel.has_permission(user_role, permission)
+            except Exception:
+                return False
 
         # Generate navigation URLs for admin dashboard
         nav_urls = {
             'dashboard': url_for('rbac.admin_dashboard'),
             'users': url_for('rbac.manage_users'),
-            'phishing': url_for('main.index'),  # Fixed: redirect to main page for now
-            'safety_tips': url_for('main.tips'),  # Fixed: redirect to tips page
+            'phishing': url_for('main.index'),
+            'safety_tips': url_for('main.tips'),
             'check': url_for('main.check_url'),
             'analyze': url_for('main.analyze_text')
         }
@@ -133,15 +206,32 @@ def admin_dashboard():
         return render_template('admin/rbac_dashboard.html', 
                              stats=stats, 
                              users=manageable_users,
+                             recent_scans=recent_scans_data,
                              current_role=current_role,
                              current_time=datetime.utcnow(),
                              get_current_user_role=get_current_user_role,
                              current_user_can=current_user_can,
                              nav_urls=nav_urls)
     except Exception as e:
-        logger.error(f"Error loading admin dashboard: {e}")
-        flash('Error loading dashboard', 'error')
-        return redirect(url_for('main.index'))
+        logger.error(f"Critical error loading admin dashboard: {e}")
+        # Return a minimal dashboard instead of redirecting
+        fallback_stats = {
+            'total_scans': 0, 'phishing_detected': 0, 'clean_results': 0,
+            'total_users': 0, 'recent_scans': 0, 'active_models': 0
+        }
+        
+        def get_current_user_role():
+            return session.get('role', 'user')
+        def current_user_can(permission):
+            return False
+            
+        return render_template('admin/rbac_dashboard.html', 
+                             stats=fallback_stats, 
+                             users=[], recent_scans=[],
+                             current_time=datetime.utcnow(),
+                             get_current_user_role=get_current_user_role,
+                             current_user_can=current_user_can,
+                             dashboard_error=True)
 
 @rbac_bp.route('/user-dashboard')
 @login_required
@@ -151,16 +241,30 @@ def user_dashboard():
         user_id = session.get('user_id')
         username = session.get('username')
 
-        # Get user-specific statistics
+        # Get user-specific statistics from ScanHistoryModel
+        from models.scan_history_model import ScanHistoryModel
+        
+        # Initialize with fallback data
+        user_stats = {'scans_performed': 0, 'threats_detected': 0, 'last_scan': None}
+        recent_scans = []
+        
+        try:
+            user_stats = ScanHistoryModel.get_user_scan_stats(user_id) or user_stats
+            recent_scans = ScanHistoryModel.get_user_scan_history(user_id, limit=5) or []
+        except Exception as db_error:
+            logger.warning(f"Database error in user dashboard: {db_error}")
+            # Continue with fallback data
+        
+        # Safe statistics calculation
+        scans_performed = user_stats.get('scans_performed', 0)
+        threats_detected = user_stats.get('threats_detected', 0)
+        
         stats = {
-            'total_scans': 0,  # Will implement with scan history
-            'clean_results': 0,
-            'phishing_detected': 0,
-            'last_scan': 'Never'
+            'total_scans': scans_performed,
+            'clean_results': max(0, scans_performed - threats_detected),
+            'phishing_detected': threats_detected,
+            'last_scan': user_stats.get('last_scan').strftime('%Y-%m-%d %H:%M') if user_stats.get('last_scan') else 'Never'
         }
-
-        # Get recent scan history for this user
-        recent_scans = []  # Will implement with scan history model
 
         # Add template context functions
         def get_current_user_role():
@@ -168,7 +272,10 @@ def user_dashboard():
 
         def current_user_can(permission):
             user_role = session.get('role', 'user')
-            return RBACModel.has_permission(user_role, permission)
+            try:
+                return RBACModel.has_permission(user_role, permission)
+            except Exception:
+                return False
 
         return render_template('admin/rbac_dashboard.html', 
                              stats=stats, 
@@ -178,9 +285,26 @@ def user_dashboard():
                              get_current_user_role=get_current_user_role,
                              current_user_can=current_user_can)
     except Exception as e:
-        logger.error(f"Error loading user dashboard: {e}")
-        flash('Error loading dashboard', 'error')
-        return redirect(url_for('main.index'))
+        logger.error(f"Critical error loading user dashboard: {e}")
+        # Return a minimal dashboard instead of redirecting
+        fallback_stats = {
+            'total_scans': 0, 'phishing_detected': 0, 'clean_results': 0,
+            'last_scan': 'Never'
+        }
+        
+        def get_current_user_role():
+            return session.get('role', 'user')
+        def current_user_can(permission):
+            return False
+            
+        return render_template('admin/rbac_dashboard.html', 
+                             stats=fallback_stats, 
+                             recent_scans=[],
+                             username=session.get('username', 'User'),
+                             current_time=datetime.utcnow(),
+                             get_current_user_role=get_current_user_role,
+                             current_user_can=current_user_can,
+                             dashboard_error=True)
 
 @rbac_bp.route('/password-reset/requests')
 @permission_required('reset_user_passwords')
@@ -796,6 +920,98 @@ def api_user_permissions():
     except Exception as e:
         logger.error(f"Error getting user permissions: {e}")
         return jsonify({'error': 'Failed to get permissions'}), 500
+
+@rbac_bp.route('/api/dashboard-stats')
+@login_required
+def api_dashboard_stats():
+    """API endpoint for real-time dashboard statistics"""
+    try:
+        user_role = session.get('role', 'user')
+        user_id = session.get('user_id')
+        
+        from models.scan_history_model import ScanHistoryModel
+        from models.analytics_model import AnalyticsModel
+        
+        if user_role in ['admin', 'superadmin']:
+            # Admin/Superadmin gets system-wide stats
+            try:
+                system_stats = AnalyticsModel.get_system_stats() or {'total_scans': 0, 'threats_detected': 0}
+                total_scans = system_stats.get('total_scans', 0)
+                threats_detected = system_stats.get('threats_detected', 0)
+                
+                stats = {
+                    'total_scans': total_scans,
+                    'phishing_detected': threats_detected,
+                    'clean_results': max(0, total_scans - threats_detected),
+                    'total_users': UserModel.get_user_count() or 0
+                }
+            except Exception:
+                stats = {'total_scans': 0, 'phishing_detected': 0, 'clean_results': 0, 'total_users': 0}
+        else:
+            # Regular user gets personal stats
+            try:
+                user_stats = ScanHistoryModel.get_user_scan_stats(user_id) or {'scans_performed': 0, 'threats_detected': 0}
+                scans_performed = user_stats.get('scans_performed', 0)
+                threats_detected = user_stats.get('threats_detected', 0)
+                
+                stats = {
+                    'total_scans': scans_performed,
+                    'phishing_detected': threats_detected,
+                    'clean_results': max(0, scans_performed - threats_detected)
+                }
+            except Exception:
+                stats = {'total_scans': 0, 'phishing_detected': 0, 'clean_results': 0}
+        
+        return jsonify({
+            'success': True,
+            'stats': stats,
+            'timestamp': datetime.utcnow().isoformat()
+        })
+    except Exception as e:
+        logger.error(f"Error getting dashboard stats: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to get statistics'
+        }), 500
+
+@rbac_bp.route('/api/track-action', methods=['POST'])
+@login_required
+def api_track_action():
+    """API endpoint for tracking user actions (analytics)"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'error': 'No data provided'}), 400
+        
+        action = data.get('action')
+        timestamp = data.get('timestamp')
+        user_role = session.get('role', 'user')
+        user_id = session.get('user_id')
+        
+        # Log the action (you can extend this to save to database)
+        logger.info(f"User action tracked - User: {user_id}, Role: {user_role}, Action: {action}, Time: {timestamp}")
+        
+        # Here you could save to an analytics collection in MongoDB
+        # analytics_data = {
+        #     'user_id': user_id,
+        #     'user_role': user_role,
+        #     'action': action,
+        #     'timestamp': timestamp,
+        #     'ip_address': request.remote_addr,
+        #     'user_agent': request.headers.get('User-Agent')
+        # }
+        # mongo_service.get_collection('user_analytics').insert_one(analytics_data)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Action tracked successfully'
+        })
+    except Exception as e:
+        logger.error(f"Error tracking action: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to track action'
+        }), 500
 
 # Initialize superadmin account if it doesn't exist
 @rbac_bp.route('/initialize-superadmin', methods=['GET', 'POST'])

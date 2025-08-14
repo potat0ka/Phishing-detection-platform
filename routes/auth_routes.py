@@ -11,12 +11,15 @@ This blueprint handles user authentication with MongoDB and bcrypt:
 Author: Bigendra Shrestha
 """
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify, current_app
 from models.user_model import UserModel
 from utils.validation import validate_email, validate_password
 from models.user_model import hash_password, verify_password
 import logging
 import bcrypt
+import os
+from werkzeug.utils import secure_filename
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 
@@ -153,6 +156,7 @@ def login():
         session['role'] = user.get('role', 'user')
         session['user_id'] = str(user.get('_id', ''))
         session['username'] = user.get('username', email.split('@')[0])
+        session['profile_photo'] = user.get('profile_photo', None)
         session.permanent = True
 
         # Update last login time if possible
@@ -221,7 +225,99 @@ def profile():
         flash('Please log in to view your profile', 'error')
         return redirect(url_for('auth.login'))
 
-    return render_template('auth/profile.html')
+    # Get user data including profile photo
+    user = UserModel.find_user_by_id(session['user_id'])
+    return render_template('auth/profile.html', user=user)
+
+@auth_bp.route('/upload-profile-photo', methods=['POST'])
+def upload_profile_photo():
+    """Upload and update user profile photo"""
+    if 'user_id' not in session:
+        logger.warning("Upload attempt without authentication")
+        return jsonify({'success': False, 'error': 'Not authenticated'}), 401
+    
+    user_id = session['user_id']
+    logger.info(f"Profile photo upload started for user {user_id}")
+    
+    try:
+        if 'profile_photo' not in request.files:
+            logger.warning(f"No file in request for user {user_id}")
+            return jsonify({'success': False, 'error': 'No file selected'}), 400
+        
+        file = request.files['profile_photo']
+        if file.filename == '':
+            logger.warning(f"Empty filename for user {user_id}")
+            return jsonify({'success': False, 'error': 'No file selected'}), 400
+        
+        logger.info(f"Processing file: {file.filename} for user {user_id}")
+        
+        # Check file type
+        allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
+        if not ('.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in allowed_extensions):
+            logger.warning(f"Invalid file type {file.filename} for user {user_id}")
+            return jsonify({'success': False, 'error': 'Invalid file type. Please use PNG, JPG, JPEG, or GIF'}), 400
+        
+        # Create secure filename (always save as JPEG since we convert)
+        filename = secure_filename(file.filename)
+        user_id = session['user_id']
+        new_filename = f"profile_{user_id}.jpg"
+        
+        # Create upload directory if it doesn't exist
+        upload_dir = os.path.join('static', 'uploads', 'profile_photos')
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        file_path = os.path.join(upload_dir, new_filename)
+        
+        # Remove old profile photo if it exists
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+                logger.info(f"Removed old profile photo: {file_path}")
+            except Exception as e:
+                logger.warning(f"Could not remove old profile photo {file_path}: {e}")
+        
+        # Save the uploaded file (already cropped from frontend)
+        file.save(file_path)
+        
+        # The image is already cropped to 300x300 from frontend
+        # Just optimize it for web display
+        with Image.open(file_path) as img:
+            # Convert to RGB if necessary (for JPEG compatibility)
+            if img.mode in ('RGBA', 'LA', 'P'):
+                background = Image.new('RGB', img.size, (255, 255, 255))
+                if img.mode == 'P':
+                    img = img.convert('RGBA')
+                background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                img = background
+            
+            # Save optimized image
+            img.save(file_path, 'JPEG', optimize=True, quality=90)
+        
+        # Update user profile photo in database
+        photo_url = f"/static/uploads/profile_photos/{new_filename}"
+        logger.info(f"Updating database with photo URL: {photo_url} for user {user_id}")
+        
+        success = UserModel.update_profile_photo(user_id, photo_url)
+        
+        if success:
+            # Update session with new photo
+            session['profile_photo'] = photo_url
+            logger.info(f"Profile photo successfully updated for user {user_id}")
+            return jsonify({
+                'success': True, 
+                'message': 'Profile photo updated successfully',
+                'photo_url': photo_url
+            })
+        else:
+            logger.error(f"Database update failed for user {user_id}")
+            return jsonify({'success': False, 'error': 'Failed to update profile photo in database'}), 500
+            
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        logger.error(f"Error uploading profile photo: {e}")
+        logger.error(f"Full traceback: {error_details}")
+        return jsonify({'success': False, 'error': f'Upload error: {str(e)}'}), 500
 
 @auth_bp.route('/change-password', methods=['GET', 'POST'])
 def change_password():
@@ -252,7 +348,7 @@ def change_password():
 
         # Get current user
         user_id = session['user_id']
-        current_user = UserModel.get_user_by_id(user_id)
+        current_user = UserModel.find_user_by_id(user_id)
 
         if not current_user:
             flash('User not found', 'error')
@@ -291,21 +387,8 @@ def forgot_password():
     flash('Password reset functionality will be available soon. Please contact admin.', 'info')
     return redirect(url_for('auth.login'))
 
-@auth_bp.route('/dashboard')
-def dashboard_redirect():
-    """Redirect to proper role-based dashboard"""
-    if 'user_id' not in session:
-        flash('Please log in to view your dashboard', 'warning')
-        return redirect(url_for('auth.login'))
-
-    user_role = session.get('role', 'user')
-
-    if user_role == 'superadmin':
-        return redirect(url_for('rbac.superadmin_dashboard'))
-    elif user_role == 'admin':
-        return redirect(url_for('rbac.admin_dashboard'))
-    else:
-        return redirect(url_for('rbac.user_dashboard'))
+# Dashboard redirect removed - handled by rbac_routes.py
+# All dashboard functionality is now centralized in RBAC routes
 
 # Helper functions for templates
 @auth_bp.app_template_global()

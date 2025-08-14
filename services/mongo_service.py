@@ -35,58 +35,76 @@ class MongoService:
             'admin_logs': 'admin_logs',
             'password_resets': 'password_resets'
         }
-        self._connect()
+        # Don't connect immediately - use lazy connection
+        self._connection_attempted = False
     
     def _connect(self) -> bool:
         """Establish MongoDB connection with comprehensive error handling"""
         try:
-            # Get MongoDB URI from environment variables
+            # Get MongoDB URI from environment variables or config
             mongo_uri = os.getenv("MONGO_URI") or os.getenv("MONGODB_URI")
             
+            # If no environment variable, try to get from config
             if not mongo_uri:
-                logger.error("No MongoDB URI found in environment variables")
+                try:
+                    from config import config
+                    mongo_uri = config.MONGO_URI
+                    logger.info("Using MongoDB URI from config file")
+                except ImportError:
+                    logger.error("Could not import config")
+            
+            if not mongo_uri:
+                logger.error("No MongoDB URI found in environment variables or config")
                 return False
             
-            # Connect to MongoDB with optimized settings for better compatibility
+            # Connect to MongoDB with reduced timeouts for faster failure
             self.client = MongoClient(
                 mongo_uri,
-                serverSelectionTimeoutMS=15000,  # Increased timeout
-                connectTimeoutMS=20000,          # Connection timeout
-                socketTimeoutMS=20000,           # Socket timeout
+                serverSelectionTimeoutMS=3000,   # Reduced timeout for faster failure
+                connectTimeoutMS=5000,           # Reduced connection timeout
+                socketTimeoutMS=5000,            # Reduced socket timeout
                 tlsAllowInvalidCertificates=True,
                 retryWrites=True,
-                maxPoolSize=10,                  # Reduced pool size for local use
+                maxPoolSize=5,                   # Smaller pool size
                 minPoolSize=1
             )
             
-            # Test connection with ping
+            # Test connection with ping (with timeout)
             self.client.admin.command('ping')
             self.db = self.client['phishing_detector']
             self.connected = True
+            self._connection_attempted = True
             
             logger.info("MongoDB connected successfully")
             return True
             
         except (ConnectionFailure, ServerSelectionTimeoutError) as e:
-            logger.error(f"MongoDB connection failed: {e}")
+            logger.warning(f"MongoDB connection failed: {e}")
             self.connected = False
+            self._connection_attempted = True
             return False
         except Exception as e:
-            logger.error(f"Unexpected MongoDB error: {e}")
+            logger.warning(f"Unexpected MongoDB error: {e}")
             self.connected = False
+            self._connection_attempted = True
             return False
     
     def get_collection(self, collection_name: str) -> Optional[Collection]:
         """Get a MongoDB collection with automatic reconnection"""
-        if not self.connected:
+        if not self.connected and not self._connection_attempted:
             self._connect()
         
-        if self.connected and self.db is not None:
-            return self.db[collection_name]
-        return None
+        if not self.connected or self.db is None:
+            logger.warning(f"MongoDB not connected, cannot get collection: {collection_name}")
+            return None
+        
+        collection_key = self.collections.get(collection_name, collection_name)
+        return self.db[collection_key]
     
     def is_connected(self) -> bool:
         """Check if MongoDB is connected"""
+        if not self.connected and not self._connection_attempted:
+            self._connect()
         return self.connected and self.client is not None
     
     # CRUD Operations
@@ -190,9 +208,6 @@ class MongoService:
             logger.info("MongoDB connection closed")
 
 # Global MongoDB service instance
-mongo_service = MongoService()
-
-# Global instance
 mongo_service = MongoService()
 
 def get_mongo_collection(collection_name: str) -> Optional[Collection]:

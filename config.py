@@ -30,7 +30,7 @@ class Config:
     
     # MongoDB Configuration
     # The MONGO_URI connects to MongoDB Atlas or local MongoDB instance
-    MONGO_URI = os.environ.get('MONGO_URI') or os.environ.get('MONGODB_URI', 'mongodb+srv://bigendraengineer:ztGPNnUgGp5F8Mie@cluster0.19pf3wn.mongodb.net/phishing_detection_db?retryWrites=true&w=majority')
+    MONGO_URI = os.environ.get('MONGO_URI') or os.environ.get('MONGODB_URI', 'mongodb+srv://bigestha:EJFPxHwFp9wqvftc@phishingcluster1.vlcgtr3.mongodb.net/phishing_detection_db?retryWrites=true&w=majority&appName=phishingCluster1')
     
     # Session Configuration
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
@@ -44,7 +44,7 @@ class Config:
     ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx'}
     
     # Security Settings
-    WTF_CSRF_ENABLED = True
+    WTF_CSRF_ENABLED = False
     WTF_CSRF_TIME_LIMIT = 3600  # 1 hour
     
     # AI/ML Model Settings

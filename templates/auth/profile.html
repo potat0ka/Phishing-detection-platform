@@ -2,144 +2,605 @@
 
 {% block title %}User Profile - AI Phishing Detection{% endblock %}
 
+{% block head %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+<style>
+.profile-photo-container {
+    position: relative;
+    display: inline-block;
+}
+
+.circular-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.profile-photo-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 4px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 2.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.crop-container {
+    max-height: 400px;
+    overflow: hidden;
+    position: relative;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.circular-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 3px dashed #007bff;
+    border-radius: 50%;
+    background: rgba(0, 123, 255, 0.1);
+    pointer-events: none;
+    z-index: 1000;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+.upload-btn {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 8px 20px;
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    color: white;
+}
+
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border-radius: 15px 15px 0 0;
+    border-bottom: none;
+}
+
+.btn-close {
+    filter: invert(1);
+}
+
+.cropper-view-box {
+    border-radius: 50% !important;
+    outline: none;
+}
+
+.cropper-face {
+    border-radius: 50% !important;
+}
+
+.alert-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 6px;
+}
+
+.status-indicator {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-user me-2"></i>User Profile
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <i class="fas fa-user-circle me-2 text-primary"></i>
+                        User Profile
                     </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     {% if session.user_id %}
-                        <div class="row mb-3">
-                            <div class="col-sm-3">
-                                <strong>Username:</strong>
+                        <!-- Profile Photo Section -->
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="profile-photo-container mb-3">
+                                        {% if (user and user.profile_photo) or session.profile_photo %}
+                                            <img id="profilePhotoPreview" src="{{ user.profile_photo if user and user.profile_photo else session.profile_photo }}" alt="Profile" class="circular-preview">
+                                        {% else %}
+                                            <div class="profile-photo-placeholder" id="profilePhotoPreview">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div class="status-indicator">
+                                            <i class="fas fa-camera text-primary" style="font-size: 12px;"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <form id="profilePhotoForm" enctype="multipart/form-data">
+                                        <input type="file" class="d-none" id="profilePhotoInput" name="profile_photo" accept="image/*">
+                                        <button type="button" class="btn upload-btn btn-sm" id="selectPhotoBtn">
+                                            <i class="fas fa-upload me-1"></i>Upload Photo
+                                        </button>
+                                    </form>
+                                    
+                                    <div id="uploadStatus" class="mt-2"></div>
+                                </div>
                             </div>
-                            <div class="col-sm-9">
-                                {{ session.get('username', 'Not available') }}
+                            
+                            <div class="col-md-9">
+                                <div class="row mb-3">
+                                    <div class="col-sm-4">
+                                        <strong class="text-muted">Username:</strong>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <span class="fw-medium">{{ user.username if user else session.username }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-sm-4">
+                                        <strong class="text-muted">Email:</strong>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <span class="fw-medium">{{ user.email if user else session.email }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-sm-4">
+                                        <strong class="text-muted">Role:</strong>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <span class="badge bg-primary rounded-pill">{{ user.role if user else session.role }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-sm-4">
+                                        <strong class="text-muted">Member Since:</strong>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <span class="fw-medium">
+                                            {% if user and user.created_at %}
+                                                {{ user.created_at.strftime('%B %d, %Y') }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="row mb-3">
-                            <div class="col-sm-3">
-                                <strong>Email:</strong>
-                            </div>
-                            <div class="col-sm-9">
-                                {{ session.get('email', 'Not available') }}
-                            </div>
-                        </div>
+                        <hr class="my-4">
                         
-                        <div class="row mb-3">
-                            <div class="col-sm-3">
-                                <strong>Role:</strong>
-                            </div>
-                            <div class="col-sm-9">
-                                {% set role = session.get('role', 'user') %}
-                                {% if role == 'superadmin' %}
-                                    <span class="badge bg-danger">
-                                        <i class="fas fa-crown me-1"></i>Super Admin
-                                    </span>
-                                {% elif role == 'admin' %}
-                                    <span class="badge bg-warning">
-                                        <i class="fas fa-shield-alt me-1"></i>Admin
-                                    </span>
-                                {% else %}
-                                    <span class="badge bg-primary">
-                                        <i class="fas fa-user me-1"></i>User
-                                    </span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <div class="col-sm-3">
-                                <strong>Account Status:</strong>
-                            </div>
-                            <div class="col-sm-9">
-                                <span class="badge bg-success">
-                                    <i class="fas fa-check-circle me-1"></i>Active
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <hr>
-                        
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 flex-wrap">
                             <a href="{{ url_for('auth.change_password') }}" class="btn btn-outline-primary">
                                 <i class="fas fa-key me-1"></i>Change Password
                             </a>
-                            
-                            {% if session.get('role') in ['admin', 'superadmin'] %}
-                                {% if session.get('role') == 'superadmin' %}
-                                    <a href="{{ url_for('rbac.superadmin_dashboard') }}" class="btn btn-outline-success">
-                                {% else %}
-                                    <a href="{{ url_for('rbac.admin_dashboard') }}" class="btn btn-outline-success">
-                                {% endif %}
-                                    <i class="fas fa-cog me-1"></i>Admin Panel
-                                </a>
-                            {% endif %}
-                            
-                            {% if session.get('role') == 'superadmin' %}
-                                <a href="{{ url_for('rbac.superadmin_dashboard') }}" class="btn btn-outline-danger">
-                                    <i class="fas fa-crown me-1"></i>Super Admin Dashboard
-                                </a>
-                            {% endif %}
+                            <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">
+                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                            </a>
                         </div>
                     {% else %}
                         <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle me-2"></i>
-                            Please log in to view your profile information.
+                            Please <a href="{{ url_for('auth.login') }}">log in</a> to view your profile.
                         </div>
-                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
-                            <i class="fas fa-sign-in-alt me-1"></i>Login
-                        </a>
                     {% endif %}
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h6 class="mb-0">
-                        <i class="fas fa-chart-line me-2"></i>Account Activity
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="text-center">
-                        <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">Activity tracking coming soon</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card mt-3">
-                <div class="card-header">
-                    <h6 class="mb-0">
-                        <i class="fas fa-shield-alt me-2"></i>Security Tips
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <ul class="list-unstyled mb-0">
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            Use strong, unique passwords
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            Enable two-factor authentication
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            Keep your account information updated
-                        </li>
-                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Photo Cropping Modal -->
+<div class="modal fade" id="photoCropModal" tabindex="-1" aria-labelledby="photoCropModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="photoCropModalLabel">
+                    <i class="fas fa-crop me-2"></i>Crop Your Profile Photo
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <p class="text-muted mb-1">Adjust the crop area to fit your profile photo perfectly.</p>
+                    <small class="text-muted">The image will be displayed in a circular frame at 300×300 pixels.</small>
+                </div>
+                
+                <!-- Cropping Container -->
+                <div class="crop-container" id="cropContainer">
+                    <img id="cropImage" style="max-width: 100%; display: block;">
+                    <div class="circular-overlay" id="circularOverlay"></div>
+                </div>
+                
+                <!-- Crop Instructions -->
+                <div class="mt-3">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <small class="text-muted">
+                                <i class="fas fa-arrows-alt me-1"></i>Drag to move
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">
+                                <i class="fas fa-expand-arrows-alt me-1"></i>Corners to resize
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">
+                                <i class="fas fa-mouse-pointer me-1"></i>Double-click to reset
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="cropAndUploadBtn">
+                    <i class="fas fa-crop me-1"></i>Crop & Upload
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM Elements
+    const form = document.getElementById('profilePhotoForm');
+    const input = document.getElementById('profilePhotoInput');
+    const preview = document.getElementById('profilePhotoPreview');
+    const selectPhotoBtn = document.getElementById('selectPhotoBtn');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const photoCropModal = new bootstrap.Modal(document.getElementById('photoCropModal'));
+    const cropImage = document.getElementById('cropImage');
+    const cropContainer = document.getElementById('cropContainer');
+    const cropAndUploadBtn = document.getElementById('cropAndUploadBtn');
+    const circularOverlay = document.getElementById('circularOverlay');
+    
+    // State variables
+    let cropper = null;
+    let currentFile = null;
+    
+    // Debug logging
+    function debugLog(message, data = null) {
+        console.log(`[Profile Upload] ${message}`, data || '');
+    }
+    
+    debugLog('Profile photo upload system initialized');
+    
+    // Handle select photo button click
+    selectPhotoBtn.addEventListener('click', function() {
+        debugLog('Select photo button clicked');
+        input.click();
+    });
+    
+    // Handle file selection
+    input.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        debugLog('File selected', file ? file.name : 'No file');
+        
+        if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showStatus('Please select a valid image file.', 'danger');
+                return;
+            }
+            
+            // Validate file size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showStatus('File size must be less than 10MB.', 'danger');
+                return;
+            }
+            
+            currentFile = file;
+            debugLog('File validated, loading for cropping');
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                debugLog('File loaded, showing crop modal');
+                cropImage.src = e.target.result;
+                photoCropModal.show();
+            };
+            reader.onerror = function() {
+                showStatus('Error reading file. Please try again.', 'danger');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Initialize cropper when modal is shown
+    document.getElementById('photoCropModal').addEventListener('shown.bs.modal', function() {
+        debugLog('Modal shown, initializing cropper');
+        
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+        
+        // Wait for image to load
+        if (cropImage.complete && cropImage.naturalWidth > 0) {
+            initializeCropper();
+        } else {
+            cropImage.onload = function() {
+                debugLog('Crop image loaded');
+                initializeCropper();
+            };
+        }
+    });
+    
+    function initializeCropper() {
+        debugLog('Initializing Cropper.js');
+        
+        cropper = new Cropper(cropImage, {
+            aspectRatio: 1, // Square aspect ratio
+            viewMode: 2, // Restrict crop box to not exceed canvas
+            dragMode: 'move',
+            autoCropArea: 0.8,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: true,
+            minCropBoxWidth: 100,
+            minCropBoxHeight: 100,
+            ready: function() {
+                debugLog('Cropper ready');
+                updateCircularOverlay();
+            },
+            crop: function() {
+                updateCircularOverlay();
+            },
+            cropstart: function() {
+                updateCircularOverlay();
+            },
+            cropmove: function() {
+                updateCircularOverlay();
+            },
+            cropend: function() {
+                updateCircularOverlay();
+            }
+        });
+    }
+    
+    function updateCircularOverlay() {
+        if (!cropper) return;
+        
+        const cropBoxData = cropper.getCropBoxData();
+        const containerData = cropper.getContainerData();
+        
+        if (cropBoxData && containerData) {
+            const size = Math.min(cropBoxData.width, cropBoxData.height);
+            const left = cropBoxData.left + (cropBoxData.width - size) / 2;
+            const top = cropBoxData.top + (cropBoxData.height - size) / 2;
+            
+            circularOverlay.style.width = size + 'px';
+            circularOverlay.style.height = size + 'px';
+            circularOverlay.style.left = left + 'px';
+            circularOverlay.style.top = top + 'px';
+            circularOverlay.style.transform = 'none';
+        }
+    }
+    
+    // Handle crop and upload
+    cropAndUploadBtn.addEventListener('click', function() {
+        if (!cropper || !currentFile) {
+            debugLog('Cannot upload: missing cropper or file');
+            return;
+        }
+        
+        debugLog('Starting crop and upload process');
+        
+        // Show loading state
+        setUploadButtonLoading(true);
+        showStatus('Processing image...', 'info');
+        
+        try {
+            // Get cropped canvas
+            const canvas = cropper.getCroppedCanvas({
+                width: 300,
+                height: 300,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+                fillColor: '#ffffff'
+            });
+            
+            if (!canvas) {
+                throw new Error('Failed to create canvas');
+            }
+            
+            debugLog('Canvas created, converting to blob');
+            
+            // Convert to blob and upload
+            canvas.toBlob(function(blob) {
+                if (blob) {
+                    debugLog('Blob created, starting upload', { size: blob.size, type: blob.type });
+                    performUpload(blob, currentFile.name);
+                } else {
+                    debugLog('Failed to create blob');
+                    showStatus('Failed to process image. Please try again.', 'danger');
+                    setUploadButtonLoading(false);
+                }
+            }, 'image/jpeg', 0.9);
+            
+        } catch (error) {
+            debugLog('Error in crop process', error);
+            showStatus('Error processing image: ' + error.message, 'danger');
+            setUploadButtonLoading(false);
+        }
+    });
+    
+    function performUpload(blob, filename) {
+        debugLog('Performing upload', { filename, blobSize: blob.size });
+        
+        const formData = new FormData();
+        formData.append('profile_photo', blob, filename);
+        
+        showStatus('Uploading...', 'info');
+        
+        fetch('/auth/upload-profile-photo', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            debugLog('Upload response received', { status: response.status, ok: response.ok });
+            
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Session expired. Please log in again.');
+                } else if (response.status === 403) {
+                    throw new Error('Access forbidden. Please try again.');
+                } else if (response.status === 413) {
+                    throw new Error('File too large. Please select a smaller image.');
+                } else {
+                    throw new Error(`Upload failed (${response.status}). Please try again.`);
+                }
+            }
+            
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return response.json();
+            } else {
+                throw new Error('Server returned unexpected response format.');
+            }
+        })
+        .then(data => {
+            debugLog('Upload response data', data);
+            
+            if (data.success) {
+                showStatus('Profile photo updated successfully!', 'success');
+                
+                // Update preview image
+                updateProfilePreview(data.photo_url);
+                
+                // Update navbar photo if it exists
+                const navbarImg = document.querySelector('.navbar img[alt="Profile"]');
+                if (navbarImg) {
+                    navbarImg.src = data.photo_url + '?t=' + Date.now(); // Cache busting
+                }
+                
+                // Close modal after delay
+                setTimeout(() => {
+                    photoCropModal.hide();
+                }, 1500);
+            } else {
+                debugLog('Upload failed', data.error);
+                showStatus(data.error || 'Upload failed. Please try again.', 'danger');
+            }
+        })
+        .catch(error => {
+            debugLog('Upload error', error);
+            showStatus(error.message, 'danger');
+        })
+        .finally(() => {
+            setUploadButtonLoading(false);
+        });
+    }
+    
+    function updateProfilePreview(photoUrl) {
+        debugLog('Updating profile preview', photoUrl);
+        
+        const container = preview.parentElement;
+        const cacheBustedUrl = photoUrl + '?t=' + Date.now();
+        
+        container.innerHTML = `
+            <img id="profilePhotoPreview" src="${cacheBustedUrl}" alt="Profile" class="circular-preview">
+            <div class="status-indicator">
+                <i class="fas fa-check text-success" style="font-size: 12px;"></i>
+            </div>
+        `;
+    }
+    
+    function showStatus(message, type) {
+        const alertClass = type === 'success' ? 'alert-success' : 
+                          type === 'danger' ? 'alert-danger' : 
+                          type === 'info' ? 'alert-info' : 'alert-warning';
+        
+        uploadStatus.innerHTML = `<div class="alert ${alertClass} alert-sm">${message}</div>`;
+        
+        // Auto-hide success messages
+        if (type === 'success') {
+            setTimeout(() => {
+                uploadStatus.innerHTML = '';
+            }, 3000);
+        }
+    }
+    
+    function setUploadButtonLoading(loading) {
+        cropAndUploadBtn.disabled = loading;
+        if (loading) {
+            cropAndUploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+        } else {
+            cropAndUploadBtn.innerHTML = '<i class="fas fa-crop me-1"></i>Crop & Upload';
+        }
+    }
+    
+    // Clean up when modal is hidden
+    document.getElementById('photoCropModal').addEventListener('hidden.bs.modal', function() {
+        debugLog('Modal hidden, cleaning up');
+        
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+        
+        currentFile = null;
+        input.value = '';
+        uploadStatus.innerHTML = '';
+        setUploadButtonLoading(false);
+        
+        // Reset overlay
+        circularOverlay.style.width = '0';
+        circularOverlay.style.height = '0';
+    });
+});
+</script>
+
 {% endblock %}

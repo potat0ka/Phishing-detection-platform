@@ -1,0 +1,459 @@
+{% extends "base.html" %}
+
+{% block title %}Advanced ML Phishing Detection{% endblock %}
+
+{% block extra_css %}
+<style>
+    .advanced-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .feature-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+    }
+    
+    .feature-item {
+        background: rgba(255,255,255,0.1);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+    }
+    
+    .feature-icon {
+        font-size: 2em;
+        margin-bottom: 10px;
+        display: block;
+    }
+    
+    .analysis-form {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .input-type-selector {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .input-type-option {
+        position: relative;
+    }
+    
+    .input-type-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+    }
+    
+    .input-type-label {
+        display: block;
+        padding: 15px;
+        background: #f8f9fa;
+        border: 2px solid #e1e5e9;
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .input-type-option input[type="radio"]:checked + .input-type-label {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    .content-input {
+        display: none;
+    }
+    
+    .content-input.active {
+        display: block;
+    }
+    
+    .advanced-options {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+    }
+    
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .analyze-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 40px;
+        border: none;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.3s;
+        width: 100%;
+    }
+    
+    .analyze-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .analyze-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .requirements-info {
+        background: #e3f2fd;
+        border: 1px solid #2196f3;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 20px 0;
+    }
+    
+    .requirements-info h4 {
+        color: #1976d2;
+        margin-bottom: 10px;
+    }
+    
+    .requirement-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 5px 0;
+    }
+    
+    .requirement-status {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+    
+    .requirement-status.available {
+        background: #4caf50;
+    }
+    
+    .requirement-status.unavailable {
+        background: #f44336;
+    }
+    
+    .alert {
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+    
+    .alert-warning {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+    }
+    
+    .alert-info {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="advanced-container">
+    <!-- Header Section -->
+    <div class="feature-card">
+        <h1><i class="fas fa-brain"></i> Advanced ML Phishing Detection</h1>
+        <p>Powered by ensemble machine learning models with self-learning capabilities</p>
+        
+        <div class="feature-grid">
+            <div class="feature-item">
+                <span class="feature-icon">🤖</span>
+                <h4>Ensemble Models</h4>
+                <p>XGBoost, LightGBM, Random Forest</p>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🧠</span>
+                <h4>BERT NLP</h4>
+                <p>Advanced text understanding</p>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">📈</span>
+                <h4>Online Learning</h4>
+                <p>Continuous improvement</p>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🔒</span>
+                <h4>Security Features</h4>
+                <p>Data poisoning protection</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Requirements -->
+    {% if requirements %}
+    <div class="requirements-info">
+        <h4><i class="fas fa-cog"></i> System Capabilities</h4>
+        <div class="requirement-item">
+            <span class="requirement-status {{ 'available' if requirements.get('ml_libraries') else 'unavailable' }}">
+                {{ '✓' if requirements.get('ml_libraries') else '✗' }}
+            </span>
+            <span>Machine Learning Libraries (scikit-learn, XGBoost, LightGBM)</span>
+        </div>
+        <div class="requirement-item">
+            <span class="requirement-status {{ 'available' if requirements.get('bert_support') else 'unavailable' }}">
+                {{ '✓' if requirements.get('bert_support') else '✗' }}
+            </span>
+            <span>BERT NLP Support (transformers, torch)</span>
+        </div>
+        <div class="requirement-item">
+            <span class="requirement-status {{ 'available' if requirements.get('web_scraping') else 'unavailable' }}">
+                {{ '✓' if requirements.get('web_scraping') else '✗' }}
+            </span>
+            <span>Web Data Feeds (requests, beautifulsoup4)</span>
+        </div>
+        <div class="requirement-item">
+            <span class="requirement-status {{ 'available' if requirements.get('nltk_support') else 'unavailable' }}">
+                {{ '✓' if requirements.get('nltk_support') else '✗' }}
+            </span>
+            <span>Natural Language Processing (NLTK)</span>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Availability Check -->
+    {% if not advanced_available %}
+    <div class="alert alert-warning">
+        <h4><i class="fas fa-exclamation-triangle"></i> Advanced ML Not Available</h4>
+        <p>The advanced ML detection system is not available. This may be due to missing dependencies or system requirements.</p>
+        <p>Please install the required packages or contact your system administrator.</p>
+        <a href="{{ url_for('main.check_url') }}" class="btn btn-primary">Use Basic Detection Instead</a>
+    </div>
+    {% else %}
+    
+    <!-- Analysis Form -->
+    <div class="analysis-form">
+        <h2><i class="fas fa-search"></i> Advanced Content Analysis</h2>
+        <p>Analyze URLs, emails, or text messages using our advanced ensemble ML models</p>
+        
+        <form method="POST" id="advancedAnalysisForm">
+            <!-- Content Type Selection -->
+            <div class="form-group">
+                <label>Select Content Type:</label>
+                <div class="input-type-selector">
+                    <div class="input-type-option">
+                        <input type="radio" id="url_type" name="input_type" value="url" checked>
+                        <label for="url_type" class="input-type-label">
+                            <i class="fas fa-link"></i><br>
+                            URL/Website
+                        </label>
+                    </div>
+                    <div class="input-type-option">
+                        <input type="radio" id="email_type" name="input_type" value="email">
+                        <label for="email_type" class="input-type-label">
+                            <i class="fas fa-envelope"></i><br>
+                            Email Content
+                        </label>
+                    </div>
+                    <div class="input-type-option">
+                        <input type="radio" id="message_type" name="input_type" value="message">
+                        <label for="message_type" class="input-type-label">
+                            <i class="fas fa-comment"></i><br>
+                            Text Message
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- URL Input -->
+            <div class="content-input active" id="url_input">
+                <div class="form-group">
+                    <label for="url"><i class="fas fa-link"></i> Website URL:</label>
+                    <input type="url" id="url" name="url" class="form-control" 
+                           placeholder="https://example.com" 
+                           pattern="https?://.*">
+                    <small class="form-text text-muted">Enter the complete URL including http:// or https://</small>
+                </div>
+            </div>
+            
+            <!-- Email Input -->
+            <div class="content-input" id="email_input">
+                <div class="form-group">
+                    <label for="email_content"><i class="fas fa-envelope"></i> Email Content:</label>
+                    <textarea id="email_content" name="email_content" class="form-control" rows="6" 
+                              placeholder="Paste the email content here including headers, subject, and body..."></textarea>
+                    <small class="form-text text-muted">Include email headers, subject line, and message body for best analysis</small>
+                </div>
+            </div>
+            
+            <!-- Message Input -->
+            <div class="content-input" id="message_input">
+                <div class="form-group">
+                    <label for="message_content"><i class="fas fa-comment"></i> Text Message:</label>
+                    <textarea id="message_content" name="message_content" class="form-control" rows="4" 
+                              placeholder="Paste the text message or content here..."></textarea>
+                    <small class="form-text text-muted">Enter any suspicious text message or content</small>
+                </div>
+            </div>
+            
+            <!-- Advanced Options -->
+            <div class="advanced-options">
+                <h4><i class="fas fa-cogs"></i> Advanced Options</h4>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="enable_learning" name="enable_learning" value="true">
+                        <label for="enable_learning">Enable Continuous Learning</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="detailed_analysis" name="detailed_analysis" value="true" checked>
+                        <label for="detailed_analysis">Detailed Feature Analysis</label>
+                    </div>
+                </div>
+                <small class="form-text text-muted">
+                    Continuous learning helps improve the model over time. Detailed analysis provides comprehensive feature breakdown.
+                </small>
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit" class="analyze-btn" id="analyzeBtn">
+                <i class="fas fa-brain"></i> Analyze with Advanced ML
+            </button>
+        </form>
+    </div>
+    
+    <!-- Information Section -->
+    <div class="alert alert-info">
+        <h4><i class="fas fa-info-circle"></i> About Advanced ML Detection</h4>
+        <p>Our advanced detection system uses:</p>
+        <ul>
+            <li><strong>Ensemble Learning:</strong> Combines multiple ML algorithms for higher accuracy</li>
+            <li><strong>Online Learning:</strong> Continuously improves from new data and user feedback</li>
+            <li><strong>BERT Integration:</strong> Advanced natural language understanding</li>
+            <li><strong>Feature Engineering:</strong> Extracts 100+ features from content</li>
+            <li><strong>Real-time Feeds:</strong> Updates from PhishTank, OpenPhish, and other sources</li>
+        </ul>
+    </div>
+    
+    {% endif %}
+</div>
+
+<script>
+// Content type switching
+document.addEventListener('DOMContentLoaded', function() {
+    const typeRadios = document.querySelectorAll('input[name="input_type"]');
+    const contentInputs = document.querySelectorAll('.content-input');
+    
+    typeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Hide all content inputs
+            contentInputs.forEach(input => {
+                input.classList.remove('active');
+            });
+            
+            // Show selected content input
+            const selectedInput = document.getElementById(this.value + '_input');
+            if (selectedInput) {
+                selectedInput.classList.add('active');
+            }
+        });
+    });
+    
+    // Form validation
+    const form = document.getElementById('advancedAnalysisForm');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    
+    form.addEventListener('submit', function(e) {
+        const selectedType = document.querySelector('input[name="input_type"]:checked').value;
+        let content = '';
+        
+        if (selectedType === 'url') {
+            content = document.getElementById('url').value.trim();
+            if (!content || !content.match(/^https?:\/\/.+/)) {
+                e.preventDefault();
+                alert('Please enter a valid URL starting with http:// or https://');
+                return;
+            }
+        } else if (selectedType === 'email') {
+            content = document.getElementById('email_content').value.trim();
+            if (!content || content.length < 10) {
+                e.preventDefault();
+                alert('Please enter at least 10 characters of email content');
+                return;
+            }
+        } else if (selectedType === 'message') {
+            content = document.getElementById('message_content').value.trim();
+            if (!content || content.length < 5) {
+                e.preventDefault();
+                alert('Please enter at least 5 characters of message content');
+                return;
+            }
+        }
+        
+        // Show loading state
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+    });
+});
+</script>
+{% endblock %}

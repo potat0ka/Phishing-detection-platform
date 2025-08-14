@@ -11,6 +11,14 @@ from datetime import datetime
 from typing import Dict, Any, Optional, List, Union
 import io
 
+# Import enhanced detection algorithms
+try:
+    from utils.enhanced_detection import analyze_content_enhanced
+    ENHANCED_DETECTION_AVAILABLE = True
+except ImportError:
+    ENHANCED_DETECTION_AVAILABLE = False
+    logging.warning("Enhanced detection algorithms not available in text analysis service")
+
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -32,15 +40,16 @@ class TextAnalysisService:
         logger.info("TextAnalysisService initialized")
     
     def analyze_text(self, text: str, check_ai: bool = True, check_plagiarism: bool = True, 
-                    source: str = "manual") -> Dict[str, Any]:
+                    source: str = "manual", use_enhanced: bool = True) -> Dict[str, Any]:
         """
-        Perform comprehensive text analysis including AI detection and plagiarism checking.
+        Perform comprehensive text analysis including AI detection and plagiarism checking with enhanced algorithms.
         
         Args:
             text (str): Text content to analyze
             check_ai (bool): Whether to perform AI detection
             check_plagiarism (bool): Whether to perform plagiarism detection
             source (str): Source of the text (manual, file_upload, etc.)
+            use_enhanced (bool): Whether to use enhanced detection algorithms
             
         Returns:
             Dict containing analysis results with standardized format
@@ -68,6 +77,52 @@ class TextAnalysisService:
                 'analysis_components': []
             }
             
+            # Use enhanced detection if available and requested
+            if use_enhanced and ENHANCED_DETECTION_AVAILABLE:
+                try:
+                    enhanced_results = analyze_content_enhanced(text, check_ai, check_plagiarism)
+                    if enhanced_results.get('success', False):
+                        # Map enhanced results to expected format
+                        if check_ai and 'ai_detection' in enhanced_results:
+                            ai_data = enhanced_results['ai_detection']
+                            results['ai_detection'] = {
+                                'percentage': ai_data['percentage'],
+                                'is_ai_generated': ai_data['is_ai_generated'],
+                                'confidence': ai_data['confidence'],
+                                'level': 'high' if ai_data['percentage'] > 70 else 
+                                        'medium' if ai_data['percentage'] > 30 else 'low',
+                                'indicators_found': len(ai_data.get('indicators', [])),
+                                'details': ai_data.get('indicators', []),
+                                'enhanced': True
+                            }
+                            results['analysis_components'].append('AI Detection (Enhanced)')
+                        
+                        if check_plagiarism and 'plagiarism' in enhanced_results:
+                            plag_data = enhanced_results['plagiarism']
+                            results['plagiarism'] = {
+                                'percentage': plag_data['percentage'],
+                                'has_plagiarism': plag_data['has_plagiarism'],
+                                'confidence': plag_data['confidence'],
+                                'level': 'high' if plag_data['percentage'] > 50 else 
+                                        'medium' if plag_data['percentage'] > 20 else 'low',
+                                'sources_found': len(plag_data.get('sources', [])),
+                                'sources': plag_data.get('sources', []),
+                                'details': plag_data.get('indicators', []),
+                                'enhanced': True
+                            }
+                            results['analysis_components'].append('Plagiarism Detection (Enhanced)')
+                        
+                        # Generate explanation for enhanced results
+                        results['explanation'] = self._generate_explanation(results)
+                        results['enhanced_analysis'] = True
+                        
+                        logger.info("Enhanced text analysis completed successfully")
+                        return results
+                        
+                except Exception as e:
+                    logger.warning(f"Enhanced analysis failed, falling back to basic methods: {e}")
+            
+            # Fallback to original methods
             # Perform AI detection if requested
             if check_ai:
                 logger.debug("Running AI detection analysis")
@@ -86,6 +141,7 @@ class TextAnalysisService:
             
             # Generate explanation summary
             results['explanation'] = self._generate_explanation(results)
+            results['enhanced_analysis'] = False
             
             logger.info("Text analysis completed successfully")
             return results
@@ -521,20 +577,21 @@ class TextAnalysisService:
 text_analysis_service = TextAnalysisService()
 
 def analyze_text_content(text: str, check_ai: bool = True, check_plagiarism: bool = True, 
-                        source: str = "manual") -> Dict[str, Any]:
+                        source: str = "manual", use_enhanced: bool = True) -> Dict[str, Any]:
     """
-    Convenience function for text analysis.
+    Convenience function for text analysis with enhanced algorithms.
     
     Args:
         text (str): Text to analyze
         check_ai (bool): Whether to check for AI content
         check_plagiarism (bool): Whether to check for plagiarism
         source (str): Source of the text
+        use_enhanced (bool): Whether to use enhanced detection algorithms
         
     Returns:
         Dict containing analysis results
     """
-    return text_analysis_service.analyze_text(text, check_ai, check_plagiarism, source)
+    return text_analysis_service.analyze_text(text, check_ai, check_plagiarism, source, use_enhanced)
 
 def extract_text_from_file(file_input) -> Dict[str, Any]:
     """

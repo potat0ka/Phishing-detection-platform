@@ -105,22 +105,22 @@
                                     <tr>
                                         <td>
                                             <i class="fas fa-user me-2"></i>
-                                            {{ user.username }}
+                                            {{ user['username'] }}
                                         </td>
-                                        <td>{{ user.email }}</td>
+                                        <td>{{ user['email'] }}</td>
                                         <td>
-                                            <span class="badge bg-{{ 'danger' if user.role == 'superadmin' else ('warning' if user.role == 'admin' else 'primary') }}">
-                                                {{ user.role.title() }}
+                                            <span class="badge bg-{{ 'danger' if user['role'] == 'superadmin' else ('warning' if user['role'] == 'admin' else 'primary') }}">
+                                                {{ user['role'].title() }}
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-{{ 'success' if user.is_active else 'secondary' }}">
-                                                {{ 'Active' if user.is_active else 'Inactive' }}
+                                            <span class="badge bg-{{ 'success' if user['is_active'] else 'secondary' }}">
+                                                {{ 'Active' if user['is_active'] else 'Inactive' }}
                                             </span>
                                         </td>
-                                        <td>{{ user.created_at[:10] if user.created_at else 'N/A' }}</td>
+                                        <td>{{ user['created_at'].strftime('%Y-%m-%d') if user.get('created_at') else 'N/A' }}</td>
                                         <td>
-                                            {% if current_user_can_manage(user.role) %}
+                                            {% if current_user_can_manage(user['role']) %}
                                             <div class="btn-group btn-group-sm">
                                                 <!-- Role Update -->
                                                 <div class="dropdown">
@@ -130,10 +130,10 @@
                                                     </button>
                                                     <ul class="dropdown-menu">
                                                         <li><h6 class="dropdown-header">Change Role</h6></li>
-                                                        {% if user.role != 'user' and current_user_can_manage('user') %}
+                                                        {% if user['role'] != 'user' and current_user_can_manage('user') %}
                                                         <li>
                                                             <form method="POST" action="{{ url_for('rbac.update_user_role') }}" class="dropdown-item">
-                                                                <input type="hidden" name="user_id" value="{{ user._id }}">
+                                                                <input type="hidden" name="user_id" value="{{ user['_id'] }}">
                                                                 <input type="hidden" name="new_role" value="user">
                                                                 <button type="submit" class="btn btn-link p-0 text-decoration-none">
                                                                     <i class="fas fa-user me-1"></i>Make User
@@ -141,10 +141,10 @@
                                                             </form>
                                                         </li>
                                                         {% endif %}
-                                                        {% if user.role != 'admin' and current_user_can_manage('admin') %}
+                                                        {% if user['role'] != 'admin' and current_user_can_manage('admin') %}
                                                         <li>
                                                             <form method="POST" action="{{ url_for('rbac.update_user_role') }}" class="dropdown-item">
-                                                                <input type="hidden" name="user_id" value="{{ user._id }}">
+                                                                <input type="hidden" name="user_id" value="{{ user['_id'] }}">
                                                                 <input type="hidden" name="new_role" value="admin">
                                                                 <button type="submit" class="btn btn-link p-0 text-decoration-none">
                                                                     <i class="fas fa-user-shield me-1"></i>Make Admin
@@ -156,11 +156,11 @@
                                                 </div>
                                                 
                                                 <!-- Deactivate -->
-                                                {% if user.is_active %}
+                                                {% if user['is_active'] %}
                                                 <form method="POST" action="{{ url_for('rbac.deactivate_user') }}" 
                                                       style="display: inline;" 
-                                                      onsubmit="return confirm('Are you sure you want to deactivate {{ user.username }}?')">
-                                                    <input type="hidden" name="user_id" value="{{ user._id }}">
+                                                      onsubmit="return confirm('Are you sure you want to deactivate ' + '{{ user['username'] }}' + '?')"></form>
+                                                    <input type="hidden" name="user_id" value="{{ user['_id'] }}">
                                                     <button type="submit" class="btn btn-outline-danger btn-sm">
                                                         <i class="fas fa-ban"></i>
                                                     </button>

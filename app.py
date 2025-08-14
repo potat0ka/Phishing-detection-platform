@@ -35,6 +35,8 @@ app = Flask(__name__)
 # Load configuration
 app.config.from_object(config)
 
+# CSRF protection disabled for development
+
 # Initialize MongoDB connection
 # PyMongo connects to MongoDB using the MONGO_URI from config
 mongo = PyMongo(app)
@@ -65,7 +67,15 @@ def load_user(user_id):
     """Load user for Flask-Login sessions with fallback support"""
     try:
         from models.user_model import UserModel
-        user_data = UserModel.find_user_by_id(int(user_id))
+        from bson import ObjectId
+        
+        # Handle both ObjectId strings and regular strings
+        if ObjectId.is_valid(user_id):
+            user_data = UserModel.find_user_by_id(ObjectId(user_id))
+        else:
+            # Try to find by username as fallback
+            user_data = UserModel.find_user_by_username(user_id)
+            
         if user_data:
             return User(
                 user_id=user_data['_id'],
@@ -100,22 +110,23 @@ except Exception as e:
 # Blueprints organize routes into separate modules
 try:
     from routes import main_bp, auth_bp, admin_bp, rbac_bp
-    from routes.dashboard_routes import dashboard_bp
+    from routes.enhanced_ai_routes import enhanced_ai_bp
     from utils.rbac_decorators import init_template_globals
     
-    # Initialize RBAC template globals
+    # Initialize template globals for RBAC
     init_template_globals(app)
     
-    # Register blueprints with URL prefixes
+    # Register all route blueprints
     app.register_blueprint(main_bp)           # Main routes: /, /check, /tips
     app.register_blueprint(auth_bp, url_prefix='/auth')  # Auth routes: /auth/login, /auth/register
     app.register_blueprint(admin_bp, url_prefix='/admin') # Admin routes: /admin/dashboard
-    app.register_blueprint(dashboard_bp)      # User dashboard: /dashboard
-    app.register_blueprint(rbac_bp)           # RBAC routes: /rbac/*
+    app.register_blueprint(rbac_bp)           # RBAC routes: /rbac/* (includes all dashboards)
+    app.register_blueprint(enhanced_ai_bp)    # Enhanced AI routes: /enhanced-analytics, /api/*
     
     logger.info("All route blueprints registered successfully")
 except ImportError as e:
     logger.error(f"Failed to import route blueprints: {e}")
+    logger.warning("Some enhanced AI features may not be available")
 
 # Global error handlers
 @app.errorhandler(404)

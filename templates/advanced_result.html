@@ -1,0 +1,546 @@
+{% extends "base.html" %}
+
+{% block title %}Advanced ML Analysis Results{% endblock %}
+
+{% block extra_css %}
+<style>
+    .result-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .result-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .threat-level {
+        font-size: 2.5em;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+    
+    .threat-level.low {
+        color: #4caf50;
+    }
+    
+    .threat-level.medium {
+        color: #ff9800;
+    }
+    
+    .threat-level.high {
+        color: #f44336;
+    }
+    
+    .risk-score {
+        font-size: 3em;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+    
+    .analysis-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin: 30px 0;
+    }
+    
+    .analysis-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border-left: 5px solid #667eea;
+    }
+    
+    .analysis-card h3 {
+        color: #333;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .feature-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .feature-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .feature-item:last-child {
+        border-bottom: none;
+    }
+    
+    .feature-value {
+        font-weight: bold;
+        color: #667eea;
+    }
+    
+    .confidence-bar {
+        width: 100%;
+        height: 20px;
+        background: #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+    
+    .confidence-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.5s ease;
+    }
+    
+    .confidence-fill.low {
+        background: linear-gradient(90deg, #4caf50, #8bc34a);
+    }
+    
+    .confidence-fill.medium {
+        background: linear-gradient(90deg, #ff9800, #ffc107);
+    }
+    
+    .confidence-fill.high {
+        background: linear-gradient(90deg, #f44336, #e91e63);
+    }
+    
+    .model-predictions {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+    
+    .model-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    
+    .model-item {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        border: 2px solid #e1e5e9;
+    }
+    
+    .model-name {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    
+    .model-score {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+    
+    .explanation-section {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        margin: 30px 0;
+    }
+    
+    .explanation-item {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 10px 0;
+        border-left: 4px solid #667eea;
+    }
+    
+    .content-preview {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+        border: 1px solid #e1e5e9;
+    }
+    
+    .content-preview pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        margin: 0;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin: 30px 0;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+    
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .feedback-section {
+        background: #e3f2fd;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 30px 0;
+        border: 1px solid #2196f3;
+    }
+    
+    .feedback-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .metadata-info {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+        font-size: 0.9em;
+        color: #666;
+    }
+    
+    .alert {
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+    
+    .alert-info {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+    }
+    
+    .progress-ring {
+        transform: rotate(-90deg);
+    }
+    
+    .progress-ring-circle {
+        transition: stroke-dasharray 0.5s ease;
+        fill: transparent;
+        stroke-width: 8;
+        stroke-linecap: round;
+    }
+    
+    @media (max-width: 768px) {
+        .analysis-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .btn {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="result-container">
+    <!-- Result Header -->
+    <div class="result-header">
+        <h1><i class="fas fa-brain"></i> Advanced ML Analysis Results</h1>
+        <div class="threat-level {{ result.threat_level }}">
+            {% if result.threat_level == 'low' %}
+                <i class="fas fa-shield-alt"></i> SAFE
+            {% elif result.threat_level == 'medium' %}
+                <i class="fas fa-exclamation-triangle"></i> SUSPICIOUS
+            {% else %}
+                <i class="fas fa-skull-crossbones"></i> DANGEROUS
+            {% endif %}
+        </div>
+        <div class="risk-score">{{ "%.1f" | format(result.risk_score * 100) }}%</div>
+        <p>Risk Score (Advanced ML Ensemble)</p>
+        
+        <!-- Confidence Bar -->
+        <div class="confidence-bar">
+            <div class="confidence-fill {{ result.threat_level }}" 
+                 style="width: {{ result.risk_score * 100 }}%"></div>
+        </div>
+    </div>
+    
+    <!-- Analysis Grid -->
+    <div class="analysis-grid">
+        <!-- Model Predictions -->
+        <div class="analysis-card">
+            <h3><i class="fas fa-robot"></i> Ensemble Model Predictions</h3>
+            {% if result.model_predictions %}
+            <div class="model-grid">
+                {% for model, prediction in result.model_predictions.items() %}
+                <div class="model-item">
+                    <div class="model-name">{{ model.replace('_', ' ').title() }}</div>
+                    <div class="model-score {{ 'high' if prediction > 0.7 else 'medium' if prediction > 0.3 else 'low' }}">
+                        {{ "%.1f" | format(prediction * 100) }}%
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>Model predictions not available</p>
+            {% endif %}
+        </div>
+        
+        <!-- Feature Analysis -->
+        <div class="analysis-card">
+            <h3><i class="fas fa-chart-bar"></i> Feature Analysis</h3>
+            {% if result.features %}
+            <ul class="feature-list">
+                {% for feature, value in result.features.items() %}
+                {% if loop.index <= 8 %}
+                <li class="feature-item">
+                    <span>{{ feature.replace('_', ' ').title() }}</span>
+                    <span class="feature-value">
+                        {% if value is number %}
+                            {{ "%.3f" | format(value) if value < 1 else "%.0f" | format(value) }}
+                        {% else %}
+                            {{ value }}
+                        {% endif %}
+                    </span>
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+            {% if result.features|length > 8 %}
+            <p><small>And {{ result.features|length - 8 }} more features...</small></p>
+            {% endif %}
+            {% else %}
+            <p>Feature analysis not available</p>
+            {% endif %}
+        </div>
+        
+        <!-- Detection Details -->
+        <div class="analysis-card">
+            <h3><i class="fas fa-search"></i> Detection Details</h3>
+            <ul class="feature-list">
+                <li class="feature-item">
+                    <span>Content Type</span>
+                    <span class="feature-value">{{ input_type.title() }}</span>
+                </li>
+                <li class="feature-item">
+                    <span>Detector Type</span>
+                    <span class="feature-value">{{ result.detector_type.replace('_', ' ').title() }}</span>
+                </li>
+                <li class="feature-item">
+                    <span>Analysis Time</span>
+                    <span class="feature-value">{{ analysis_timestamp }}</span>
+                </li>
+                {% if result.processing_time %}
+                <li class="feature-item">
+                    <span>Processing Time</span>
+                    <span class="feature-value">{{ "%.3f" | format(result.processing_time) }}s</span>
+                </li>
+                {% endif %}
+                {% if result.learning_enabled %}
+                <li class="feature-item">
+                    <span>Learning Mode</span>
+                    <span class="feature-value">Enabled</span>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Explanation Section -->
+    {% if result.explanation %}
+    <div class="explanation-section">
+        <h3><i class="fas fa-lightbulb"></i> Analysis Explanation</h3>
+        {% for item in result.explanation %}
+        <div class="explanation-item">
+            <strong>{{ item.category.replace('_', ' ').title() }}:</strong> {{ item.description }}
+            {% if item.confidence %}
+            <br><small>Confidence: {{ "%.1f" | format(item.confidence * 100) }}%</small>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Content Preview -->
+    <div class="analysis-card">
+        <h3><i class="fas fa-file-alt"></i> Analyzed Content</h3>
+        <div class="content-preview">
+            <pre>{{ content[:500] }}{% if content|length > 500 %}...{% endif %}</pre>
+        </div>
+        {% if content|length > 500 %}
+        <p><small>Showing first 500 characters of {{ content|length }} total</small></p>
+        {% endif %}
+    </div>
+    
+    <!-- Feedback Section -->
+    {% if user_authenticated and result.learning_enabled %}
+    <div class="feedback-section">
+        <h4><i class="fas fa-comments"></i> Help Improve Our AI</h4>
+        <p>Was this analysis correct? Your feedback helps our AI learn and improve.</p>
+        <div class="feedback-buttons">
+            <button class="btn btn-success" onclick="submitFeedback(true)">
+                <i class="fas fa-thumbs-up"></i> Correct Analysis
+            </button>
+            <button class="btn btn-danger" onclick="submitFeedback(false)">
+                <i class="fas fa-thumbs-down"></i> Incorrect Analysis
+            </button>
+        </div>
+        <div id="feedback-result" style="margin-top: 15px;"></div>
+    </div>
+    {% endif %}
+    
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="{{ url_for('main.advanced_analysis') }}" class="btn btn-primary">
+            <i class="fas fa-redo"></i> Analyze Another
+        </a>
+        <a href="{{ url_for('main.check_url') }}" class="btn btn-secondary">
+            <i class="fas fa-search"></i> Basic Analysis
+        </a>
+        {% if user_authenticated %}
+        <a href="{{ url_for('rbac.user_dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-history"></i> View History
+        </a>
+        {% endif %}
+        <button class="btn btn-secondary" onclick="window.print()">
+            <i class="fas fa-print"></i> Print Results
+        </button>
+    </div>
+    
+    <!-- Metadata Info -->
+    <div class="metadata-info">
+        <strong>Analysis ID:</strong> {{ scan_id or 'N/A' }} |
+        <strong>Timestamp:</strong> {{ analysis_timestamp }} |
+        <strong>Advanced ML:</strong> Enabled
+        {% if result.api_version %}
+        | <strong>API Version:</strong> {{ result.api_version }}
+        {% endif %}
+    </div>
+    
+    <!-- Information Alert -->
+    <div class="alert alert-info">
+        <h4><i class="fas fa-info-circle"></i> About This Analysis</h4>
+        <p>This analysis was performed using our advanced machine learning ensemble that includes:</p>
+        <ul>
+            <li><strong>Multiple ML Models:</strong> XGBoost, LightGBM, Random Forest, and online learning algorithms</li>
+            <li><strong>Advanced Features:</strong> 100+ extracted features including URL patterns, content analysis, and NLP</li>
+            <li><strong>BERT Integration:</strong> State-of-the-art natural language understanding</li>
+            <li><strong>Real-time Learning:</strong> Continuous improvement from user feedback and data feeds</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+// Feedback submission
+function submitFeedback(isCorrect) {
+    const feedbackResult = document.getElementById('feedback-result');
+    
+    // Determine the actual classification based on threat level
+    const threatLevel = '{{ result.threat_level }}';
+    const isPhishing = threatLevel === 'high' || threatLevel === 'medium';
+    
+    // If user says analysis is correct, use the current classification
+    // If user says analysis is incorrect, flip the classification
+    const actualIsPhishing = isCorrect ? isPhishing : !isPhishing;
+    
+    const feedbackData = {
+        content: `{{ content|replace('"', '\\"')|replace('\n', '\\n') }}`,
+        is_phishing: actualIsPhishing,
+        content_type: '{{ input_type }}',
+        metadata: {
+            feedback_type: isCorrect ? 'correct' : 'incorrect',
+            original_prediction: isPhishing,
+            scan_id: '{{ scan_id or "" }}'
+        }
+    };
+    
+    fetch('/api/advanced/learn', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(feedbackData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            feedbackResult.innerHTML = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check"></i> Thank you! Your feedback has been recorded and will help improve our AI.
+                </div>
+            `;
+            // Hide feedback buttons
+            document.querySelector('.feedback-buttons').style.display = 'none';
+        } else {
+            feedbackResult.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> Error: ${data.error}
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        feedbackResult.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i> Error submitting feedback. Please try again.
+            </div>
+        `;
+    });
+}
+
+// Animation for confidence bar
+document.addEventListener('DOMContentLoaded', function() {
+    const confidenceFill = document.querySelector('.confidence-fill');
+    if (confidenceFill) {
+        setTimeout(() => {
+            confidenceFill.style.width = '{{ result.risk_score * 100 }}%';
+        }, 500);
+    }
+});
+</script>
+{% endblock %}

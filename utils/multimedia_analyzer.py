@@ -21,6 +21,14 @@ import base64
 from datetime import datetime
 from typing import Dict, Any, Optional, Tuple
 
+# Import enhanced detection algorithms
+try:
+    from .enhanced_detection import analyze_content_enhanced
+    ENHANCED_DETECTION_AVAILABLE = True
+except ImportError:
+    ENHANCED_DETECTION_AVAILABLE = False
+    logging.warning("Enhanced detection algorithms not available in multimedia analyzer")
+
 logger = logging.getLogger(__name__)
 
 class MultimediaAnalyzer:
@@ -31,21 +39,22 @@ class MultimediaAnalyzer:
         self.temp_dir = tempfile.gettempdir()
         logger.info("Multimedia Analyzer initialized")
     
-    def analyze_content(self, content_type: str, content_data: Any, filename: Optional[str] = None) -> Dict[str, Any]:
+    def analyze_content(self, content_type: str, content_data: Any, filename: Optional[str] = None, use_enhanced: bool = True) -> Dict[str, Any]:
         """
-        Analyze content based on type
+        Analyze content based on type with enhanced algorithms
         
         Args:
             content_type: Type of content ('text', 'image', 'video', 'audio')
             content_data: The actual content (text string, file bytes, etc.)
             filename: Original filename for file uploads
+            use_enhanced: Whether to use enhanced detection algorithms
             
         Returns:
             Dictionary with analysis results
         """
         try:
             if content_type == 'text':
-                return self._analyze_text(content_data)
+                return self._analyze_text(content_data, use_enhanced)
             elif content_type == 'image':
                 return self._analyze_image(content_data, filename)
             elif content_type == 'video':
@@ -59,8 +68,8 @@ class MultimediaAnalyzer:
             logger.error(f"Error analyzing {content_type}: {e}")
             return {'error': f'Analysis failed: {str(e)}'}
     
-    def _analyze_text(self, text: str) -> Dict[str, Any]:
-        """Analyze text for plagiarism and AI generation"""
+    def _analyze_text(self, text: str, use_enhanced: bool = True) -> Dict[str, Any]:
+        """Analyze text for plagiarism and AI generation with enhanced algorithms"""
         result = {
             'content_type': 'text',
             'analysis_timestamp': datetime.utcnow().isoformat(),
@@ -69,10 +78,58 @@ class MultimediaAnalyzer:
             'plagiarism_score': 0.0,
             'ai_likelihood': 0.0,
             'authenticity_verdict': 'Unknown',
-            'details': []
+            'details': [],
+            'enhanced': False
         }
         
         try:
+            # Use enhanced detection if available and requested
+            if use_enhanced and ENHANCED_DETECTION_AVAILABLE:
+                try:
+                    enhanced_results = analyze_content_enhanced(text, check_ai=True, check_plagiarism=True)
+                    if enhanced_results.get('success', False):
+                        # Extract enhanced results
+                        if 'ai_detection' in enhanced_results:
+                            ai_data = enhanced_results['ai_detection']
+                            result['ai_likelihood'] = ai_data['percentage'] / 100.0
+                            result['ai_confidence'] = ai_data['confidence']
+                            result['ai_indicators'] = ai_data.get('indicators', [])
+                        
+                        if 'plagiarism' in enhanced_results:
+                            plag_data = enhanced_results['plagiarism']
+                            result['plagiarism_score'] = plag_data['percentage'] / 100.0
+                            result['plagiarism_confidence'] = plag_data['confidence']
+                            result['plagiarism_indicators'] = plag_data.get('indicators', [])
+                        
+                        result['enhanced'] = True
+                        
+                        # Determine overall authenticity with enhanced data
+                        if result['plagiarism_score'] > 0.6:
+                            result['authenticity_verdict'] = 'Likely Plagiarized'
+                            result['details'].append(f'Enhanced analysis: High plagiarism probability ({result["plagiarism_score"]:.1%})')
+                        elif result['ai_likelihood'] > 0.7:
+                            result['authenticity_verdict'] = 'Likely AI-Generated'
+                            result['details'].append(f'Enhanced analysis: High AI generation probability ({result["ai_likelihood"]:.1%})')
+                        elif result['ai_likelihood'] > 0.4:
+                            result['authenticity_verdict'] = 'Possibly AI-Assisted'
+                            result['details'].append(f'Enhanced analysis: Moderate AI generation probability ({result["ai_likelihood"]:.1%})')
+                        else:
+                            result['authenticity_verdict'] = 'Likely Human-Written'
+                            result['details'].append('Enhanced analysis: Low indicators of plagiarism or AI generation')
+                        
+                        # Enhanced confidence calculation
+                        confidence = max(
+                            result.get('ai_confidence', 0),
+                            result.get('plagiarism_confidence', 0)
+                        )
+                        result['confidence_score'] = confidence
+                        
+                        return result
+                        
+                except Exception as e:
+                    logger.warning(f"Enhanced text analysis failed, falling back to basic method: {e}")
+            
+            # Fallback to basic analysis
             # Basic plagiarism detection using pattern matching
             plagiarism_score = self._detect_plagiarism(text)
             result['plagiarism_score'] = plagiarism_score
